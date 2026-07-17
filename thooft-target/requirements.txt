@@ -1,0 +1,12 @@
+# Core solver + validation
+numpy>=1.24
+scipy>=1.10
+
+# Arbitrary-precision solver (thooft_highprec.py, generate_reference.py)
+mpmath>=1.3
+
+# Regge-trajectory plot (plot_spectrum.py)
+matplotlib>=3.7
+
+# Test suite (test_thooft.py)
+pytest>=7.0

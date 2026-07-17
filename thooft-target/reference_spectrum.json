@@ -1,0 +1,170 @@
+[
+  {
+    "n": 0,
+    "parity": "sym",
+    "CP": -1,
+    "value": "0.737061746292689626360936",
+    "stable_digits": 15
+  },
+  {
+    "n": 1,
+    "parity": "anti",
+    "CP": 1,
+    "value": "1.7537313369174989458319",
+    "stable_digits": 14
+  },
+  {
+    "n": 2,
+    "parity": "sym",
+    "CP": -1,
+    "value": "2.74816091237060152831851",
+    "stable_digits": 14
+  },
+  {
+    "n": 3,
+    "parity": "anti",
+    "CP": 1,
+    "value": "3.75105758170547151321362",
+    "stable_digits": 14
+  },
+  {
+    "n": 4,
+    "parity": "sym",
+    "CP": -1,
+    "value": "4.74929538103752019763817",
+    "stable_digits": 13
+  },
+  {
+    "n": 5,
+    "parity": "anti",
+    "CP": 1,
+    "value": "5.75049262364878119190752",
+    "stable_digits": 13
+  },
+  {
+    "n": 6,
+    "parity": "sym",
+    "CP": -1,
+    "value": "6.74962941964890080911682",
+    "stable_digits": 13
+  },
+  {
+    "n": 7,
+    "parity": "anti",
+    "CP": 1,
+    "value": "7.75028439719264266708761",
+    "stable_digits": 13
+  },
+  {
+    "n": 8,
+    "parity": "sym",
+    "CP": -1,
+    "value": "8.74977158078929312438288",
+    "stable_digits": 13
+  },
+  {
+    "n": 9,
+    "parity": "anti",
+    "CP": 1,
+    "value": "9.75018513525400354794341",
+    "stable_digits": 13
+  },
+  {
+    "n": 10,
+    "parity": "sym",
+    "CP": -1,
+    "value": "10.7498450891609598308764",
+    "stable_digits": 13
+  },
+  {
+    "n": 11,
+    "parity": "anti",
+    "CP": 1,
+    "value": "11.7501301425152359184432",
+    "stable_digits": 13
+  },
+  {
+    "n": 12,
+    "parity": "sym",
+    "CP": -1,
+    "value": "12.7498880084164477577803",
+    "stable_digits": 13
+  },
+  {
+    "n": 13,
+    "parity": "anti",
+    "CP": 1,
+    "value": "13.7500965039730453588151",
+    "stable_digits": 13
+  },
+  {
+    "n": 14,
+    "parity": "sym",
+    "CP": -1,
+    "value": "14.7499152444468573183417",
+    "stable_digits": 12
+  },
+  {
+    "n": 15,
+    "parity": "anti",
+    "CP": 1,
+    "value": "15.750074428439203672874",
+    "stable_digits": 12
+  },
+  {
+    "n": 16,
+    "parity": "sym",
+    "CP": -1,
+    "value": "16.749933611057588394173",
+    "stable_digits": 12
+  },
+  {
+    "n": 17,
+    "parity": "anti",
+    "CP": 1,
+    "value": "17.7500591590361347732186",
+    "stable_digits": 12
+  },
+  {
+    "n": 18,
+    "parity": "sym",
+    "CP": -1,
+    "value": "18.7499465840346981495288",
+    "stable_digits": 12
+  },
+  {
+    "n": 19,
+    "parity": "anti",
+    "CP": 1,
+    "value": "19.7500481571706917602693",
+    "stable_digits": 12
+  },
+  {
+    "n": 20,
+    "parity": "sym",
+    "CP": -1,
+    "value": "20.7499560881743415857356",
+    "stable_digits": 12
+  },
+  {
+    "n": 21,
+    "parity": "anti",
+    "CP": 1,
+    "value": "21.7500399671308289954727",
+    "stable_digits": 12
+  },
+  {
+    "n": 22,
+    "parity": "sym",
+    "CP": -1,
+    "value": "22.7499632597626579135376",
+    "stable_digits": 12
+  },
+  {
+    "n": 23,
+    "parity": "anti",
+    "CP": 1,
+    "value": "23.7500337053191044280651",
+    "stable_digits": 12
+  }
+]

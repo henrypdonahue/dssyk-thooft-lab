@@ -1,0 +1,9 @@
+# Core: sparse SYK construction, diagonalization, measurement
+numpy>=1.24
+scipy>=1.10
+
+# Figures
+matplotlib>=3.7
+
+# Tests
+pytest>=7.0
