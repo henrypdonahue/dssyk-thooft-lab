@@ -59,10 +59,12 @@ So the test is split by what each tool can honestly establish:
 
 - **Eq. 3.27 — mechanism confirmed and quantified (for the $H^{2k}$ singlets).**
   The singlet self-averaging *rate* is exactly $2/\binom{N}{p}$ (verified: an
-  exact identity for $m_2$; ED-confirmed at ~1%), which along the double-scaling
-  line is super-exponential ($\sim10^{-46}$ at $N=640$; the exact form is
-  $\sim e^{-\frac12\sqrt N\ln N}$). Higher moments $m_4,m_6$ self-average at the
-  same combinatorial rate. What is *not* established: a fully general bounded
+  exact identity for $m_2$; ED-confirmed at 2–9%, consistent with the
+  $\sqrt{2/(n-1)}\approx10\%$ sampling noise of $n=200$ realizations), which
+  along the double-scaling line is super-exponential ($\sim10^{-46}$ at $N=640$;
+  the *leading* form is $\sim e^{-\frac12\sqrt N\ln N}$ — subleading
+  $O(\sqrt N)$ terms are sizable, e.g. a factor $\sim e^{-24}$ at $N=640$).
+  Higher moments $m_4,m_6$ self-average at the same combinatorial rate. What is *not* established: a fully general bounded
   singlet observable (only powers of $H$ are probed), and the $m_2$ identity is
   not itself a test of the paper's diagrammatics (see caveat above).
 - **Eq. 3.28 — consistent, but at the edge of ED's reach.** The trustworthy
@@ -86,8 +88,10 @@ measured — see `validate_syk.py`:
 - **$[H,P]=0$** with fermion parity $P$, and the **parity-sector subtlety**:
   mixing the two blocks fakes Poisson statistics; resolving parity is mandatory.
 - **Random-matrix Bott periodicity**: the mean gap ratio $\langle r\rangle$
-  cycles GOE→GUE→GSE→GUE with $N\bmod 8$ — all four classes reproduced
-  ($N=10,14,18$→GUE; $12,20$→GSE; $16$→GOE).
+  cycles GOE→GUE→GSE→GUE with $N\bmod 8$ — all three RMT classes reproduced
+  across four $N\bmod8$ values ($N=10,14,18$→GUE; $12,20$→GSE; $16$→GOE).
+  Note: the $N\bmod8$ table used here is the $p\equiv0\pmod4$ classification
+  (guarded in `validate_syk.py`).
 
 ## Files
 

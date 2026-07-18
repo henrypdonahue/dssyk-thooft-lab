@@ -127,7 +127,7 @@ Dependencies: `numpy`, `scipy` (core); `mpmath` (arbitrary precision);
 ```bash
 python3 thooft_spectrum.py     # print the spectrum (double precision)
 python3 validate.py            # human-readable validation report (exit code = pass/fail)
-pytest -q                      # asserting regression suite (~1 s)
+pytest -q                      # asserting regression suite (~5 s)
 python3 sine_solver.py         # independent cross-check vs the main solver
 python3 thooft_highprec.py     # arbitrary-precision spectrum
 ```
@@ -184,9 +184,13 @@ $0.7370617462926896\ldots$ (`reference_spectrum.json`), agreeing with FLZ to
 ~15 digits. (2) The high-precision ($\sim$12-digit) guarantee is an $\alpha=0$
 statement: it rests on the FLZ tables and sum rules, which exist only at the
 duality point. The general-$\alpha$ extension is validated only by the
-independent sine solver ($\sim$4 digits) — the method should be equally accurate
-away from $\alpha=0$, but nothing *external* confirms it there yet (see the
-low-hanging-fruit list: pulling FLZ/'t Hooft $m\neq0$ eigenvalues would close this).
+independent sine solver ($\sim$4 digits) — and away from $\alpha=0$ the method is
+*not* expected to be equally accurate: the basis hardwires the $\alpha=0$ endpoint
+exponent $\tfrac12$, while the true exponent $\beta(\alpha)$ solves
+$\pi\beta\cot\pi\beta=-\alpha$, so for $\alpha\neq0$ convergence degrades from
+spectral to algebraic. Nothing *external* confirms the $\alpha\neq0$ machinery to
+high precision yet (pulling published $m\neq0$ eigenvalues would close this; a
+Jacobi-type $[x(1-x)]^{\beta}$ basis would restore spectral accuracy).
 
 ## Result (summary)
 

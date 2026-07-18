@@ -75,11 +75,15 @@ PI = np.pi
 def _f(k: np.ndarray | int):
     """f(k) = Int_0^pi sin(theta) cos(k theta) d theta.
 
-    = 2/(1-k^2) for even integer k, 0 for odd integer k.
+    = 2/(1-k^2) for even integer k, 0 for odd integer k (including k = +-1,
+    where the even-branch expression would divide by zero; the guard below keeps
+    np.where from evaluating it there, so mixed-parity index sets are safe).
     """
     k = np.asarray(k)
-    out = np.where(k % 2 == 0, 2.0 / (1.0 - k.astype(float) ** 2), 0.0)
-    return out
+    kf = k.astype(float)
+    even = k % 2 == 0
+    denom = np.where(even, 1.0 - kf ** 2, 1.0)  # placeholder 1 on odd k
+    return np.where(even, 2.0 / denom, 0.0)
 
 
 def _odd_harmonic(pmax: int) -> np.ndarray:
@@ -159,6 +163,22 @@ def spectrum(num_basis: int = 200, num_levels: int = 40, alpha: float = 0.0):
     """
     ev_sym, _, _ = solve_sector(num_basis, parity=0, alpha=alpha)   # symmetric -> FLZ even n
     ev_anti, _, _ = solve_sector(num_basis, parity=1, alpha=alpha)  # antisym   -> FLZ odd  n
+
+    # The labeling below assumes the two CP sectors strictly interleave
+    # (sym, anti, sym, anti, ...).  That is proven at alpha = 0 (FLZ) and holds
+    # at every alpha tested, but it is an assumption away from the duality
+    # point -- so assert it rather than silently mislabeling n and CP (levels
+    # could reorder e.g. approaching the chiral limit alpha -> -1).
+    n_pairs = (num_levels + 1) // 2
+    for m in range(n_pairs):
+        if not ev_sym[m] < ev_anti[m]:
+            raise RuntimeError(
+                f"CP sectors do not interleave at alpha={alpha}: "
+                f"sym[{m}]={ev_sym[m]:.6f} >= anti[{m}]={ev_anti[m]:.6f}")
+        if m + 1 < n_pairs and not ev_anti[m] < ev_sym[m + 1]:
+            raise RuntimeError(
+                f"CP sectors do not interleave at alpha={alpha}: "
+                f"anti[{m}]={ev_anti[m]:.6f} >= sym[{m+1}]={ev_sym[m+1]:.6f}")
 
     levels = []
     for n in range(num_levels):

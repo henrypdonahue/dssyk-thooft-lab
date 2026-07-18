@@ -5,8 +5,8 @@ Run with:  pytest -q        (or  python3 -m pytest -q)
 
 Every check that validate.py *prints*, this file *asserts* with an explicit
 tolerance, so the package fails loudly if a change breaks the physics.  The whole
-suite is double precision and runs in roughly a few minutes (the sine
-cross-check quadrature dominates the cost).
+suite is double precision and runs in a few seconds (the sine cross-check
+quadrature dominates the cost).
 """
 
 import numpy as np

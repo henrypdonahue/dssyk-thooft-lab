@@ -1,12 +1,13 @@
-# Core solver + validation
-numpy>=1.24
-scipy>=1.10
+# Exact pins: eigh(D, S) is version-sensitive at the ~12th digit, and the
+# reference tables were certified with these versions (Python 3.9).
+numpy==2.0.2
+scipy==1.13.1
 
 # Arbitrary-precision solver (thooft_highprec.py, generate_reference.py)
-mpmath>=1.3
+mpmath==1.3.0
 
 # Regge-trajectory plot (plot_spectrum.py)
-matplotlib>=3.7
+matplotlib==3.9.4
 
 # Test suite (test_thooft.py)
-pytest>=7.0
+pytest==6.2.5

@@ -42,7 +42,12 @@ def _even_parity_mask(N: int) -> np.ndarray:
 
 
 def mean_r(eigs: np.ndarray, trim: float = 0.15) -> float:
-    """Mean adjacent-gap ratio over the central (1-2*trim) of a sorted spectrum."""
+    """Mean adjacent-gap ratio over the central (1-2*trim) of a sorted spectrum.
+
+    The s > 1e-12 filter below is load-bearing: in the GSE cases (N mod 8 = 4)
+    every level is Kramers-doubled within a parity sector, and without dropping
+    the zero gaps the r-statistic would be garbage.  It also makes the GOE/GUE
+    cases robust to accidental near-degeneracies."""
     e = np.sort(eigs)
     lo, hi = int(len(e) * trim), int(len(e) * (1 - trim))
     e = e[lo:hi]
@@ -53,7 +58,16 @@ def mean_r(eigs: np.ndarray, trim: float = 0.15) -> float:
 
 
 def r_statistic(N: int, p: int = 4, n_real: int = 8, seed: int = 0) -> float:
-    """<r> in the even-parity sector, averaged over n_real disorder realizations."""
+    """<r> in the even-parity sector, averaged over n_real disorder realizations.
+
+    Only valid against CLASS_BY_NMOD8 for p = 0 mod 4: the antiunitary
+    classification of Majorana SYK depends on p mod 4 (p = 2 mod 4 realizes a
+    different N mod 8 table), so guard rather than silently validate against
+    the wrong ensemble."""
+    if p % 4 != 0:
+        raise ValueError(
+            f"p={p}: CLASS_BY_NMOD8 is the p = 0 (mod 4) classification; "
+            "p = 2 (mod 4) has a different N mod 8 table")
     psis = majorana_operators(N)
     mask = _even_parity_mask(N)
     rng = np.random.default_rng(seed)

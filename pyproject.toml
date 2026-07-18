@@ -1,0 +1,27 @@
+# Repo-level metadata + pinned dependency set.  `pip install -e .` installs the
+# pinned scientific stack; the modules themselves remain flat script directories
+# (run scripts and pytest from inside each module directory, as the READMEs say).
+# Cross-module access is by design file-based (duality/ reads
+# thooft-target/reference_spectrum.json) or via an explicit sys.path line
+# (mn_spectroscopy.py importing syk) — no package installation required.
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hologram-duality"
+version = "0.1.0"
+description = "Numerical stress-tests of the DSSYK_infinity <-> 't Hooft duality (arXiv:2607.05678)"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy==2.0.2",
+    "scipy==1.13.1",
+    "mpmath==1.3.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==6.2.5", "matplotlib==3.9.4"]
+
+[tool.setuptools]
+py-modules = []
