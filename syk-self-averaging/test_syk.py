@@ -207,6 +207,54 @@ def test_cp_higher_n_is_a_mixture():
     assert 0.05 < w < 0.95, f"n=2 wrong-channel weight {w:.3f}"
 
 
+# --------------------------------------------------------------------------
+# Exact-Wick adjoint variance (exact_wick.py): Eq. 3.28 beyond ED
+# --------------------------------------------------------------------------
+@pytest.mark.parametrize("N,p", [(8, 4), (8, 6)])
+def test_wick_closed_form_matches_enumeration(N, p):
+    """Var(B_jk) = 4 sigma^4 C(N-2,p-1) must equal the literal sum over all
+    subset pairs of Majorana-trace contractions (verifies every sign in the
+    derivation, including T_cd T_dc = +1)."""
+    from exact_wick import var_offdiag_exact, var_offdiag_enumerated
+    ve, vn = var_offdiag_exact(N, p), var_offdiag_enumerated(N, p)
+    assert abs(vn / ve - 1.0) < 1e-12
+
+
+def test_wick_mean_diag_and_ratio_artifact():
+    """E[B_jj] = sigma^2 C(N,p)(1 - 2p/N): matches enumeration, and vanishes
+    exactly at p = N/2 -- the derived origin of the ratio artifact."""
+    from exact_wick import mean_diag_exact, mean_diag_enumerated
+    for (N, p) in [(8, 4), (8, 6), (10, 4)]:
+        me, mn = mean_diag_exact(N, p), mean_diag_enumerated(N, p)
+        assert abs(me - mn) < 1e-10 * max(1.0, abs(me))
+    assert mean_diag_exact(12, 6) == 0.0
+    assert mean_diag_exact(16, 8) == 0.0
+
+
+def test_wick_matches_ED_ensemble():
+    """The closed-form rms must reproduce a fresh ED disorder ensemble."""
+    from exact_wick import rms_offdiag_exact
+    from self_averaging import measure_symmetry_violation
+    N, p = 10, 4
+    r = measure_symmetry_violation(N, p, n_inst=100, seed=99)
+    exact = rms_offdiag_exact(N, p)
+    # E[RMS] <= sqrt(E[RMS^2]) = exact (Jensen), so allow a small one-sided
+    # margin plus 3 standard errors
+    assert r["rms_off"] < exact * 1.005 + 3 * r["rms_off_err"]
+    assert r["rms_off"] > exact * 0.95 - 3 * r["rms_off_err"]
+
+
+def test_wick_double_scaling_superexponential():
+    """Along p = sqrt(N), ln rms / sqrt(N) must decrease without bound:
+    the Eq. 3.28 form e^{-a sqrt N} is beaten for every a (checked well past
+    any ED-reachable N)."""
+    from exact_wick import double_scaling_scan
+    rows = double_scaling_scan(1.0, [16, 64, 100, 400, 1600])
+    slopes = [r["ln_rms"] / np.sqrt(r["N"]) for r in rows]
+    assert all(b < a for a, b in zip(slopes, slopes[1:]))
+    assert slopes[-1] < -2.0
+
+
 def test_relvar_m2_matches_ED():
     """ED relative variance of m2 matches the analytic 2/C(N,p) to ~few %."""
     N, p = 12, 4
