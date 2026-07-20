@@ -67,15 +67,34 @@ So the test is split by what each tool can honestly establish:
   Higher moments $m_4,m_6$ self-average at the same combinatorial rate. What is *not* established: a fully general bounded
   singlet observable (only powers of $H$ are probed), and the $m_2$ identity is
   not itself a test of the paper's diagrammatics (see caveat above).
-- **Eq. 3.28 — consistent, but at the edge of ED's reach.** The trustworthy
-  signal $\mathrm{rms\_off}$ of the adjoint bilinear decays with $N$ and steepens
-  with $p$, as required. Distinguishing the precise $e^{-a\sqrt N}$ form from a
-  steep power law needs the double-scaling regime ($p\sim\sqrt N$, large $N$)
-  that ED cannot reach; the accessible window ($N\le18$) constrains the trend but
-  cannot pin the exponent. (The dimensionless ratio $\mathrm{rms\_off}/\mathrm{rms\_diag}$
-  has a spurious bump at $p=N/2$ where its denominator collapses — a metric
-  artifact, not physics; read $\mathrm{rms\_off}$.) An honest reach limit,
-  **not** a failure of the claim.
+- **Eq. 3.28 — now settled exactly, beyond ED (`exact_wick.py`).** $B_{jk}$ is
+  quadratic in the couplings, so Wick reduces its disorder statistics to
+  Majorana trace combinatorics, in closed form at any $(N,p)$:
+  $$\mathrm{Var}(B_{jk}) = 4\sigma^4\binom{N-2}{p-1},\qquad
+    \mathbb{E}[B_{jj}] = \sigma^2\binom{N}{p}\left(1-\tfrac{2p}{N}\right).$$
+  Verified against literal contraction enumeration (exact) and the ED ensembles
+  (0.99–1.006). Along $p=\sqrt N$ this gives
+  $\ln\mathrm{rms} = -\tfrac14\sqrt N\ln N\,(1+o(1))$ — smaller than
+  $e^{-a\sqrt N}$ for **every** $a$: Eq. 3.28 holds, verified in the
+  double-scaling regime it is about (scanned to $N=1600$), not extrapolated
+  from $N\le18$ fits. Bonus: $\mathbb{E}[B_{jj}]$ vanishes exactly at $p=N/2$ —
+  the previously-flagged "ratio artifact" is now *derived*. At fixed $p$ (where
+  the 't Hooft comparison lives) the same formula is the power law
+  $\mathrm{rms}\sim 2\,p!/\sqrt{(p-1)!}\;N^{-(p-1)/2}$: symmetry emergence is
+  only polynomial in the match regime.
+
+- **The $M_n$ tower and CP, measured (`dirac.py`, `mn_spectroscopy.py`).**
+  Exact and asserted: $[H,Q]=0$, $M_0=Q$, $M_1=-(p/2)iH$ (paper's $M_1=H$ fails
+  at $O(1)$), $M_2=-\sum\dot c^\dagger\dot c$ (paper's $+$ sign is wrong),
+  $M_n^\dagger=(-1)^nM_n$ for $n\le2$ only. The paper's CP must be the
+  **unitary** particle-hole map ($M_1\propto iH$ flips under any antiunitary
+  fixing $H$, yet the graviton is CP-even); on a C-invariant instance
+  CP$(M_0)=-1$ and CP$(M_1)=+1$ are exact, while the raw $n\ge2$ operators are
+  CP-**mixtures** (15–68% wrong-channel weight — total-time-derivative
+  contamination). The sharp form of CP$=(-1)^{n+1}$ therefore lives in
+  CP-resolved correlators; `mn_spectroscopy.py` measures exactly those
+  (first-look at $N_c=10$, $\lambda=1.6$: conserved $n=0,1$ machine-exact at
+  $\omega=0$; broad continua for $n\ge2$; odd $n$ favors the predicted channel).
 
 Full numbers in [`results.txt`](results.txt); figure in `self_averaging.png`.
 
@@ -97,22 +116,30 @@ measured — see `validate_syk.py`:
 
 | file | purpose |
 |------|---------|
-| `syk.py` | sparse Majorana + complex SYK Hamiltonians (Jordan–Wigner), parity/charge operators |
+| `syk.py` | sparse Majorana + Dirac operators (Jordan–Wigner) — the slow reference builders |
+| `pauli_strings.py` | fast bitwise Pauli-string Hamiltonian assembly (10–100×; equivalence-tested vs `syk.py`) |
+| `dirac.py` | charge-conserving complex SYK — the U(1)/"QED" sector: $[H,Q]=0$, the $M_n$ tower, unitary CP machinery |
+| `exact_wick.py` | **exact** disorder statistics of the adjoint bilinear: Eq. 3.28 verified in the double-scaling regime ED can't reach |
+| `mn_spectroscopy.py` | first CP-resolved $M_n$ spectral functions (single realization, $T=\infty$) |
 | `validate_syk.py` | construction validation via $N\bmod8$ RMT level statistics |
-| `self_averaging.py` | the §3.5 measurement (A/B/C above) + verdict |
-| `plot_self_averaging.py` | the two-panel figure |
+| `self_averaging.py` | the §3.5 measurement (A/B/C above) + verdict, with error bars and ΔAIC model selection |
+| `plot_self_averaging.py` | the two-panel figure (reads `results.json`) |
 | `test_syk.py` | asserting `pytest` suite |
-| `results.txt` | saved run output |
+| `results.txt` / `results.json` | saved run output (human / machine) |
+| `mn_spectra.json` / `mn_spectra.png` | spectroscopy output |
 | `requirements.txt` | pinned deps |
 
 ## Usage
 
 ```bash
 pip install -r requirements.txt
-python3 validate_syk.py         # RMT Bott-periodicity validation (~30 s)
-python3 self_averaging.py       # the full self-averaging test (~7 min)
-python3 plot_self_averaging.py  # figure
-pytest -q -m 'not slow'         # fast asserts
+python3 validate_syk.py         # RMT Bott-periodicity validation (~7 s)
+python3 self_averaging.py       # the full self-averaging test (~2 min; writes results.txt/.json)
+python3 exact_wick.py           # exact Eq. 3.28 statistics + double-scaling scan (~1 s)
+python3 dirac.py                # Dirac/QED sector identity + CP report (~5 s)
+python3 mn_spectroscopy.py      # CP-resolved Mn spectral functions (~1 min; --big for Nc=12)
+python3 plot_self_averaging.py  # figure (reads results.json)
+pytest -q -m 'not slow'         # fast asserts (~4 s)
 ```
 
 ## Honest scope

@@ -30,16 +30,23 @@ $\sim10^{-46}$ by $N=640$. The sharp $e^{-a\sqrt N}$ symmetry-violation form liv
 beyond instance-level ED's reach — an honest wall (see `exact_wick.py` for the way
 around it).
 
+**[`duality/`](duality) — the comparison dictionary ✅**
+Every convention a DSSYK ↔ 't Hooft comparison needs ($n$-offset, CP, the
+$\lambda$-vs-$\lambda_{\rm chord}$ factor 2, $M_n$ normalization), encoded once and
+unit-tested *before* any DSSYK number exists, plus the two parameter-free falsifiable
+fingerprints: mass-squared ratios and the alternating-CP interleave splittings.
+
 Each folder is self-contained (own README, deps, solver, cross-check, `pytest`).
-Run `pip install -r requirements.txt` then `pytest -q` inside either
+Run `pip install -r requirements.txt` then `pytest -q` inside any of them
 (`-m 'not slow'` skips the long ED sweeps).
 
 ## Status & corrections
 
 | Module | Verdict | Tests | Anchor |
 |---|---|---|---|
-| thooft-target | No known bugs; independently re-derived | 13/13 | FLZ to 2e-12; sum rules ~9e-11 |
-| syk-self-averaging | Honest; claims survive scrutiny | 8/8 | RMT Bott periodicity, all 4 classes |
+| thooft-target | No known bugs; independently re-derived; eigenfunctions validated | 17/17 | FLZ to 2e-12; sum rules ~9e-11; Parseval to 3e-6 |
+| syk-self-averaging | Honest; Eq. 3.28 now verified *exactly* in double scaling | 24 | RMT Bott periodicity; Wick-vs-enumeration exact |
+| duality | Conventions + fingerprints encoded before any DSSYK number exists | 8/8 | FLZ reference table |
 
 Load-bearing corrections for any DSSYK ↔ 't Hooft comparison:
 
@@ -104,10 +111,11 @@ exact). Then the full infinite-$T$ bilinear-ladder solve ($\{h:k(h)=1\}$) — ga
 moments/anchor, whose first job is discrete-vs-continuum. A "no discrete tower" result would
 itself be publishable, about *where* the duality holds.
 
-**Infra minimum.** One `pyproject.toml` so the modules can import each other (today
-`self_averaging.py`'s `from syk import …` only works from inside its folder) and pinned deps
-(numpy 2.0.2, scipy 1.13.1, mpmath 1.3.0) — `eigh(D,S)` is version-sensitive at the 12th
-digit. Everything else (CI, `make reproduce`, dashboards) is release-hardening, not a gate.
+**Infra minimum — done.** Deps pinned (numpy 2.0.2, scipy 1.13.1, mpmath 1.3.0 —
+`eigh(D,S)` is version-sensitive at the 12th digit), `pyproject.toml` at the root, git
+history since 2026-07-17. Scripts run from inside each module directory; cross-module
+access is file-based (`duality/` reads the certified reference table). Remaining
+(CI, `make reproduce`, dashboards) is release-hardening, not a gate.
 
 ## Blocked / out of scope
 

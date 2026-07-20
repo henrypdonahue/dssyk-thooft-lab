@@ -134,6 +134,43 @@ audit found real defects to fix:
 Ordered from an afternoon's work to open research problems. Each rung is (mostly)
 independent; the tiers gate the ones that aren't.
 
+### Progress log (2026-07-20)
+
+- ✅ **Rungs 1–4** (Tier 0): git history exists; README defects fixed; deps pinned;
+  `pyproject.toml`; `_f()` guarded; interleaving asserted; ddof=1; plot reads
+  `results.json`.
+- ✅ **Rung 5**: `dirac.py` — complex SYK built, [H,Q]=0 exact, M₀=Q, M₁=−(p/2)iH
+  asserted (plus new: M₂=−Σċ†ċ — the paper's ψ†ψ̈=+ψ̇†ψ̇ sign is wrong; and
+  Mₙ† = (−1)ⁿMₙ holds only for n ≤ 2).
+- ✅ **Rung 6**: CP measured. Finding: the paper's CP must be the *unitary*
+  particle-hole map (M₁∝iH rules out antiunitary); CP(M₀)=−1, CP(M₁)=+1 exact on
+  C-invariant instances; raw n ≥ 2 operators are CP-*mixtures* (15–68% wrong
+  channel) — the sharp claim lives in CP-resolved correlators.
+- ✅ **Rung 7**: error bars everywhere; ΔAIC model selection with the true
+  e^(−a√N·lnN) candidate (which now wins decisively for the double-scaling
+  combinatorics); honest "cannot discriminate" verdicts in the ED window.
+- ✅ **Rung 8**: bitwise Pauli-string assembly, 10–100×; suite 2 min → 4 s.
+- ✅ **Rung 9** (eigenfunction half): Parseval completeness (Σf² = 1 to 3e-6),
+  independent weak-form Rayleigh-quotient recovery of eigenvalues from
+  eigenvectors (~1e-6), cross-solver wavefunction overlap > 0.9999, first
+  decay-constant table. External α ≠ 0 anchors still open (literature fetch in
+  progress).
+- ✅ **Rung 10**: `duality/` dictionary with the two parameter-free fingerprints
+  (mass ratios; interleave splittings) encoded and tested.
+- ✅ **Rung 11**: `exact_wick.py` — **Eq. (3.28) verified exactly in the
+  double-scaling regime**: Var(B_jk) = 4σ⁴C(N−2,p−1) (enumeration- and
+  ED-verified), ln rms = −¼√N lnN(1+o(1)) at p=√N, scanned to N=1600. Bonus:
+  E[B_jj] = σ²C(N,p)(1−2p/N) *derives* the p=N/2 ratio artifact. At fixed p the
+  same formula quantifies the merely-polynomial symmetry emergence in the match
+  regime (rung 16's question, answered analytically).
+- ✅ **Rung 14** (first version): `mn_spectroscopy.py` — first CP-resolved Mₙ
+  spectral functions ever computed (single realization, Nc=10–12, λ=1.6):
+  conserved n=0,1 machine-exact at ω=0; broad continua for n≥2; odd n favors the
+  predicted CP channel. Deliberately not presented as the λ→0 match.
+- ⬜ Rungs 12, 13, 15–24 remain open; rung 13 (boost-to-mass dictionary) is now
+  the sharpest prerequisite before spectroscopy can be pushed toward the match
+  regime.
+
 ### Tier 0 — Hygiene (hours; do immediately)
 
 1. **`git init` and commit.** The repo has a `.gitignore` but is not a git repository.
