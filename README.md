@@ -35,7 +35,18 @@ $M_2=-\sum\dot\psi^\dagger\dot\psi$ (paper's $+$ sign is wrong), CP must be the 
 particle-hole map, and raw $M_{n\ge2}$ are CP-mixtures — CP lives in resolved correlators.
 
 **New data:** first CP-resolved $M_n$ spectral functions (`mn_spectroscopy.py`); first
-'t Hooft decay-constant table (all $f_n>0$ in the $\phi(0^+)>0$ convention).
+'t Hooft decay-constant table (all $f_n>0$ in the $\phi(0^+)>0$ convention);
+CP-resolved spectral-moment invariants along fixed $p$ (`moments_pipeline.py`).
+
+**New calibration (rung 13, `duality/BOOST.md`):** one discrete mass appears in
+boost frequency as a *continuum with mass-encoding nodes* — peak-hunting is the
+wrong observable, and the ω-symmetric $T_B=\infty$ hologram vs KMS-asymmetric bulk
+response ("tomperature" map) is the precisely-stated gating unknown.
+
+**Audited (rung 12):** the systematics behind §3.5 were never published anywhere —
+`exact_wick.py` is the only prefactor-exact derivation in existence and *confirms*
+the papers at leading order; the λ factor-2 clash is internal to the Susskind corpus;
+the 2511.10907 entropy correction leaves §5 untouched.
 
 **Still untested:** the headline spectrum match itself, and whether the DSSYK singlet
 spectrum is a discrete tower or a continuum — the real open risk.
