@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from syk import majorana_operators, majorana_hamiltonian
+from pauli_strings import majorana_hamiltonian_fast
 
 RMT = {"Poisson": 0.3863, "GOE": 0.5307, "GUE": 0.5996, "GSE": 0.6744}
 CLASS_BY_NMOD8 = {0: "GOE", 2: "GUE", 4: "GSE", 6: "GUE"}
@@ -68,12 +68,11 @@ def r_statistic(N: int, p: int = 4, n_real: int = 8, seed: int = 0) -> float:
         raise ValueError(
             f"p={p}: CLASS_BY_NMOD8 is the p = 0 (mod 4) classification; "
             "p = 2 (mod 4) has a different N mod 8 table")
-    psis = majorana_operators(N)
     mask = _even_parity_mask(N)
     rng = np.random.default_rng(seed)
     vals = []
     for _ in range(n_real):
-        H = majorana_hamiltonian(N, p, rng, psis=psis).toarray()
+        H = majorana_hamiltonian_fast(N, p, rng)
         Hs = H[np.ix_(mask, mask)]
         eigs = np.linalg.eigvalsh(Hs)
         vals.append(mean_r(eigs))

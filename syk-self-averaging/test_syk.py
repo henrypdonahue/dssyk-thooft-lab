@@ -12,6 +12,12 @@ import scipy.sparse as sp
 
 from syk import (majorana_operators, majorana_hamiltonian, fermion_parity,
                  charge_operator, coupling_variance)
+from pauli_strings import (majorana_string, monomial_string,
+                           majorana_hamiltonian_fast, add_string_dense)
+from dirac import (draw_couplings, dirac_hamiltonian,
+                   dirac_hamiltonian_reference, charge_matrix, annihilators,
+                   mn_operator, time_derivative, particle_hole, cp_conjugate,
+                   wrong_channel_weight)
 from self_averaging import relvar_m2_exact, measure_moments
 import validate_syk
 
@@ -62,17 +68,143 @@ def test_m2_equals_sum_J_squared():
     assert abs(m2 - np.sum(J ** 2)) < 1e-9
 
 
-def test_charge_conserved_complex():
-    """[H_complex, Q] = 0 for the Dirac model (the U(1) EM sector)."""
-    # Build a complex SYK H from a Majorana H on 2*Nc Majoranas and check it
-    # commutes with Q only if it is charge-conserving; here we simply verify Q
-    # is a good quantum number of the number operator basis (idempotent-free).
-    Nc = 4
-    Q = charge_operator(Nc).toarray()
-    # Q has integer spectrum 0..Nc
+# --------------------------------------------------------------------------
+# Fast Pauli-string assembly (pauli_strings.py)
+# --------------------------------------------------------------------------
+def test_majorana_strings_match_sparse():
+    """Every psi_a as a (phase, x, z) string must equal the sparse JW matrix."""
+    N = 8
+    psis = majorana_operators(N)
+    dim = 1 << (N // 2)
+    states = np.arange(dim, dtype=np.int64)
+    for a in range(N):
+        M = np.zeros((dim, dim), dtype=complex)
+        add_string_dense(M, majorana_string(N, a), 1.0, states)
+        assert np.abs(M - psis[a].toarray()).max() < 1e-14
+
+
+def test_monomial_string_matches_sparse_product():
+    """A full p-Majorana monomial string must equal the sparse matrix product."""
+    N = 8
+    psis = majorana_operators(N)
+    dim = 1 << (N // 2)
+    states = np.arange(dim, dtype=np.int64)
+    for combo in [(0, 1, 2, 3), (0, 2, 5, 7), (1, 3, 4, 6), (2, 3, 6, 7)]:
+        ref = psis[combo[0]].toarray()
+        for a in combo[1:]:
+            ref = ref @ psis[a].toarray()
+        M = np.zeros((dim, dim), dtype=complex)
+        add_string_dense(M, monomial_string(N, combo), 1.0, states)
+        assert np.abs(M - ref).max() < 1e-14
+
+
+@pytest.mark.parametrize("N,p", [(8, 4), (10, 4), (8, 6)])
+def test_fast_hamiltonian_equals_reference(N, p):
+    """Identical rng state -> the fast builder reproduces syk.majorana_hamiltonian."""
+    H_ref = majorana_hamiltonian(N, p, np.random.default_rng(5)).toarray()
+    H_fast = majorana_hamiltonian_fast(N, p, np.random.default_rng(5))
+    assert np.abs(H_ref - H_fast).max() < 1e-13
+
+
+# --------------------------------------------------------------------------
+# Dirac sector (dirac.py): the U(1)/"QED" half of the duality
+# --------------------------------------------------------------------------
+def test_dirac_builder_matches_sparse_reference():
+    """The bitwise Dirac builder must equal the independent sparse construction."""
+    Nc, p = 4, 4
+    couplings = draw_couplings(Nc, p, np.random.default_rng(2))
+    H = dirac_hamiltonian(Nc, p, couplings=couplings)
+    H_ref = dirac_hamiltonian_reference(Nc, p, couplings)
+    assert np.abs(H - H_ref).max() < 1e-13
+
+
+def test_dirac_charge_conserved():
+    """[H, Q] = 0 for the complex SYK model (the U(1)/EM sector), with H
+    genuinely built and Hermitian, and Q with integer spectrum 0..Nc."""
+    Nc, p = 5, 4
+    H = dirac_hamiltonian(Nc, p, rng=np.random.default_rng(3))
+    Q = charge_matrix(Nc)
+    assert np.abs(H - H.conj().T).max() < 1e-12
+    assert np.abs(H @ Q - Q @ H).max() < 1e-12
     eigs = np.linalg.eigvalsh(Q)
     assert np.allclose(np.round(eigs), eigs, atol=1e-9)
     assert eigs.min() >= -1e-9 and eigs.max() <= Nc + 1e-9
+    # and the sparse-operator Q agrees with the diagonal one
+    assert np.abs(charge_operator(Nc).toarray() - Q).max() < 1e-12
+
+
+def test_mn_operator_identities():
+    """The corrected tower identities (README correction #3 and its family):
+    M_0 = Q;  M_1 = -(p/2) i H  (paper's M_1 = H fails at O(1));
+    M_2 = -sum cdot^dag cdot  (paper's + sign is wrong)."""
+    Nc, p = 5, 4
+    H = dirac_hamiltonian(Nc, p, rng=np.random.default_rng(7))
+    cs = annihilators(Nc)
+    Q = charge_matrix(Nc)
+
+    M0 = mn_operator(H, cs, 0)
+    assert np.abs(M0 - Q).max() < 1e-12
+
+    M1 = mn_operator(H, cs, 1)
+    assert np.abs(M1 + (p / 2) * 1j * H).max() < 1e-12
+    assert np.abs(M1 - H).max() > 1.0          # the paper's identity fails
+
+    M2 = mn_operator(H, cs, 2)
+    cdots = [time_derivative(H, C) for C in cs]
+    sum_cdd = sum(Cd.conj().T @ Cd for Cd in cdots)
+    assert np.abs(M2 + sum_cdd).max() < 1e-11
+    assert np.abs(M2 - sum_cdd).max() > 1.0    # the paper's + sign fails
+
+
+def test_mn_hermiticity_parity():
+    """M_n^dag = (-1)^n M_n holds exactly for n = 0, 1, 2 -- and genuinely
+    FAILS for n = 3 (the tower is not simply +-Hermitian beyond n = 2)."""
+    Nc, p = 5, 4
+    H = dirac_hamiltonian(Nc, p, rng=np.random.default_rng(11))
+    cs = annihilators(Nc)
+    for n in range(3):
+        Mn = mn_operator(H, cs, n)
+        scale = max(np.abs(Mn).max(), 1e-300)
+        assert np.abs(Mn.conj().T - (-1) ** n * Mn).max() / scale < 1e-12
+    M3 = mn_operator(H, cs, 3)
+    assert np.abs(M3.conj().T - (-1) ** 3 * M3).max() / np.abs(M3).max() > 0.05
+
+
+def test_cp_photon_graviton_exact():
+    """On a C-invariant instance (disjoint/real ensemble), the unitary
+    particle-hole map C gives exactly CP(Q - Nc/2) = -1 (photon) and
+    CP(M_1) = +1 (graviton) -- the paper's n = 0, 1 assignments."""
+    Nc, p = 6, 4
+    rng = np.random.default_rng(4)
+    Hc = dirac_hamiltonian(Nc, p,
+                           couplings=draw_couplings(Nc, p, rng, "c_symmetric"))
+    U = particle_hole(Nc)
+    dim = 1 << Nc
+    assert np.abs(U @ U.conj().T - np.eye(dim)).max() < 1e-12
+    assert np.abs(cp_conjugate(U, Hc) - Hc).max() < 1e-12   # C-invariance
+    Qbar = charge_matrix(Nc) - (Nc / 2) * np.eye(dim)
+    assert np.abs(cp_conjugate(U, Qbar) + Qbar).max() < 1e-12     # CP = -1
+    cs = annihilators(Nc)
+    M1 = mn_operator(Hc, cs, 1)
+    assert np.abs(cp_conjugate(U, M1) - M1).max() < 1e-11          # CP = +1
+
+
+def test_cp_higher_n_is_a_mixture():
+    """The measured finding this module documents: for n >= 2 the raw M_n is a
+    CP-mixture even on a C-invariant instance (total-time-derivative
+    contamination), so the paper's CP = (-1)^{n+1} for the dynamical tower is
+    a statement about CP-resolved correlators, not about the raw operators."""
+    Nc, p = 6, 4
+    rng = np.random.default_rng(4)
+    Hc = dirac_hamiltonian(Nc, p,
+                           couplings=draw_couplings(Nc, p, rng, "c_symmetric"))
+    U = particle_hole(Nc)
+    cs = annihilators(Nc)
+    dim = 1 << Nc
+    M2 = mn_operator(Hc, cs, 2)
+    M2 = M2 - np.trace(M2) / dim * np.eye(dim)
+    w = wrong_channel_weight(U, M2, (-1) ** (2 + 1))
+    assert 0.05 < w < 0.95, f"n=2 wrong-channel weight {w:.3f}"
 
 
 def test_relvar_m2_matches_ED():
