@@ -269,6 +269,18 @@ def test_wick_double_scaling_superexponential():
     assert slopes[-1] < -2.0
 
 
+def test_majorana_m1_identity():
+    """The Majorana counterpart of M1 = -(p/2)iH: with psi^2 = 1,
+    sum_a psi_a [H, psi_a] = -2p H exactly -- so (i/N) sum psi psidot is
+    conserved (proportional to H) and useless as a dynamical probe; the
+    first dynamical Majorana singlet is sum psidot psidot."""
+    N, p = 10, 4
+    H = majorana_hamiltonian_fast(N, p, np.random.default_rng(2))
+    psis = [P.toarray() for P in majorana_operators(N)]
+    S = sum(P @ (H @ P - P @ H) for P in psis)
+    assert np.abs(S - (-2 * p) * H).max() < 1e-10
+
+
 def test_largeq_bench_structure():
     """The ED bench for the large-q anchor: G(0) = <psi^2> = 1 exactly, and
     the singlet bilinear correlator is a positive symmetrized weight."""

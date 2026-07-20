@@ -10,15 +10,22 @@ model-generated ground truth: this module measures, by exact diagonalization
 with the fast Pauli-string builder,
 
     G(t)   = < psi_1(t) psi_1(0) >          (T = inf two-point function)
-    C_2(t) = < Obar(t) Obar(0) >,  O = (i/N) sum_a psi_a psidot_a
-                                        (the simplest dynamical Majorana
-                                         singlet bilinear; traceless part)
+    C_2(t) = < Obar(t) Obar(0) >,  O = -(1/N) sum_a psidot_a psidot_a
+                                        (the M_2-type Majorana singlet;
+                                         traceless part)
 
-disorder-averaged with errors, for increasing p at fixed N and along fixed
-lambda, and stores them in largeq_bench.json.  Any large-q closed form must
-reproduce these curves to O(1/p) accuracy with NO free parameters once the
-coupling normalization is fixed -- that comparison lives in
-duality/largeq_anchor.py (built when the verified formulas land).
+disorder-averaged with errors, along FIXED p with growing N (lambda = p^2/N
+falling -- the direction in which large-q formulas, whose corrections are
+O(1/q) AND O(lambda), must improve), stored in largeq_bench.json.  The
+comparison against the transcribed closed forms lives in
+duality/largeq_anchor.py.
+
+(A trap this module hit and now documents: the "obvious" singlet
+(i/N) sum psi_a psidot_a is exactly conserved -- the Majorana analog of
+M_1 = -(p/2)iH reads  sum_a psi_a [H, psi_a] = -2p H  in our psi^2 = 1
+normalization, asserted in the tests -- so it is 100% static and useless as a
+dynamical probe.  The first genuinely dynamical member of the Majorana tower
+is sum psidot psidot, by the same conservation identity that fixes M_2.)
 
 Conventions: Var(J) = p!/N^{p-1} (papers' Eq. 3.8, script-J = 1), Majoranas
 psi_a^2 = 1.  With this normalization <H^2>/dim = C(N,p) p!/N^{p-1} ~ N/p...
@@ -45,7 +52,7 @@ def two_point_ed(N: int, p: int, ts, n_inst: int = 8, seed: int = 0):
     psis = [P.toarray() for P in majorana_operators(N)]
     dim = 1 << (N // 2)
     ts = np.asarray(ts, float)
-    G_rows, C_rows, m2_rows = [], [], []
+    G_rows, C_rows, m2_rows, sf_rows = [], [], [], []
     for _ in range(n_inst):
         H = majorana_hamiltonian_fast(N, p, rng)
         E, V = np.linalg.eigh(H)
@@ -59,17 +66,18 @@ def two_point_ed(N: int, p: int, ts, n_inst: int = 8, seed: int = 0):
         G_rows.append([complex(np.sum(np.exp(1j * omega * t) * W1))
                        for t in ts])
 
-        # singlet bilinear O = (i/N) sum_a psi_a psidot_a, traceless part,
-        # constructed directly in the eigenbasis
+        # M_2-type singlet O = -(1/N) sum_a psidot_a psidot_a, traceless part,
+        # constructed directly in the eigenbasis (psidot = i[H, psi])
         O = np.zeros((dim, dim), dtype=complex)
         for P in psis:
             Pd = V.conj().T @ P @ V
-            Pdot = 1j * (np.diag(E) @ Pd - Pd @ np.diag(E))
-            O += 1j * Pd @ Pdot
+            Pdot = 1j * (E[:, None] * Pd - Pd * E[None, :])
+            O -= Pdot @ Pdot
         O /= N
         O -= np.trace(O) / dim * np.eye(dim)
         WO = np.abs(O) ** 2 / dim
         C_rows.append([float(np.sum(np.cos(omega * t) * WO)) for t in ts])
+        sf_rows.append(float(WO[np.abs(omega) < 1e-9].sum() / WO.sum()))
     G = np.array(G_rows)
     C = np.array(C_rows)
     sem = 1.0 / np.sqrt(max(n_inst - 1, 1))
@@ -80,6 +88,11 @@ def two_point_ed(N: int, p: int, ts, n_inst: int = 8, seed: int = 0):
         G_im=np.mean(G.imag, 0).tolist(),
         C2=np.mean(C, 0).tolist(),
         C2_err=(np.std(C, 0, ddof=1) * sem).tolist(),
+        # static (omega = 0) fraction of the M_2-type singlet correlator: the
+        # large-q "Hamiltonian exchange only" structure predicts the dynamical
+        # remainder is subleading as lambda -> 0
+        static_fraction=float(np.mean(sf_rows)),
+        static_fraction_err=float(np.std(sf_rows, ddof=1) * sem),
         m2_mean=float(np.mean(m2_rows)), m2_err=float(np.std(m2_rows, ddof=1) * sem),
     )
 
@@ -87,13 +100,17 @@ def two_point_ed(N: int, p: int, ts, n_inst: int = 8, seed: int = 0):
 if __name__ == "__main__":
     ts = np.linspace(0.0, 6.0, 61)
     rows = []
-    print("ED bench for the large-q anchor (T = inf, Var J = p!/N^{p-1}):\n")
-    for (N, p, n_inst) in [(16, 4, 12), (16, 6, 12), (16, 8, 12), (18, 6, 8)]:
+    print("ED bench for the large-q anchor (T = inf, Var J = p!/N^{p-1}).")
+    print("Fixed p, growing N: lambda = p^2/N falls toward the regime where")
+    print("the large-q closed forms (corrections O(1/q) AND O(lambda)) apply.\n")
+    for (N, p, n_inst) in [(16, 4, 12), (20, 4, 8), (24, 4, 4),
+                           (16, 6, 12), (18, 6, 8), (16, 8, 12)]:
         r = two_point_ed(N, p, ts, n_inst=n_inst, seed=40 + N + p)
         rows.append(r)
-        print(f"  N={N} p={p}: <H^2>/dim = {r['m2_mean']:.3f} ± {r['m2_err']:.3f}, "
-              f"G(0) = {r['G_re'][0]:.4f}, G_re(t=2) = "
-              f"{r['G_re'][20]:.4f} ± {r['G_re_err'][20]:.4f}")
+        print(f"  N={N} p={p} (lam={p*p/N:.2f}): <H^2>/dim = "
+              f"{r['m2_mean']:.3f} ± {r['m2_err']:.3f},  G(0) = {r['G_re'][0]:.4f},  "
+              f"static frac of C2 = {r['static_fraction']:.3f} ± "
+              f"{r['static_fraction_err']:.3f}")
     out = Path(__file__).resolve().parent / "largeq_bench.json"
     with open(out, "w") as fh:
         json.dump(rows, fh)

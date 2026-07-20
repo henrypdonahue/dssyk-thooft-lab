@@ -182,8 +182,21 @@ independent; the tiers gate the ones that aren't.
   computation. (Also fixed en route: for n ≥ 3, Tr(M(t)M†) is genuinely
   ω-asymmetric since M_n is not ±Hermitian — the symmetrized correlator is the
   convention-stable object.)
-- ⬜ Open: 15 proper (exact N=∞ moments), 16 remainder, 17–24; sharpest next:
-  the tomperature map (13's remainder, gating 18), then 17→18.
+- ✅ **17** (structure settled; residues = the remaining work):
+  `duality/largeq_anchor.py` + `LARGEQ.md` — equation-verified large-q closed
+  forms with the exact conventions bridge (𝒥 = √2·p; G(t) = sech(√2pt)^(2/p)
+  matches ED with no free parameters at O(1/p)). **Finding: the λ→0 anchor
+  cannot come from the leading large-q 4-pt function** — its SW plane has
+  poles only at m=0 (Hamiltonian exchange = the entire TOC) and m=±v
+  (scramblon); the would-be tower (quantization sets 𝓜^e/𝓜^o, the
+  all-temperature k(h)=1) cancels at leading order and its couplings are
+  O(1/q²) (GR 2.15). The tower's even/odd alternation = the CP slot; at T=∞
+  the sets → integers (consistent with BOOST.md). Rung 17 proper = computing
+  the unpublished finite-T O(1/q) residues on that skeleton. En route: the
+  Majorana M₁ analog Σψ[H,ψ] = −2pH (asserted); ED bench `largeq_bench.json`.
+- ⬜ Open: 15 proper (exact N=∞ moments), 16 remainder, 18–24; sharpest next:
+  the O(1/q) residues on the 𝓜-skeleton (17 proper) and the tomperature map
+  (13 remainder) — the two now-precisely-stated gates to 18.
 
 ### Tier 0 — Hygiene (hours; do immediately)
 
