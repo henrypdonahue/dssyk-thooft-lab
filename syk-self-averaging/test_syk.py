@@ -269,6 +269,20 @@ def test_wick_double_scaling_superexponential():
     assert slopes[-1] < -2.0
 
 
+def test_moments_pipeline_structure():
+    """Structural checks of the rung-15 moment pipeline: positive weights,
+    odd moments vanishing (omega-symmetric T=inf correlators), and the exact
+    Cauchy-Schwarz bound mu4*mu0 >= mu2^2 (kurt >= 1)."""
+    from moments_pipeline import ensemble_moments
+    rows = ensemble_moments(Nc=6, p=4, n_inst=4, seed0=7)
+    assert len(rows) == 4      # n in (2,3) x (right, wrong)
+    for r in rows:
+        assert r["mu0"] > 0
+        assert r["odd_moment_check"] < 1e-10
+        assert r["kurt"] >= 1.0
+        assert r["w2"] > 0
+
+
 def test_mn_spectroscopy_structure():
     """Structural exactness checks of the spectroscopy pipeline at small Nc:
     conserved n = 0, 1 put ALL weight at omega = 0; n = 2 moves weight to
