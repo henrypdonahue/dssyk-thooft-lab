@@ -255,6 +255,20 @@ def test_wick_double_scaling_superexponential():
     assert slopes[-1] < -2.0
 
 
+def test_mn_spectroscopy_structure():
+    """Structural exactness checks of the spectroscopy pipeline at small Nc:
+    conserved n = 0, 1 put ALL weight at omega = 0; n = 2 moves weight to
+    omega != 0; CP fractions are sane."""
+    import mn_spectroscopy
+    res = mn_spectroscopy.run(Nc=8, p=4, n_max=2, seed=5)
+    by_n = {r["n"]: r for r in res["spectra"]}
+    assert by_n[0]["static_fraction"] > 1 - 1e-10
+    assert by_n[1]["static_fraction"] > 1 - 1e-10
+    assert by_n[2]["static_fraction"] < 0.99
+    for r in res["spectra"]:
+        assert 0.0 <= r["frac_right_cp"] <= 1.0
+
+
 def test_relvar_m2_matches_ED():
     """ED relative variance of m2 matches the analytic 2/C(N,p) to ~few %."""
     N, p = 12, 4
