@@ -92,20 +92,28 @@ def build_matrices(num_basis: int = 60, n_quad: int = 400, alpha: float = 0.0):
 
 
 def solve(num_basis: int = 60, n_quad: int = 400, alpha: float = 0.0,
-          num_levels: int = 8):
+          num_levels: int = 8, return_vectors: bool = False):
     """Lowest `num_levels` values of 2 lambda_n = M_n^2/(pi g^2), ascending.
 
     This mixes both CP sectors (no parity splitting); return the full ordered
     list and let the caller compare against the interleaved main spectrum.
+    With return_vectors=True also return the sine-basis coefficient columns
+    (G-orthonormal, i.e. the reconstructed phi are unit-normalized in
+    L^2[0,1]) for eigenfunction-level cross-checks.
     """
     G, Pi, W = build_matrices(num_basis, n_quad, alpha)
     # <u,FP v> = W_gag - Pi, so  alpha*Pi - <.,FP.> = (alpha+1)*Pi - W_gag.
     # The coefficient (alpha+1) = pi m^2/g^2 is the *bare* mass: the endpoint
     # self-energy from the finite part shifts alpha -> alpha+1, as it must.
     A = (alpha + 1.0) * Pi - W
-    mu = eigh(A, G, eigvals_only=True)             # mu = 2 pi^2 lambda
-    two_lambda = np.sort(mu) / PI ** 2
-    return two_lambda[:num_levels]
+    if not return_vectors:
+        mu = eigh(A, G, eigvals_only=True)         # mu = 2 pi^2 lambda
+        two_lambda = np.sort(mu) / PI ** 2
+        return two_lambda[:num_levels]
+    mu, vecs = eigh(A, G)
+    order = np.argsort(mu)
+    two_lambda = mu[order] / PI ** 2
+    return two_lambda[:num_levels], vecs[:, order[:num_levels]]
 
 
 if __name__ == "__main__":

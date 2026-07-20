@@ -147,6 +147,58 @@ def test_potential_matrix_vs_quadrature():
             assert abs(P[i, j] - ref) < 1e-8
 
 
+# --------------------------------------------------------------------------
+# Eigenfunction-level validation (eigenfunctions.py)
+# --------------------------------------------------------------------------
+def test_parseval_completeness():
+    """Completeness of the eigenvectors: sum_n (Int phi_n)^2 = 1 (symmetric
+    tower) and sum_n (Int x phi_n)^2 = 1/3 (both sectors), up to the
+    basis-truncation tail."""
+    from eigenfunctions import parseval_unit, parseval_x
+    assert abs(parseval_unit(200) - 1.0) < 5e-5
+    assert abs(parseval_x(200) - 1.0 / 3.0) < 5e-6
+
+
+def test_rayleigh_weakform_recovers_eigenvalues():
+    """Each eigenvector, pushed through the INDEPENDENT Gagliardo weak form on
+    Gauss-Legendre nodes, must reproduce its eigenvalue (validates the
+    wavefunctions against the operator, not just against FLZ numbers)."""
+    from eigenfunctions import rayleigh_weakform
+    ev0, vecs0, deg0 = solve_sector(200, parity=0)
+    ev1, vecs1, deg1 = solve_sector(200, parity=1)
+    for n in range(3):
+        assert abs(rayleigh_weakform(vecs0[:, n], deg0) - ev0[n]) < 1e-4
+    assert abs(rayleigh_weakform(vecs1[:, 0], deg1) - ev1[0]) < 1e-4
+
+
+def test_wavefunction_crosscheck_sine():
+    """|<phi_0^cheb, phi_0^sine>| -> 1: the two solvers agree on the SHAPE of
+    the ground state, at the sine solver's documented algebraic accuracy."""
+    from eigenfunctions import reconstruct
+    ev0, vecs0, deg0 = solve_sector(200, parity=0)
+    _, svecs = sine_solver.solve(num_basis=80, n_quad=600, num_levels=1,
+                                 return_vectors=True)
+    xq, wq = np.polynomial.legendre.leggauss(400)
+    xq = 0.5 * (xq + 1.0)
+    wq = 0.5 * wq
+    phi_cheb = reconstruct(vecs0[:, 0], deg0, xq)
+    ks = np.arange(1, 81)
+    phi_sine = np.sin(np.outer(xq, np.pi * ks)) @ svecs[:, 0]
+    overlap = abs(np.sum(wq * phi_cheb * phi_sine))
+    norms = np.sqrt(np.sum(wq * phi_cheb ** 2) * np.sum(wq * phi_sine ** 2))
+    assert overlap / norms > 0.9999
+
+
+def test_decay_constants_structure():
+    """f_n alternate in sign, decay in magnitude, and f_0 dominates -- the
+    qualitative structure any DSSYK matrix-element comparison will lean on."""
+    from eigenfunctions import decay_constants
+    f, _ = decay_constants(200, num_levels=8)
+    assert f[0] > 0.9
+    assert all(abs(f[i + 1]) < abs(f[i]) for i in range(7))
+    assert all(np.sign(f[i]) == -np.sign(f[i + 1]) for i in range(7))
+
+
 @pytest.mark.parametrize("alpha,tol", [(0.0, 1.5e-2), (0.5, 5e-3), (2.0, 5e-4)])
 def test_independent_sine_crosscheck(alpha, tol):
     """The Chebyshev spectrum must agree with the *independent* sine-basis

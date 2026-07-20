@@ -74,7 +74,7 @@ def solve_sector_mp(num_basis, parity, alpha=0):
     Linv = _invert_lower(L)
     # A = Linv * D * Linv^T   (symmetric).
     A = Linv * D * Linv.T
-    E, _ = eigsy(A)                      # symmetric eigenvalues
+    E = eigsy(A, eigvals_only=True)      # skip the unused eigenvectors (~2x)
     vals = sorted(E[i] / pi ** 2 for i in range(K))
     return vals
 
