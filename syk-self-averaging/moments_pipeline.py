@@ -26,8 +26,14 @@ robust to that unresolved map, so this pipeline publishes exactly those, with
 statistics, ready for the exact chord/Wick N = infinity computation (rung 15
 proper) to be checked against.
 
-Odd moments vanish identically at T_B = infinity (the trace correlator is
-omega-symmetric; asserted in the tests).
+Hermiticity subtlety (caught by this module's own test): for n >= 3 the raw
+M_n is NOT +-Hermitian (dirac.py), so the ordered correlator Tr(M_n(t)M_n^dag)
+has genuinely nonvanishing odd-in-omega parts -- at T_B = infinity the exact
+relation is S_{AA^dag}(omega) = S_{A^dag A}(-omega), symmetric only for the
+combined object.  We therefore use the SYMMETRIZED spectral function, i.e.
+split each CP-projected operator into Hermitian + anti-Hermitian parts and add
+their (individually omega-symmetric) weights; odd moments then vanish
+identically (asserted in the tests).
 """
 
 from __future__ import annotations
@@ -66,7 +72,13 @@ def instance_moments(Nc: int, p: int, seed: int, n_list=(2, 3), n_max=None):
         chans = {"right": Mp if cp_target == +1 else Mm,
                  "wrong": Mm if cp_target == +1 else Mp}
         for tag, op in chans.items():
-            W = np.abs(V.conj().T @ op @ V) ** 2 / dim
+            # symmetrized spectral weight: Hermitian + anti-Hermitian parts
+            # separately (each omega-symmetric); see module docstring
+            op_h = 0.5 * (op + op.conj().T)
+            op_a = 0.5 * (op - op.conj().T)
+            Wt_h = V.conj().T @ op_h @ V
+            Wt_a = V.conj().T @ op_a @ V
+            W = (np.abs(Wt_h) ** 2 + np.abs(Wt_a) ** 2) / dim
             mu = {k: float(np.sum(W * omega ** k)) for k in (0, 1, 2, 4)}
             out[(n, tag)] = dict(mu0=mu[0], mu1=mu[1], mu2=mu[2], mu4=mu[4],
                                  escale=escale)

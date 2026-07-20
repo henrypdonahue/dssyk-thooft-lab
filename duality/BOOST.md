@@ -26,13 +26,15 @@ $$S(\omega) \;=\; \frac{1}{\pi a}\, e^{\pi\omega/a}\, K_{i\omega/a}(m/a)^2 .$$
    exponentially Boltzmann-suppressed. Any finite-precision spectroscopy sees only the
    first few masses.
 4. **A sharp open tension.** The bulk response is KMS-asymmetric at the Unruh
-   temperature ($S(\omega)=e^{2\pi\omega/a}S(-\omega)$, exact above), but the
-   $T_B=\infty$ hologram correlator $\mathrm{Tr}(M(t)M)/\dim$ is exactly
-   $\omega$-**symmetric** (measured). Matching them requires a nontrivial
-   state/frequency map — the "tomperature" identification (Rahman–Susskind
-   2401.08555). Until that map is fixed, comparing DSSYK spectral shapes with bulk
-   masses is convention-ambiguous. **This is the gating question of rung 13/18**, now
-   stated precisely.
+   temperature ($S(\omega)=e^{2\pi\omega/a}S(-\omega)$, exact above). At
+   $T_B=\infty$ the hologram obeys $S_{AA^\dagger}(\omega)=S_{A^\dagger A}(-\omega)$
+   — the KMS factor degenerates to 1, and the symmetrized correlator (the
+   convention-stable object used in `mn_spectroscopy`/`moments_pipeline`) is exactly
+   $\omega$-symmetric. An asymmetric Unruh response can only emerge through a
+   nontrivial state/frequency map — the "tomperature" identification
+   (Rahman–Susskind 2401.08555). Until that map is fixed, comparing DSSYK spectral
+   shapes with bulk masses is convention-ambiguous. **This is the gating question of
+   rung 13/18**, now stated precisely.
 
 ## Implication for the headline test (rung 18)
 

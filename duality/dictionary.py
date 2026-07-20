@@ -21,9 +21,12 @@ The four load-bearing corrections (top-level README), as code:
   4. Conventions:       the PAPER's lambda is p^2/N; the CHORD literature
                         (Berkooz et al., the machinery any DSSYK solve will
                         use) defines lambda_chord = 2p^2/N and q =
-                        exp(-lambda_chord).  A silent factor of 2 here would
-                        wreck any quantitative match -- hence the explicit
-                        converters.
+                        exp(-lambda_chord).  The clash is INTERNAL to the
+                        Susskind corpus too: the companion arXiv:2501.09423
+                        Eq. (3.6) defines lambda = 2p^2/N (chord convention)
+                        while 2607.05678 Sec. 4.1 uses p^2/N.  A silent
+                        factor of 2 here would wreck any quantitative match
+                        -- hence the explicit converters.
 
 Mass units.  thooft-target reports the dimensionless eigenvalue
 2*lambda_n = M_n^2/(pi g^2) at the duality point alpha = pi m_q^2/g^2 = 0.

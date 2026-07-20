@@ -156,8 +156,34 @@ independent; the tiers gate the ones that aren't.
 - ✅ **14** (first version): `mn_spectroscopy.py` — first CP-resolved Mₙ spectral
   functions (single realization, λ=1.6): conserved n=0,1 machine-exact at ω=0;
   broad continua for n≥2. Deliberately *not* the λ→0 match.
-- ⬜ Open: **13** (boost-to-mass dictionary — the gating prerequisite), 12, 15,
-  17–24.
+- ✅ **12** (audited 2026-07-20): the "systematic derivation" behind §3.5 is
+  published **nowhere** — 2501.09423 never mentions self-averaging, its counting
+  rule (Eq. 4.26) is magnitude-only, part-empirical (their §6.2), and its n≪p
+  approximation fails exactly in the diagram-B regime (error ~e^p; harmless for
+  the bound, fatal for prefactors). `exact_wick.py` is the only complete
+  prefactor-exact derivation in existence; it *confirms* both papers at leading
+  order (their diagram-B = σ⁴C(N,p); ours adds the exact pinning factor
+  4p(N−p)/N(N−1)) — a small publishable note. Also: the λ factor-2 clash is
+  internal to the Susskind corpus (2501.09423 Eq. 3.6: λ=2p²/N). And
+  2511.10907's entropy correction (T_c = Λ√N per McLerran–Sen; stretched
+  horizon at Planck, not string, depth) leaves §5's Holographic Tuning
+  untouched — 2607.05678 already cites and incorporates it; but 2501.09423
+  §6.1–6.2 is superseded, and rungs 19/21 must use T_c = Λ√N.
+- ✅ **13** (calibration level): `duality/boost_mass.py` + `BOOST.md` — exact
+  boost spectral function of one mass, S = (1/πa)e^(πω/a)K_{iω/a}(m/a)²,
+  verified to 1e-12 by an independent route. One discrete mass ⇒ a *continuum*
+  with mass-encoding *nodes* (peak-hunting is the wrong observable); heavy
+  states Boltzmann-faint; the ω-symmetric T_B=∞ hologram vs KMS-asymmetric
+  bulk response is the precisely-stated open map (tomperature). Rung 18's
+  "discrete vs continuum" question reformulated accordingly.
+- ✅ **15** (groundwork): `moments_pipeline.py` — disorder-averaged CP-resolved
+  spectral-moment shape invariants (w₂, kurtosis) with errors along fixed
+  p = 4, Nc = 6→10; the map-robust targets for the exact N=∞ chord/Wick
+  computation. (Also fixed en route: for n ≥ 3, Tr(M(t)M†) is genuinely
+  ω-asymmetric since M_n is not ±Hermitian — the symmetrized correlator is the
+  convention-stable object.)
+- ⬜ Open: 15 proper (exact N=∞ moments), 16 remainder, 17–24; sharpest next:
+  the tomperature map (13's remainder, gating 18), then 17→18.
 
 ### Tier 0 — Hygiene (hours; do immediately)
 

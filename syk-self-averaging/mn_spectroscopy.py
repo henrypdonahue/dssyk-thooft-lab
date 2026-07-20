@@ -54,10 +54,17 @@ from dirac import (draw_couplings, dirac_hamiltonian, annihilators,
 
 
 def spectral_weights(M: np.ndarray, V: np.ndarray, omega: np.ndarray):
-    """All (omega_ab, |<a|M|b>|^2/dim) pairs for one operator, given the
-    precomputed omega_ab = E_a - E_b grid."""
-    Mt = V.conj().T @ M @ V
-    W = np.abs(Mt) ** 2 / M.shape[0]
+    """All (omega_ab, weight) pairs for one operator, given the precomputed
+    omega_ab = E_a - E_b grid.  SYMMETRIZED: the Hermitian and anti-Hermitian
+    parts contribute separately (each omega-symmetric).  For n >= 3 the raw
+    M_n is not +-Hermitian, so the ordered correlator Tr(M(t)M^dag) has
+    odd-in-omega parts; at T_B = inf the exact relation is
+    S_{AA^dag}(w) = S_{A^dag A}(-w), and the symmetrized object is the
+    convention-stable one (see moments_pipeline.py)."""
+    Mh = 0.5 * (M + M.conj().T)
+    Ma = 0.5 * (M - M.conj().T)
+    W = (np.abs(V.conj().T @ Mh @ V) ** 2
+         + np.abs(V.conj().T @ Ma @ V) ** 2) / M.shape[0]
     return omega.ravel(), W.ravel()
 
 
