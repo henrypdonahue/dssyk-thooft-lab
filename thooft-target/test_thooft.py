@@ -148,6 +148,91 @@ def test_potential_matrix_vs_quadrature():
 
 
 # --------------------------------------------------------------------------
+# External anchors (external_anchors.json): FLZ higher sum rules and the
+# Litvinov-Meshcheriakov alpha != 0 tables / exact alpha-dependent sum rules
+# --------------------------------------------------------------------------
+import json as _json
+import os as _os
+from math import factorial as _factorial
+
+with open(_os.path.join(_os.path.dirname(__file__), "external_anchors.json")) as _fh:
+    ANCHORS = _json.load(_fh)
+
+
+def _G_sum(evs_two_lambda, offset, s, n_cut=120):
+    """G^(s) = sum 1/lambda_n^s over one parity sector, with the analytic
+    polygamma tail from the leading asymptotic 2*lambda_n -> n + 3/4."""
+    total, n = 0.0, offset
+    for tl in evs_two_lambda:
+        if n > n_cut:
+            break
+        total += 2.0 ** s / tl ** s
+        n += 2
+    a = (n + 0.75) / 2.0
+    total += (-1) ** s * polygamma(s - 1, a) / _factorial(s - 1)
+    return total
+
+
+def test_flz_higher_sum_rules():
+    """FLZ Eq. (1.8) beyond s = 2: G3+- and G4+- against the exact zeta-value
+    closed forms -- four more independent whole-spectrum certificates."""
+    ev_sym, _, _ = solve_sector(400, parity=0)
+    ev_anti, _, _ = solve_sector(400, parity=1)
+    targets = {
+        (3, 0): -4 * PI ** 2 / 3 + 28 * zeta(3),
+        (3, 1): -8.0 / 3.0 + 4 * PI ** 2 / 9,
+        (4, 0): (-2 * PI ** 2 + 42 * zeta(3) - (7 / 3) * PI ** 2 * zeta(3)
+                 + (49 / 2) * zeta(3) ** 2 + (31 / 2) * zeta(5)),
+        (4, 1): 11.0 / 3.0 - (7 / 9) * PI ** 2 + (7 / 6) * PI ** 2 * zeta(3)
+                - (31 / 4) * zeta(5),
+    }
+    for (s, parity), tgt in targets.items():
+        evs = ev_sym if parity == 0 else ev_anti
+        got = _G_sum(evs, parity, s)
+        assert abs(got - tgt) < 1e-10, f"G{s} parity {parity}: {got} vs {tgt}"
+    # and the tabulated FLZ Table 3 values agree with those closed forms
+    assert abs(targets[(3, 0)] - ANCHORS["flz_table3_alpha0"]["3"][0]) < 1e-12
+    assert abs(targets[(4, 1)] - ANCHORS["flz_table3_alpha0"]["4"][1]) < 1e-12
+
+
+def test_lm_alpha_nonzero_eigenvalues():
+    """The previously-open external gap: at alpha != 0 the spectrum must match
+    the published Litvinov-Meshcheriakov tables (arXiv:2409.11324, 6
+    significant digits in lambda -> ~1e-5 on 2*lambda for the low levels)."""
+    for a_str, tabs in ANCHORS["lm_two_lambda_tables"].items():
+        if a_str == "comment":
+            continue
+        alpha = float(a_str)
+        levels = spectrum(num_basis=300, num_levels=10, alpha=alpha)
+        for n, L in enumerate(levels):
+            ref = tabs["even"][n // 2] if n % 2 == 0 else tabs["odd"][n // 2]
+            assert abs(L["two_lambda"] - ref) < 3e-5, (
+                f"alpha={alpha} n={n}: {L['two_lambda']:.6f} vs LM {ref}")
+
+
+def test_lm_exact_alpha_sum_rules():
+    """Sharper alpha != 0 anchor: the DIFFERENCE G2(alpha) - G2(0) converges
+    absolutely (no alpha-dependent tail needed), so the exact 20-digit
+    Litvinov-Meshcheriakov sum-rule values test the whole alpha != 0 spectrum
+    against exact analytic results.  Accuracy here is limited by the basis'
+    hardwired alpha = 0 endpoint exponent (algebraic convergence off the
+    duality point) -- the tolerance below IS that measured limitation."""
+    ev0_s, _, _ = solve_sector(300, parity=0)
+    ev0_a, _, _ = solve_sector(300, parity=1)
+    G2p0, G2m0 = 7 * zeta(3), 2.0
+    for a_str in ("-0.5", "-0.1", "0.1", "0.5"):
+        alpha = float(a_str)
+        eva_s, _, _ = solve_sector(300, parity=0, alpha=alpha)
+        eva_a, _, _ = solve_sector(300, parity=1, alpha=alpha)
+        dGp = sum(4 / eva_s[m] ** 2 - 4 / ev0_s[m] ** 2 for m in range(100))
+        dGm = sum(4 / eva_a[m] ** 2 - 4 / ev0_a[m] ** 2 for m in range(100))
+        tp = float(ANCHORS["lm_sum_rules_exact"][a_str]["Gp2"])
+        tm = float(ANCHORS["lm_sum_rules_exact"][a_str]["Gm2"])
+        assert abs(G2p0 + dGp - tp) < 5e-4
+        assert abs(G2m0 + dGm - tm) < 5e-4
+
+
+# --------------------------------------------------------------------------
 # Eigenfunction-level validation (eigenfunctions.py)
 # --------------------------------------------------------------------------
 def test_parseval_completeness():

@@ -147,7 +147,16 @@ in `test_thooft.py`:
   value (Eq. 4.37) to published precision.
 - **Exact sum rules (FLZ Eq. 1.8):** independent whole-spectrum check,
   $$\sum_m \lambda_{2m}^{-2}=7\zeta(3),\qquad \sum_m \lambda_{2m+1}^{-2}=2,$$
-  reproduced to $\sim10^{-10}$.
+  reproduced to $\sim10^{-10}$ — plus the $s=3,4$ closed forms
+  ($-\tfrac43\pi^2+28\zeta(3)$, …, FLZ Eq. 1.8/Table 3) to $\sim3\times10^{-12}$:
+  six independent whole-spectrum certificates in total.
+- **Eigenfunctions** (`eigenfunctions.py`): Parseval completeness of the
+  decay-constant overlaps ($\sum f_n^2 = 1$ to $3\times10^{-6}$,
+  $\sum(\int x\phi_n)^2=\tfrac13$ to $2\times10^{-6}$), independent weak-form
+  Rayleigh-quotient recovery of every checked eigenvalue from its eigenvector
+  ($\sim10^{-6}$), cross-solver ground-state overlap $>0.9999$. First
+  decay-constant table ($f_0=+0.9428$, alternating signs) — no published
+  wavefunction tables exist to compare against (checked: FLZ, AK, LM).
 - **Asymptotics:** $2\lambda_n\to n+\tfrac34$ ('t Hooft/WKB leading behavior).
 - **Independent cross-check** (`sine_solver.py`): a second solver in the
   $\sin(k\pi x)$ basis, sharing *no* code, basis, or closed-form matrix elements
@@ -183,14 +192,18 @@ FLZ's published Padé estimate; the solver's *own* computed value is
 $0.7370617462926896\ldots$ (`reference_spectrum.json`), agreeing with FLZ to
 ~15 digits. (2) The high-precision ($\sim$12-digit) guarantee is an $\alpha=0$
 statement: it rests on the FLZ tables and sum rules, which exist only at the
-duality point. The general-$\alpha$ extension is validated only by the
-independent sine solver ($\sim$4 digits) — and away from $\alpha=0$ the method is
-*not* expected to be equally accurate: the basis hardwires the $\alpha=0$ endpoint
-exponent $\tfrac12$, while the true exponent $\beta(\alpha)$ solves
-$\pi\beta\cot\pi\beta=-\alpha$, so for $\alpha\neq0$ convergence degrades from
-spectral to algebraic. Nothing *external* confirms the $\alpha\neq0$ machinery to
-high precision yet (pulling published $m\neq0$ eigenvalues would close this; a
-Jacobi-type $[x(1-x)]^{\beta}$ basis would restore spectral accuracy).
+duality point. Away from $\alpha=0$ the method is *not* equally
+accurate: the basis hardwires the $\alpha=0$ endpoint exponent $\tfrac12$, while the
+true exponent $\beta(\alpha)$ solves $\pi\beta\cot\pi\beta=-\alpha$, so for
+$\alpha\neq0$ convergence degrades from spectral to algebraic. The $\alpha\neq0$
+machinery **is** now externally anchored (`external_anchors.json`, asserted in the
+tests): the Litvinov–Meshcheriakov tables (arXiv:2409.11324) are reproduced at their
+6-digit rounding floor ($\lesssim2\times10^{-5}$ on $2\lambda$, $|\alpha|\le0.5$,
+$n<10$), and their *exact* $\alpha$-dependent sum rules are matched to
+$10^{-5}$–$2\times10^{-4}$ via the absolutely-convergent difference
+$G^{(2)}(\alpha)-G^{(2)}(0)$ — that residual *is* the measured algebraic-convergence
+limitation. (A Jacobi-type $[x(1-x)]^{\beta}$ basis would restore spectral accuracy
+off the duality point.)
 
 ## Result (summary)
 
