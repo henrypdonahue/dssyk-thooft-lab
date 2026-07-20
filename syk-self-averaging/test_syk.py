@@ -170,6 +170,20 @@ def test_mn_hermiticity_parity():
     assert np.abs(M3.conj().T - (-1) ** 3 * M3).max() / np.abs(M3).max() > 0.05
 
 
+def test_particle_hole_sign_law():
+    """C c_i C^dag = (-1)^(Nc-1) c_i^dag -- the global sign is Nc-dependent
+    (+1 only for odd Nc).  Bilinears are insensitive (sign enters twice), but
+    any odd-length fermion string is not; the docstring's stated law must be
+    the tested one."""
+    for Nc in (4, 5):
+        cs = annihilators(Nc)
+        U = particle_hole(Nc)
+        s = (-1) ** (Nc - 1)
+        for i in range(Nc):
+            assert np.abs(U @ cs[i] @ U.conj().T
+                          - s * cs[i].conj().T).max() < 1e-12
+
+
 def test_cp_photon_graviton_exact():
     """On a C-invariant instance (disjoint/real ensemble), the unitary
     particle-hole map C gives exactly CP(Q - Nc/2) = -1 (photon) and

@@ -7,7 +7,7 @@ import math
 import numpy as np
 import pytest
 
-from dictionary import (M1_COEFFICIENT, lambda_paper, lambda_chord,
+from dictionary import (m1_coefficient, lambda_paper, lambda_chord,
                         chord_from_paper, paper_from_chord, q_parameter,
                         alpha_bar, gbar_squared, string_tension,
                         n_paper_from_flz, n_flz_from_paper, cp_paper,
@@ -63,9 +63,9 @@ def test_cp_assignments():
 
 
 def test_m1_coefficient():
-    """Correction #3 as a constant: M_1 = -(p/2) i H."""
-    assert M1_COEFFICIENT(4) == -2.0
-    assert M1_COEFFICIENT(8) == -4.0
+    """Correction #3 encoded: M_1 = -(p/2) i H."""
+    assert m1_coefficient(4) == -2.0
+    assert m1_coefficient(8) == -4.0
 
 
 def test_reference_loads_and_matches_flz():

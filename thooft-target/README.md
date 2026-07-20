@@ -155,8 +155,9 @@ in `test_thooft.py`:
   $\sum(\int x\phi_n)^2=\tfrac13$ to $2\times10^{-6}$), independent weak-form
   Rayleigh-quotient recovery of every checked eigenvalue from its eigenvector
   ($\sim10^{-6}$), cross-solver ground-state overlap $>0.9999$. First
-  decay-constant table ($f_0=+0.9428$, alternating signs) — no published
-  wavefunction tables exist to compare against (checked: FLZ, AK, LM).
+  decay-constant table ($f_0=+0.9428$; in the physical $\phi_n(0^+)>0$ sign
+  convention all $f_n$ are positive and monotonically decreasing) — no
+  published wavefunction tables exist to compare against (checked: FLZ, AK, LM).
 - **Asymptotics:** $2\lambda_n\to n+\tfrac34$ ('t Hooft/WKB leading behavior).
 - **Independent cross-check** (`sine_solver.py`): a second solver in the
   $\sin(k\pi x)$ basis, sharing *no* code, basis, or closed-form matrix elements

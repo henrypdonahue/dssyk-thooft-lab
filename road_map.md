@@ -150,11 +150,14 @@ independent; the tiers gate the ones that aren't.
   e^(−a√N·lnN) candidate (which now wins decisively for the double-scaling
   combinatorics); honest "cannot discriminate" verdicts in the ED window.
 - ✅ **Rung 8**: bitwise Pauli-string assembly, 10–100×; suite 2 min → 4 s.
-- ✅ **Rung 9** (eigenfunction half): Parseval completeness (Σf² = 1 to 3e-6),
-  independent weak-form Rayleigh-quotient recovery of eigenvalues from
-  eigenvectors (~1e-6), cross-solver wavefunction overlap > 0.9999, first
-  decay-constant table. External α ≠ 0 anchors still open (literature fetch in
-  progress).
+- ✅ **Rung 9** (complete): eigenfunctions — Parseval completeness (Σf² = 1 to
+  3e-6), independent weak-form Rayleigh-quotient recovery of eigenvalues from
+  eigenvectors (~1e-6), cross-solver overlap > 0.9999, first decay-constant
+  table (all fₙ > 0 in the φ(0⁺)>0 convention; no published tables exist to
+  compare — new data). External anchors —
+  FLZ s=3,4 sum rules to 3e-12; Litvinov–Meshcheriakov α≠0 tables matched at
+  their rounding floor; LM *exact* α-dependent sum rules to 1e-5–2e-4
+  (`external_anchors.json`). The α≠0 gap is closed.
 - ✅ **Rung 10**: `duality/` dictionary with the two parameter-free fingerprints
   (mass ratios; interleave splittings) encoded and tested.
 - ✅ **Rung 11**: `exact_wick.py` — **Eq. (3.28) verified exactly in the

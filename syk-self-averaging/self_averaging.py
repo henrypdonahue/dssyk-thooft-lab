@@ -49,6 +49,7 @@ from __future__ import annotations
 
 import json
 from math import comb, factorial, log
+from pathlib import Path
 
 import numpy as np
 
@@ -138,9 +139,13 @@ def measure_symmetry_violation(N: int, p: int, n_inst: int, seed: int = 0):
     offs, diags, ratios = [], [], []
     for _ in range(n_inst):
         H = majorana_hamiltonian_fast(N, p, rng)
-        # dense stack A[j] = psi_j H ;  B_{jk} = Tr(A_j A_k)/dim = einsum jmn,knm
+        # dense stack A[j] = psi_j H ;  B_{jk} = Tr(A_j A_k)/dim.  Contract as
+        # one BLAS gemm on flattened matrices (vec(A_j) . vec(A_k^T)) instead
+        # of a non-BLAS einsum loop.
         A = np.stack([np.asarray(psis[j] @ H) for j in range(N)])
-        B = np.einsum("jmn,knm->jk", A, A).real / dim
+        F = A.reshape(N, -1)
+        G = A.transpose(0, 2, 1).reshape(N, -1)
+        B = (F @ G.T).real / dim
         rms_off = np.sqrt(np.mean(B[off_mask] ** 2))
         rms_diag = np.sqrt(np.mean(np.diag(B) ** 2))
         offs.append(rms_off)
@@ -290,16 +295,16 @@ if __name__ == "__main__":
             flag = "  <- ratio artifact (p~N/2)" if abs(p - N / 2) < 1e-9 else ""
             print(f"    {N:>3} {r['rms_off']:>12.3e} {r['rms_off_err']:>10.1e} "
                   f"{r['rms_diag']:>12.3e} {r['ratio']:>10.3e}{flag}")
-        results["C_symmetry_violation"][str(p)] = rows_c
         f = fit_models(ns_sv, ys)   # fit the trustworthy rms_off
         print("    fits of rms_off: " + ", ".join(
             f"{k} R^2={v['r2']:.3f}" for k, v in f.items()))
         print(f"    -> {fit_verdict(f)}")
-        results["C_symmetry_violation"][f"fits_p{p}"] = f
+        results["C_symmetry_violation"][f"p{p}"] = dict(rows=rows_c, fits=f)
 
-    with open("results.json", "w") as fh:
+    out_path = Path(__file__).resolve().parent / "results.json"
+    with open(out_path, "w") as fh:
         json.dump(results, fh, indent=1)
-    print("\nwrote results.json (machine-readable; plot_self_averaging.py reads it)")
+    print(f"\nwrote {out_path} (machine-readable; plot_self_averaging.py reads it)")
 
     print("\n" + "=" * 70)
     print("VERDICT")
@@ -322,13 +327,19 @@ if __name__ == "__main__":
       singlet W is not probed here.
 
   * Eq. 3.28 (symmetry violation): rms_off of the adjoint bilinear decays with N
-    and steepens with p, consistent with the claimed suppression. In the ED
-    window (N <= 18, fixed p) the fits above CANNOT discriminate a steep power
-    law from e^-aN or e^-a sqrtN -- the Delta-AIC verdicts say so explicitly --
-    and the sharp e^-a sqrt(N) form is a double-scaling statement ED cannot
-    reach. A genuine reach limit, not a failure of the claim; exact_wick.py
-    computes the same observable's disorder variance analytically at arbitrary
-    (N, p) and settles the form where it matters. (The ratio rms_off/rms_diag
-    shows a spurious bump at p=N/2 where its denominator collapses -- a metric
-    artifact, not physics; read rms_off.)
+    and steepens with p, consistent with the claimed suppression. What the
+    Delta-AIC verdicts above actually show in the ED window (N <= 18, fixed p):
+    a PURE power law is disfavored (Delta-AIC ~ 9-12), but the exponential-family
+    candidates cannot be reliably separated (best-vs-next 2-5, and the winner
+    differs between p = 4 and p = 6) -- so the window alone identifies neither
+    the asymptotic form nor the exponent. It does not need to: exact_wick.py
+    gives the observable's disorder variance in CLOSED FORM at any (N, p) --
+    at fixed p the true asymptote is the power law rms ~ N^{-(p-1)/2} (the
+    window's curvature that mimics an exponential is the pre-asymptotic shape
+    of 2 sigma^2 sqrt(C(N-2,p-1)), which passes through every ED point), and
+    along p = sqrt(N) it is ln rms = -(1/4) sqrt(N) ln N (1+o(1)), beating
+    e^{-a sqrt N} for every a -- Eq. 3.28 verified where it matters. (The
+    ratio rms_off/rms_diag shows a spurious bump at p=N/2 where its
+    denominator collapses; exact_wick.py derives it: E[B_jj] vanishes there.
+    Read rms_off.)
 """)

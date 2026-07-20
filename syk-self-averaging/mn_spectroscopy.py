@@ -9,8 +9,9 @@ has published even an exploratory ED look at these correlators.  This script
 is that first look: honest about what it can and cannot see.
 
 What it computes, for ONE disorder realization (legitimate because the meson
-spectral function is a singlet and the measured singlet self-averaging rate is
-1/C(N,p) -- see self_averaging.py; at Nc = 10, p = 4 that is 2/C(10,4) ~ 1%):
+spectral function is a singlet, and the measured self-averaging principle is
+relVar ~ 2 / #independent couplings -- see self_averaging.py; the c_symmetric
+Dirac ensemble at Nc = 10, p = 4 has 630 independent couplings, so ~0.3%):
 
     S_n(omega) = (1/dim) sum_{a,b} |<a| Mbar_n |b>|^2
                                      delta(omega - (E_a - E_b)),
@@ -45,24 +46,23 @@ from __future__ import annotations
 
 import json
 import sys
-from math import comb
 
 import numpy as np
 
 from dirac import (draw_couplings, dirac_hamiltonian, annihilators,
-                   charge_matrix, mn_operator, particle_hole, cp_projections)
+                   mn_tower, particle_hole, cp_projections)
 
 
-def spectral_weights(M: np.ndarray, V: np.ndarray, E: np.ndarray):
-    """All (omega_ab, |<a|M|b>|^2/dim) pairs for one operator."""
+def spectral_weights(M: np.ndarray, V: np.ndarray, omega: np.ndarray):
+    """All (omega_ab, |<a|M|b>|^2/dim) pairs for one operator, given the
+    precomputed omega_ab = E_a - E_b grid."""
     Mt = V.conj().T @ M @ V
     W = np.abs(Mt) ** 2 / M.shape[0]
-    omega = E[:, None] - E[None, :]
     return omega.ravel(), W.ravel()
 
 
 def run(Nc: int = 10, p: int = 4, n_max: int = 6, seed: int = 21,
-        n_bins: int = 121, outfile: str = None):
+        n_bins: int = 121, outfile=None):
     rng = np.random.default_rng(seed)
     couplings = draw_couplings(Nc, p, rng, ensemble="c_symmetric")
     H = dirac_hamiltonian(Nc, p, couplings=couplings)
@@ -70,19 +70,25 @@ def run(Nc: int = 10, p: int = 4, n_max: int = 6, seed: int = 21,
     U = particle_hole(Nc)
     cs = annihilators(Nc)
     lam = p * p / Nc
+    n_indep = len(couplings) // 2   # (A,B)/(B,A) stored pairwise, no diagonal
 
     print(f"Dirac SYK, Nc={Nc} (dim {dim}), p={p}, C-invariant instance, "
           f"lambda = p^2/Nc = {lam:.2f}")
-    print("(single realization; singlet self-averaging rate 2/C(Nc,p) = "
-          f"{2/comb(Nc, p):.1e})\n")
+    print(f"(single realization; this ensemble has {n_indep} independent "
+          f"couplings -> singlet self-averaging ~ 2/{n_indep} = "
+          f"{2/n_indep:.1e})\n")
 
     E, V = np.linalg.eigh(H)
+    omega_grid = E[:, None] - E[None, :]
+    static_mask = (np.abs(omega_grid) < 1e-8).ravel()
+    hist_range = (-1.05 * 2 * np.max(np.abs(E)), 1.05 * 2 * np.max(np.abs(E)))
 
     results = dict(Nc=Nc, p=p, seed=seed, lam=lam, levels=n_max + 1, spectra=[])
     print(f"{'n':>3} {'CP tgt':>7} {'w(omega=0)':>11} {'right-CP frac':>14} "
           f"{'sqrt<w^2>':>10}")
+    towers = mn_tower(H, cs, n_max)
     for n in range(n_max + 1):
-        Mn = mn_operator(H, cs, n)
+        Mn = towers[n]
         Mb = Mn - np.trace(Mn) / dim * np.eye(dim)
         Mp, Mm = cp_projections(U, Mb)
         cp_target = (-1) ** (n + 1)
@@ -91,17 +97,15 @@ def run(Nc: int = 10, p: int = 4, n_max: int = 6, seed: int = 21,
         row = dict(n=n, cp_target=cp_target)
         total_all, static_all = 0.0, 0.0
         for tag, op in [("right", right), ("wrong", wrong)]:
-            omega, w = spectral_weights(op, V, E)
+            omega, w = spectral_weights(op, V, omega_grid)
             total = w.sum()
-            static_mask = np.abs(omega) < 1e-8
             static = w[static_mask].sum()
             # histogram the DYNAMICAL weight only; the omega = 0 (diagonal /
             # conserved) weight is reported separately as static_weight
             hist, edges = np.histogram(
                 omega[~static_mask], bins=n_bins,
                 weights=w[~static_mask],
-                range=(-1.05 * np.max(np.abs(E)) * 2,
-                       1.05 * np.max(np.abs(E)) * 2))
+                range=hist_range)
             row[tag] = dict(total_weight=float(total),
                             static_weight=float(static),
                             omega_second_moment=float((w * omega ** 2).sum()

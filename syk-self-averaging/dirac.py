@@ -122,12 +122,11 @@ def draw_couplings(Nc: int, p: int, rng, ensemble: str = "generic") -> dict:
                              "p/2 odd would require imaginary antisymmetric J")
         for ia, A in enumerate(subsets):
             for B in subsets[ia:]:
-                if set(A) & set(B):
+                if set(A) & set(B):     # also skips A == B
                     continue
                 x = rng.normal(0.0, sigma)
                 J[(A, B)] = x
-                if A != B:
-                    J[(B, A)] = x
+                J[(B, A)] = x
     else:
         raise ValueError(f"unknown ensemble {ensemble!r}")
     return J
@@ -142,11 +141,9 @@ def _mode_bit(Nc: int, i: int) -> int:
 
 
 def _below_mask(Nc: int, i: int) -> int:
-    """Bitmask of all modes j < i (the Jordan-Wigner string of mode i)."""
-    m = 0
-    for j in range(i):
-        m |= _mode_bit(Nc, j)
-    return m
+    """Bitmask of all modes j < i (the Jordan-Wigner string of mode i).
+    Modes j < i occupy the i highest bit positions, hence the closed form."""
+    return ((1 << i) - 1) << (Nc - i)
 
 
 def apply_monomial(Nc: int, A, B, states: np.ndarray):
@@ -231,7 +228,11 @@ def charge_matrix(Nc: int) -> np.ndarray:
 
 
 def annihilators(Nc: int) -> list:
-    """Dense c_i matrices (from the bitwise action; O(dim) each)."""
+    """Dense c_i matrices (from the bitwise action; O(dim) each).
+
+    Deliberately independent of syk.dirac_operators (sparse Jordan-Wigner
+    kron products) -- the two encodings are asserted equal in the tests, so
+    the duplication is load-bearing cross-validation, not drift risk."""
     dim = 1 << Nc
     states = np.arange(dim, dtype=np.int64)
     out = []
@@ -249,14 +250,24 @@ def time_derivative(H: np.ndarray, X: np.ndarray) -> np.ndarray:
 
 
 def mn_operator(H: np.ndarray, cs: list, n: int) -> np.ndarray:
-    """M_n = sum_i c^dag_i (d^n/dt^n) c_i."""
-    M = np.zeros_like(H)
+    """M_n = sum_i c^dag_i (d^n/dt^n) c_i.  For a whole tower use mn_tower,
+    which builds the derivative chains incrementally instead of from scratch
+    per n."""
+    return mn_tower(H, cs, n)[n]
+
+
+def mn_tower(H: np.ndarray, cs: list, n_max: int) -> list:
+    """[M_0, M_1, ..., M_{n_max}], with each mode's derivative chain advanced
+    once per level (O(n_max) commutators per mode, not O(n_max^2))."""
+    towers = [np.zeros_like(H) for _ in range(n_max + 1)]
     for C in cs:
+        Cd = C.conj().T
         Cn = C
-        for _ in range(n):
+        towers[0] += Cd @ Cn
+        for n in range(1, n_max + 1):
             Cn = time_derivative(H, Cn)
-        M += C.conj().T @ Cn
-    return M
+            towers[n] += Cd @ Cn
+    return towers
 
 
 def particle_hole(Nc: int) -> np.ndarray:
@@ -264,8 +275,12 @@ def particle_hole(Nc: int) -> np.ndarray:
 
         C = (c_0 + c^dag_0)(c_1 + c^dag_1) ... (c_{Nc-1} + c^dag_{Nc-1}),
 
-    with C c_i C^dag = c^dag_i (all signs +1 in this Jordan-Wigner convention;
-    asserted in the tests) and C (Q - Nc/2) C^dag = -(Q - Nc/2).
+    with  C c_i C^dag = (-1)^(Nc-1) c^dag_i  (the sign is a GLOBAL
+    (-1)^(Nc-1), the same for every mode -- asserted in the tests; it is +1
+    only for odd Nc).  Bilinears c^dag_i X c_i pick the sign up twice, so
+    every M_n statement below is sign-independent; anyone conjugating an
+    ODD-length fermion string at even Nc must keep the (-1)^(Nc-1).
+    C (Q - Nc/2) C^dag = -(Q - Nc/2) always.
 
     Why the paper's "CP" must be this UNITARY map and not an antiunitary one:
     M_1 = -(p/2) i H, and any antiunitary operation that fixes H flips the
@@ -273,11 +288,25 @@ def particle_hole(Nc: int) -> np.ndarray:
     CP = +1.  Unitary C fixes i, so C M_1 C^dag = +M_1 exactly on a
     C-invariant instance.  (In the 1+1d bulk this is charge conjugation
     composed with spatial parity -- a unitary symmetry, as CP always is; the
-    hologram is 0+1d, so its image here is just C.)"""
-    cs = annihilators(Nc)
-    U = np.eye(1 << Nc, dtype=complex)
-    for C in cs:
-        U = U @ (C + C.conj().T)
+    hologram is 0+1d, so its image here is just C.)
+
+    Each factor c_i + c^dag_i is a signed permutation (a Jordan-Wigner
+    Majorana string), so the product is assembled as a signed permutation in
+    O(Nc * dim) instead of Nc dense matrix products."""
+    dim = 1 << Nc
+    states = np.arange(dim, dtype=np.int64)
+    perm = states.copy()
+    sign = np.ones(dim)
+    # apply the factors right-to-left: for a product U = P_0 P_1 ... P_{Nc-1},
+    # U|s> = P_0(P_1(...P_{Nc-1}|s>))
+    for i in reversed(range(Nc)):
+        bit = _mode_bit(Nc, i)
+        below = _below_mask(Nc, i)
+        # (c_i + c^dag_i)|s> = (-1)^{popcount(s & below)} |s XOR bit>
+        sign = sign * (1.0 - 2.0 * (np.bitwise_count(perm & below) & 1))
+        perm = perm ^ bit
+    U = np.zeros((dim, dim), dtype=complex)
+    U[perm, states] = sign
     return U
 
 

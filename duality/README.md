@@ -9,7 +9,7 @@ place an index offset, factor of 2, or normalization can hide.
 |---|---|
 | $n_{\text{paper}} = n_{\text{FLZ}} + 2$ (photon/graviton relabeling) | correction #1 |
 | CP $=(-1)^{n+1}$, consistent with FLZ wavefunction parity through the offset | paper §4.2–4.3 |
-| $M_1 = -(p/2)\,iH$ (`M1_COEFFICIENT`) | correction #3, tested in `syk-self-averaging` |
+| $M_1 = -(p/2)\,iH$ (`m1_coefficient`) | correction #3, tested in `syk-self-averaging` |
 | paper $\lambda = p^2/N$ **vs** chord $\lambda_{\text{chord}} = 2p^2/N$, $q=e^{-\lambda_{\text{chord}}}$ | the factor-2 landmine |
 | $\bar\alpha = \bar g^2 N = p^2$, $\bar g^2 = \lambda$, $\tau = p^2 m_q^2$ | paper §4.1–4.2 |
 

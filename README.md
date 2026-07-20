@@ -58,8 +58,9 @@ Load-bearing corrections for any DSSYK ↔ 't Hooft comparison:
    line where self-averaging sits. At finite $\lambda$ the mesons interact (2506.18054's
    own conclusions: the fixed-$\bar g$ limit is "a theory of interacting meson-strings"),
    so an *exact* match is only expected as $\lambda\to0$ ($q\to1$). Note this regime also
-   weakens the symmetry-emergence bound: at fixed $p$ the suppression is the power law
-   $N^{-p}$, not $e^{-a\sqrt N}$.
+   weakens the symmetry-emergence bound: at fixed $p$ the singlet variance is the power
+   law $N^{-p}$ and the symmetry-violation amplitude is
+   $\mathrm{rms}(B_{jk})\sim N^{-(p-1)/2}$ (exact: `exact_wick.py`), not $e^{-a\sqrt N}$.
 3. **Normalization.** $M_0=Q$ exactly, but $M_1=-(p/2)\,iH$ (not the paper's $M_1=H$;
    forced by symmetry — $\dot Q=0$ makes $M_1$ anti-Hermitian) — compare peaks in the
    same units. Encoded as a test in `syk-self-averaging/test_syk.py`.

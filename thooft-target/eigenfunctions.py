@@ -97,14 +97,32 @@ def reconstruct_derivative(vec: np.ndarray, degrees: np.ndarray,
     return np.sqrt(2.0) * 2.0 * total
 
 
+def canonicalize_signs(vecs: np.ndarray, degrees) -> np.ndarray:
+    """Fix the physically-meaningless per-eigenvector sign left arbitrary by
+    LAPACK: flip each column so that phi_n(x) > 0 as x -> 0+.
+
+    Near x = 0 (xi = -1), phi ~ sqrt(1-xi^2) * sum_m a_m U_m(-1) with
+    U_m(-1) = (-1)^m (m+1), so the sign at the endpoint is the sign of
+    sum_m a_m (-1)^m (m+1).  Without this, quantities linear in the
+    wavefunction (decay constants, form factors) carry an arbitrary
+    build-dependent sign."""
+    d = np.asarray(degrees)
+    endpoint = ((-1.0) ** d * (d + 1.0)) @ vecs
+    flip = np.where(endpoint < 0, -1.0, 1.0)
+    return vecs * flip[None, :]
+
+
 # ---------------------------------------------------------------------------
 # 1. decay constants and Parseval sums
 # ---------------------------------------------------------------------------
 def decay_constants(num_basis: int = 200, num_levels: int = 60):
     """f_n = Int_0^1 phi_n dx for the symmetric sector (antisymmetric levels
-    have f = 0 by parity), unit-normalized phi.  Closed form:
+    have f = 0 by parity), unit-normalized phi, in the phi_n(0+) > 0 sign
+    convention (see canonicalize_signs -- without a stated convention the
+    signs would be arbitrary LAPACK output).  Closed form:
     f = sqrt(2) (pi/4) a_0^(n)."""
     ev, vecs, degrees = solve_sector(num_basis, parity=0)
+    vecs = canonicalize_signs(vecs, degrees)
     return np.sqrt(2.0) * (PI / 4.0) * vecs[0, :num_levels], ev[:num_levels]
 
 
@@ -153,7 +171,7 @@ def rayleigh_weakform(vec, degrees, alpha: float = 0.0,
         Q = np.outer(wq, wq) / (dx * dx)
     np.fill_diagonal(Q, 0.0)
     r = Q.sum(axis=1)
-    off = phi @ (np.diag(r) - Q) @ phi
+    off = np.sum(r * phi ** 2) - phi @ Q @ phi
     diag = np.sum((wq * dphi) ** 2)
     gag = off + 0.5 * diag
 

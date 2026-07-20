@@ -275,13 +275,16 @@ def test_wavefunction_crosscheck_sine():
 
 
 def test_decay_constants_structure():
-    """f_n alternate in sign, decay in magnitude, and f_0 dominates -- the
-    qualitative structure any DSSYK matrix-element comparison will lean on."""
+    """In the physical phi_n(0+) > 0 convention (canonicalize_signs), the
+    decay constants are ALL POSITIVE, monotonically decreasing, with f_0
+    dominant.  (Without a stated convention the signs are arbitrary LAPACK
+    output -- an earlier draft asserted an 'alternation' that was exactly
+    that artifact.)"""
     from eigenfunctions import decay_constants
     f, _ = decay_constants(200, num_levels=8)
     assert f[0] > 0.9
-    assert all(abs(f[i + 1]) < abs(f[i]) for i in range(7))
-    assert all(np.sign(f[i]) == -np.sign(f[i + 1]) for i in range(7))
+    assert all(fi > 0 for fi in f)
+    assert all(f[i + 1] < f[i] for i in range(7))
 
 
 @pytest.mark.parametrize("alpha,tol", [(0.0, 1.5e-2), (0.5, 5e-3), (2.0, 5e-4)])

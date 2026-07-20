@@ -66,12 +66,10 @@ quantitative content of correction #2's footnote.
 from __future__ import annotations
 
 from itertools import combinations
-from math import comb, factorial, log, sqrt
-
-import numpy as np
+from math import comb, log, sqrt
 
 from syk import coupling_variance
-from pauli_strings import monomial_string, string_product, majorana_string
+from pauli_strings import string_product, majorana_string
 
 _I_POW = [1, 1j, -1, -1j]
 
@@ -175,10 +173,8 @@ if __name__ == "__main__":
     measured = {}
     if rj.exists():
         data = json.loads(rj.read_text())
-        for p_key, rows in data.get("C_symmetry_violation", {}).items():
-            if p_key.startswith("fits"):
-                continue
-            for r in rows:
+        for block in data.get("C_symmetry_violation", {}).values():
+            for r in block["rows"]:
                 measured[(r["N"], r["p"])] = (r["rms_off"], r["rms_off_err"])
     print(f"  {'N':>4} {'p':>3} {'exact rms':>12} {'ED rms_off':>12} {'ratio':>7}")
     for (N, p) in [(10, 4), (12, 4), (14, 4), (16, 4), (18, 4),

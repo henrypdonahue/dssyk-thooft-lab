@@ -17,7 +17,7 @@ The four load-bearing corrections (top-level README), as code:
                         alpha_bar = p^2 fixed), NOT the lambda-fixed
                         double-scaling line.
   3. Normalization:     M_0 = Q exactly;  M_1 = -(p/2) i H  (not the paper's
-                        M_1 = H) -- the constant M1_COEFFICIENT below.
+                        M_1 = H) -- m1_coefficient below.
   4. Conventions:       the PAPER's lambda is p^2/N; the CHORD literature
                         (Berkooz et al., the machinery any DSSYK solve will
                         use) defines lambda_chord = 2p^2/N and q =
@@ -44,8 +44,10 @@ from pathlib import Path
 # couplings and double-scaling conventions
 # ---------------------------------------------------------------------------
 
-# correction #3: M_1 = M1_COEFFICIENT * i * H  (the paper says M_1 = H)
-M1_COEFFICIENT = lambda p: -p / 2.0
+def m1_coefficient(p: float) -> float:
+    """Correction #3: M_1 = m1_coefficient(p) * i * H = -(p/2) i H
+    (the paper says M_1 = H).  A function of p, not a constant."""
+    return -p / 2.0
 
 
 def lambda_paper(N: float, p: float) -> float:
