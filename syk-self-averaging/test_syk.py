@@ -269,6 +269,17 @@ def test_wick_double_scaling_superexponential():
     assert slopes[-1] < -2.0
 
 
+def test_largeq_bench_structure():
+    """The ED bench for the large-q anchor: G(0) = <psi^2> = 1 exactly, and
+    the singlet bilinear correlator is a positive symmetrized weight."""
+    from largeq_bench import two_point_ed
+    r = two_point_ed(N=10, p=4, ts=[0.0, 1.0], n_inst=3, seed=1)
+    assert abs(r["G_re"][0] - 1.0) < 1e-10
+    assert abs(r["G_im"][0]) < 1e-10
+    assert r["C2"][0] > 0
+    assert r["m2_mean"] > 0
+
+
 def test_moments_pipeline_structure():
     """Structural checks of the rung-15 moment pipeline: positive weights,
     odd moments vanishing (omega-symmetric T=inf correlators), and the exact
