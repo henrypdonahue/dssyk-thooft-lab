@@ -410,6 +410,52 @@ def paired_split_sem(inst_list, n):
 
 
 
+def trend_plot(payload, out_path):
+    """moments_trend.png: w2 and kurt per CP channel vs 1/Nc at fixed p = 4
+    (left edge = the lambda -> 0 matching corner).  Reads the payload written
+    by main(); an Nc = 14 single-realization point, if present, is drawn as an
+    open marker (no error bar -- one instance)."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    trend = payload["trend"]
+    nc14 = payload.get("nc14_single_instance")
+    colors = {"right": "#2166ac", "wrong": "#b2182b"}
+    fig, axes = plt.subplots(2, 2, figsize=(11, 7.5), sharex=True)
+    for col, n in enumerate(sorted({t["n"] for t in trend})):
+        rows = sorted([t for t in trend if t["n"] == n], key=lambda t: t["Nc"])
+        x = [t["inv_Nc"] for t in rows]
+        for row, obs in enumerate(("w2", "kurt")):
+            ax = axes[row][col]
+            for tag in ("right", "wrong"):
+                ax.errorbar(x, [t[f"{obs}_{tag}"] for t in rows],
+                            yerr=[t[f"{obs}_{tag}_err"] for t in rows],
+                            fmt="o-", ms=4, lw=1.0, capsize=3,
+                            color=colors[tag], label=f"{tag} CP channel")
+                if nc14 is not None and f"{n}:{tag}" in nc14:
+                    ax.plot(1.0 / 14.0, nc14[f"{n}:{tag}"][obs], "o",
+                            ms=6, mfc="none", color=colors[tag])
+            ax.grid(True, alpha=0.2)
+            if row == 0:
+                ax.set_title(f"$n = {n}$   (CP$_{{target}} = {(-1)**(n+1):+d}$)")
+            else:
+                ax.set_xlabel(r"$1/N_c$   ($\lambda = 16/N_c$; "
+                              r"left edge = matching corner)")
+        axes[0][col].set_ylabel(r"$w_2 = \mu_2/(\mu_0\,\langle H^2\rangle)$")
+        axes[1][col].set_ylabel(r"kurt $= \mu_4\mu_0/\mu_2^2$")
+    axes[0][0].legend(frameon=False, fontsize=9)
+    if nc14 is not None:
+        axes[0][1].text(0.03, 0.95, "open markers: single $N_c=14$ instance\n"
+                        "(no error bar)", transform=axes[0][1].transAxes,
+                        fontsize=8, color="0.4", va="top")
+    fig.suptitle("CP-resolved $M_n$ shape invariants, fixed $p=4$ "
+                 "(charge-sector-blocked ED)", y=0.995)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    print(f"wrote {out_path}")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[1])
     ap.add_argument("--nc14", action="store_true",
@@ -417,7 +463,17 @@ def main():
                          "measured Nc=12 timing extrapolates below ~40 min")
     ap.add_argument("--n-inst", type=int, default=None,
                     help="override the timing-based Nc=12 instance count")
+    ap.add_argument("--plot", action="store_true",
+                    help="regenerate moments_trend.png from the existing "
+                         "moments_nc12.json and exit (no recompute)")
     args = ap.parse_args()
+
+    if args.plot:
+        here = Path(__file__).resolve().parent
+        with open(here / "moments_nc12.json") as fh:
+            payload = json.load(fh)
+        trend_plot(payload, here / "moments_trend.png")
+        return
 
     Nc, p, n_list, seed0 = 12, 4, (2, 3), 100
     here = Path(__file__).resolve().parent
