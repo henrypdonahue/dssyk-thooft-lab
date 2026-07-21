@@ -19,7 +19,7 @@ from dirac import (apply_monomial, coupling_variance_dirac,
                    dirac_hamiltonian, dirac_hamiltonian_reference,
                    draw_couplings)
 from baryons import (baryon_correlator_ed, baryon_dagger, baryon_sign,
-                     charging_curve, dense_sector_blocks,
+                     charging_curve, csym_edge_estimate, dense_sector_blocks,
                      deltaE_from_couplings, ensemble_run, fit_mass_models,
                      instance_observables, power_exponent_fit,
                      reassemble_dense, sector_hamiltonian, sector_m2_enumerate,
@@ -267,6 +267,62 @@ def test_fit_models_on_synthetic_data():
         warnings.simplefilter("ignore", OptimizeWarning)
         p = power_exponent_fit(ns, 5.0 * ns ** -1.5, 0.001 * ns ** -1.5)
     assert abs(p["e"] + 1.5) < 1e-6
+
+
+def test_power_fit_honesty_bookkeeping():
+    """The rejected flag and sqrt(chi2/dof)-inflated errors that every
+    consumer must quote: a perfect power law is not rejected and keeps its
+    raw errors (scale floored at 1); saturating data with tiny error bars
+    reject the power-law form (chi2 >> 5 dof) and inflate the exponent error
+    by exactly sqrt(chi2/dof)."""
+    import warnings
+    from scipy.optimize import OptimizeWarning
+    ns = np.array([4, 5, 6, 7, 8, 9, 10], float)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", OptimizeWarning)
+        good = power_exponent_fit(ns, 5.0 * ns ** -1.5, 0.001 * ns ** -1.5)
+    assert not good["rejected"]
+    assert good["e_err_scaled"] == good["e_err"]     # scale floored at 1
+    bad = power_exponent_fit(ns, 3.0 - 5.0 / ns, 0.001 * np.ones_like(ns))
+    assert bad["rejected"] and bad["chi2"] > 5 * bad["dof"]
+    scale = np.sqrt(bad["chi2"] / bad["dof"])
+    assert abs(bad["e_err_scaled"] - bad["e_err"] * scale) < 1e-12
+    assert abs(bad["a_err_scaled"] - bad["a_err"] * scale) < 1e-12
+
+
+def test_csym_edge_estimate_formula_and_peak():
+    """csym_edge_estimate = -2 sqrt(C(Nc-2,2) sigma^2) (p = 4), and its
+    pre-asymptotic peak sits at Nc = 5 + sqrt(7) ~ 7.65 (the root of
+    d/dNc [(Nc-2)(Nc-3)/Nc^3] = 0), which is what makes the in-window
+    |Delta2| saturation expected rather than anomalous."""
+    for Nc in (6, 8, 10, 12):
+        exact = -2.0 * np.sqrt(comb(Nc - 2, 2)
+                               * coupling_variance_dirac(Nc, 4))
+        assert abs(csym_edge_estimate(Nc, 4) - exact) < 1e-14
+    # continuous-Nc peak of |estimate|^2 ~ (n-2)(n-3)/n^3
+    n = np.linspace(4.0, 20.0, 16001)
+    mag2 = (n - 2) * (n - 3) / n ** 3
+    n_peak = n[np.argmax(mag2)]
+    assert abs(n_peak - (5.0 + np.sqrt(7.0))) < 2e-3
+
+
+def test_csym_edge_estimate_brackets_measured_e0():
+    """The heuristic sparse-GOE edge is an ASYMPTOTIC bound-like estimate:
+    the measured mean E0(2) (= Delta2 exactly) approaches it from below.  At
+    Nc = 8 the measured/estimate ratio is ~0.91 (rising 0.87 -> 0.94 over
+    Nc = 6..10); assert it lands in (0.85, 0.97) with 100 draws -- i.e. the
+    VALUE is consistent at the +-10% level while the in-window exponents are
+    not asymptotic (that mismatch is reported honestly in the docstring)."""
+    Nc, p, n = 8, 4, 100
+    k = p // 2
+    est = csym_edge_estimate(Nc, p)
+    e0s = []
+    for j in range(n):
+        rng = np.random.default_rng(6000 + j)
+        coup = draw_couplings(Nc, p, rng, "c_symmetric")
+        e0s.append(np.linalg.eigvalsh(sector_hamiltonian(Nc, coup, k))[0])
+    ratio = float(np.mean(e0s)) / est
+    assert 0.85 < ratio < 0.97
 
 
 # --------------------------------------------------------------------------

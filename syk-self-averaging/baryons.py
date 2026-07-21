@@ -90,11 +90,22 @@ charge,
 
 the interaction energy of two holes in the baryon.  The sharp testable
 version of "inter-baryon forces are gravitational-strength" is an Nc-scaling
-HIERARCHY: is Delta2 parametrically suppressed in 1/Nc relative to the meson
-(singlet) energy scale escale = sqrt(Tr H^2/dim) ~ sqrt(Nc)?  The module
-measures Delta2(Nc-1) statistics and fits the power law of |mean| and of the
-ratio |Delta2|/escale.  This is a charging-curve statement, NOT a spatial
-force measurement -- stated wherever the numbers are reported.
+HIERARCHY: is Delta2 parametrically suppressed relative to a meson reference
+scale?  The module measures Delta2(Nc-1) statistics and fits the power law
+of |mean| and of the ratio |Delta2|/escale.  This is a charging-curve
+statement, NOT a spatial force measurement -- stated wherever the numbers
+are reported.
+
+Denominator caveat (load-bearing for the headline exponent): the reference
+scale used here, escale = sqrt(Tr H^2/dim), is the TOTAL many-body spectral
+width -- it grows like sqrt(Nc) by the coupling normalization -- and NOT the
+O(1) excitation energy of the M_n meson oscillations that this repo measures
+in mn_spectroscopy.py.  The ratio exponent therefore depends on the
+denominator choice: against the many-body width the asymptotic edge estimate
+reads ratio ~ 1/Nc, while against an O(1) meson excitation energy the same
+estimate reads |Delta2| ~ Nc^{-1/2}.  The QUALITATIVE conclusion -- the edge
+curvature is parametrically suppressed at large Nc under either denominator
+-- is robust to the choice; the specific power is not.
 
 Exact edge structure (derived here, asserted in tests): every H term needs
 B a subset of occ (k modes) and A inside the complement-plus-B, so blocks
@@ -138,22 +149,42 @@ Measured results (p = 4, Nc = 4..10, production run -> baryons.json)
      effective forms differ at this size.  c_symmetric chi2/dof ~ 15 for the
      best model: with SEMs this small the fits RESOLVE finite-size curvature
      beyond any 2-parameter form.
-  *  The hierarchy: |Delta2(Nc-1)|/escale falls like Nc^(-1.79 +- 0.03)
-     (generic; |Delta2| ~ Nc^(-1.31), Delta2 > 0, convex edge) and
-     Nc^(-0.85 +- 0.01) (c_symmetric; Delta2 < 0 exactly = E0(2), concave
-     edge, |Delta2| saturating in-window -- the power-law form is itself
-     rejected there, chi2/dof = 629/5, pre-asymptotic).  Both signs of the
-     suppression agree with the analytic edge estimate |Delta2| ~ Nc^{-1/2},
-     escale ~ Nc^{+1/2} => ratio ~ 1/Nc.  So in the only sense accessible in
-     0+1d the baryon-baryon term IS parametrically 1/Nc-suppressed relative
-     to meson scales -- consistent with the "gravitational-strength" reading,
-     with the sign (attractive vs repulsive analog) ensemble-DEPENDENT and
-     therefore not a robust prediction of the construction.
-  *  Scale check: generic escale ~ Nc^(0.48 +- 0.01) (the designed sqrt(Nc));
-     c_symmetric escale shows Nc^(1.16 +- 0.01) in-window because the
-     disjointness constraint discards an O(p^2/Nc) coupling fraction that is
-     order one at these sizes -- window exponents there are effective, not
-     asymptotic.
+  *  The hierarchy (effective in-window exponents): |Delta2(Nc-1)|/escale
+     falls like Nc^(-1.79 +- 0.03) (generic: good fit, chi2/dof = 5.2/5;
+     |Delta2| ~ Nc^(-1.31 +- 0.03), Delta2 > 0, convex edge) and like
+     Nc^(-0.85 +- 0.04) (c_symmetric: the power-law form is itself REJECTED,
+     chi2/dof = 194/5, error quoted after sqrt(chi2/dof) inflation;
+     Delta2 < 0 exactly = E0(2), concave edge, |Delta2| saturating in-window
+     with its own rejected fit Nc^(+0.34 +- 0.12), chi2/dof = 629/5).
+     What these numbers DEMONSTRATE is the qualitative hierarchy only: the
+     edge curvature falls relative to the many-body width, by many sigma, in
+     both ensembles.  They do NOT confirm the specific asymptotic edge
+     estimate |Delta2| ~ Nc^{-1/2}, escale ~ Nc^{+1/2} => ratio ~ 1/Nc:
+     the generic in-window ratio exponent -1.79 +- 0.03 sits ~25 fit-sigma
+     from -1, generic |Delta2| goes as Nc^{-1.31} not Nc^{-0.5}, and the
+     c_symmetric exponents fail their own fits (pre-asymptotic window).
+     The estimate is supported at the level of VALUES, not window exponents:
+     c_symmetric Delta2 = E0(2) exactly, and the heuristic sparse-GOE edge
+     -2 sqrt(C(Nc-2,2) sigma^2) (csym_edge_estimate) gives -2.68 at Nc = 10
+     vs measured -2.52 +- 0.01, with the measured/estimate ratio rising
+     0.87 -> 0.94 over the production window Nc = 6..10 (0.96 at Nc = 12 in
+     an out-of-window check; approaching 1 from below) and the
+     estimate's pre-asymptotic peak at Nc = 5 + sqrt(7) ~ 7.6 matching the
+     observed in-window saturation of |Delta2|.  So ratio ~ 1/Nc is the
+     plausible ASYMPTOTIC reading, consistent with but NOT established by
+     this window.  In the only sense accessible in 0+1d the baryon-baryon
+     term is parametrically suppressed relative to the many-body width --
+     compatible with the "gravitational-strength" reading (see the
+     denominator caveat above for how the power depends on the reference
+     scale) -- with the sign (attractive vs repulsive analog)
+     ensemble-DEPENDENT and therefore not a robust prediction of the
+     construction.
+  *  Scale check: generic escale ~ Nc^(0.48 +- 0.01) (the designed sqrt(Nc);
+     chi2/dof = 7.6/5); c_symmetric escale shows Nc^(1.16 +- 0.08) in-window
+     (power law REJECTED, chi2/dof = 589/5, error sqrt(chi2/dof)-inflated)
+     because the disjointness constraint discards an O(p^2/Nc) coupling
+     fraction that is order one at these sizes -- ALL c_symmetric window
+     exponents are effective, not asymptotic.
   *  The collapse frequency: measured std(DeltaE) falls from 2.36 (Nc = 4)
      to 1.83 (Nc = 10), tracking sqrt(C(Nc,2)) sigma exactly, while M_B grows
      4.0 -> 8.4: the naive correlator's only frequency and the physical mass
@@ -166,7 +197,13 @@ What is exact vs measured vs conjectured
     Delta2 = E0(2) (c_symmetric); PH palindromy; sector-m2 closed form
     (two routes).
   MEASURED (with error bars): M_B(Nc) statistics and its extensivity fits;
-    Delta2 statistics and scaling; the Delta2/escale hierarchy.
+    Delta2 statistics and scaling; the Delta2/escale hierarchy.  Where a
+    power-law fit is statistically rejected (chi2 > 5 dof) the exponent is
+    reported as an effective in-window slope with sqrt(chi2/dof)-inflated
+    errors, and flagged as rejected in the JSON, the prints, and the figure.
+  HEURISTIC (checked numerically, not proved): the sparse-GOE semicircle
+    edge estimate csym_edge_estimate for the c_symmetric E0(2); the
+    ratio ~ 1/Nc asymptotic reading of the hierarchy built on it.
   CONJECTURED / not tested: any identification of Delta2 with a bulk
     gravitational force; the O(sqrt N)-meson mechanism (needs multi-meson
     states, out of ED reach here); multi-baryon physics (needs >= 2 flavors,
@@ -328,6 +365,28 @@ def sector_m2_closed_form(Nc: int, p: int, q: int, ensemble: str) -> float:
     return sigma2 * tot / comb(Nc, q)
 
 
+def csym_edge_estimate(Nc: int, p: int) -> float:
+    """HEURISTIC sparse-GOE estimate of the c_symmetric edge curvature,
+    which equals E0(k) exactly (k = p/2; for p = 4 that is Delta2(Nc-1) =
+    E0(2)).  The q = k sector Hamiltonian is a C(Nc,k) x C(Nc,k) real
+    symmetric matrix with zero diagonal whose row (state S, |S| = k) has one
+    independent N(0, sigma^2) entry for each k-subset A disjoint from S,
+    i.e. row variance R = C(Nc-k, k) sigma^2; the semicircle edge is then
+
+        E0(k) ~ -2 sqrt(R) = -2 sqrt(C(Nc-k, k) sigma^2).
+
+    This is an asymptotic heuristic (finite degree, sparse), NOT exact: the
+    measured mean E0(2) approaches it from below, ratio 0.87 -> 0.94 over
+    the production window Nc = 6..10 and 0.96 at Nc = 12
+    (test_baryons.py checks the value at Nc = 8).  For p = 4 the estimate
+    peaks at Nc = 5 + sqrt(7) ~ 7.65 before its asymptotic Nc^{-1/2} decay
+    -- matching the observed in-window saturation of |Delta2| -- because
+    sigma^2 = 4 * 2^4 / Nc^3 while C(Nc-2, 2) ~ Nc^2 / 2."""
+    k = p // 2
+    return -2.0 * float(np.sqrt(comb(Nc - k, k)
+                                * coupling_variance_dirac(Nc, p)))
+
+
 # --------------------------------------------------------------------------
 # charging curve, per-instance observables, ensemble statistics
 # --------------------------------------------------------------------------
@@ -346,8 +405,10 @@ def charging_curve(H: np.ndarray, Nc: int):
 
 def instance_observables(Nc: int, p: int, seed: int, ensemble: str) -> dict:
     """One disorder instance: charging curve E0(q), baryon mass proxy
-    M_B = E0(Nc) - min_q E0(q), edge curvature Delta2(Nc-1), meson (singlet)
-    scale escale = sqrt(Tr H^2/dim), and the collapse frequency DeltaE."""
+    M_B = E0(Nc) - min_q E0(q), edge curvature Delta2(Nc-1), many-body
+    spectral width escale = sqrt(Tr H^2/dim) (NOT the O(1) meson excitation
+    scale -- see the denominator caveat in the module docstring), and the
+    collapse frequency DeltaE."""
     rng = np.random.default_rng(seed)
     couplings = draw_couplings(Nc, p, rng, ensemble)
     H = dirac_hamiltonian(Nc, p, couplings=couplings)
@@ -444,7 +505,16 @@ def fit_mass_models(ns, ys, errs) -> dict:
 def power_exponent_fit(ns, ys, errs) -> dict:
     """Power-law a*Nc^e fit (weighted); used for the Delta2 / escale / ratio
     scalings.  ys must be positive -- callers pass |mean| and report the sign
-    separately."""
+    separately.
+
+    Honesty bookkeeping: the raw covariance errors (a_err, e_err) assume the
+    power-law form is CORRECT.  When the fit is statistically rejected
+    (chi2 >> dof) they understate the model uncertainty by ~sqrt(chi2/dof),
+    so the dict also carries a_err_scaled / e_err_scaled -- the standard
+    sqrt(chi2/dof) inflation, floored at 1 -- and a boolean 'rejected'
+    (chi2 > 5 dof, the same criterion the figure uses).  Every consumer that
+    QUOTES an exponent must quote the scaled error and flag rejection; a
+    rejected fit's exponent is an effective in-window slope, not a law."""
     ns = np.asarray(ns, float)
     ys = np.asarray(ys, float)
     errs = np.asarray(errs, float)
@@ -453,9 +523,13 @@ def power_exponent_fit(ns, ys, errs) -> dict:
                            absolute_sigma=True, maxfev=20000)
     perr = np.sqrt(np.diag(pcov))
     chi2 = float(np.sum(((ys - f(ns, *popt)) / errs) ** 2))
+    dof = len(ns) - 2
+    scale = max(1.0, float(np.sqrt(chi2 / dof))) if dof > 0 else 1.0
     return dict(a=float(popt[0]), e=float(popt[1]),
                 a_err=float(perr[0]), e_err=float(perr[1]),
-                chi2=chi2, dof=len(ns) - 2)
+                a_err_scaled=float(perr[0]) * scale,
+                e_err_scaled=float(perr[1]) * scale,
+                chi2=chi2, dof=dof, rejected=bool(chi2 > 5.0 * dof))
 
 
 # --------------------------------------------------------------------------
@@ -509,9 +583,15 @@ def make_figure(rows: dict, fits: dict, scal: dict, path: Path, p: int):
         axB.plot(nn, pw[0] * nn ** pw[1], "--", lw=1.2, color=COLORS[ens],
                  alpha=0.7)
         ge = fits[ens]["a*Nc^gamma"]
+        # honesty: sqrt(chi2/dof)-inflate the quoted gamma error and flag
+        # statistically rejected fits (same policy as power_exponent_fit)
+        gsc = max(1.0, np.sqrt(ge["chi2"] / ge["dof"]))
+        gbad = ge["chi2"] > 5 * ge["dof"]
         axB.text(0.03, 0.95 - 0.09 * (ens == "c_symmetric"),
                  rf"{ens}: $\gamma = {ge['params'][1]:.3f} \pm "
-                 rf"{ge['param_errs'][1]:.3f}$",
+                 rf"{ge['param_errs'][1] * gsc:.3f}$"
+                 + (rf"  (REJECTED, $\chi^2$/dof = {ge['chi2']:.0f}/"
+                    rf"{ge['dof']})" if gbad else ""),
                  transform=axB.transAxes, fontsize=9, va="top",
                  color=COLORS[ens])
     axB.set_xlabel("$N_c$")
@@ -536,28 +616,30 @@ def make_figure(rows: dict, fits: dict, scal: dict, path: Path, p: int):
         nn = np.linspace(ns[0], ns[-1], 50)
         axC.plot(nn, s["a"] * nn ** s["e"], "-", lw=1.1, color=COLORS[ens],
                  alpha=0.6)
-        # honesty: flag power-law fits the data statistically reject
-        bad = s["chi2"] > 5 * s["dof"]
+        # honesty: scaled errors everywhere; flag statistically rejected fits
         axC.text(0.03, 0.16 - 0.09 * (ens == "c_symmetric"),
                  rf"{ens}: $|\Delta_2| \sim N_c^{{{s['e']:.2f} \pm "
-                 rf"{s['e_err']:.2f}}}$"
-                 + (rf"  (poor fit, $\chi^2$/dof = {s['chi2']:.0f}/"
-                    rf"{s['dof']})" if bad else ""),
+                 rf"{s['e_err_scaled']:.2f}}}$"
+                 + (rf"  (REJECTED, $\chi^2$/dof = {s['chi2']:.0f}/"
+                    rf"{s['dof']})" if s["rejected"] else ""),
                  transform=axC.transAxes, fontsize=9, color=COLORS[ens])
     ns = np.array([r["Nc"] for r in rows["generic"]], float)
     esc = np.array([r["escale_mean"] for r in rows["generic"]])
     esce = np.array([r["escale_sem"] for r in rows["generic"]])
     axC.errorbar(ns, esc, yerr=esce, fmt="s", ms=5, capsize=2,
-                 color="#777777", label=r"meson scale $\sqrt{Tr H^2/dim}$")
+                 color="#777777",
+                 label=r"many-body width $\sqrt{Tr H^2/dim}$ (generic)")
     se = scal["generic"]["escale"]
-    axC.text(0.03, 0.25, rf"escale $\sim N_c^{{{se['e']:.2f} \pm "
-             rf"{se['e_err']:.2f}}}$", transform=axC.transAxes, fontsize=9,
-             color="#777777")
+    axC.text(0.03, 0.25, rf"width $\sim N_c^{{{se['e']:.2f} \pm "
+             rf"{se['e_err_scaled']:.2f}}}$"
+             + (rf"  (REJECTED, $\chi^2$/dof = {se['chi2']:.0f}/"
+                rf"{se['dof']})" if se["rejected"] else ""),
+             transform=axC.transAxes, fontsize=9, color="#777777")
     axC.set_xscale("log")
     axC.set_yscale("log")
     axC.set_xlabel("$N_c$")
     axC.set_ylabel("energy")
-    axC.set_title("Edge curvature vs meson scale")
+    axC.set_title("Edge curvature vs many-body spectral width")
     axC.legend(frameon=False, fontsize=8, loc="upper right")
     axC.grid(True, which="both", alpha=0.2)
 
@@ -629,8 +711,11 @@ if __name__ == "__main__":
                   f"{d['chi2']:.1f}/{d['dof']}  AIC = {d['aic']:7.1f}")
         print(f"    -> {fit_verdict(f)}")
 
-    print("\n4. The hierarchy: Delta2 vs the meson (singlet) scale")
+    print("\n4. The hierarchy: Delta2 vs the many-body spectral width")
     print("-" * 74)
+    print("  (errors on exponents are sqrt(chi2/dof)-inflated where the fit")
+    print("   fails; REJECTED = chi2 > 5 dof: exponent is an effective")
+    print("   in-window slope, not a law)")
     scal = {}
     for ens in rows:
         ns = [r["Nc"] for r in rows[ens]]
@@ -651,22 +736,53 @@ if __name__ == "__main__":
         s = scal[ens]
         print(f"  {ens}: Delta2 mean is {sgn}"
               + (f" ({insignif} pts < 2 sigma from 0)" if insignif else ""))
-        print(f"    |Delta2|        ~ Nc^({s['delta2']['e']:+.2f} ± "
-              f"{s['delta2']['e_err']:.2f})   chi2/dof = "
-              f"{s['delta2']['chi2']:.1f}/{s['delta2']['dof']}")
-        print(f"    escale          ~ Nc^({s['escale']['e']:+.2f} ± "
-              f"{s['escale']['e_err']:.2f})")
-        print(f"    |Delta2|/escale ~ Nc^({s['ratio']['e']:+.2f} ± "
-              f"{s['ratio']['e_err']:.2f})")
+        for label, key in (("|Delta2|       ", "delta2"),
+                           ("escale (width) ", "escale"),
+                           ("|Delta2|/escale", "ratio")):
+            d = s[key]
+            print(f"    {label} ~ Nc^({d['e']:+.2f} ± "
+                  f"{d['e_err_scaled']:.2f})   chi2/dof = "
+                  f"{d['chi2']:.1f}/{d['dof']}"
+                  + ("   REJECTED (in-window slope only)"
+                     if d["rejected"] else ""))
     print("\n  Reading (charging-curve proxy, NOT a spatial force): the edge")
-    print("  curvature is parametrically suppressed relative to the meson scale")
-    print("  iff the ratio exponent is < 0 by many sigma; see numbers above.")
+    print("  curvature falls relative to the many-body width by many sigma in")
+    print("  both ensembles -- that QUALITATIVE hierarchy is the demonstrated")
+    print("  result.  The specific asymptotic estimate ratio ~ 1/Nc is NOT")
+    print("  confirmed in-window: the generic ratio exponent "
+          f"({scal['generic']['ratio']['e']:+.2f}) sits "
+          f"{abs(scal['generic']['ratio']['e'] + 1.0) / scal['generic']['ratio']['e_err_scaled']:.0f} "
+          "fit-sigma from -1,")
+    print("  and the c_symmetric fits are rejected (pre-asymptotic window).")
+
+    print("\n5. The c_symmetric edge VALUE vs the heuristic sparse-GOE estimate")
+    print("-" * 74)
+    print("  Delta2 = E0(2) exactly; estimate = -2 sqrt(C(Nc-2,2) sigma^2);")
+    print(f"  estimate peaks at Nc = 5 + sqrt(7) = {5 + np.sqrt(7):.2f} "
+          "(the in-window saturation).")
+    edge_rows = []
+    for r in rows["c_symmetric"]:
+        est = csym_edge_estimate(r["Nc"], p)
+        edge_rows.append(dict(Nc=r["Nc"], estimate=est,
+                              measured=r["delta2_mean"],
+                              measured_sem=r["delta2_sem"],
+                              ratio=r["delta2_mean"] / est))
+        print(f"    Nc={r['Nc']:>2}: estimate {est:+.4f}   measured "
+              f"{r['delta2_mean']:+.4f} ± {r['delta2_sem']:.4f}   "
+              f"ratio {r['delta2_mean'] / est:.3f}")
+    print("  -> values consistent (ratio -> 1 from below); the window's")
+    print("     effective exponents are NOT (see section 4): ratio ~ 1/Nc is")
+    print("     an asymptotic reading, unestablished at Nc <= 10.")
 
     out = dict(meta=dict(p=p, n_inst=N_INST, ensembles=list(rows),
                          description="rung 23 baryon-sector ED, see "
                                      "baryons.py docstring"),
                collapse_demo=collapse, rows=rows, fits_MB=fits,
-               scalings=scal)
+               scalings=scal,
+               csym_edge_estimate=dict(
+                   formula="-2*sqrt(C(Nc-2,2)*sigma^2), heuristic "
+                           "sparse-GOE edge; peak at Nc = 5 + sqrt(7)",
+                   peak_Nc=float(5 + np.sqrt(7)), rows=edge_rows))
     here = Path(__file__).resolve().parent
     with open(here / "baryons.json", "w") as fh:
         json.dump(out, fh, indent=1)
