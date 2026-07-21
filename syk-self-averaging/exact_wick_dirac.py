@@ -144,6 +144,7 @@ Honesty box
 
 from __future__ import annotations
 
+import json
 from itertools import combinations
 from math import comb, factorial, log, sqrt
 
@@ -539,3 +540,166 @@ def instance_mu_ed(Nc: int, p: int, seed: int):
     return {"odd": (inst[(2, "right")]["mu0"], inst[(2, "right")]["mu2"]),
             "even": (inst[(2, "wrong")]["mu0"], inst[(2, "wrong")]["mu2"]),
             "escale2": inst[(2, "right")]["escale"] ** 2}
+
+
+# ---------------------------------------------------------------------------
+# driver: print the tables, write exact_wick_dirac.json
+# ---------------------------------------------------------------------------
+NC8_MU2_COST_NOTE = (
+    "E[mu2] at Nc = 8 needs the irreducible triple sum S_AB ~ n_pairs^3 = "
+    "210^3 ~ 9.3e6 evaluations, each ~6 dense 256x256 products (~2-4 ms): "
+    "order days on this machine per channel.  Delivered exactly at Nc = 6 "
+    "(45^3, ~20 s) instead; Nc = 8 mu2 stays with the ED pipeline.")
+
+
+def _part1_block(enum_pairs, table_pairs):
+    from exact_wick import rms_offdiag_exact as rms_majorana
+    checks = []
+    for (Nc, p) in enum_pairs:
+        mean_o, var_o = stats_enumerated(Nc, p, 0, 1)
+        mean_d, _ = stats_enumerated(Nc, p, 0, 0)
+        checks.append(dict(
+            Nc=Nc, p=p,
+            var_exact=var_offdiag_csym(Nc, p), var_enumerated=var_o,
+            mean_offdiag_enumerated=mean_o,
+            mean_diag_exact=mean_diag_csym(Nc, p), mean_diag_enumerated=mean_d))
+    rows = []
+    for (Nc, p) in table_pairs:
+        rows.append(dict(
+            Nc=Nc, p=p,
+            var_offdiag=var_offdiag_csym(Nc, p),
+            rms_offdiag=rms_offdiag_csym(Nc, p),
+            rms_large_nc_law=rms_offdiag_large_nc(Nc, p),
+            mean_diag=mean_diag_csym(Nc, p),
+            rms_majorana_same_modes=rms_majorana(2 * Nc, p)))
+    return dict(
+        closed_forms=dict(
+            var_offdiag="4 sigma^4 C(Nc-2,k-1) C(Nc-k-1,k) / 4^(p+1) "
+                        "= (k!)^4 C(Nc-2,k-1) C(Nc-k-1,k) / Nc^(2p-2)",
+            mean_offdiag="0 (exact)",
+            mean_diag="sigma^2 C(Nc-1,k) C(Nc-k-1,k) / 2^(p+1) "
+                      "= E[m2] (Nc-p)/(2Nc)",
+            fixed_p_rate="rms(B_ij) -> sqrt(k) k! Nc^-(p-1)/2, same power "
+                         "as Majorana rms ~ 2 p!/sqrt((p-1)!) N^-(p-1)/2"),
+        enumeration_checks=checks,
+        rows=rows,
+        mean_vanishing_artifact=dict(
+            statement="E[B_ii] = 0 and Var(B_ij) = 0 exactly at Nc = p "
+                      "(every coupling touches every mode); in Majorana "
+                      "units N = 2Nc this is the same (1-2p/N) factor as "
+                      "the p = N/2 artifact of exact_wick.py",
+            example=dict(Nc=4, p=4,
+                         mean_diag=mean_diag_csym(4, 4),
+                         var_offdiag=var_offdiag_csym(4, 4))))
+
+
+def _mu0_comparison(mu0_by_nc):
+    import pathlib
+    rows = json.loads(
+        (pathlib.Path(__file__).resolve().parent / "moments.json").read_text())
+    ed = {(r["Nc"], r["channel"]): r for r in rows if r["n"] == 2}
+    table = []
+    for Nc, ex in sorted(mu0_by_nc.items()):
+        for ch, tag in (("odd", "right"), ("even", "wrong")):
+            r = ed.get((Nc, tag))
+            if r is None:
+                continue
+            z = (ex[ch] - r["mu0"]) / r["mu0_err"]
+            table.append(dict(
+                Nc=Nc, n=2, channel=f"{ch} (pipeline '{tag}')",
+                mu0_exact=float(ex[ch]), mu0_ed=r["mu0"],
+                mu0_ed_sem=r["mu0_err"], ed_n_inst=r["n_inst"],
+                z=float(z)))
+    return table
+
+
+if __name__ == "__main__":
+    import argparse
+    import time
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--big", action="store_true",
+                    help="add the Nc = 10 exact mu0 (~25 min)")
+    args = ap.parse_args()
+
+    print("Part 1: Var(B_ij), E[B_ii] for the c_symmetric Dirac ensemble")
+    print("  closed form vs literal T-matrix enumeration:")
+    part1 = _part1_block(enum_pairs=[(5, 4), (6, 4), (7, 4)],
+                         table_pairs=[(6, 4), (8, 4), (10, 4), (14, 4),
+                                      (20, 4), (40, 4), (10, 8), (14, 8),
+                                      (20, 8)])
+    for c in part1["enumeration_checks"]:
+        print(f"    Nc={c['Nc']} p={c['p']}: Var exact {c['var_exact']:.6e} "
+              f"enum {c['var_enumerated']:.6e}   E[B_ii] exact "
+              f"{c['mean_diag_exact']:.6e} enum {c['mean_diag_enumerated']:.6e}")
+    print("\n  closed-form table (rms_majorana at N = 2Nc for comparison):")
+    print(f"    {'Nc':>4} {'p':>2} {'rms(B_ij)':>12} {'large-Nc law':>13} "
+          f"{'E[B_ii]':>12} {'Majorana rms':>13}")
+    for r in part1["rows"]:
+        print(f"    {r['Nc']:>4} {r['p']:>2} {r['rms_offdiag']:>12.4e} "
+              f"{r['rms_large_nc_law']:>13.4e} {r['mean_diag']:>12.4e} "
+              f"{r['rms_majorana_same_modes']:>13.4e}")
+
+    print("\nPart 2: exact E[mu0] of CP-resolved traceless M_2 (Isserlis)")
+    mu0_by_nc = {}
+    nc_list = [6, 8] + ([10] if args.big else [])
+    for Nc in nc_list:
+        t0 = time.time()
+        mu0_by_nc[Nc] = mu0_exact_csym(Nc, 4, progress=(Nc >= 10))
+        print(f"  Nc={Nc}: odd {mu0_by_nc[Nc]['odd']:.6f}  "
+              f"even {mu0_by_nc[Nc]['even']:.6f}  "
+              f"({mu0_by_nc[Nc]['n_pairs']} pairs, {time.time()-t0:.0f} s)")
+    comparison = _mu0_comparison(mu0_by_nc)
+    print("\n  vs moments.json ED means (n = 2):")
+    for row in comparison:
+        print(f"    Nc={row['Nc']} {row['channel']:>24}: exact "
+              f"{row['mu0_exact']:9.4f}   ED {row['mu0_ed']:9.4f} "
+              f"+- {row['mu0_ed_sem']:.4f}   z = {row['z']:+.2f}")
+
+    print("\n  exact E[mu2] at Nc = 6 (sextic Isserlis, 15 pairings):")
+    t0 = time.time()
+    mu2 = mu2_exact_csym(6, 4, progress=False)
+    print(f"    odd {mu2['odd']:.6f}  even {mu2['even']:.6f}  "
+          f"({time.time()-t0:.0f} s)")
+    m2m = m2_mean_exact(6, 4)
+    print(f"    ratio-of-means E[mu2]/(E[mu0] E[m2]): "
+          f"odd {mu2['odd']/(mu0_by_nc[6]['odd']*m2m):.4f}  "
+          f"even {mu2['even']/(mu0_by_nc[6]['even']*m2m):.4f}")
+    print("    (NOT comparable to moments.json w2, a mean of per-instance")
+    print("     ratios; the calibrated mu2 check is the slow-test fresh ED")
+    print("     ensemble.)")
+    print(f"\n  Nc = 8 mu2: {NC8_MU2_COST_NOTE}")
+
+    out = dict(
+        meta=dict(
+            description="Exact disorder statistics on the U(N)/Dirac side: "
+                        "adjoint bilinear B_ij and singlet M_2 moments, "
+                        "c_symmetric ensemble (see exact_wick_dirac.py "
+                        "docstring for derivations and caveats)",
+            conventions="dirac.py: sigma^2 = (k!)^2 2^p/Nc^(p-1), k = p/2; "
+                        "channel 'odd' = CP-odd = pipeline 'right' for n=2",
+            ed_reference="moments.json (moments_pipeline.py ED ensembles)"),
+        part1_varB=part1,
+        part2_mu0=dict(
+            method="M_2 = sum x_u x_v G_uv; E[mu0] by the three Isserlis "
+                   "pairings over coupling pairs; traces numeric, no ED, "
+                   "no sampling",
+            exact={f"Nc{Nc}": {k: (float(v) if k != "n_pairs" else v)
+                               for k, v in d.items()}
+                   for Nc, d in mu0_by_nc.items()},
+            vs_moments_json=comparison),
+        part2_mu2=dict(
+            exact_nc6={k: (float(v) if k != "n_pairs" else v)
+                       for k, v in mu2.items()},
+            ratio_of_means_w2_nc6=dict(
+                odd=float(mu2["odd"] / (mu0_by_nc[6]["odd"] * m2m)),
+                even=float(mu2["even"] / (mu0_by_nc[6]["even"] * m2m)),
+                caveat="ratio of exact means; moments.json w2 is a mean of "
+                       "per-instance ratios -- differs at O(relVar), do not "
+                       "compare within SEM"),
+            nc8_cost_note=NC8_MU2_COST_NOTE))
+    import pathlib
+    path = pathlib.Path(__file__).resolve().parent / "exact_wick_dirac.json"
+    with open(path, "w") as fh:
+        json.dump(out, fh, indent=1)
+    print(f"\nwrote {path}")
