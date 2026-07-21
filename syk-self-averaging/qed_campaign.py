@@ -134,22 +134,63 @@ Exact sector facts (all tested):
     E0(q) = E0(Nc - q) exactly, sector by sector.
 
 The charging curve is the disorder mean E0(q) +- SEM at Nc = 8, 10, p = 4,
-both ensembles.  Around half filling, x = q - Nc/2, we compare (weighted
-least squares on the interior sectors k <= q <= Nc-k, where H_q is
-nontrivial):
+both ensembles.  Around half filling, x = q - Nc/2, we compare on the
+interior sectors k <= q <= Nc-k (where H_q is nontrivial):
 
     capacitive:  E0 = a + mu x + x^2/(2C)     ("Coulomb-blockade-like")
     confining :  E0 = a + mu x + s |x|        ("linear in the charge")
 
-Both models have 3 parameters, so AIC = chi^2 + 2K and Delta-AIC = Delta
-chi^2: the honest content is the magnitude (Delta-AIC < 2 means the window
-cannot distinguish them, exactly as in self_averaging.py).  The comparison
-is RELATIVE, not an absolute goodness-of-fit claim: with sub-percent SEMs
-the capacitive model wins by Delta-AIC ~ 10^2-10^3 everywhere, but its own
-chi^2/dof can be >> 1 (the data resolve corrections beyond a pure
-parabola -- quartic terms and edge effects); chi^2/dof is reported next to
+STATISTICS (the part that was wrong once).  The sector means E0(q) are
+measured on the SAME disorder instances for every q, and each instance's
+overall coupling scale moves all its sectors together, so the components
+of the mean vector are strongly positively correlated: measured
+interior-window correlations run from ~ +0.25 to +0.98 (generic) and up
+to exactly +1 (c_symmetric mirror pairs, see below).  A chi^2 built from per-sector SEMs
+as if the points were independent is therefore NOT a calibrated
+likelihood statistic.  The fits here are GLS with the FULL estimated
+covariance of the interior mean vector (eigenvalue-thresholded
+pseudo-inverse; Hartlap factor (n - d - 2)/(n - 1) correcting the
+inverse-of-estimated-covariance bias), so chi2_gls is approximately
+calibrated -- up to the O(d/n_inst) noise of the estimated covariance
+itself (d <= 7 fit points from n_inst >= 60 instances).  The diagonal
+chi^2 is still emitted as chi2_diag, labeled a reference number only;
+GLS makes the capacitive-vs-confining preference STRONGER, not weaker.
+
+For c_symmetric the mirror E0(q) = E0(Nc - q) is instance-EXACT (tested),
+so mirrored sectors carry ZERO independent information: the covariance of
+the full interior window is exactly singular (mirror pairs have
+correlation +1), and an independence fit would double-count every
+off-center deviation.  The fit folds to q <= Nc/2 -- 3 unique interior
+points at Nc = 8, not 5 -- and drops the linear term (mu = 0 exactly by
+the same symmetry), leaving K = 2 parameters per model.  Generic curves
+keep all interior points and K = 3 (the J_AA particle-hole breaking makes
+mu physical).
+
+Within each window both models have the same K, so AIC = chi2_gls + 2K
+gives Delta-AIC = Delta chi2_gls; Delta-AIC < 2 means the window cannot
+distinguish them, exactly as in self_averaging.py.  The comparison is
+RELATIVE, not an absolute goodness-of-fit claim: the capacitive model
+wins in every window (GLS Delta-AIC ~ 2.1-2.5e3 generic, ~ 1.5-2.4e3 in
+the short folded c_symmetric windows, vs diagonal reference Delta-chi2
+of only ~ 90-690 -- GLS strengthens the preference because the shared
+noise mode cannot absorb a kink-vs-parabola shape difference; the OLD
+independence-fit c_symmetric Delta-AIC values 530/1027 double-counted
+mirrored sectors and are retired), but its own chi2_gls/dof is >> 1 for
+the generic curves (the data resolve corrections beyond a pure parabola
+-- quartic terms and edge effects); chi2_gls/dof is reported next to
 every fit so nobody mistakes "much better than linear" for "exactly
-quadratic".  This is the first U(1)-sector energetics data for the duality.
+quadratic".
+
+INTERPRETATION (what a huge Delta-AIC buys and what it does not).
+Decisively rejecting the kinked a + mu x + s|x| alternative is mostly a
+test of the SMOOTHNESS/analyticity of E0(Q) at half filling: any chaotic
+charge-conserving Hamiltonian whose ground-energy density is a smooth
+function of the filling would reject the |x| kink just as hard, so the
+model comparison by itself is WEAK evidence FOR a specific
+Coulomb/capacitive bulk reading.  The positive physical content is the
+measured curvature (the capacitance C and its Nc trend), not the win
+over the strawman.  This is the first U(1)-sector energetics data for
+the duality.
 
 --------------------------------------------------------------------------
 3. Charged vs singlet spectral weight
@@ -186,8 +227,9 @@ c_symmetric the statement is far stronger and INSTANCE-EXACT:
 kills the cross terms of the commutator quadratic form
 sum_i ||[H, c_i]||^2, locking the charged frequency scale rigidly to the
 instance's total energy scale (verified to machine precision in the tests;
-for generic instances the cross terms push mu2_charged ~25% BELOW
-(p/Nc) m2 at Nc = 6-8).
+for generic instances the cross terms push E[mu2_charged] BELOW
+(p/Nc) E[m2] by exactly 23.1% (Nc=6), 20.6% (Nc=7), 18.6% (Nc=8) at
+p = 4 -- a deficit that shrinks with Nc, from the exact formulas above).
 
 HONESTY BOX -- what this does and does not test.  In 0+1d there is no
 spatial confinement: no Wilson loop, no linear potential in a distance, no
@@ -203,10 +245,13 @@ the bulk-side meaning of the comparison further depends on the unresolved
 hologram/bulk frequency map (duality/BOOST.md).  We say so wherever the
 numbers are reported.
 
-Statistics: every ensemble number carries an SEM with ddof=1; disorder
-instances are seeded reproducibly.  The default __main__ takes ~2-3 min and
-writes qed_campaign.json + qed_campaign.png; --big adds the Nc = 10
-spectral run and larger ensembles.
+Statistics: every ensemble number carries an SEM with ddof=1; the charging
+curves additionally carry the full covariance of the mean vector (the
+sectors are measured on the same instances and are strongly correlated --
+see part 2), and their model fits are GLS against that covariance;
+disorder instances are seeded reproducibly.  The default __main__ takes
+~2-3 min and writes qed_campaign.json + qed_campaign.png; --big adds the
+Nc = 10 spectral run and larger ensembles.
 """
 
 from __future__ import annotations
@@ -436,7 +481,10 @@ def sector_spectra(H: np.ndarray, Nc: int, sectors: list = None) -> list:
 
 def charging_curve(Nc: int, p: int, ensemble: str, n_inst: int,
                    seed: int = 0) -> dict:
-    """Disorder-averaged ground energy per charge sector, E0(q) +- SEM."""
+    """Disorder-averaged ground energy per charge sector, E0(q) +- SEM,
+    PLUS the full covariance of the mean vector (Cov(E0)/n_inst, ddof=1):
+    the sectors of one instance are strongly correlated across q, so the
+    SEMs alone under-specify the error model of the mean curve."""
     rng = np.random.default_rng(seed)
     sectors = sector_indices(Nc)
     e0 = np.empty((n_inst, Nc + 1))
@@ -447,39 +495,106 @@ def charging_curve(Nc: int, p: int, ensemble: str, n_inst: int,
             Hq = H[np.ix_(ix, ix)]
             e0[j, q] = np.linalg.eigvalsh(Hq)[0].real if len(ix) > 1 \
                 else Hq[0, 0].real
+    cov_mean = np.cov(e0, rowvar=False) / n_inst      # ddof=1, matches SEM^2
     return dict(Nc=Nc, p=p, ensemble=ensemble, n_inst=n_inst,
                 q=list(range(Nc + 1)),
                 e0_mean=[float(x) for x in e0.mean(axis=0)],
                 e0_sem=[float(x) for x in e0.std(axis=0, ddof=1)
-                        / np.sqrt(n_inst)])
+                        / np.sqrt(n_inst)],
+                e0_cov_mean=[[float(v) for v in row] for row in cov_mean])
+
+
+def _gls_fit(A: np.ndarray, y: np.ndarray, cov: np.ndarray,
+             n_cov: int = None):
+    """Generalized least squares: coef minimizing r^T Cinv r, with Cinv the
+    eigenvalue-thresholded pseudo-inverse of the (estimated) covariance of
+    y.  When cov was estimated from n_cov samples, the Hartlap factor
+    (n_cov - rank - 2)/(n_cov - 1) corrects the mean bias of the inverse
+    (it rescales chi2 only; the coefficients are scale-invariant).
+    Returns (coef, chi2, rank, cond, hartlap)."""
+    w, U = np.linalg.eigh(0.5 * (cov + cov.T))
+    tol = w.max() * 1e-10
+    good = w > tol
+    rank = int(good.sum())
+    winv = np.where(good, 1.0 / np.where(good, w, 1.0), 0.0)
+    Cinv = (U * winv) @ U.T
+    hartlap = 1.0
+    if n_cov is not None and n_cov > rank + 2:
+        hartlap = (n_cov - rank - 2) / (n_cov - 1.0)
+    AtC = A.T @ Cinv
+    coef = np.linalg.solve(AtC @ A, AtC @ y)
+    r = y - A @ coef
+    chi2 = hartlap * float(r @ Cinv @ r)
+    cond = float(w.max() / w[good].min())
+    return coef, chi2, rank, cond, hartlap
 
 
 def fit_charging(curve: dict) -> dict:
-    """Weighted least squares of the interior charging curve
-    (k <= q <= Nc - k) against the capacitive and confining models
-    (module docstring, part 2).  AIC = chi^2 + 2K, K = 3 for both, so
-    Delta-AIC = Delta chi^2; Delta-AIC < 2 = indistinguishable."""
+    """GLS fit of the interior charging curve (k <= q <= Nc - k) against the
+    capacitive and confining models (module docstring, part 2).
+
+    The E0(q) means are measured on the same instances and are strongly
+    correlated across q, so the fit uses the FULL covariance of the mean
+    vector (curve["e0_cov_mean"]; falls back to diagonal SEM^2 if absent,
+    e.g. for synthetic curves).  For c_symmetric the mirror
+    E0(q) = E0(Nc-q) is instance-exact, making mirrored sectors literal
+    duplicates (covariance exactly singular): the fit folds to q <= Nc/2
+    and drops the linear term (mu = 0 exactly), K = 2; generic keeps the
+    full window and K = 3.  Both models share K, so AIC = chi2_gls + 2K
+    gives Delta-AIC = Delta chi2_gls; |Delta-AIC| < 2 = indistinguishable.
+    chi2_diag (per-sector SEMs, independence assumed) is emitted as a
+    reference number only -- it is NOT a calibrated statistic."""
     Nc, k = curve["Nc"], curve["p"] // 2
     q = np.array(curve["q"], dtype=float)
-    y = np.array(curve["e0_mean"])
-    s = np.array(curve["e0_sem"])
+    y_all = np.array(curve["e0_mean"])
+    s_all = np.array(curve["e0_sem"])
+    cov_all = (np.array(curve["e0_cov_mean"]) if "e0_cov_mean" in curve
+               else np.diag(s_all ** 2))
     keep = (q >= k) & (q <= Nc - k)
-    x = q[keep] - Nc / 2.0
-    y, s = y[keep], s[keep]
-    out = {}
-    for name, col3 in [("capacitive_x2", x ** 2), ("confining_absx", np.abs(x))]:
-        A = np.vstack([np.ones_like(x), x, col3]).T
-        coef, *_ = np.linalg.lstsq(A / s[:, None], y / s, rcond=None)
-        resid = (y - A @ coef) / s
-        chi2 = float(np.sum(resid ** 2))
-        dof = int(keep.sum()) - 3
-        out[name] = dict(coef=[float(c) for c in coef], chi2=chi2,
-                         aic=chi2 + 2 * 3, n_points=int(keep.sum()),
-                         chi2_per_dof=chi2 / dof if dof > 0 else np.nan)
-    quad_c = out["capacitive_x2"]["coef"][2]
+    folded = curve.get("ensemble") == "c_symmetric"
+    mirror_max_dev = None
+    if folded:
+        interior = np.flatnonzero(keep)
+        mirror_max_dev = float(max(abs(y_all[i] - y_all[Nc - i])
+                                   for i in interior))
+        keep &= (q <= Nc / 2.0)
+    idx = np.flatnonzero(keep)
+    x = q[idx] - Nc / 2.0
+    y = y_all[idx]
+    s = s_all[idx]
+    C = cov_all[np.ix_(idx, idx)]
+    n_pts = len(idx)
+    K = 2 if folded else 3
+    dof = n_pts - K
+    n_cov = curve.get("n_inst")
+    corr = C / np.sqrt(np.outer(np.diag(C), np.diag(C)))
+    off = corr[~np.eye(n_pts, dtype=bool)]
+    out = dict(folded=bool(folded), n_points=n_pts, K=K, dof=dof,
+               corr_offdiag_range=([float(off.min()), float(off.max())]
+                                   if off.size else None))
+    if mirror_max_dev is not None:
+        out["mirror_max_dev"] = mirror_max_dev
+    for name, col in [("capacitive_x2", x ** 2), ("confining_absx", np.abs(x))]:
+        cols = ([np.ones_like(x), col] if folded
+                else [np.ones_like(x), x, col])
+        A = np.vstack(cols).T
+        coef, chi2, rank, cond, hartlap = _gls_fit(A, y, C, n_cov)
+        coefd, *_ = np.linalg.lstsq(A / s[:, None], y / s, rcond=None)
+        chi2_diag = float(np.sum(((y - A @ coefd) / s) ** 2))
+        out[name] = dict(coef=[float(c) for c in coef],
+                         chi2_gls=chi2, aic=chi2 + 2 * K,
+                         chi2_gls_per_dof=chi2 / dof if dof > 0 else np.nan,
+                         chi2_diag=chi2_diag,
+                         chi2_diag_per_dof=(chi2_diag / dof if dof > 0
+                                            else np.nan),
+                         cov_rank=rank, cov_cond=cond, hartlap=hartlap)
+    quad_c = out["capacitive_x2"]["coef"][-1]
     out["capacitance"] = float(1.0 / (2.0 * quad_c)) if quad_c != 0 else np.inf
     daic = out["confining_absx"]["aic"] - out["capacitive_x2"]["aic"]
     out["delta_aic_conf_minus_cap"] = daic
+    out["delta_chi2_diag_conf_minus_cap"] = (
+        out["confining_absx"]["chi2_diag"]
+        - out["capacitive_x2"]["chi2_diag"])
     if abs(daic) < 2.0:
         out["verdict"] = ("indistinguishable in this window "
                           f"(|Delta-AIC| = {abs(daic):.1f} < 2)")
@@ -631,7 +746,11 @@ def make_figure(results: dict, out_png: Path) -> None:
             fit = curve["fits"]["capacitive_x2"]
             k = curve["p"] // 2
             xf = np.linspace(k - Nc / 2.0, Nc / 2.0 - k, 120)
-            a, mu, cq = fit["coef"]
+            if len(fit["coef"]) == 2:      # folded c_symmetric: mu = 0 exact
+                a, cq = fit["coef"]
+                mu = 0.0
+            else:
+                a, mu, cq = fit["coef"]
             axM.plot(xf, a + mu * xf + cq * xf ** 2, "-", lw=1.0,
                      color=color, alpha=0.7)
     axM.set_xlabel(r"$x = Q - N_c/2$")
@@ -746,17 +865,46 @@ def main(big: bool = False) -> dict:
             print("    Q     : " + " ".join(f"{q:>8d}" for q in curve["q"]))
             print("    E0    : " + " ".join(f"{v:>8.3f}" for v in e0))
             print("    +-SEM : " + " ".join(f"{v:>8.3f}" for v in sem))
+            lo, hi = f["corr_offdiag_range"]
+            print(f"    [mean-vector cross-Q correlations in [{lo:+.2f}, "
+                  f"{hi:+.2f}] -- fits are GLS with the full covariance]")
+            if f["folded"]:
+                print("    [c_symmetric mirror E0(q) = E0(Nc-q) is "
+                      f"instance-exact (max dev {f['mirror_max_dev']:.1e}): "
+                      f"folded to Q <= Nc/2, {f['n_points']} unique pts, "
+                      "mu = 0 exact, K = 2]")
             cap = f["capacitive_x2"]
             con = f["confining_absx"]
-            print(f"    capacitive:  E0 = {cap['coef'][0]:.3f} "
-                  f"{cap['coef'][1]:+.3f} x {cap['coef'][2]:+.3f} x^2   "
-                  f"chi2/dof = {cap['chi2_per_dof']:.1f} "
-                  f"({cap['n_points']} pts); C = {f['capacitance']:.3f}")
-            print(f"    confining :  E0 = {con['coef'][0]:.3f} "
-                  f"{con['coef'][1]:+.3f} x {con['coef'][2]:+.3f} |x|   "
-                  f"chi2/dof = {con['chi2_per_dof']:.1f}")
-            print(f"    -> {f['verdict']}  [relative comparison only: "
-                  "chi2/dof > 1 means resolvable non-parabolic corrections]")
+            if f["folded"]:
+                cap_str = (f"E0 = {cap['coef'][0]:.3f} "
+                           f"{cap['coef'][1]:+.3f} x^2")
+                con_str = (f"E0 = {con['coef'][0]:.3f} "
+                           f"{con['coef'][1]:+.3f} |x|")
+            else:
+                cap_str = (f"E0 = {cap['coef'][0]:.3f} "
+                           f"{cap['coef'][1]:+.3f} x {cap['coef'][2]:+.3f} x^2")
+                con_str = (f"E0 = {con['coef'][0]:.3f} "
+                           f"{con['coef'][1]:+.3f} x {con['coef'][2]:+.3f} |x|")
+            print(f"    capacitive:  {cap_str}   "
+                  f"chi2_gls/dof = {cap['chi2_gls_per_dof']:.1f} "
+                  f"({f['n_points']} pts, dof {f['dof']}); "
+                  f"C = {f['capacitance']:.3f}")
+            print(f"    confining :  {con_str}   "
+                  f"chi2_gls/dof = {con['chi2_gls_per_dof']:.1f}")
+            print(f"    -> {f['verdict']}  [GLS Delta-chi2; diagonal-"
+                  f"independence reference Delta-chi2 = "
+                  f"{f['delta_chi2_diag_conf_minus_cap']:.1f} is NOT "
+                  "calibrated (correlated sectors)]")
+            print("       [relative comparison only: chi2_gls/dof > 1 means "
+                  "resolvable non-parabolic corrections]")
+
+    print("\n  (Rejecting the |x| kink mostly tests smoothness/analyticity "
+          "of E0(Q) at")
+    print("   half filling -- any chaotic charge-conserving H with a smooth "
+          "ground-")
+    print("   energy density does the same; weak evidence FOR a specific "
+          "Coulomb/")
+    print("   capacitive bulk reading.  The physics is C and its Nc trend.)")
 
     print("\n" + "=" * 72)
     print("3. Charged (c_i) vs singlet (M2bar) spectral weight, T = infinity")

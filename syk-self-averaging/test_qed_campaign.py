@@ -185,7 +185,9 @@ def test_charging_curve_shapes_and_edges():
 
 def test_charging_fit_recovers_planted_models():
     """The fit machinery recovers a planted quadratic (capacitive) curve --
-    coefficient and AIC preference -- and symmetrically for a planted |x|."""
+    coefficient and AIC preference -- and symmetrically for a planted |x|.
+    (No ensemble/covariance keys: exercises the diagonal fallback, where
+    GLS reduces exactly to the old WLS.)"""
     Nc, p = 10, 4
     q = np.arange(Nc + 1, dtype=float)
     x = q - Nc / 2.0
@@ -196,11 +198,112 @@ def test_charging_fit_recovers_planted_models():
                      e0_sem=[0.01] * (Nc + 1))
         f = fit_charging(curve)
         assert f["verdict"].startswith("best: " + expect)
+        assert f["folded"] is False and f["K"] == 3
         if expect == "capacitive_x2":
             assert abs(f["capacitive_x2"]["coef"][2] - 0.125) < 1e-9
             assert abs(f["capacitance"] - 4.0) < 1e-6
         else:
             assert abs(f["confining_absx"]["coef"][2] - 0.7) < 1e-9
+        # diagonal covariance: GLS chi2 must coincide with the diagonal chi2
+        for m in ("capacitive_x2", "confining_absx"):
+            assert abs(f[m]["chi2_gls"] - f[m]["chi2_diag"]) < 1e-8
+
+
+def test_charging_curve_covariance_structure():
+    """charging_curve returns the full covariance of the mean vector:
+    diagonal == SEM^2, PSD, and (the correlated-sector point) the interior
+    cross-q correlations are strongly positive because all sectors of one
+    instance share its coupling scale; for c_symmetric the mirrored sectors
+    are instance-exact duplicates, so their correlation is +1 and the
+    interior covariance is singular."""
+    curve = charging_curve(6, 4, "c_symmetric", n_inst=12, seed=21)
+    C = np.array(curve["e0_cov_mean"])
+    s = np.array(curve["e0_sem"])
+    assert C.shape == (7, 7)
+    assert np.abs(np.diag(C) - s ** 2).max() < 1e-12 * (s ** 2).max()
+    w = np.linalg.eigvalsh(0.5 * (C + C.T))
+    assert w.min() > -1e-12 * w.max()
+    corr_mirror = C[2, 4] / np.sqrt(C[2, 2] * C[4, 4])   # q = 2 vs q = 4
+    assert abs(corr_mirror - 1.0) < 1e-9
+    curve_g = charging_curve(6, 4, "generic", n_inst=12, seed=21)
+    Cg = np.array(curve_g["e0_cov_mean"])
+    for a in (2, 3):
+        for b in range(a + 1, 5):
+            assert Cg[a, b] / np.sqrt(Cg[a, a] * Cg[b, b]) > 0.0
+
+
+def test_fit_charging_folds_c_symmetric():
+    """c_symmetric fits fold the instance-exact mirror: only q <= Nc/2
+    enters (3 unique interior points at Nc = 8, not 5), the linear term is
+    dropped (K = 2; mu = 0 exactly by the symmetry), and the recorded
+    mirror deviation of the means is at roundoff level.  Generic is NOT
+    folded (the J_AA break particle-hole symmetry)."""
+    curve = charging_curve(8, 4, "c_symmetric", n_inst=12, seed=22)
+    f = fit_charging(curve)
+    assert f["folded"] is True
+    assert f["n_points"] == 3 and f["K"] == 2 and f["dof"] == 1
+    assert f["mirror_max_dev"] < 1e-9
+    for m in ("capacitive_x2", "confining_absx"):
+        assert len(f[m]["coef"]) == 2
+        assert f[m]["cov_rank"] == 3          # folded covariance nonsingular
+    assert np.isfinite(f["capacitance"])
+    curve_g = charging_curve(8, 4, "generic", n_inst=12, seed=22)
+    fg = fit_charging(curve_g)
+    assert fg["folded"] is False
+    assert fg["n_points"] == 5 and fg["K"] == 3 and fg["dof"] == 2
+    lo, hi = fg["corr_offdiag_range"]
+    assert -1.0 <= lo <= hi < 1.0             # correlated but not singular
+
+
+def test_fit_charging_gls_calibration_and_recovery():
+    """On synthetic ensembles with strongly correlated cross-q noise
+    (mimicking the measured +0.25..+0.98 correlations of the real curves),
+    the GLS fit (a) recovers planted capacitive coefficients, (b) prefers
+    the true model, and (c) is CALIBRATED: chi2_gls averaged over many
+    synthetic ensembles is ~ dof.  The diagonal-independence chi2 of the
+    same data is grossly MIS-calibrated -- here strongly deflated (mean
+    and variance far below dof and 2*dof), because the shared noise mode
+    inflates every SEM while contributing only ~1 independent noise
+    d.o.f. -- which is why it was retired as a statistic (it also
+    understates Delta-chi2 on the real curves; GLS strengthens the model
+    preference there)."""
+    rng = np.random.default_rng(31)
+    Nc, p, n_inst = 10, 4, 200
+    q = np.arange(Nc + 1, dtype=float)
+    x = q - Nc / 2.0
+    truth = -3.0 + 0.05 * x + 0.11 * x ** 2
+    # correlated noise: one strong shared mode (a non-model shape) + iid
+    shared = 0.2 * np.abs(x) ** 1.5
+    chi2_gls, chi2_diag, coefs = [], [], []
+    for rep in range(40):
+        e0 = (truth[None, :]
+              + rng.normal(size=(n_inst, 1)) * shared[None, :]
+              + 0.05 * rng.normal(size=(n_inst, Nc + 1)))
+        curve = dict(Nc=Nc, p=p, n_inst=n_inst, q=list(range(Nc + 1)),
+                     e0_mean=[float(v) for v in e0.mean(axis=0)],
+                     e0_sem=[float(v) for v in e0.std(axis=0, ddof=1)
+                             / np.sqrt(n_inst)],
+                     e0_cov_mean=[[float(v) for v in row] for row in
+                                  np.cov(e0, rowvar=False) / n_inst])
+        f = fit_charging(curve)
+        assert f["verdict"].startswith("best: capacitive_x2")
+        chi2_gls.append(f["capacitive_x2"]["chi2_gls"])
+        chi2_diag.append(f["capacitive_x2"]["chi2_diag"])
+        coefs.append(f["capacitive_x2"]["coef"][2])
+        lo, hi = f["corr_offdiag_range"]
+        assert hi > 0.5                       # the noise really is correlated
+    dof = 7 - 3
+    mean_gls = float(np.mean(chi2_gls))
+    assert 0.5 * dof < mean_gls < 1.6 * dof   # calibrated
+    assert abs(float(np.mean(coefs)) - 0.11) < 0.01
+    # the diagonal statistic is mis-calibrated in the deflated direction:
+    # the shared mode inflates every SEM but contributes only ~1
+    # independent noise d.o.f., so chi2_diag sits far below dof (measured
+    # mean ~ 0.3, var ~ 0.2 vs the nominal 4 and 8); the GLS statistic
+    # keeps a chi2_dof-like spread
+    assert float(np.mean(chi2_diag)) < 0.5 * dof
+    assert float(np.var(chi2_diag, ddof=1)) < 0.5 * 2 * dof
+    assert float(np.var(chi2_gls, ddof=1)) < 4 * 2 * dof
 
 
 # --------------------------------------------------------------------------
@@ -304,6 +407,20 @@ def test_qed_campaign_json_structure():
     for curve in data["charging"]:
         assert "fits" in curve and "verdict" in curve["fits"]
         assert len(curve["e0_mean"]) == curve["Nc"] + 1
+        assert len(curve["e0_cov_mean"]) == curve["Nc"] + 1
+        f = curve["fits"]
+        for m in ("capacitive_x2", "confining_absx"):
+            for key in ("chi2_gls", "chi2_diag", "aic", "hartlap"):
+                assert key in f[m]
+        Nc, k = curve["Nc"], curve["p"] // 2
+        if curve["ensemble"] == "c_symmetric":
+            # folded fit: only the unique sectors q <= Nc/2 enter
+            assert f["folded"] is True and f["K"] == 2
+            assert f["n_points"] == Nc // 2 - k + 1
+            assert f["mirror_max_dev"] < 1e-9
+        else:
+            assert f["folded"] is False and f["K"] == 3
+            assert f["n_points"] == Nc - 2 * k + 1
     for row in data["spectral"]:
         assert row["w2_charged_sem"] > 0 and row["w2_singlet_sem"] > 0
 
