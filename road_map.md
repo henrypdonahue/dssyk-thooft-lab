@@ -194,9 +194,25 @@ independent; the tiers gate the ones that aren't.
   the sets → integers (consistent with BOOST.md). Rung 17 proper = computing
   the unpublished finite-T O(1/q) residues on that skeleton. En route: the
   Majorana M₁ analog Σψ[H,ψ] = −2pH (asserted); ED bench `largeq_bench.json`.
-- ⬜ Open: 15 proper (exact N=∞ moments), 16 remainder, 18–24; sharpest next:
-  the O(1/q) residues on the 𝓜-skeleton (17 proper) and the tomperature map
-  (13 remainder) — the two now-precisely-stated gates to 18.
+- ✅ **19** (2026-07-21, adversarially reviewed): `qed_campaign.py` — the
+  Dirac/QED campaign. U(N)-class self-averaging made exact (Dirac analog of
+  the Wick closed forms, verified by enumeration + ED); disorder-averaged
+  charging curves E0(q) with full mean-vector covariance and GLS fits
+  (capacitive vs confining stated via ΔAIC, not asserted); charged-vs-singlet
+  spectral scales. Closes the "Majorana numerics vs Dirac claims" gap.
+- ✅ **23** (2026-07-21, adversarially reviewed): `baryons.py` — baryon-sector
+  first contact. ε-tensor baryons at Nc=4–8: exact 2-point collapse onto
+  charge sectors, M_B extensivity, edge-curvature hierarchy; hierarchy claims
+  kept honest (spectral widths, rejected-fit error inflation). First data on
+  the wholly-underived inter-baryon-force claim.
+- ✅ thooft polish (2026-07-21, adversarially reviewed): `jacobi_solver.py` —
+  matched-exponent Jacobi basis [x(1-x)]^β, β from πβcotπβ=−α: spectral
+  accuracy at α≠0 (ground state <1e-11 by K=32 vs the Chebyshev solver's
+  algebraic K^(−4β)); β=½ anchor vs closed form ~5e-13; LM sum rules s≥4 to
+  ~1e-12. Removes the α≠0 precision limitation flagged in Part I.
+- ⬜ Open: 15 proper (exact N=∞ moments), 16 remainder, 18, 20–22, 24;
+  sharpest next: the O(1/q) residues on the 𝓜-skeleton (17 proper) and the
+  tomperature map (13 remainder) — the two precisely-stated gates to 18.
 
 ### Tier 0 — Hygiene (hours; do immediately)
 
@@ -299,9 +315,9 @@ independent; the tiers gate the ones that aren't.
     degenerate trajectories" wording means: the CSV shows an interleaved, *non*-degenerate
     tower), (e) the Regge slope τ = p²m_q². Note the race: the authors have promised this
     computation.
-19. **Dirac-SYK QED campaign:** charged-sector correlators for the linear-Coulomb /
+19. ✅ **Dirac-SYK QED campaign:** charged-sector correlators for the linear-Coulomb /
     U(1)-confinement signature (the 2012.12326 story), plus U(N)-class self-averaging —
-    closing the Majorana-numerics/Dirac-claims gap wholesale.
+    closing the Majorana-numerics/Dirac-claims gap wholesale. *(Done — progress log.)*
 
 ### Tier 4 — Hardest (open-ended; each could be a paper)
 
@@ -318,9 +334,10 @@ independent; the tiers gate the ones that aren't.
 22. **The finite-N coupling curve ḡ²(N).** Fig. 17 is a sketch with no formula, yet the
     whole set-it-and-forget-it inversion rests on it. Compute it: match a bulk observable
     (e.g. a mass ratio from rung 18's pipeline) at a sequence of finite N and extrapolate.
-23. **Baryon-sector first contact.** ε-tensor baryon operators in small-N Dirac SYK
+23. ✅ **Baryon-sector first contact.** ε-tensor baryon operators in small-N Dirac SYK
     (N = 4–8): mass scaling ~N, baryon-baryon correlations — the only route to data on the
     wholly-underived "inter-baryon forces are gravitational / O(√N) mesons" claim.
+    *(Done at first-contact level — progress log.)*
 24. **Discriminate the competing duals.** Whatever rung 18 produces, run the same
     observable against the Narovlansky–Verlinde and sine-dilaton predictions where they
     differ. The meson tower is currently the only proposed observable sharp enough to

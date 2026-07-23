@@ -39,7 +39,10 @@ program (road_map.md rung 15), not a spectrum match.
 
 Output: mn_spectra.json (histogrammed S_n^+-, summary numbers) and
 mn_spectra.png.  Runtime ~seconds at Nc = 10 (default); pass --big for
-Nc = 12 (~minutes, dim 4096).
+Nc = 12 (~minutes, dim 4096), which writes to the separate stem
+mn_spectra_big.{json,png} so the committed Nc = 10 artifacts survive.
+Bin edges are spectrum-scaled per run, so big/non-big histograms are not
+bin-aligned.
 """
 
 from __future__ import annotations
@@ -50,22 +53,15 @@ import sys
 import numpy as np
 
 from dirac import (draw_couplings, dirac_hamiltonian, annihilators,
-                   mn_tower, particle_hole, cp_projections)
+                   mn_tower, particle_hole, cp_projections,
+                   symmetrized_weight)
 
 
 def spectral_weights(M: np.ndarray, V: np.ndarray, omega: np.ndarray):
     """All (omega_ab, weight) pairs for one operator, given the precomputed
-    omega_ab = E_a - E_b grid.  SYMMETRIZED: the Hermitian and anti-Hermitian
-    parts contribute separately (each omega-symmetric).  For n >= 3 the raw
-    M_n is not +-Hermitian, so the ordered correlator Tr(M(t)M^dag) has
-    odd-in-omega parts; at T_B = inf the exact relation is
-    S_{AA^dag}(w) = S_{A^dag A}(-w), and the symmetrized object is the
-    convention-stable one (see moments_pipeline.py)."""
-    Mh = 0.5 * (M + M.conj().T)
-    Ma = 0.5 * (M - M.conj().T)
-    W = (np.abs(V.conj().T @ Mh @ V) ** 2
-         + np.abs(V.conj().T @ Ma @ V) ** 2) / M.shape[0]
-    return omega.ravel(), W.ravel()
+    omega_ab = E_a - E_b grid.  The weight convention (Hermitian +
+    anti-Hermitian parts separately) lives in dirac.symmetrized_weight."""
+    return omega.ravel(), symmetrized_weight(V.conj().T @ M @ V).ravel()
 
 
 def run(Nc: int = 10, p: int = 4, n_max: int = 6, seed: int = 21,
@@ -184,5 +180,7 @@ def plot(results, fname="mn_spectra.png"):
 
 if __name__ == "__main__":
     big = "--big" in sys.argv
-    res = run(Nc=12 if big else 10, outfile="mn_spectra.json")
-    plot(res)
+    # --big writes to its own files so the committed Nc=10 artifacts survive
+    stem = "mn_spectra_big" if big else "mn_spectra"
+    res = run(Nc=12 if big else 10, outfile=f"{stem}.json")
+    plot(res, fname=f"{stem}.png")

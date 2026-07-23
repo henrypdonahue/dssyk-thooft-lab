@@ -258,14 +258,14 @@ from __future__ import annotations
 
 import argparse
 import json
-from itertools import combinations
+from functools import lru_cache
 from math import comb, factorial
 from pathlib import Path
 
 import numpy as np
 
 from dirac import (annihilators, coupling_variance_dirac, dirac_hamiltonian,
-                   draw_couplings, time_derivative)
+                   draw_couplings, symmetrized_weight, time_derivative)
 
 
 # --------------------------------------------------------------------------
@@ -611,6 +611,9 @@ def _sym_moments(W: np.ndarray, omega: np.ndarray) -> dict:
     return {f"mu{n}": float(np.sum(W * omega ** n)) for n in (0, 1, 2, 4)}
 
 
+_annihilators_cached = lru_cache(maxsize=8)(annihilators)   # per-Nc, not per-instance
+
+
 def instance_spectral(Nc: int, p: int, ensemble: str, seed: int) -> dict:
     """Symmetrized T = infinity spectral moments of the charged operator c_i
     (mode-averaged) and of the singlet M2bar, for one disorder instance.
@@ -626,18 +629,16 @@ def instance_spectral(Nc: int, p: int, ensemble: str, seed: int) -> dict:
     E, V = np.linalg.eigh(H)
     omega = E[:, None] - E[None, :]
     escale2 = float(np.mean(E ** 2))                 # Tr(H^2)/dim
-    cs = annihilators(Nc)
+    cs = _annihilators_cached(Nc)
 
     Wc = np.zeros((dim, dim))
     M2t = np.zeros((dim, dim), dtype=complex)
     for c in cs:
         ct = V.conj().T @ c @ V
-        ch = 0.5 * (ct + ct.conj().T)
-        ca = 0.5 * (ct - ct.conj().T)
-        Wc += np.abs(ch) ** 2 + np.abs(ca) ** 2
+        Wc += symmetrized_weight(ct)
         cdot = 1j * omega * ct
         M2t -= cdot.conj().T @ cdot
-    Wc /= Nc * dim                                   # mode-averaged, mu0 = 1/2
+    Wc /= Nc                                         # mode-averaged, mu0 = 1/2
     charged = _sym_moments(Wc, omega)
 
     M2t -= (np.trace(M2t) / dim) * np.eye(dim)       # traceless M2bar

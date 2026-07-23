@@ -69,9 +69,7 @@ from itertools import combinations
 from math import comb, log, sqrt
 
 from syk import coupling_variance
-from pauli_strings import string_product, majorana_string
-
-_I_POW = [1, 1j, -1, -1j]
+from pauli_strings import _I_POW, string_product, majorana_string
 
 
 # ---------------------------------------------------------------------------

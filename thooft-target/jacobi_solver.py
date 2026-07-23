@@ -146,6 +146,8 @@ from scipy.linalg import eigh
 from scipy.optimize import brentq
 from scipy.special import gammaln, roots_jacobi
 
+from thooft_spectrum import interleave_levels
+
 PI = np.pi
 
 
@@ -344,13 +346,18 @@ def build_sector_jacobi(num_basis: int, parity: int, alpha: float = 0.0,
 
 
 def solve_sector_jacobi(num_basis: int, parity: int, alpha: float = 0.0,
-                        n_ts: int | None = None, beta: float | None = None):
+                        n_ts: int | None = None, beta: float | None = None,
+                        eigvals_only: bool = False):
     """(two_lambda ascending, eigenvectors, degrees) for one CP sector.
 
     Same return convention as thooft_spectrum.solve_sector; eigenvectors are
     orthonormal coefficient columns in the unit-normalized b_k basis (the
-    Gram matrix is the identity)."""
+    Gram matrix is the identity).  eigvals_only=True skips the eigenvectors
+    (None in that slot, ~2x faster)."""
     degrees, A = build_sector_jacobi(num_basis, parity, alpha, n_ts, beta)
+    if eigvals_only:
+        mu = eigh(A, eigvals_only=True)
+        return np.sort(mu / PI ** 2), None, degrees
     mu, vecs = eigh(A)
     two_lambda = mu / PI ** 2
     order = np.argsort(two_lambda)
@@ -361,29 +368,13 @@ def spectrum_jacobi(num_basis: int = 80, num_levels: int = 30,
                     alpha: float = 0.0, n_ts: int | None = None):
     """Full interleaved spectrum, same output schema as
     thooft_spectrum.spectrum (n, two_lambda, parity, CP), with the same
-    explicit interleaving assertion instead of silent mislabeling."""
-    ev_sym, _, _ = solve_sector_jacobi(num_basis, 0, alpha, n_ts)
-    ev_anti, _, _ = solve_sector_jacobi(num_basis, 1, alpha, n_ts)
-
-    n_pairs = (num_levels + 1) // 2
-    for m in range(n_pairs):
-        if not ev_sym[m] < ev_anti[m]:
-            raise RuntimeError(
-                f"CP sectors do not interleave at alpha={alpha}: "
-                f"sym[{m}]={ev_sym[m]:.6f} >= anti[{m}]={ev_anti[m]:.6f}")
-        if m + 1 < n_pairs and not ev_anti[m] < ev_sym[m + 1]:
-            raise RuntimeError(
-                f"CP sectors do not interleave at alpha={alpha}: "
-                f"anti[{m}]={ev_anti[m]:.6f} >= sym[{m+1}]={ev_sym[m+1]:.6f}")
-
-    levels = []
-    for n in range(num_levels):
-        if n % 2 == 0:
-            val, par = ev_sym[n // 2], "even"
-        else:
-            val, par = ev_anti[n // 2], "odd"
-        levels.append(dict(n=n, two_lambda=val, parity=par, CP=(-1) ** (n + 1)))
-    return levels
+    explicit interleaving assertion instead of silent mislabeling (shared
+    helper thooft_spectrum.interleave_levels)."""
+    ev_sym, _, _ = solve_sector_jacobi(num_basis, 0, alpha, n_ts,
+                                       eigvals_only=True)
+    ev_anti, _, _ = solve_sector_jacobi(num_basis, 1, alpha, n_ts,
+                                        eigvals_only=True)
+    return interleave_levels(ev_sym, ev_anti, num_levels, alpha)
 
 
 # ---------------------------------------------------------------------------
@@ -562,7 +553,9 @@ if __name__ == "__main__":
         "old_vs_jacobi": scan,
         "lm_sum_rule_residuals": sums,
     }
-    with open("jacobi_convergence.json", "w") as fh:
+    from pathlib import Path
+    with open(Path(__file__).resolve().parent / "jacobi_convergence.json",
+              "w") as fh:
         json.dump(payload, fh, indent=1)
     print("wrote jacobi_convergence.json")
     for a_str, blk in scan.items():

@@ -3,6 +3,9 @@ Runs two basis sizes and reports agreeing digits per level."""
 from mpmath import mp, nstr, fabs
 from thooft_highprec import solve_sector_mp
 import json, time
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
 
 mp.dps = 50
 NLEV = 24
@@ -36,6 +39,6 @@ for n in range(NLEV):
     rows.append(dict(n=n, parity=par, CP=cp, value=nstr(v2, 24), stable_digits=dig))
     print(f"{n:>3} {par:>5} {cp:>+3d}  {nstr(v2,22):>24}   ~{dig} digits")
 
-with open("reference_spectrum.json", "w") as f:
+with open(HERE / "reference_spectrum.json", "w") as f:
     json.dump(rows, f, indent=2)
 print("\nwrote reference_spectrum.json")

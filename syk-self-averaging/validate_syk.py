@@ -37,8 +37,7 @@ def _even_parity_mask(N: int) -> np.ndarray:
     even-qubit-parity (P-eigenvalue) sector."""
     nq = N // 2
     idx = np.arange(1 << nq)
-    popcount = np.array([bin(i).count("1") for i in idx])
-    return (popcount % 2) == 0
+    return (np.bitwise_count(idx) % 2) == 0
 
 
 def mean_r(eigs: np.ndarray, trim: float = 0.15) -> float:

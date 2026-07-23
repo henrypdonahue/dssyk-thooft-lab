@@ -39,13 +39,35 @@ $M_2=-\sum\dot c^\dagger\dot c$ (paper's $+$ sign is wrong);
 $M_n^\dagger=(-1)^nM_n$ only for $n\le2$. The paper's CP must be the **unitary**
 particle-hole map, $C c_i C^\dagger=(-1)^{N_c-1}c_i^\dagger$ ($M_1\propto iH$
 rules out antiunitary). CP$(M_0)=-1$, CP$(M_1)=+1$ exact on C-invariant
-instances; raw $M_{n\ge2}$ are CP-*mixtures* (15–68% wrong channel), so
-CP$=(-1)^{n+1}$ lives in CP-resolved correlators — `mn_spectroscopy.py`
-computes them (first data: conserved $n=0,1$ machine-exact at $\omega=0$;
-broad continua at $\lambda=1.6$; not the $\lambda\to0$ match regime).
+instances; raw $M_{n\ge2}$ are CP-*mixtures* (~15–65% wrong channel, varying
+with $n$, $N_c$, instance), so CP$=(-1)^{n+1}$ lives in CP-resolved
+correlators — `mn_spectroscopy.py` computes them (first data: conserved
+$n=0,1$ machine-exact at $\omega=0$; broad continua at $\lambda=1.6$; not the
+$\lambda\to0$ match regime).
+
+**U(N)/QED campaign** (rung 19, `qed_campaign.py`): U(N)-class self-averaging
+made exact (Dirac analog of the Wick closed forms, verified by enumeration and
+ED), disorder-averaged charging curves $E_0(q)$ with full covariance + GLS
+model fits, and the charged-vs-singlet spectral-scale comparison — closing the
+"Majorana numerics vs Dirac claims" gap. Honest verdict inside: at ED sizes
+the capacitive-vs-confining discrimination is stated with ΔAIC, not asserted.
+
+**Baryon sector first contact** (rung 23, `baryons.py`): $\epsilon$-tensor
+baryon operators at $N_c=4$–8 — exact 2-point collapse onto charge sectors,
+$M_B$ extensivity scaling, and the edge-curvature hierarchy, the first data on
+the paper's wholly-underived inter-baryon-force claim (hierarchy claims kept
+honest: spectral widths, rejected-fit error inflation documented).
+
+**Shape-invariant moments** (rung 15 groundwork, `moments_pipeline.py`):
+disorder-averaged CP-resolved spectral-moment invariants ($w_2$, kurtosis)
+along fixed $p=4$ — the map-robust targets for the exact $N=\infty$
+chord/Wick computation. **Large-q ED bench** (`largeq_bench.py`): ground
+truth for `duality/largeq_anchor.py`.
 
 Numbers: [`results.txt`](results.txt)/`results.json`; figures
-`self_averaging.png`, `mn_spectra.png`.
+`self_averaging.png`, `mn_spectra.png` (+ `mn_spectra_big.*` at $N_c=12$),
+`qed_campaign.png`, `baryons.png`; data `moments.json`, `largeq_bench.json`,
+`qed_campaign.json`, `baryons.json`.
 
 ## Why the numbers are trustworthy
 
@@ -66,13 +88,17 @@ Numbers: [`results.txt`](results.txt)/`results.json`; figures
 |------|---------|
 | `syk.py` | sparse JW operators — slow reference builders |
 | `pauli_strings.py` | bitwise Hamiltonian assembly (10–100×, equivalence-tested) |
-| `dirac.py` | complex SYK: $[H,Q]=0$, $M_n$ tower, unitary CP machinery |
+| `dirac.py` | complex SYK: $[H,Q]=0$, $M_n$ tower, unitary CP machinery, shared spectral-weight convention |
 | `exact_wick.py` | closed-form Eq. 3.28 statistics, beyond ED |
 | `mn_spectroscopy.py` | CP-resolved $M_n$ spectral functions |
+| `moments_pipeline.py` | CP-resolved spectral-moment shape invariants with statistics (rung 15) |
+| `qed_campaign.py` | U(N) self-averaging exact + charging curves + charged/singlet scales (rung 19) |
+| `baryons.py` | ε-tensor baryon sector: collapse, extensivity, hierarchy (rung 23) |
+| `largeq_bench.py` | ED ground truth for the large-q anchor (`duality/largeq_anchor.py`) |
 | `validate_syk.py` | RMT level-statistics validation |
 | `self_averaging.py` | the §3.5 measurement + verdict |
 | `plot_self_averaging.py` | figure (reads `results.json`) |
-| `test_syk.py` | 24-test asserting suite |
+| `test_syk.py`, `test_qed_campaign.py`, `test_baryons.py` | 86-test asserting suites |
 
 ## Usage
 
@@ -82,9 +108,11 @@ python3 validate_syk.py         # RMT validation (~7 s)
 python3 self_averaging.py       # §3.5 measurement (~2 min; writes results.*)
 python3 exact_wick.py           # exact Eq. 3.28 + double-scaling scan (~1 s)
 python3 dirac.py                # Dirac/QED identities + CP report (~5 s)
-python3 mn_spectroscopy.py      # Mn spectral functions (~1 min; --big = Nc 12)
+python3 mn_spectroscopy.py      # Mn spectral functions (seconds; --big = Nc 12, minutes)
+python3 qed_campaign.py         # rung 19 campaign (writes qed_campaign.*)
+python3 baryons.py              # rung 23 campaign (writes baryons.*)
 python3 plot_self_averaging.py  # figure
-pytest -q -m 'not slow'         # fast asserts (~4 s)
+pytest -q -m 'not slow'         # fast asserts (~1 min)
 ```
 
 ## Scope

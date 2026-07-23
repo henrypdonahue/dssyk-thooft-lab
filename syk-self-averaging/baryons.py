@@ -390,7 +390,7 @@ def csym_edge_estimate(Nc: int, p: int) -> float:
 # --------------------------------------------------------------------------
 # charging curve, per-instance observables, ensemble statistics
 # --------------------------------------------------------------------------
-def charging_curve(H: np.ndarray, Nc: int):
+def instance_charging_curve(H: np.ndarray, Nc: int):
     """E0(q) for q = 0..Nc and the per-sector second moments Tr_q H^2/dim_q,
     from the dense charge-conserving H."""
     blocks = dense_sector_blocks(H, Nc)
@@ -412,7 +412,7 @@ def instance_observables(Nc: int, p: int, seed: int, ensemble: str) -> dict:
     rng = np.random.default_rng(seed)
     couplings = draw_couplings(Nc, p, rng, ensemble)
     H = dirac_hamiltonian(Nc, p, couplings=couplings)
-    E0, m2q = charging_curve(H, Nc)
+    E0, m2q = instance_charging_curve(H, Nc)
     qstar = int(np.argmin(E0))
     dims = np.array([comb(Nc, q) for q in range(Nc + 1)], dtype=float)
     escale = float(np.sqrt(np.sum(m2q * dims) / (1 << Nc)))

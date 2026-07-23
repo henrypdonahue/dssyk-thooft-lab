@@ -25,8 +25,8 @@ manifest.  The module verifies this closed form against an INDEPENDENT route:
 the position-space Wightman function W(tau) = (1/2pi) K_0(m d(tau)) with the
 exact worldline geodesic distance continued through the Euclidean section
 (d_E = (2/a) sin(a s/2), s = eps + i tau), numerically Fourier transformed --
-the epsilon regulator enters the comparison exactly as e^{-|omega| ... } no:
-as the known factor e^{-omega eps}.
+the epsilon regulator enters the comparison as the known factor
+e^{-omega eps}.
 
 Calibration facts this establishes (tested in test_boost.py):
 

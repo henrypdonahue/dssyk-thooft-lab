@@ -156,6 +156,12 @@ def load_reference(path=None) -> list:
             two_lambda=float(r["value"]),
             stable_digits=r["stable_digits"],
         ))
+    # The fingerprint functions below index rows positionally (rows[0] =
+    # ground state, adjacent gaps), so enforce FLZ ordering rather than
+    # trusting the JSON file order.
+    rows.sort(key=lambda r: r["n_flz"])
+    if [r["n_flz"] for r in rows] != list(range(len(rows))):
+        raise ValueError("reference table has missing/duplicate FLZ levels")
     return rows
 
 

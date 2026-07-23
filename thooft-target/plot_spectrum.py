@@ -34,5 +34,6 @@ ax.set_title("Massless 't Hooft meson spectrum "
 ax.legend(frameon=False, loc="upper left")
 ax.grid(True, alpha=0.25)
 fig.tight_layout()
-fig.savefig("regge_trajectory.png", dpi=150)
+from pathlib import Path
+fig.savefig(Path(__file__).resolve().parent / "regge_trajectory.png", dpi=150)
 print("wrote regge_trajectory.png")

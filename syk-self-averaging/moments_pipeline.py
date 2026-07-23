@@ -39,12 +39,20 @@ identically (asserted in the tests).
 from __future__ import annotations
 
 import json
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
 
 from dirac import (draw_couplings, dirac_hamiltonian, annihilators,
-                   mn_tower, particle_hole, cp_projections)
+                   mn_tower, particle_hole, cp_projections,
+                   symmetrized_weight)
+
+
+@lru_cache(maxsize=8)
+def _fixed_ops(Nc: int):
+    """Disorder-independent operators, built once per Nc (not per instance)."""
+    return particle_hole(Nc), annihilators(Nc)
 
 
 def instance_moments(Nc: int, p: int, seed: int, n_list=(2, 3), n_max=None):
@@ -60,8 +68,7 @@ def instance_moments(Nc: int, p: int, seed: int, n_list=(2, 3), n_max=None):
     E, V = np.linalg.eigh(H)
     omega = E[:, None] - E[None, :]
     escale = float(np.sqrt(np.mean(E ** 2)))          # sqrt(Tr H^2/dim)
-    U = particle_hole(Nc)
-    cs = annihilators(Nc)
+    U, cs = _fixed_ops(Nc)
     towers = mn_tower(H, cs, n_max)
 
     out = {}
@@ -72,13 +79,7 @@ def instance_moments(Nc: int, p: int, seed: int, n_list=(2, 3), n_max=None):
         chans = {"right": Mp if cp_target == +1 else Mm,
                  "wrong": Mm if cp_target == +1 else Mp}
         for tag, op in chans.items():
-            # symmetrized spectral weight: Hermitian + anti-Hermitian parts
-            # separately (each omega-symmetric); see module docstring
-            op_h = 0.5 * (op + op.conj().T)
-            op_a = 0.5 * (op - op.conj().T)
-            Wt_h = V.conj().T @ op_h @ V
-            Wt_a = V.conj().T @ op_a @ V
-            W = (np.abs(Wt_h) ** 2 + np.abs(Wt_a) ** 2) / dim
+            W = symmetrized_weight(V.conj().T @ op @ V)
             mu = {k: float(np.sum(W * omega ** k)) for k in (0, 1, 2, 4)}
             out[(n, tag)] = dict(mu0=mu[0], mu1=mu[1], mu2=mu[2], mu4=mu[4],
                                  escale=escale)

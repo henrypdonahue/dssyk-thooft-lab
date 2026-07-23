@@ -140,14 +140,47 @@ def build_sector(num_basis: int, parity: int, alpha: float = 0.0):
     return degrees, D, S
 
 
-def solve_sector(num_basis: int, parity: int, alpha: float = 0.0):
-    """Return (two_lambda, eigenvectors, degrees) for one CP sector, ascending."""
+def solve_sector(num_basis: int, parity: int, alpha: float = 0.0,
+                 eigvals_only: bool = False):
+    """Return (two_lambda, eigenvectors, degrees) for one CP sector, ascending.
+    With eigvals_only=True the eigenvector slot is None (~2x faster; used by
+    the eigenvalue-only callers spectrum/validate/plot)."""
     degrees, D, S = build_sector(num_basis, parity, alpha)
     # Generalized symmetric-definite eigenproblem  D a = Lambda S a.
+    if eigvals_only:
+        Lam = eigh(D, S, eigvals_only=True)
+        two_lambda = Lam / PI ** 2  # 2 lambda_n = M^2 / (pi g^2)
+        return np.sort(two_lambda), None, degrees
     Lam, vecs = eigh(D, S)
     two_lambda = Lam / PI ** 2  # 2 lambda_n = M^2 / (pi g^2)
     order = np.argsort(two_lambda)
     return two_lambda[order], vecs[:, order], degrees
+
+
+def interleave_levels(ev_sym, ev_anti, num_levels: int, alpha: float) -> list:
+    """Merge the two CP-sector spectra into FLZ-ordered levels, ASSERTING the
+    strict (sym, anti, sym, anti, ...) interleaving instead of silently
+    mislabeling n and CP (levels could reorder e.g. approaching the chiral
+    limit alpha -> -1).  Interleaving is proven at alpha = 0 (FLZ) and holds
+    at every alpha tested.  Shared by thooft_spectrum and jacobi_solver."""
+    n_pairs = (num_levels + 1) // 2
+    for m in range(n_pairs):
+        if not ev_sym[m] < ev_anti[m]:
+            raise RuntimeError(
+                f"CP sectors do not interleave at alpha={alpha}: "
+                f"sym[{m}]={ev_sym[m]:.6f} >= anti[{m}]={ev_anti[m]:.6f}")
+        if m + 1 < n_pairs and not ev_anti[m] < ev_sym[m + 1]:
+            raise RuntimeError(
+                f"CP sectors do not interleave at alpha={alpha}: "
+                f"anti[{m}]={ev_anti[m]:.6f} >= sym[{m+1}]={ev_sym[m+1]:.6f}")
+    levels = []
+    for n in range(num_levels):
+        if n % 2 == 0:
+            val, par = ev_sym[n // 2], "even"
+        else:
+            val, par = ev_anti[n // 2], "odd"
+        levels.append(dict(n=n, two_lambda=val, parity=par, CP=(-1) ** (n + 1)))
+    return levels
 
 
 def spectrum(num_basis: int = 200, num_levels: int = 40, alpha: float = 0.0):
@@ -161,40 +194,27 @@ def spectrum(num_basis: int = 200, num_levels: int = 40, alpha: float = 0.0):
       parity    : 'even' (symmetric) or 'odd' (antisymmetric) under x->1-x
       CP        : (-1)^(n+1)   [Susskind et al. convention]
     """
-    ev_sym, _, _ = solve_sector(num_basis, parity=0, alpha=alpha)   # symmetric -> FLZ even n
-    ev_anti, _, _ = solve_sector(num_basis, parity=1, alpha=alpha)  # antisym   -> FLZ odd  n
-
-    # The labeling below assumes the two CP sectors strictly interleave
-    # (sym, anti, sym, anti, ...).  That is proven at alpha = 0 (FLZ) and holds
-    # at every alpha tested, but it is an assumption away from the duality
-    # point -- so assert it rather than silently mislabeling n and CP (levels
-    # could reorder e.g. approaching the chiral limit alpha -> -1).
-    n_pairs = (num_levels + 1) // 2
-    for m in range(n_pairs):
-        if not ev_sym[m] < ev_anti[m]:
-            raise RuntimeError(
-                f"CP sectors do not interleave at alpha={alpha}: "
-                f"sym[{m}]={ev_sym[m]:.6f} >= anti[{m}]={ev_anti[m]:.6f}")
-        if m + 1 < n_pairs and not ev_anti[m] < ev_sym[m + 1]:
-            raise RuntimeError(
-                f"CP sectors do not interleave at alpha={alpha}: "
-                f"anti[{m}]={ev_anti[m]:.6f} >= sym[{m+1}]={ev_sym[m+1]:.6f}")
-
-    levels = []
-    for n in range(num_levels):
-        if n % 2 == 0:
-            val = ev_sym[n // 2]
-            par = "even"
-        else:
-            val = ev_anti[n // 2]
-            par = "odd"
-        levels.append(
-            dict(n=n, two_lambda=val, parity=par, CP=(-1) ** (n + 1))
-        )
-    return levels
+    ev_sym, _, _ = solve_sector(num_basis, parity=0, alpha=alpha,
+                                eigvals_only=True)   # symmetric -> FLZ even n
+    ev_anti, _, _ = solve_sector(num_basis, parity=1, alpha=alpha,
+                                 eigvals_only=True)  # antisym   -> FLZ odd  n
+    return interleave_levels(ev_sym, ev_anti, num_levels, alpha)
 
 
 if __name__ == "__main__":
+    import sys
+    if "--csv" in sys.argv:
+        # provenance route for the committed spectrum_double_precision.csv
+        # (14-digit table, reproduced by this at its rounding floor ~1e-11)
+        from pathlib import Path
+        out = Path(__file__).resolve().parent / "spectrum_double_precision.csv"
+        with open(out, "w") as fh:
+            fh.write("n,two_lambda_n = M^2/(pi g^2),parity_under_x->1-x,CP\n")
+            for L in spectrum(num_basis=400, num_levels=40):
+                fh.write(f"{L['n']},{L['two_lambda']:.14f},"
+                         f"{L['parity']},{L['CP']:+d}\n")
+        print(f"wrote {out.name}")
+        sys.exit(0)
     levels = spectrum(num_basis=200, num_levels=30)
     print(f"{'n':>3} {'parity':>10} {'CP':>3}   2*lambda_n = M^2/(pi g^2)")
     print("-" * 55)

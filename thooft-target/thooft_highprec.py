@@ -93,12 +93,6 @@ def _invert_lower(L):
     return Inv
 
 
-def ground_state(dps=40, num_basis=60):
-    mp.dps = dps
-    ev = solve_sector_mp(num_basis, parity=0)
-    return ev[0]
-
-
 if __name__ == "__main__":
     mp.dps = 35
     K = 90

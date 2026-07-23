@@ -45,7 +45,8 @@ CP structure (the paper's CP = (-1)^{n+1}, Sec. 4.3), as actually measured:
   *  On a C-invariant instance (draw_couplings ensemble="c_symmetric"),
      CP(M_0) = -1 and CP(M_1) = +1 hold EXACTLY.
   *  For n >= 2 the raw M_n operators are CP-MIXTURES (wrong-channel
-     Frobenius weight 15-60%; measure with wrong_channel_weight).  This is
+     Frobenius weight ~15-65%, varying with n, Nc and instance; measure with
+     wrong_channel_weight).  This is
      structural, not numerical: M_n = d^n/dt2^n O(t1,t2)|_{t1=t2}
      differentiates only ONE time argument, so total-time-derivative
      (commutator) pieces carrying the opposite CP contaminate the operator.
@@ -247,6 +248,23 @@ def annihilators(Nc: int) -> list:
 def time_derivative(H: np.ndarray, X: np.ndarray) -> np.ndarray:
     """d/dt X = i [H, X]."""
     return 1j * (H @ X - X @ H)
+
+
+def symmetrized_weight(M_eig: np.ndarray) -> np.ndarray:
+    """Symmetrized T = infinity spectral weight matrix W_ab for an operator
+    already rotated to the energy eigenbasis: the Hermitian and anti-Hermitian
+    parts contribute separately (each omega-symmetric),
+
+        W = (|M_h|^2 + |M_a|^2) / dim,   M_{h,a} = (M +- M^dag)/2.
+
+    For non-+-Hermitian operators (raw M_n, n >= 3) the ordered correlator
+    Tr(M(t)M^dag)/dim has odd-in-omega parts with S_{AA^dag}(w) =
+    S_{A^dag A}(-w); this symmetrized W is the convention-stable object
+    (see moments_pipeline.py docstring).  Single point of truth for
+    mn_spectroscopy, moments_pipeline and qed_campaign."""
+    Mh = 0.5 * (M_eig + M_eig.conj().T)
+    Ma = 0.5 * (M_eig - M_eig.conj().T)
+    return (np.abs(Mh) ** 2 + np.abs(Ma) ** 2) / M_eig.shape[0]
 
 
 def mn_operator(H: np.ndarray, cs: list, n: int) -> np.ndarray:
