@@ -14,7 +14,7 @@ numerical stress-tests, each cross-checked against an independent method or anal
 |---|---|---|---|
 | [`thooft-target/`](thooft-target) | the yardstick: 't Hooft meson spectrum, $\alpha=0$ (Chebyshev) and $\alpha\neq0$ (matched-exponent Jacobi) | 36 | FLZ to 2e-12; six exact sum rules to ~1e-10; α≠0 spectrally accurate, externally anchored (LM tables + exact sum rules) |
 | [`syk-self-averaging/`](syk-self-averaging) | the falsifiable claims: §3.5 self-averaging + the $M_n$/CP sector + the U(N)/QED campaign (rung 19) + the baryon sector (rung 23) | 86 | RMT Bott periodicity; exact-Wick closed forms vs enumeration and ED |
-| [`duality/`](duality) | the comparison dictionary + fingerprints (built before any DSSYK number exists), boost-to-mass calibration, large-q anchor | 20 | FLZ reference table; exact Rindler spectral function; ED-locked large-q bridge |
+| [`duality/`](duality) | the comparison dictionary + fingerprints (built before any DSSYK number exists), boost-to-mass calibration, large-q anchor, anti-scrambling sign test (rungs 25–26) | 38 | FLZ reference table; exact Rindler spectral function; ED-locked large-q bridge; folded-correlator ED lab |
 
 Each folder is self-contained (README, pinned deps, solver, cross-check, `pytest`).
 `pip install -r requirements.txt`, then `pytest -q` inside any of them
@@ -50,6 +50,17 @@ response ("tomperature" map) is the precisely-stated gating unknown.
 `exact_wick.py` is the only prefactor-exact derivation in existence and *confirms*
 the papers at leading order; the λ factor-2 clash is internal to the Susskind corpus;
 the 2511.10907 entropy correction leaves §5 untouched.
+
+**New external constraint (2026-07-23, `duality/ANTISCRAMBLING.md`):**
+Cui–Kolchmeyer 2607.13665 (cites the target paper) argue dS observer OTOCs
+must *anti-scramble*; Harlow–Zhao 2607.14215 propose bounded-spectrum QM with
+Euclidean-folded correlators as the mechanism and pose the SYK test as open.
+This repo ran both: DSSYK∞ **scrambles** at every temperature
+($\mathrm{Re}\,a=-1$ exactly; ED-confirmed) — the flat dictionary cannot be a
+dS observer at OTOC level, sharpening the tomperature gap to "must flip the
+sign" — and the first SYK fold data (mechanics work; the Lorentzian response
+tracks the continuation; the Euclidean $N$-trend is the open question).
+Time-ordered physics — the entire spectrum-match program — is untouched.
 
 **Still untested:** the headline spectrum match itself, and whether the DSSYK singlet
 spectrum is a discrete tower or a continuum — the real open risk.

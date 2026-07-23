@@ -27,12 +27,19 @@ Built from `thooft-target/reference_spectrum.json`; both are **parameter-free**
 
 Also in this module: [`BOOST.md`](BOOST.md) + `boost_mass.py` — the rung-13
 boost-to-mass calibration (one mass = a boost-frequency *continuum with
-nodes*; the "tomperature" map is the stated open question), and
+nodes*; the "tomperature" map is the stated open question);
 [`LARGEQ.md`](LARGEQ.md) + `largeq_anchor.py` — the rung-17 large-q
 $\lambda\to0$ anchor (conventions bridge $\mathcal J=\sqrt2\,p$, ED-locked;
-the meson tower cancels at leading order, so the anchor lives at $O(1/q)$).
+the meson tower cancels at leading order, so the anchor lives at $O(1/q)$);
+and [`ANTISCRAMBLING.md`](ANTISCRAMBLING.md) + `antiscrambling.py` — the
+rung-25/26 response to Cui–Kolchmeyer 2607.13665 and Harlow–Zhao 2607.14215:
+DSSYK∞ *scrambles* at every temperature ($\mathrm{Re}\,a=-1$ exactly), so
+the flat dictionary cannot produce dS anti-scrambling, and the first SYK
+data on the HZ Euclidean-fold prescription (ED lab:
+`../syk-self-averaging/fold_bench.py`).
 
 ```bash
 python3 dictionary.py     # print the yardstick in both conventions
-pytest -q                 # 20 tests: conventions, boost closed form, large-q bridge
+python3 antiscrambling.py # the OTOC sign table + fold map
+pytest -q                 # 38 tests: conventions, boost, large-q, anti-scrambling
 ```

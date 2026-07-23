@@ -95,6 +95,7 @@ Numbers: [`results.txt`](results.txt)/`results.json`; figures
 | `qed_campaign.py` | U(N) self-averaging exact + charging curves + charged/singlet scales (rung 19) |
 | `baryons.py` | ε-tensor baryon sector: collapse, extensivity, hierarchy (rung 23) |
 | `largeq_bench.py` | ED ground truth for the large-q anchor (`duality/largeq_anchor.py`) |
+| `fold_bench.py` | complex-time/folded 4-pt ED lab for rungs 25–26 (`duality/ANTISCRAMBLING.md`) |
 | `validate_syk.py` | RMT level-statistics validation |
 | `self_averaging.py` | the §3.5 measurement + verdict |
 | `plot_self_averaging.py` | figure (reads `results.json`) |

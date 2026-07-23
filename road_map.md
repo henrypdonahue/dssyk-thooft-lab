@@ -126,6 +126,17 @@ audit found real defects to fix:
   three programs — high payoff either way.
 - ⚠ Convention landmine: this paper uses λ = p²/N with no q; the chord literature uses
   λ = 2p²/N, q = e^(−λ). Any reuse of chord results must pass through a tested conversion.
+- **Update 2026-07-23:** the paper is no longer uncited. Cui–Kolchmeyer 2607.13665
+  ("A de Sitter Anti-Scrambling Algebra", MIT/IAS) cites it as [12] while arguing dS
+  observer OTOCs *anti-scramble* (negative eikonal phase, KMS failure at the dS
+  temperature, Hartle–Hawking not a trace on the crossed product) — a structural
+  challenge to observer-centric static patch holography. The same-week companion
+  Harlow–Zhao 2607.14215 proposes the QM mechanism: bounded-spectrum systems with
+  Euclidean-folded correlators — DSSYK's defining features — and poses the fold test
+  "in a concrete model such as the SYK model" as open. Both PDFs in repo root; this
+  repo's response is rungs 25–26 (`duality/ANTISCRAMBLING.md`). Time-ordered physics
+  (the entire spectrum-match program, rungs 13–18) is explicitly untouched by these
+  papers; the OTOC sector is a NEW discriminator axis for rung 24.
 
 ---
 
@@ -210,9 +221,28 @@ independent; the tiers gate the ones that aren't.
   accuracy at α≠0 (ground state <1e-11 by K=32 vs the Chebyshev solver's
   algebraic K^(−4β)); β=½ anchor vs closed form ~5e-13; LM sum rules s≥4 to
   ~1e-12. Removes the α≠0 precision limitation flagged in Part I.
-- ⬜ Open: 15 proper (exact N=∞ moments), 16 remainder, 18, 20–22, 24;
-  sharpest next: the O(1/q) residues on the 𝓜-skeleton (17 proper) and the
-  tomperature map (13 remainder) — the two precisely-stated gates to 18.
+- ✅ **25** (2026-07-23): `duality/antiscrambling.py` + `ANTISCRAMBLING.md` —
+  the OTOC sign test forced by Cui–Kolchmeyer 2607.13665. Closed form
+  (Streicher transcription, LaTeX-source level): the growing OTOC term has
+  Re a(v) = −1 EXACTLY at every temperature, λ_L → 2𝒥 at T_B=∞ — the
+  scrambling/AdS sign (CK's c>0), confirmed model-level by ED at every
+  measured (N, βJ). A dS observer needs c<0: **under the flat dictionary
+  DSSYK∞ cannot anti-scramble** — the tomperature map (13 remainder) is now
+  gated by "must flip the OTOC sign," a much sharper statement.
+- ✅ **26** (first data, 2026-07-23): `syk-self-averaging/fold_bench.py` —
+  the Harlow–Zhao Euclidean-fold test (2607.14215 §6) they explicitly pose
+  for SYK. Folded correlators are finite (bounded spectrum, as HZ require)
+  and the fold's Lorentzian response tracks the analytic continuation
+  (Im 𝓕/F_d to ~10% at the best point, sign/trend everywhere); but the
+  folded Euclidean 4-pt drifts AWAY from the continued closed form as N
+  grows at fixed p (ratio 1.05→1.21→1.42 for N=12→14→16) while unfolded
+  observables converge — λ-corrections vs a genuine Stokes obstruction is
+  not separable at ED sizes. Deciders: fixed-λ scan; chord-side folded
+  4-pt at N=∞ (adjacent to rung 18 tooling).
+- ⬜ Open: 15 proper (exact N=∞ moments), 16 remainder, 18, 20–22, 24, and
+  the rung-26 deciders; sharpest next: the O(1/q) residues on the
+  𝓜-skeleton (17 proper) and the tomperature map (13 remainder, now
+  sign-gated by rung 25) — the gates to 18.
 
 ### Tier 0 — Hygiene (hours; do immediately)
 
@@ -341,7 +371,27 @@ independent; the tiers gate the ones that aren't.
 24. **Discriminate the competing duals.** Whatever rung 18 produces, run the same
     observable against the Narovlansky–Verlinde and sine-dilaton predictions where they
     differ. The meson tower is currently the only proposed observable sharp enough to
-    separate the three programs.
+    separate the three programs. *(2026-07-23: the CK anti-scrambling/KMS constraint is
+    a second discriminator axis — check which programs formulate the hologram as a KMS
+    state at the dS temperature.)*
+
+### 2026-07-23 additions (the CK/HZ response ladder)
+
+25. ✅ **The OTOC sign test.** Does DSSYK∞ scramble or anti-scramble under the flat
+    dictionary? *(Done — scrambles, Re a = −1 exactly at all temperatures;
+    `duality/ANTISCRAMBLING.md`.)*
+26. **The Euclidean-fold laboratory.** HZ's fold prescription evaluated exactly in
+    finite-N SYK vs the continued closed forms. *(First data done — mechanics work,
+    Lorentzian response tracks, Euclidean N-trend open.)* Deciders, in order of power:
+    fixed-λ scan (p = 4, N = 8–24, sector-resolved ED); the folded 4-pt in the exact
+    chord theory at N = ∞ (the fold is a contour statement; chord correlators are
+    analytic in the chord angles) — adjacent to the rung-18 toolchain and would answer
+    HZ exactly.
+27. **Freeness onset.** CK show the early/late-operator algebra becomes a free product
+    beyond the scrambling time. Freeness is a concrete statement about mixed moments of
+    a(0), b(T) — directly measurable with the existing Pauli-string ED at T_B = ∞.
+    Nobody has exhibited the free-product transition in a microscopic dS-candidate
+    model; self-contained, publishable either way.
 
 ### Blocked / not worth attempting from here
 

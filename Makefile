@@ -44,6 +44,7 @@ reproduce-slow:
 	cd syk-self-averaging && $(PY) qed_campaign.py
 	cd syk-self-averaging && $(PY) baryons.py
 	cd syk-self-averaging && $(PY) mn_spectroscopy.py --big
+	cd syk-self-averaging && $(PY) fold_bench.py
 	cd thooft-target && $(PY) generate_reference.py
 	cd thooft-target && $(PY) jacobi_solver.py
 	cd thooft-target && $(PY) thooft_spectrum.py --csv
