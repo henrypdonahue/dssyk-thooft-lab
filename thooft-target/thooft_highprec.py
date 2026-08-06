@@ -8,10 +8,12 @@ double-precision floor (~1e-13).  The matrix elements D and S are *rational*
 (times pi^2 in D), so the only precision limit is the working precision and the
 basis-truncation error, both controllable.
 
-Generalized eigenproblem  diag(D) a = Lambda S a  with S symmetric positive
-definite is reduced to a standard symmetric one via Cholesky S = L L^T:
-    A = L^{-1} diag(D) L^{-T},   A = A^T,   eig(A) = {Lambda_n}.
-Then  2 lambda_n = Lambda_n / pi^2.
+Generalized eigenproblem  D a = Lambda S a  (S symmetric positive definite).
+At alpha = 0 (the duality point) D is diagonal & positive, so this reduces by a
+single O(K^2) scaling to the standard symmetric
+    A = D^{-1/2} S D^{-1/2},   A = A^T,   eig(A) = {1/Lambda_n},
+with no Cholesky and no matrix inversion.  Then  2 lambda_n = Lambda_n / pi^2.
+(For alpha != 0, D is non-diagonal and a Cholesky reduction is used instead.)
 """
 
 from mpmath import mp, mpf, matrix, cholesky, eigsy, pi, nstr
@@ -70,13 +72,21 @@ def solve_sector_mp(num_basis, parity, alpha=0):
     """Return the sorted 2*lambda_n for one CP sector at current mp.dps."""
     _, D, S = build_sector_mp(num_basis, parity, alpha)
     K = num_basis
-    L = cholesky(S)                      # S = L L^T, lower-triangular
-    Linv = _invert_lower(L)
-    # A = Linv * D * Linv^T   (symmetric).
-    A = Linv * D * Linv.T
-    E = eigsy(A, eigvals_only=True)      # skip the unused eigenvectors (~2x)
-    vals = sorted(E[i] / pi ** 2 for i in range(K))
-    return vals
+    if alpha == 0:
+        # D diagonal & positive: reduce  D a = Lambda S a  by the O(K^2) scaling
+        # A = D^{-1/2} S D^{-1/2}, whose eigenvalues are {1/Lambda_n}.
+        d = [mp.sqrt(D[i, i]) for i in range(K)]
+        A = matrix(K, K)
+        for i in range(K):
+            for j in range(K):
+                A[i, j] = S[i, j] / (d[i] * d[j])
+        E = eigsy(A, eigvals_only=True)  # skip the unused eigenvectors (~2x)
+        return sorted(1 / (E[i] * pi ** 2) for i in range(K))
+    # alpha != 0: D non-diagonal; reduce via Cholesky S = L L^T,
+    # A = L^{-1} D L^{-T} (symmetric), eig(A) = {Lambda_n}.
+    Linv = _invert_lower(cholesky(S))
+    E = eigsy(Linv * D * Linv.T, eigvals_only=True)
+    return sorted(E[i] / pi ** 2 for i in range(K))
 
 
 def _invert_lower(L):

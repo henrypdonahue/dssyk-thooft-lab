@@ -65,7 +65,7 @@ C. Symmetry violation by ED: off-diagonal adjoint bilinear vs N
      16    2.220e-01    1.5e-03    5.335e+00  4.162e-02
      18    1.940e-01    1.1e-03    7.007e+00  2.769e-02
     fits of rms_off: power-law R^2=0.995, exp(-aN) R^2=0.999, exp(-a sqrt N) R^2=0.999, exp(-a sqrtN lnN) R^2=0.999
-    -> best: exp(-a sqrtN lnN) (Delta-AIC to next = 2.1)
+    -> cannot discriminate: exp(-a sqrtN lnN), exp(-a sqrt N), exp(-aN) within Delta-AIC < 6 (nominal lead 'exp(-a sqrtN lnN)', 2.1); < 1 decade in N -- 2-parameter selection uninformative
 
   p = 6:
       N      rms_off         +-     rms_diag      ratio
@@ -75,7 +75,7 @@ C. Symmetry violation by ED: off-diagonal adjoint bilinear vs N
      16    6.082e-02    4.1e-04    1.377e+00  4.415e-02
      18    4.985e-02    2.6e-04    2.359e+00  2.114e-02
     fits of rms_off: power-law R^2=0.986, exp(-aN) R^2=0.999, exp(-a sqrt N) R^2=0.994, exp(-a sqrtN lnN) R^2=0.997
-    -> best: exp(-aN) (Delta-AIC to next = 4.8)
+    -> cannot discriminate: exp(-aN), exp(-a sqrtN lnN) within Delta-AIC < 6 (nominal lead 'exp(-aN)', 4.8); < 1 decade in N -- 2-parameter selection uninformative
 
 wrote /Users/henrydonahue/Projects/Hologram/syk-self-averaging/results.json (machine-readable; plot_self_averaging.py reads it)
 

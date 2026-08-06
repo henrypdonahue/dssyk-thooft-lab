@@ -186,7 +186,8 @@ Measured results (p = 4, Nc = 4..10, production run -> baryons.json)
      fraction that is order one at these sizes -- ALL c_symmetric window
      exponents are effective, not asymptotic.
   *  The collapse frequency: measured std(DeltaE) falls from 2.36 (Nc = 4)
-     to 1.83 (Nc = 10), tracking sqrt(C(Nc,2)) sigma exactly, while M_B grows
+     to 1.83 (Nc = 10), tracking the sqrt(C(Nc,2)) sigma closed form (which is
+     exact; the measured agreement is statistical, ~1 sigma), while M_B grows
      4.0 -> 8.4: the naive correlator's only frequency and the physical mass
      proxy move in OPPOSITE directions with Nc.
 

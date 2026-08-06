@@ -31,7 +31,9 @@ The four load-bearing corrections (top-level README), as code:
 Mass units.  thooft-target reports the dimensionless eigenvalue
 2*lambda_n = M_n^2/(pi g^2) at the duality point alpha = pi m_q^2/g^2 = 0.
 Physical masses need a value of g^2 (or of the string tension
-tau = g^2 N = p^2 m_q^2), which the duality fixes only through the dictionary;
+tau = alpha_bar * m_q^2 = p^2 m_q^2, with alpha_bar = gbar^2 N the
+dimensionless coupling -- not the dimensionful g^2 N), which the duality
+fixes only through the dictionary;
 RATIOS of masses-squared are parameter-free, so the comparison tables below
 are built from ratios and from the interleave splittings -- the sharpest
 falsifiable fingerprints available today.
@@ -89,9 +91,12 @@ def gbar_squared(N: float, p: float) -> float:
 
 
 def string_tension(m_q_squared: float, p: float) -> float:
-    """tau = g^2 N = alpha_bar * m_q^2 = p^2 m_q^2 (paper Sec. 4.2).  Fixed,
-    finite tau with p^2 = lambda N forces m_q^2 -> 0 in the double-scaled
-    limit: the duality point is the RENORMALIZED-massless 't Hooft model."""
+    """tau = alpha_bar * m_q^2 = p^2 m_q^2 (paper Sec. 4.2), in units where
+    the DIMENSIONLESS 't Hooft coupling alpha_bar = gbar^2 N = p^2 (do NOT
+    conflate with the dimensionful g^2 N -- see alpha_bar/gbar_squared).
+    Fixed, finite tau with p^2 = lambda N forces m_q^2 -> 0 in the
+    double-scaled limit: the duality point is the RENORMALIZED-massless
+    't Hooft model."""
     return alpha_bar(p) * m_q_squared
 
 

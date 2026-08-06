@@ -23,8 +23,13 @@ duality/antiscrambling.py; asserted in duality/test_antiscrambling.py):
     path-ordered correlator: operator sequence by descending
     standard-configuration theta, WITH the fermionic transposition sign:
         F = -(1/N^2) sum_ij Tr[rho psi_i(z1) psi_j(z3) psi_i(z2) psi_j(z4)].
-    (Convention fixed empirically: this choice tracks Streicher (3.10); the
-    opposite sign is off by x25.)
+    The leading minus is DERIVED, not fitted: reaching descending-theta order
+    is a single transposition (psi_i(z2) past psi_j(z3)), which for anticommuting
+    fields costs one (-1).  It is cross-validated against the independently
+    transcribed Streicher (3.10) closed form.  The wrong sign is not a mere
+    normalization: F ~= F_d here (the connected part is a small difference), so
+    flipping F's sign moves the connected RATIO N*(F - F_d)/F_d by ~2N -- that
+    is the "x25" one sees downstream, a ratio distortion, not a fudge factor.
   * At finite dimension the ordered-trace expression is an ENTIRE function
     of the four thetas, so the FOLD -- Harlow-Zhao's continuation (6.9),
     theta^QM = (-t1, 2pi n - t2, 2pi - t3, 2pi(n+1) - t4) -- is evaluated by

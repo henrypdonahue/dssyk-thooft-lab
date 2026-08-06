@@ -158,12 +158,15 @@ def growth_coefficient(v: float) -> complex:
     symmetric configuration theta = (3pi/2, pi/2, pi, 0), Lorentzian
     theta-time thL added to the (theta1, theta2) flavor pair:
 
-        script-F/F_d  ~  a(v) e^{v thL} + (linear background),
+        script-F/F_d  ~  a(v) e^{v thL} + C(v) e^{-i pi v} e^{-v thL},
         a(v) = - e^{-i pi v/2} / cos(pi v/2),        Re a(v) = -1  EXACTLY
 
-    (derivation: at this configuration phi12m = phi34m = pi, and
-    sin(phi12p/2) -> (1/2) e^{v thL} e^{-i pi v/2}, so the second term of
-    otoc_ratio dominates; the third term is the linear background).  The
+    (derivation: at this configuration phi12m = phi34m = pi, so the third
+    term of otoc_ratio vanishes identically (~5e-33) and the first is the
+    constant C(v); sin(phi12p/2) -> (1/2) e^{v thL} e^{-i pi v/2} makes the
+    second term the growing/decaying pair, dev.real = C(v) - 2 cosh(v thL),
+    i.e. the "background" is the constant C(v) plus a negligible decaying
+    e^{-v thL} -- there is NO linear-in-thL term).  The
     real part is -1 at EVERY temperature, T_B = infinity included: the
     SCRAMBLING sign (CK's c > 0, AdS/time-delay), with magnitude not even
     suppressed at v -> 0.  A dS observer needs the opposite sign (CK's
@@ -174,18 +177,20 @@ def growth_coefficient(v: float) -> complex:
 
 
 def growth_coefficient_numeric(betaJ: float) -> float:
-    """Re a(v) extracted numerically from otoc_ratio: fit
-    dev(thL) = c0 + c1 thL + a e^{v thL} over a late-thL window (the linear
-    term is the genuine background from the third term of (3.10)).
-    Validates growth_coefficient; returns Re a."""
+    """Re a(v) extracted numerically from otoc_ratio.  At this symmetric
+    config the third term of (3.10) vanishes identically (~5e-33), so
+    dev.real = C(v) - e^{v thL} - e^{-v thL} EXACTLY: a constant background
+    C(v) plus a decaying e^{-v thL}, with NO linear-in-thL piece.  Fit that
+    basis over a late-thL window and return the coefficient of e^{v thL}
+    (= Re a, recovered to machine precision); validates growth_coefficient."""
     v = v_of_betaJ(betaJ) if betaJ > 0 else 1e-4
     thLs = np.array([4.0, 5.0, 6.0, 7.0]) / v
     devs = np.array([complex(otoc_ratio(1.5 * np.pi + 1j * t,
                                         0.5 * np.pi + 1j * t,
                                         np.pi, 0.0, v)) for t in thLs])
-    A = np.vstack([np.ones_like(thLs), thLs, np.exp(v * thLs)]).T
+    A = np.vstack([np.ones_like(thLs), np.exp(v * thLs), np.exp(-v * thLs)]).T
     coef, *_ = np.linalg.lstsq(A, devs.real, rcond=None)
-    return float(coef[2])
+    return float(coef[1])
 
 
 # ---------------------------------------------------------------------------

@@ -47,10 +47,19 @@ $$\mathcal F/F_d \sim a(v)\,e^{v\,\theta_L},\qquad
 
 with rate $\lambda_L = 2\pi v/\beta \to 2\mathcal J$ as $T_B\to\infty$: the
 scrambling (AdS/time-delay, CK's $c>0$) sign, **unsuppressed at the
-$T_B=\infty$ hologram point**. ED confirms the model-level statement at all
-orders in $1/N, 1/q$: $\mathrm{Re}\,\mathcal F/F_d$ decreases monotonically
-in Lorentzian time at every measured $(N,\beta\mathcal J)$ (asserted in
-`test_bench_scrambling_sign_verdict`).
+$T_B=\infty$ hologram point**.
+
+What ED adds, and what it does not. ED independently confirms the OTOC
+*magnitude growth* at all orders in $1/N,1/q$: $\mathrm{Re}\,\mathcal F/F_d$
+moves monotonically away from its time-ordered value at every measured
+$(N,\beta\mathcal J)$, by well over $100\sigma$ (drop/err $\approx130$–$200$;
+`test_bench_scrambling_sign_verdict`). The *sign* that makes this
+"scrambling" rather than "anti-scrambling," however, is **analytic**
+(Streicher-transcribed): it rides on the crossed-operator ordering, which is
+fixed empirically to match Streicher (the opposite order is off by ×25; see
+caveats). So ED gives an independent measurement of the growth, not an
+independent measurement of the sign — do not read this as ED alone deciding
+scrambling vs. anti-scrambling.
 
 **Consequence.** Under the flat identification (boundary time = observer
 proper time), DSSYK∞ has the wrong OTOC sign to be CK's dS observer — at

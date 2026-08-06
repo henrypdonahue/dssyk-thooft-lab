@@ -120,13 +120,12 @@ Exact: the endpoint-exponent condition; the Gagliardo identity; the Gram and
 potential matrix elements (Gauss-Jacobi of polynomial integrands); the
 beta = 1/2 anchor closed form.  Measured (jacobi_convergence.json): the
 quadrature floor (~1e-12 on low eigenvalues at default settings); at
-alpha = +/-0.5 the ground state converges below 1e-11 by K = 32 while the
-old solver follows an algebraic law measured as ~K^-(4 beta) (fitted rates
-2.34 and 1.48 vs 4 beta = 2.34 and 1.48) and still sits at 1e-7..1e-5 at
-K = 128; the
-K = 200 vs 160 self-consistency of the reference is ~4e-12, externally
-certified by the LM tables (their 6-digit floor) and by the 20-digit LM sum
-rules (s = 2: <= 3e-8, s >= 4: ~1e-12 relative).  Caveat, stated honestly:
+alpha = +/-0.5 the ground state converges below 1e-11 by K = 32 while the old
+solver follows the exponent-mismatch algebraic law ~K^-(4 beta) (fitted rates
+match 4 beta to 2 digits: 2.34, 1.48) and still sits at 1e-7..1e-5 at K = 128;
+the reference's K = 200 vs 160 self-consistency is ~4e-12, externally certified
+by the LM tables (their 6-digit floor) and by the 20-digit LM sum rules
+(s = 2: <= 3e-8, s >= 4: ~1e-12 relative).  Caveat, stated honestly:
 the true wavefunction also carries subleading endpoint behavior NOT in this
 basis (secondary exponent beta2 in (1,2) solving the same transcendental
 condition, plus integer-power/log terms sourced by the regular part of the

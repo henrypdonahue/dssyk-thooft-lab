@@ -923,11 +923,19 @@ def main(big: bool = False) -> dict:
                   f"mu2_charged = {r['mu2_charged_mean']:.4f} "
                   f"+- {r['mu2_charged_sem']:.4f} "
                   f"(exact E[mu2] = {r['mu2_charged_exact']:.4f})")
-            anchor = ("instance-EXACT identity 2p/Nc" if ens == "c_symmetric"
-                      else "anchor 2p/Nc")
+            if ens == "c_symmetric":
+                anchor_label = "instance-EXACT identity 2p/Nc"
+                anchor_val = 2 * p / Nc
+            else:
+                # generic: 2p/Nc is the c_symmetric value; the generic
+                # ensemble-mean anchor is 2 E[mu2_charged]/E[m2] (< 2p/Nc by
+                # the cross-term deficit, see docstring)
+                anchor_label = "generic anchor 2*E[mu2]/E[m2]"
+                anchor_val = (2 * mean_mu2_charged_exact(Nc, p, ens)
+                              / mean_m2_exact(Nc, p, ens))
             print(f"    w2_charged = {r['w2_charged']:.4f} "
                   f"+- {r['w2_charged_sem']:.4f}   "
-                  f"({anchor} = {2*p/Nc:.3f});  "
+                  f"({anchor_label} = {anchor_val:.3f});  "
                   f"kurt = {r['kurt_charged']:.2f}")
             print(f"    w2_singlet = {r['w2_singlet']:.4f} "
                   f"+- {r['w2_singlet_sem']:.4f};  "

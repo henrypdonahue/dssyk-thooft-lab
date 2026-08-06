@@ -9,9 +9,10 @@ in the flat-space limit), and every spectrum-match proposal silently assumes
 module computes what a mass actually looks like in a boost-frequency spectral
 function, exactly, in the simplest calibration case: a free scalar particle of
 mass m in 1+1d Minkowski vacuum, probed along a uniformly accelerated
-worldline of proper acceleration a (boost frequency omega = frequency
-conjugate to the observer's proper time; for the trajectory at Rindler radius
-1/a this is boost time in units where the horizon generator is rescaled by a).
+worldline of proper acceleration a.  The boost frequency omega is conjugate
+to boost time eta (the Rindler time that the boost generator translates);
+on the trajectory at Rindler radius 1/a proper time equals eta/a, so
+omega is the observer's proper-time frequency measured in units of a.
 
 Closed form (derived by expanding the Wightman function in plane waves,
 k = m sinh(theta), and using int du e^{i nu u - i z sinh u} =

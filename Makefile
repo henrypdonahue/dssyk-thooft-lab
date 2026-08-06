@@ -33,6 +33,7 @@ reproduce:
 	cd duality && $(PY) dictionary.py
 	cd duality && $(PY) boost_mass.py
 	cd duality && $(PY) largeq_anchor.py
+	cd duality && $(PY) antiscrambling.py
 
 # The disorder-ensemble sweeps and high-precision reference generation that
 # produced the committed JSON/CSV artifacts.  Hours, not minutes.

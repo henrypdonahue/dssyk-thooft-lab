@@ -25,18 +25,20 @@ Built from `thooft-target/reference_spectrum.json`; both are **parameter-free**
    the paper's "two degenerate Regge trajectories… on top of one another":
    equal slopes and interleaving — adjacent levels are *not* degenerate.)
 
-Also in this module: [`BOOST.md`](BOOST.md) + `boost_mass.py` — the rung-13
-boost-to-mass calibration (one mass = a boost-frequency *continuum with
-nodes*; the "tomperature" map is the stated open question);
-[`LARGEQ.md`](LARGEQ.md) + `largeq_anchor.py` — the rung-17 large-q
-$\lambda\to0$ anchor (conventions bridge $\mathcal J=\sqrt2\,p$, ED-locked;
-the meson tower cancels at leading order, so the anchor lives at $O(1/q)$);
-and [`ANTISCRAMBLING.md`](ANTISCRAMBLING.md) + `antiscrambling.py` — the
-rung-25/26 response to Cui–Kolchmeyer 2607.13665 and Harlow–Zhao 2607.14215:
-DSSYK∞ *scrambles* at every temperature ($\mathrm{Re}\,a=-1$ exactly), so
-the flat dictionary cannot produce dS anti-scrambling, and the first SYK
-data on the HZ Euclidean-fold prescription (ED lab:
-`../syk-self-averaging/fold_bench.py`).
+Also in this module:
+
+- [`BOOST.md`](BOOST.md) + `boost_mass.py` — rung-13 boost-to-mass
+  calibration: one mass = a boost-frequency *continuum with nodes*; the
+  "tomperature" map is the stated open question.
+- [`LARGEQ.md`](LARGEQ.md) + `largeq_anchor.py` — rung-17 large-q
+  $\lambda\to0$ anchor (conventions bridge $\mathcal J=\sqrt2\,p$, ED-locked);
+  the meson tower cancels at leading order, so the anchor lives at $O(1/q)$.
+- [`ANTISCRAMBLING.md`](ANTISCRAMBLING.md) + `antiscrambling.py` —
+  rung-25/26 response to Cui–Kolchmeyer 2607.13665 and Harlow–Zhao
+  2607.14215: DSSYK∞ *scrambles* at every temperature
+  ($\mathrm{Re}\,a=-1$ exactly), so the flat dictionary cannot produce dS
+  anti-scrambling; plus the first SYK data on the HZ Euclidean-fold
+  prescription (ED lab: `../syk-self-averaging/fold_bench.py`).
 
 ```bash
 python3 dictionary.py     # print the yardstick in both conventions

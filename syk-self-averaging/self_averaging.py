@@ -176,8 +176,11 @@ def fit_models(ns, ys):
     Returns dict name -> dict(r2, slope, aic).  All models have the same
     number of parameters (2), so AIC = n*ln(SS_res/n) + 4 and Delta-AIC
     ordering coincides with R^2 ordering -- the honest content of AIC here is
-    the MAGNITUDE of the differences: Delta-AIC < 2 means the data cannot
-    distinguish the models."""
+    the MAGNITUDE of the differences (see fit_verdict).  Fits are unweighted
+    OLS in log-space: these are diagnostics only (the exact rate comes from
+    exact_wick.py), the per-point log-errors are comparable across the narrow
+    window, and weighting cannot rescue 2-parameter selection over < 1 decade
+    anyway."""
     ns = np.asarray(ns, float)
     ly = np.log(np.asarray(ys, float))
     n = len(ns)
@@ -195,15 +198,32 @@ def fit_models(ns, ys):
     return out
 
 
-def fit_verdict(fits) -> str:
-    """Best model plus an explicit indistinguishability statement."""
+DAIC_BAND = 6.0   # indistinguishability band for 2-parameter log-fits
+
+
+def fit_verdict(fits, ns=None) -> str:
+    """Best model plus an explicit indistinguishability statement.
+
+    All candidates are 2-parameter, so AIC ranking coincides with R^2 ranking
+    and only the MAGNITUDE of the gaps carries information.  Two honesty
+    guards, both deliberately conservative here: (a) any lead under DAIC_BAND
+    is reported as 'cannot discriminate' (2 is too aggressive for these few
+    points); (b) when the fit spans < 1 decade in N the ranking is
+    uninformative regardless of the nominal lead -- 2-parameter selection over
+    a narrow window cannot identify an asymptotic form -- and we say so."""
     ranked = sorted(fits.items(), key=lambda kv: kv[1]["aic"])
     best, second = ranked[0], ranked[1]
     daic = second[1]["aic"] - best[1]["aic"]
-    if daic < 2.0:
-        contenders = [k for k, v in ranked if v["aic"] - best[1]["aic"] < 2.0]
-        return (f"cannot discriminate: {', '.join(contenders)} all within "
-                f"Delta-AIC < 2 (best '{best[0]}' leads by only {daic:.1f})")
+    narrow = ns is not None and max(ns) / min(ns) < 10.0
+    if daic < DAIC_BAND or narrow:
+        contenders = [k for k, v in ranked
+                      if v["aic"] - best[1]["aic"] < DAIC_BAND]
+        msg = (f"cannot discriminate: {', '.join(contenders)} within "
+               f"Delta-AIC < {DAIC_BAND:.0f} (nominal lead '{best[0]}', "
+               f"{daic:.1f})")
+        if narrow:
+            msg += "; < 1 decade in N -- 2-parameter selection uninformative"
+        return msg
     return f"best: {best[0]} (Delta-AIC to next = {daic:.1f})"
 
 
@@ -240,7 +260,7 @@ if __name__ == "__main__":
     print("\n    Fit of log relVar along double-scaling line:")
     for name, f in fits.items():
         print(f"      {name:18s}: R^2 = {f['r2']:.4f}   AIC = {f['aic']:+7.1f}")
-    print(f"    -> {fit_verdict(fits)}")
+    print(f"    -> {fit_verdict(fits, [r[0] for r in rows])}")
     print("    (super-polynomial growth of the decay rate is what confirms "
           "Eq. 3.27's tail)")
     results["A_fits"] = fits
@@ -298,7 +318,7 @@ if __name__ == "__main__":
         f = fit_models(ns_sv, ys)   # fit the trustworthy rms_off
         print("    fits of rms_off: " + ", ".join(
             f"{k} R^2={v['r2']:.3f}" for k, v in f.items()))
-        print(f"    -> {fit_verdict(f)}")
+        print(f"    -> {fit_verdict(f, ns_sv)}")
         results["C_symmetry_violation"][f"p{p}"] = dict(rows=rows_c, fits=f)
 
     out_path = Path(__file__).resolve().parent / "results.json"

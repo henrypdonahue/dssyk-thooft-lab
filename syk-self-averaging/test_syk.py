@@ -344,5 +344,18 @@ def test_bott_periodicity_two_classes():
     assert validate_syk._nearest_class(r12) == "GSE"
 
 
+def test_gse_kramers_doubling():
+    """GSE cases (N mod 8 = 4) carry EXACT 2-fold Kramers degeneracy within
+    each parity sector -- asserted directly, not just via <r>."""
+    for N in (12, 20):
+        intra, inter = validate_syk.kramers_splitting(N, seed=100 + N)
+        assert intra < 1e-9        # exactly doubled (machine precision)
+        assert inter > 1e-3        # genuinely paired, not accidental
+    # a non-GSE class (N=10, GUE) is NOT doubled: the guard forbids the call,
+    # and its raw spectrum has no such pairing
+    with pytest.raises(ValueError):
+        validate_syk.kramers_splitting(10)
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))

@@ -172,7 +172,7 @@ independent; the tiers gate the ones that aren't.
   rule (Eq. 4.26) is magnitude-only, part-empirical (their §6.2), and its n≪p
   approximation fails exactly in the diagram-B regime (error ~e^p; harmless for
   the bound, fatal for prefactors). `exact_wick.py` is the only complete
-  prefactor-exact derivation in existence; it *confirms* both papers at leading
+  prefactor-exact derivation we're aware of; it *confirms* both papers at leading
   order (their diagram-B = σ⁴C(N,p); ours adds the exact pinning factor
   4p(N−p)/N(N−1)) — a small publishable note. Also: the λ factor-2 clash is
   internal to the Susskind corpus (2501.09423 Eq. 3.6: λ=2p²/N). And
@@ -225,10 +225,13 @@ independent; the tiers gate the ones that aren't.
   the OTOC sign test forced by Cui–Kolchmeyer 2607.13665. Closed form
   (Streicher transcription, LaTeX-source level): the growing OTOC term has
   Re a(v) = −1 EXACTLY at every temperature, λ_L → 2𝒥 at T_B=∞ — the
-  scrambling/AdS sign (CK's c>0), confirmed model-level by ED at every
-  measured (N, βJ). A dS observer needs c<0: **under the flat dictionary
-  DSSYK∞ cannot anti-scramble** — the tomperature map (13 remainder) is now
-  gated by "must flip the OTOC sign," a much sharper statement.
+  scrambling/AdS sign (CK's c>0). ED independently confirms the OTOC
+  magnitude *growth* at every measured (N, βJ); the scrambling *sign* itself
+  is analytic (Streicher-transcribed), inheriting an empirically-fixed
+  crossed-operator ordering, not an independent ED sign measurement. A dS
+  observer needs c<0: **under the flat dictionary DSSYK∞ cannot
+  anti-scramble** — the tomperature map (13 remainder) is now gated by
+  "must flip the OTOC sign," a sharper statement.
 - ✅ **26** (first data, 2026-07-23): `syk-self-averaging/fold_bench.py` —
   the Harlow–Zhao Euclidean-fold test (2607.14215 §6) they explicitly pose
   for SYK. Folded correlators are finite (bounded spectrum, as HZ require)

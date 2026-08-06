@@ -80,7 +80,10 @@ def reconstruct(vec: np.ndarray, degrees: np.ndarray, x: np.ndarray) -> np.ndarr
 def reconstruct_derivative(vec: np.ndarray, degrees: np.ndarray,
                            x: np.ndarray) -> np.ndarray:
     """d phi_n / dx at interior points (chain rule d xi/dx = 2), same
-    normalization as reconstruct."""
+    normalization as reconstruct.
+
+    Precondition: x must be interior (Gauss-Legendre nodes) -- this divides by
+    sqrt(1-xi^2) and by (1-xi^2), so it blows up at the endpoints x=0,1."""
     xi = 2.0 * np.asarray(x) - 1.0
     dmax = int(np.max(degrees))
     U = _U_all(dmax + 1, xi)

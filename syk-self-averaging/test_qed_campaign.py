@@ -425,5 +425,20 @@ def test_qed_campaign_json_structure():
         assert row["w2_charged_sem"] > 0 and row["w2_singlet_sem"] > 0
 
 
+def test_w2_anchor_ensemble_dependence():
+    """The printed w2 anchor 2 E[mu2]/E[m2]: equals the instance-exact 2p/Nc
+    for c_symmetric (mu2 identity), and sits strictly BELOW it for generic
+    (cross-term deficit) -- the anchor is ensemble-dependent, not 2p/Nc."""
+    from qed_campaign import mean_mu2_charged_exact, mean_m2_exact
+    for Nc in (6, 8, 10):
+        for p in (4, 6):
+            sym = (2 * mean_mu2_charged_exact(Nc, p, "c_symmetric")
+                   / mean_m2_exact(Nc, p, "c_symmetric"))
+            gen = (2 * mean_mu2_charged_exact(Nc, p, "generic")
+                   / mean_m2_exact(Nc, p, "generic"))
+            assert abs(sym - 2 * p / Nc) < 1e-12 * (2 * p / Nc)
+            assert gen < sym
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))

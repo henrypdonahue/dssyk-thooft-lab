@@ -78,6 +78,27 @@ def r_statistic(N: int, p: int = 4, n_real: int = 8, seed: int = 0) -> float:
     return float(np.mean(vals))
 
 
+def kramers_splitting(N: int, p: int = 4, seed: int = 0) -> tuple[float, float]:
+    """Quantify the GSE Kramers doubling directly (backs the 'verified
+    explicitly' claim, complementing the <r> statistic).
+
+    In a GSE case (N mod 8 = 4) the antiunitary symmetry squares to -1, so
+    within a parity sector every level is EXACTLY 2-fold degenerate.  Returns
+    (max intra-pair splitting, min inter-pair gap) over the sorted even-parity
+    spectrum of one realization: exact doubling means the first is machine-zero
+    while the second stays O(1), so the degeneracy is genuine, not accidental."""
+    if N % 8 != 4:
+        raise ValueError(f"N={N}: Kramers doubling is the GSE case N = 4 (mod 8)")
+    mask = _even_parity_mask(N)
+    rng = np.random.default_rng(seed)
+    eigs = np.sort(np.linalg.eigvalsh(majorana_hamiltonian_fast(N, p, rng)[
+        np.ix_(mask, mask)]))
+    pairs = eigs.reshape(-1, 2)
+    intra = np.abs(pairs[:, 1] - pairs[:, 0])
+    inter = np.abs(pairs[1:, 0] - pairs[:-1, 1])
+    return float(intra.max()), float(inter.min())
+
+
 def _nearest_class(r: float) -> str:
     return min(RMT, key=lambda k: abs(RMT[k] - r))
 
