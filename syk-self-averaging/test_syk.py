@@ -269,6 +269,32 @@ def test_wick_double_scaling_superexponential():
     assert slopes[-1] < -2.0
 
 
+def test_wick_fixed_p_powerlaw():
+    """Rung 16: at FIXED p (lambda -> 0, the regime of the 't Hooft spectrum
+    comparison) the exact rms follows the POWER LAW N^{-(p-1)/2} with
+    prefactor 2 p!/sqrt((p-1)!), and the per-element violation
+    rms/E[B_jj] falls as N^{-(p+1)/2} -- polynomially slow emergence,
+    vs super-exponential along double scaling."""
+    from math import exp, factorial, log, sqrt
+    from exact_wick import fixed_p_scan
+    for p in (4, 6):
+        rows = fixed_p_scan(p, [160, 320, 640, 1280, 2560, 5120])
+        # local log-log slope converges (monotonically from above in |.|)
+        # onto -(p-1)/2
+        slopes = [r["slope"] for r in rows if r["slope"] is not None]
+        assert all(b < a for a, b in zip(slopes, slopes[1:]))
+        assert abs(slopes[-1] + (p - 1) / 2.0) < 0.01
+        # prefactor of the asymptote
+        pref = 2.0 * factorial(p) / sqrt(factorial(p - 1))
+        r = rows[-1]
+        recon = exp(r["ln_rms"] + (p - 1) / 2.0 * log(r["N"]))
+        assert abs(recon / pref - 1.0) < 0.01
+        # normalized violation slope -> -(p+1)/2
+        rslope = ((rows[-1]["ln_ratio"] - rows[-2]["ln_ratio"])
+                  / (log(rows[-1]["N"]) - log(rows[-2]["N"])))
+        assert abs(rslope + (p + 1) / 2.0) < 0.01
+
+
 def test_majorana_m1_identity():
     """The Majorana counterpart of M1 = -(p/2)iH: with psi^2 = 1,
     sum_a psi_a [H, psi_a] = -2p H exactly -- so (i/N) sum psi psidot is

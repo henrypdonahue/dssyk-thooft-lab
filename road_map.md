@@ -242,10 +242,16 @@ independent; the tiers gate the ones that aren't.
   observables converge — λ-corrections vs a genuine Stokes obstruction is
   not separable at ED sizes. Deciders: fixed-λ scan; chord-side folded
   4-pt at N=∞ (adjacent to rung 18 tooling).
-- ⬜ Open: 15 proper (exact N=∞ moments), 16 remainder, 18, 20–22, 24, and
-  the rung-26 deciders; sharpest next: the O(1/q) residues on the
-  𝓜-skeleton (17 proper) and the tomperature map (13 remainder, now
-  sign-gated by rung 25) — the gates to 18.
+- ✅ **16** (numerical link, 2026-08-06): `exact_wick.py` `fixed_p_scan` —
+  the fixed-p, λ→0 map made explicit (the analytic answer was rung 11's):
+  local slopes converge onto N^(−(p−1)/2) with prefactor 2p!/√((p−1)!);
+  per-element violation rms(B_jk)/E[B_jj] ~ N^(−(p+1)/2) (10⁻⁶ needs
+  N ≈ 826 at p = 4). The Part-I consequence ("emergence is weakest where
+  the match is made") is now a printed, tested table, not a remark.
+- ⬜ Open: 15 proper (exact N=∞ moments), 18, 20–22, 24, and the rung-26
+  deciders; sharpest next: the O(1/q) residues on the 𝓜-skeleton (17
+  proper) and the tomperature map (13 remainder, now sign-gated by rung
+  25) — the gates to 18.
 
 ### Tier 0 — Hygiene (hours; do immediately)
 

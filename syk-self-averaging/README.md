@@ -29,9 +29,13 @@ $$\mathrm{Var}(B_{jk})=4\sigma^4\binom{N-2}{p-1},\qquad
 verified against literal contraction enumeration (exact) and ED (~1%). Along
 $p=\sqrt N$: $\ln\mathrm{rms}=-\tfrac14\sqrt N\ln N\,(1+o(1))$ — beats
 $e^{-a\sqrt N}$ for every $a$, verified in the regime the claim is about
-(scanned to $N=1600$). At fixed $p$ (the match regime) the asymptote is the
-power law $N^{-(p-1)/2}$. $\mathbb{E}[B_{jj}]=0$ at $p=N/2$ *derives* the
-ratio artifact flagged below.
+(scanned to $N=1600$). At fixed $p$ (the match regime, $\lambda\to0$) the
+scan (rung 16) shows emergence is only **polynomial**: local slopes converge
+onto $N^{-(p-1)/2}$ with prefactor $2\,p!/\sqrt{(p-1)!}$, and the per-element
+violation $\mathrm{rms}(B_{jk})/\mathbb{E}[B_{jj}]\sim N^{-(p+1)/2}$ — e.g.
+$10^{-6}$ needs $N\sim826$ at $p=4$: the emergent symmetry is quantitatively
+weakest exactly where the spectrum match is to be made.
+$\mathbb{E}[B_{jj}]=0$ at $p=N/2$ *derives* the ratio artifact flagged below.
 
 **$M_n$ tower and CP, measured** (`dirac.py`, `mn_spectroscopy.py`). Exact and
 asserted: $[H,Q]=0$; $M_0=Q$; $M_1=-(p/2)iH$ (paper's $M_1=H$ fails at $O(1)$);

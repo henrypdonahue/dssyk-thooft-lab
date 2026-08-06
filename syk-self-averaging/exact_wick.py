@@ -101,6 +101,15 @@ def mean_diag_exact(N: int, p: int) -> float:
     return sigma2 * comb(N, p) * (1.0 - 2.0 * p / N)
 
 
+def ln_mean_diag(N: int, p: int) -> float:
+    """ln E[B_jj] evaluated stably at large (N, p) via lgamma (needs
+    p < N/2 so the log argument is positive)."""
+    from math import lgamma, log1p
+    ln_sigma2 = lgamma(p + 1) - (p - 1) * log(N)
+    ln_binom = lgamma(N + 1) - lgamma(p + 1) - lgamma(N - p + 1)
+    return ln_sigma2 + ln_binom + log1p(-2.0 * p / N)
+
+
 # ---------------------------------------------------------------------------
 # brute-force string enumeration (verifies every step of the derivation)
 # ---------------------------------------------------------------------------
@@ -163,6 +172,28 @@ def double_scaling_scan(lam: float, ns) -> list:
     return rows
 
 
+# ---------------------------------------------------------------------------
+# the fixed-p scan: symmetry emergence where the 't Hooft comparison lives
+# ---------------------------------------------------------------------------
+def fixed_p_scan(p: int, ns) -> list:
+    """Exact symmetry violation at FIXED p as lambda = p^2/N -> 0 (rung 16):
+    the regime of the spectrum match, NOT the double-scaling regime.  Per N:
+    lambda, ln rms(B_jk), the local slope d ln rms / d ln N (asymptote
+    -(p-1)/2), and the normalized per-element violation
+    ln[rms(B_jk)/E[B_jj]] (asymptote slope -(p+1)/2)."""
+    rows = []
+    prev = None
+    for N in ns:
+        lr = ln_rms_offdiag(N, p)
+        row = dict(N=N, p=p, lam=p * p / N, ln_rms=lr,
+                   ln_ratio=lr - ln_mean_diag(N, p), slope=None)
+        if prev is not None:
+            row["slope"] = (lr - prev["ln_rms"]) / (log(N) - log(prev["N"]))
+        rows.append(row)
+        prev = row
+    return rows
+
+
 if __name__ == "__main__":
     print("Exact vs ED (values from results.json where available):")
     import json
@@ -202,3 +233,27 @@ if __name__ == "__main__":
     print("\n  ln rms / sqrt(N) decreases without bound -> the violation is")
     print("  smaller than e^{-a sqrt N} for EVERY a: Eq. (3.28) holds, with the")
     print("  sharp form  ln rms = -(1/4) sqrt N ln N (1 + o(1))  at lambda = 1.")
+
+    from math import exp, factorial
+    print("\nFixed p, lambda = p^2/N -> 0 (rung 16) -- the regime where the")
+    print("'t Hooft comparison lives.  Emergence is only POLYNOMIAL here:")
+    print("rms ~ 2 p!/sqrt((p-1)!) N^{-(p-1)/2}, and the per-element violation")
+    print("rms(B_jk)/E[B_jj] ~ 2 p!/sqrt((p-1)!) N^{-(p+1)/2}:")
+    for p in (4, 6):
+        print(f"  p = {p}  (slope asymptotes: rms -(p-1)/2 = {-(p-1)/2:.1f}, "
+              f"ratio -(p+1)/2 = {-(p+1)/2:.1f})")
+        print(f"  {'N':>6} {'lambda':>8} {'rms(B_jk)':>11} "
+              f"{'d ln rms/d ln N':>16} {'rms/E[B_jj]':>12}")
+        for r in fixed_p_scan(p, [20, 40, 80, 160, 320, 640, 1280]):
+            slope = "--" if r["slope"] is None else f"{r['slope']:.3f}"
+            print(f"  {r['N']:>6} {r['lam']:>8.3f} {exp(r['ln_rms']):>11.3e} "
+                  f"{slope:>16} {exp(r['ln_ratio']):>12.3e}")
+    pref = 2.0 * factorial(4) / sqrt(factorial(3))
+    n_at = {eps: (pref / eps) ** (2.0 / 5.0) for eps in (1e-3, 1e-6, 1e-9)}
+    print("\n  The consequence nobody had drawn: along double scaling the")
+    print("  violation is super-exponential, but at fixed p = 4 a per-element")
+    print("  violation of 1e-3 / 1e-6 / 1e-9 needs N ~ "
+          + " / ".join(f"{n_at[e]:.0f}" for e in (1e-3, 1e-6, 1e-9))
+          + ",")
+    print("  i.e. the emergent U(N) symmetry is quantitatively WEAKEST exactly")
+    print("  where the spectrum match is to be made (lambda -> 0 at fixed p).")

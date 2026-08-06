@@ -13,7 +13,7 @@ numerical stress-tests, each cross-checked against an independent method or anal
 | module | role | tests | headline anchor |
 |---|---|---|---|
 | [`thooft-target/`](thooft-target) | the yardstick: 't Hooft meson spectrum, $\alpha=0$ (Chebyshev) and $\alpha\neq0$ (matched-exponent Jacobi) | 36 | FLZ to 2e-12; six exact sum rules to ~1e-10; α≠0 spectrally accurate, externally anchored (LM tables + exact sum rules) |
-| [`syk-self-averaging/`](syk-self-averaging) | the falsifiable claims: §3.5 self-averaging + the $M_n$/CP sector + the U(N)/QED campaign (rung 19) + the baryon sector (rung 23) | 88 | RMT Bott periodicity; exact-Wick closed forms vs enumeration and ED |
+| [`syk-self-averaging/`](syk-self-averaging) | the falsifiable claims: §3.5 self-averaging + the $M_n$/CP sector + the U(N)/QED campaign (rung 19) + the baryon sector (rung 23) | 89 | RMT Bott periodicity; exact-Wick closed forms vs enumeration and ED |
 | [`duality/`](duality) | the comparison dictionary + fingerprints (built before any DSSYK number exists), boost-to-mass calibration, large-q anchor, anti-scrambling sign test (rungs 25–26) | 38 | FLZ reference table; exact Rindler spectral function; ED-locked large-q bridge; folded-correlator ED lab |
 
 Each folder is self-contained (README, solver, cross-check, `pytest`). Install the pinned
