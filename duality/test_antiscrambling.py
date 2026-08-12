@@ -214,8 +214,64 @@ def test_bench_fold_lorentzian_response_tracks_continuation(bench):
         assert all(b < a for a, b in zip(ims_ed, ims_ed[1:]))
         # quantitative tracking at the smallest lambda-correction points:
         # betaJ = 2, N = 12 tracks within 10%; document-level, not asserted
-        # tighter because the N-trend at fixed p is the OPEN question (see
+        # tighter because the Euclidean N-trend at fixed p is a genuine
+        # obstruction (decided by the fixed-lambda scan below; see
         # ANTISCRAMBLING.md).
         if pt["betaJ"] == 2.0 and pt["N"] == 12:
             for e, c in zip(ims_ed, ims_cf):
                 assert e / c == pytest.approx(1.0, abs=0.15)
+
+
+# ---------------------------------------------------------------------------
+# the fixed-lambda scan (fold_scan.json): rung-26 decider #1
+# ---------------------------------------------------------------------------
+_SCAN = Path(__file__).resolve().parent.parent / "syk-self-averaging" / \
+    "fold_scan.json"
+
+
+@pytest.fixture(scope="module")
+def scan():
+    if not _SCAN.exists():
+        pytest.skip("run syk-self-averaging/fold_bench.py --scan first")
+    return json.loads(_SCAN.read_text())["points"]
+
+
+def _fold_ratio(pt):
+    v = v_of_betaJ(pt["betaJ"])
+    cf = complex(otoc_ratio(*pt["fold_thetas"], v)).real
+    return pt["fold"]["re"] / cf, abs(pt["fold"]["err_re"] / cf)
+
+
+def test_scan_verdict_N_obstruction_not_lambda(scan):
+    """RUNG 26, decider #1: the folded Euclidean drift is a genuine
+    N-obstruction, not a lambda-correction.
+
+    (a) CONTROL: the unfolded crossed OTOC ratio is N-stable across the
+        whole p = 4 series (spread < 0.06 around its O(1/p) offset) --
+        the fold is the culprit, not the closed form;
+    (b) the folded ratio grows STRICTLY with N at fixed p = 4 while
+        lambda = 16/N shrinks -- opposite to a correction that vanishes
+        toward the semiclassical regime;
+    (c) matched lambda = 2.0: the larger-N point (p=6, N=18) drifts
+        further than (p=4, N=8) by many sigma, despite smaller 1/p error;
+    (d) the folded connected fraction |(F-F_d)/F_d| = |ratio|/N grows
+        monotonically and reaches O(1) by N = 20: the 1/N hierarchy
+        collapses under the fold (HZ's 'continuation commutes' fails at
+        ED sizes)."""
+    p4 = sorted((pt for pt in scan if pt["p"] == 4), key=lambda q: q["N"])
+    v = v_of_betaJ(2.0)
+    cf_otoc = {pt["N"]: complex(otoc_ratio(*pt["config_crossed"], v)).real
+               for pt in p4}
+    unfolded = [pt["otoc"]["re"] / cf_otoc[pt["N"]] for pt in p4]
+    assert max(unfolded) - min(unfolded) < 0.06                      # (a)
+    folded = [_fold_ratio(pt)[0] for pt in p4]
+    assert all(b > a for a, b in zip(folded, folded[1:]))            # (b)
+    assert folded[-1] > 5 * folded[0]
+    anchor6 = next(pt for pt in scan if pt["p"] == 6 and pt["N"] == 18)
+    anchor4 = next(pt for pt in scan if pt["p"] == 4 and pt["N"] == 8)
+    r6, e6 = _fold_ratio(anchor6)
+    r4, e4 = _fold_ratio(anchor4)
+    assert r6 - r4 > 4 * np.hypot(e6, e4)                            # (c)
+    conn = [abs(pt["fold"]["re"]) / pt["N"] for pt in p4]
+    assert all(b > a for a, b in zip(conn, conn[1:]))                # (d)
+    assert conn[-1] > 0.7

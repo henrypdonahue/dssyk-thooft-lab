@@ -14,7 +14,7 @@ numerical stress-tests, each cross-checked against an independent method or anal
 |---|---|---|---|
 | [`thooft-target/`](thooft-target) | the yardstick: 't Hooft meson spectrum, $\alpha=0$ (Chebyshev) and $\alpha\neq0$ (matched-exponent Jacobi) | 36 | FLZ to 2e-12; six exact sum rules to ~1e-10; α≠0 spectrally accurate, externally anchored (LM tables + exact sum rules) |
 | [`syk-self-averaging/`](syk-self-averaging) | the falsifiable claims: §3.5 self-averaging + the $M_n$/CP sector + the U(N)/QED campaign (rung 19) + the baryon sector (rung 23) + freeness onset (rung 27) | 94 | RMT Bott periodicity; exact-Wick closed forms vs enumeration and ED |
-| [`duality/`](duality) | the comparison dictionary + fingerprints (built before any DSSYK number exists), boost-to-mass calibration, large-q anchor, anti-scrambling sign test (rungs 25–26) | 38 | FLZ reference table; exact Rindler spectral function; ED-locked large-q bridge; folded-correlator ED lab |
+| [`duality/`](duality) | the comparison dictionary + fingerprints (built before any DSSYK number exists), boost-to-mass calibration, large-q anchor, anti-scrambling sign test (rungs 25–26) | 39 | FLZ reference table; exact Rindler spectral function; ED-locked large-q bridge; folded-correlator ED lab + fixed-λ scan verdict |
 
 Each folder is self-contained (README, solver, cross-check, `pytest`). Install the pinned
 scientific stack once from the repo root (`pip install -e ".[dev]"`), then run `pytest -q`
@@ -68,9 +68,12 @@ scrambling *sign* is analytic (Streicher-transcribed), inheriting an
 empirically-fixed crossed-operator ordering rather than an independent ED sign
 measurement. So the flat dictionary cannot be a dS observer at OTOC level,
 sharpening the tomperature gap to "must flip the sign" — plus first SYK fold data
-(mechanics work; the Lorentzian response tracks the continuation; the Euclidean
-$N$-trend is the open question). Time-ordered physics — the entire spectrum-match
-program — is untouched.
+(mechanics work; the Lorentzian response tracks the continuation) and the fixed-λ
+scan verdict on the Euclidean $N$-trend: **a genuine $N$-obstruction, not a
+λ-artifact** — the folded connected part is not $1/N$-suppressed, so HZ's
+"continuation commutes with the semiclassical limit" fails at ED sizes
+(unfolded control $N$-stable; final $N=\infty$ word awaits the chord-side fold).
+Time-ordered physics — the entire spectrum-match program — is untouched.
 
 **Still untested:** the headline spectrum match itself, and whether the DSSYK singlet
 spectrum is a discrete tower or a continuum — the real open risk.

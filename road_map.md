@@ -242,6 +242,19 @@ independent; the tiers gate the ones that aren't.
   observables converge — λ-corrections vs a genuine Stokes obstruction is
   not separable at ED sizes. Deciders: fixed-λ scan; chord-side folded
   4-pt at N=∞ (adjacent to rung 18 tooling).
+- ✅ **26 decider #1** (2026-08-12): `fold_bench.py --scan` — the fixed-λ
+  scan, p=4 N=8..20 (λ=16/N ∈ [0.8,2]) + matched-λ anchor
+  (p=6,N=18)↔(p=4,N=8). Verdict: **a genuine N-obstruction, not a
+  λ-artifact.** Control: the unfolded OTOC ratio is N-stable (1.80→1.84)
+  while the folded ratio explodes (1.52→8.19); the drift GROWS as λ shrinks
+  (opposite to a semiclassical correction); at matched λ=2.0 the larger-N
+  point drifts further (1.700±0.004 vs 1.522±0.027) despite smaller 1/p
+  error; and the folded connected fraction (F−F_d)/F_d reaches O(1)
+  (−0.37→−0.79) — the 1/N hierarchy itself collapses under the fold. At ED
+  sizes HZ's "continuation commutes" assumption fails, increasingly badly
+  with system size; honest cap N ≤ 20 stated (crossed 4-pt is O(N²dim³)).
+  Final word at N=∞ stays with the chord-side fold (decider #2, rung-18
+  toolchain).
 - ✅ **16** (numerical link, 2026-08-06): `exact_wick.py` `fixed_p_scan` —
   the fixed-p, λ→0 map made explicit (the analytic answer was rung 11's):
   local slopes converge onto N^(−(p−1)/2) with prefactor 2p!/√((p−1)!);
@@ -261,9 +274,9 @@ independent; the tiers gate the ones that aren't.
   scrambling-time separation where CK's statement properly lives; word
   plateaus at N ≥ 20 are SEM-limited.
 - ⬜ Open: 15 proper (exact N=∞ moments), 18, 20–22, 24, and the rung-26
-  chord-side decider (decider #1, the fixed-λ scan, is running as
-  `fold_bench.py --scan`); sharpest next: the O(1/q) residues on the
-  𝓜-skeleton (17 proper) and the tomperature map (13 remainder, now
+  chord-side decider #2 (the N=∞ folded 4-pt, now the sole remaining fold
+  question after decider #1's verdict); sharpest next: the O(1/q) residues
+  on the 𝓜-skeleton (17 proper) and the tomperature map (13 remainder, now
   sign-gated by rung 25) — the gates to 18.
 
 ### Tier 0 — Hygiene (hours; do immediately)
@@ -404,8 +417,9 @@ independent; the tiers gate the ones that aren't.
     `duality/ANTISCRAMBLING.md`.)*
 26. **The Euclidean-fold laboratory.** HZ's fold prescription evaluated exactly in
     finite-N SYK vs the continued closed forms. *(First data done — mechanics work,
-    Lorentzian response tracks, Euclidean N-trend open.)* Deciders, in order of power:
-    fixed-λ scan (p = 4, N = 8–24, sector-resolved ED); the folded 4-pt in the exact
+    Lorentzian response tracks. Decider #1 done 2026-08-12: the Euclidean drift is a
+    genuine N-obstruction, not a λ-artifact — the folded connected part is not
+    1/N-suppressed; progress log.)* Remaining decider: the folded 4-pt in the exact
     chord theory at N = ∞ (the fold is a contour statement; chord correlators are
     analytic in the chord angles) — adjacent to the rung-18 toolchain and would answer
     HZ exactly.

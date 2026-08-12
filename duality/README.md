@@ -38,7 +38,9 @@ Also in this module:
   2607.14215: DSSYK∞ *scrambles* at every temperature
   ($\mathrm{Re}\,a=-1$ exactly), so the flat dictionary cannot produce dS
   anti-scrambling; plus the first SYK data on the HZ Euclidean-fold
-  prescription (ED lab: `../syk-self-averaging/fold_bench.py`).
+  prescription and the fixed-λ scan verdict — the folded Euclidean drift
+  is a genuine $N$-obstruction, not a λ-artifact (ED lab:
+  `../syk-self-averaging/fold_bench.py`, `--scan`).
 
 ```bash
 python3 dictionary.py     # print the yardstick in both conventions

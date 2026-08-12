@@ -96,16 +96,42 @@ $p=6,\ \beta\mathcal J\in\{2,0.5\},\ N\in\{12,14,16\}$:
    drifts **away** as $N$ grows ($\approx1.21$ at $N{=}14$, $\approx1.42$ at
    $N{=}16$); near the continuation's poles (the folded 2-pt at
    $\theta=-\pi$, the small-$v$ folded 4-pt) the ED values converge slowly
-   or not visibly. Two readings, not distinguishable at ED sizes: (a)
-   $\lambda=p^2/N$ corrections simply behave differently under folds (still
-   $\lambda\ge2.25$ here), or (b) a genuine Stokes-type obstruction to HZ's
-   "continuation commutes with the semiclassical limit" assumption is
-   developing. **This is the first data on their SYK question either way.**
+   or not visibly. Two readings, initially not distinguishable at ED sizes:
+   (a) $\lambda=p^2/N$ corrections simply behave differently under folds,
+   or (b) a genuine Stokes-type obstruction to HZ's "continuation commutes
+   with the semiclassical limit" assumption is developing.
 
-## What would decide it
+## The fixed-λ scan decided it (decider #1, `fold_bench.py --scan`)
 
-- A fixed-$\lambda$ scan ($p=4$, $N=8..24$, sector-resolved ED) separates
-  $\lambda$-corrections from genuine $N$-trends.
+$p=4$, $N=8..20$ at $\beta\mathcal J=2$ ($\lambda=16/N\in[0.8,2.0]$), plus
+the matched-$\lambda$ anchor $(p{=}6,N{=}18)\leftrightarrow(p{=}4,N{=}8)$,
+both $\lambda=2.0$ (`fold_scan.json`; asserted in
+`test_antiscrambling.py`). Verdict: **reading (b) — a genuine
+$N$-obstruction, not a $\lambda$-artifact:**
+
+- **The control isolates the fold.** The *unfolded* crossed OTOC ratio
+  (ED/closed form) is $N$-stable across the entire series ($1.80\to1.84$,
+  the expected $O(1/p)$ offset), while the *folded* ratio explodes,
+  $1.52\to8.19$, at the same points, same instances.
+- **$\lambda$-corrections are refuted as the driver.** The folded drift
+  *grows* as $\lambda$ shrinks at fixed $p$ — opposite to a correction
+  that vanishes toward the semiclassical regime — and at matched
+  $\lambda=2.0$ the larger-$N$ point drifts further
+  ($1.700\pm0.004$ at $p{=}6,N{=}18$ vs $1.522\pm0.027$ at $p{=}4,N{=}8$),
+  despite its *smaller* $1/p$ error.
+- **The $1/N$ hierarchy itself collapses under the fold.** The folded
+  connected fraction $(F-F_d)/F_d$ grows monotonically $-0.37\to-0.79$
+  over $N=8\to20$: the folded connected part is *not* $1/N$-suppressed —
+  the $e^{+\tau H}$ segments amplify it to $O(1)$. At ED sizes, HZ's
+  "continuation commutes with the semiclassical limit" fails for the
+  folded 4-pt, increasingly badly with system size.
+
+Honest cap, stated not silent: the scan stops at $N=20$ (the crossed 4-pt
+is $O(N^2\dim^3)$; $N=24$ is out of dense-ED reach), so an eventual
+large-$N$ crossover cannot be excluded from ED alone.
+
+## What would settle it at $N=\infty$
+
 - Chord/exact methods at $N=\infty$ (the rung-18 toolchain) could evaluate
   the folded 4-pt directly in the double-scaled theory — the fold is a
   contour statement, and DSSYK chord correlators are analytic in the chord
