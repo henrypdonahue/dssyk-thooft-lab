@@ -248,10 +248,23 @@ independent; the tiers gate the ones that aren't.
   per-element violation rms(B_jk)/E[B_jj] ~ N^(−(p+1)/2) (10⁻⁶ needs
   N ≈ 826 at p = 4). The Part-I consequence ("emergence is weakest where
   the match is made") is now a printed, tested table, not a remark.
+- ✅ **27** (first data, 2026-08-12): `syk-self-averaging/freeness.py` —
+  the freeness onset CK pose (their §4), measured. For the bosonic pair
+  E = iψ₀ψ₁, F(t) = iψ₂(t)ψ₃(t), freeness ⇔ spec(E+F) = arcsine law
+  (Bernoulli ⊞ Bernoulli); classical (t=0, exact) = binomial. At
+  N = 12..24: the spectrum LANDS on the arcsine law — W1 plateau falls
+  strictly, ~dim^(−0.9) (rigid-spectrum 1/dim floor, not sampling
+  dim^(−1/2)); all alternating words → 0. Nobody had exhibited the
+  free-product transition in a microscopic dS-candidate model. Honest
+  caveats: the distributional crossover sits at the DISSIPATION time
+  (t𝒥 ≈ 1.2, nearly N-independent) — ED cannot resolve the ln N
+  scrambling-time separation where CK's statement properly lives; word
+  plateaus at N ≥ 20 are SEM-limited.
 - ⬜ Open: 15 proper (exact N=∞ moments), 18, 20–22, 24, and the rung-26
-  deciders; sharpest next: the O(1/q) residues on the 𝓜-skeleton (17
-  proper) and the tomperature map (13 remainder, now sign-gated by rung
-  25) — the gates to 18.
+  chord-side decider (decider #1, the fixed-λ scan, is running as
+  `fold_bench.py --scan`); sharpest next: the O(1/q) residues on the
+  𝓜-skeleton (17 proper) and the tomperature map (13 remainder, now
+  sign-gated by rung 25) — the gates to 18.
 
 ### Tier 0 — Hygiene (hours; do immediately)
 
@@ -396,11 +409,13 @@ independent; the tiers gate the ones that aren't.
     chord theory at N = ∞ (the fold is a contour statement; chord correlators are
     analytic in the chord angles) — adjacent to the rung-18 toolchain and would answer
     HZ exactly.
-27. **Freeness onset.** CK show the early/late-operator algebra becomes a free product
+27. ✅ **Freeness onset.** CK show the early/late-operator algebra becomes a free product
     beyond the scrambling time. Freeness is a concrete statement about mixed moments of
     a(0), b(T) — directly measurable with the existing Pauli-string ED at T_B = ∞.
     Nobody has exhibited the free-product transition in a microscopic dS-candidate
-    model; self-contained, publishable either way.
+    model; self-contained, publishable either way. *(Done at first-data level —
+    progress log: arcsine-law convergence with a ~1/dim floor. Remaining
+    sharpening: the ln N onset-time question needs sizes beyond ED.)*
 
 ### Blocked / not worth attempting from here
 

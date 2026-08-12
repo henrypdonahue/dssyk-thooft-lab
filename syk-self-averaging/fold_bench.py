@@ -276,5 +276,46 @@ def main(quick: bool = False):
     print("wrote fold_bench.json")
 
 
+def main_scan():
+    """Rung-26 decider #1: the fixed-lambda scan (ANTISCRAMBLING.md, 'What
+    would decide it').  A p = 4 N-sequence at betaJ = 2 sweeps lambda = 16/N
+    from 2.0 down to 0.8, and the p = 6, N = 18 anchor MATCHES lambda = 2.0
+    with the (p = 4, N = 8) point -- equal lambda at very different N.  If
+    the folded-4pt drift (ED/continued-closed-form ratio) collapses onto
+    lambda the drift is a lambda-correction; if at matched lambda the larger
+    N drifts further, a genuine N-obstruction to 'continuation commutes' is
+    developing.  Honest cap: N <= 20 (the crossed 4-pt is O(N^2 dim^3);
+    N = 24 is out of dense-ED reach) -- the N = infinity answer stays with
+    the chord-side fold (decider #2).  Writes fold_scan.json."""
+    points = [
+        dict(N=8, p=4, betaJ=2.0, n_inst=192, seed=500),
+        dict(N=10, p=4, betaJ=2.0, n_inst=128, seed=501),
+        dict(N=12, p=4, betaJ=2.0, n_inst=96, seed=502),
+        dict(N=14, p=4, betaJ=2.0, n_inst=64, seed=503),
+        dict(N=16, p=4, betaJ=2.0, n_inst=32, seed=504),
+        dict(N=18, p=4, betaJ=2.0, n_inst=16, seed=505),
+        dict(N=20, p=4, betaJ=2.0, n_inst=8, seed=506),
+        dict(N=18, p=6, betaJ=2.0, n_inst=16, seed=507),   # matched-lambda anchor
+    ]
+    results = []
+    for kw in points:
+        print(f"running {kw} ...", flush=True)
+        results.append(run_point(**kw))
+        print(f"  done in {results[-1]['runtime_s']} s", flush=True)
+    payload = dict(
+        provenance="fold_bench.py --scan -- rung-26 decider #1: fixed-lambda "
+                   "scan, p = 4, N = 8..20 at betaJ = 2 (lambda = 16/N in "
+                   "[0.8, 2.0]) + the matched-lambda anchor (p = 6, N = 18) "
+                   "<-> (p = 4, N = 8), both lambda = 2.0.  N <= 20 cap is "
+                   "stated, not silent: crossed 4-pt is O(N^2 dim^3).",
+        points=results)
+    with open(Path(__file__).resolve().parent / "fold_scan.json", "w") as fh:
+        json.dump(payload, fh, indent=1)
+    print("wrote fold_scan.json")
+
+
 if __name__ == "__main__":
-    main(quick="--quick" in sys.argv)
+    if "--scan" in sys.argv:
+        main_scan()
+    else:
+        main(quick="--quick" in sys.argv)

@@ -68,10 +68,33 @@ along fixed $p=4$ — the map-robust targets for the exact $N=\infty$
 chord/Wick computation. **Large-q ED bench** (`largeq_bench.py`): ground
 truth for `duality/largeq_anchor.py`.
 
+**Freeness onset — the free-product transition, first data** (rung 27,
+`freeness.py`): Cui–Kolchmeyer (2607.13665 §4) argue early/late observer
+algebras combine as a *free product* past the scrambling time; at $T_B=\infty$
+the state is the trace, so this is measurable. For the bosonic pair
+$E=i\psi_0\psi_1$, $F(t)=i\psi_2(t)\psi_3(t)$ (both $\pm1$ symmetries,
+commuting and classically independent at $t=0$), freeness is equivalent to
+$\mathrm{spec}(E{+}F(t))$ = the **arcsine law** (free convolution
+Bernoulli$\boxplus$Bernoulli; classical = binomial). Measured, $N=12..24$
+(dim 64..4096): the spectrum lands ON the arcsine law — the $W_1$ distance
+plateau falls strictly with every $N$ step, $\sim\mathrm{dim}^{-0.9}$
+(the $\sim1/\mathrm{dim}$ floor of a rigid spectrum, far below the
+$\mathrm{dim}^{-1/2}$ of unstructured sampling), so the free product is exact
+in the limit by this trend. Alternating words ($\tau[(EF)^k]$, the Majorana
+OTOC $\tau[abab]$: free prediction 0 for all) land on 0 to their
+statistics-limited floors. **Honest caveats:** the distributional crossover
+sits at the *dissipation* time $t\mathcal J\approx1.2$, nearly
+$N$-independent — ED sizes cannot resolve the $\ln N$ scrambling-time
+separation CK's statement lives at (the word $\tau[abab]$ shows only a weak
+drift, $t_{1/2}\mathcal J\approx2.1\to2.6$ over dim $64\to4096$); and the
+word plateaus at $N\ge20$ are SEM-limited (6 instances at $N=24$). First
+exhibition of the free-product transition in a microscopic dS-candidate
+model, either way.
+
 Numbers: [`results.txt`](results.txt)/`results.json`; figures
 `self_averaging.png`, `mn_spectra.png` (+ `mn_spectra_big.*` at $N_c=12$),
-`qed_campaign.png`, `baryons.png`; data `moments.json`, `largeq_bench.json`,
-`qed_campaign.json`, `baryons.json`.
+`qed_campaign.png`, `baryons.png`, `freeness.png`; data `moments.json`,
+`largeq_bench.json`, `qed_campaign.json`, `baryons.json`, `freeness.json`.
 
 ## Why the numbers are trustworthy
 
@@ -99,11 +122,12 @@ Numbers: [`results.txt`](results.txt)/`results.json`; figures
 | `qed_campaign.py` | U(N) self-averaging exact + charging curves + charged/singlet scales (rung 19) |
 | `baryons.py` | ε-tensor baryon sector: collapse, extensivity, hierarchy (rung 23) |
 | `largeq_bench.py` | ED ground truth for the large-q anchor (`duality/largeq_anchor.py`) |
-| `fold_bench.py` | complex-time/folded 4-pt ED lab for rungs 25–26 (`duality/ANTISCRAMBLING.md`) |
+| `fold_bench.py` | complex-time/folded 4-pt ED lab for rungs 25–26 (`duality/ANTISCRAMBLING.md`); `--scan` = the rung-26 fixed-λ decider |
+| `freeness.py` | freeness onset: the classical→free-product transition (rung 27) |
 | `validate_syk.py` | RMT level-statistics validation |
 | `self_averaging.py` | the §3.5 measurement + verdict |
-| `plot_self_averaging.py` | figure (reads `results.json`) |
-| `test_syk.py`, `test_qed_campaign.py`, `test_baryons.py` | 86-test asserting suites |
+| `plot_self_averaging.py`, `plot_freeness.py` | figures (read the JSONs) |
+| `test_syk.py`, `test_qed_campaign.py`, `test_baryons.py`, `test_freeness.py` | asserting suites |
 
 ## Usage
 
@@ -116,7 +140,9 @@ python3 dirac.py                # Dirac/QED identities + CP report (~5 s)
 python3 mn_spectroscopy.py      # Mn spectral functions (seconds; --big = Nc 12, minutes)
 python3 qed_campaign.py         # rung 19 campaign (writes qed_campaign.*)
 python3 baryons.py              # rung 23 campaign (writes baryons.*)
+python3 freeness.py             # rung 27 campaign (hours; writes freeness.json)
 python3 plot_self_averaging.py  # figure
+python3 plot_freeness.py        # figure (reads freeness.json)
 pytest -q -m 'not slow'         # fast asserts (~1 min)
 ```
 

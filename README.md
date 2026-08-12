@@ -13,7 +13,7 @@ numerical stress-tests, each cross-checked against an independent method or anal
 | module | role | tests | headline anchor |
 |---|---|---|---|
 | [`thooft-target/`](thooft-target) | the yardstick: 't Hooft meson spectrum, $\alpha=0$ (Chebyshev) and $\alpha\neq0$ (matched-exponent Jacobi) | 36 | FLZ to 2e-12; six exact sum rules to ~1e-10; α≠0 spectrally accurate, externally anchored (LM tables + exact sum rules) |
-| [`syk-self-averaging/`](syk-self-averaging) | the falsifiable claims: §3.5 self-averaging + the $M_n$/CP sector + the U(N)/QED campaign (rung 19) + the baryon sector (rung 23) | 89 | RMT Bott periodicity; exact-Wick closed forms vs enumeration and ED |
+| [`syk-self-averaging/`](syk-self-averaging) | the falsifiable claims: §3.5 self-averaging + the $M_n$/CP sector + the U(N)/QED campaign (rung 19) + the baryon sector (rung 23) + freeness onset (rung 27) | 94 | RMT Bott periodicity; exact-Wick closed forms vs enumeration and ED |
 | [`duality/`](duality) | the comparison dictionary + fingerprints (built before any DSSYK number exists), boost-to-mass calibration, large-q anchor, anti-scrambling sign test (rungs 25–26) | 38 | FLZ reference table; exact Rindler spectral function; ED-locked large-q bridge; folded-correlator ED lab |
 
 Each folder is self-contained (README, solver, cross-check, `pytest`). Install the pinned
@@ -42,7 +42,11 @@ particle-hole map, and raw $M_{n\ge2}$ are CP-mixtures — CP lives in resolved 
 spectral-moment invariants along fixed $p$ (`moments_pipeline.py`);
 U(N)-class self-averaging exact + charging curves with GLS statistics
 (`qed_campaign.py`, rung 19); baryon-sector first contact — exact 2-point collapse,
-$M_B$ extensivity, edge-curvature hierarchy (`baryons.py`, rung 23).
+$M_B$ extensivity, edge-curvature hierarchy (`baryons.py`, rung 23); **first
+exhibition of CK's early/late free-product transition** — $\mathrm{spec}(E{+}F(t))$
+lands on the arcsine law with a rigid-spectrum $\sim1/\mathrm{dim}$ floor, onset at
+the dissipation time (`freeness.py`, rung 27; the $\ln N$ scrambling-time
+separation is beyond ED).
 
 **New calibration (rung 13, `duality/BOOST.md`):** one discrete mass appears in
 boost frequency as a *continuum with mass-encoding nodes* — peak-hunting is the

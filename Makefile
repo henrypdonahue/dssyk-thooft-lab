@@ -30,6 +30,7 @@ reproduce:
 	cd syk-self-averaging && $(PY) dirac.py
 	cd syk-self-averaging && $(PY) mn_spectroscopy.py
 	cd syk-self-averaging && $(PY) plot_self_averaging.py
+	cd syk-self-averaging && $(PY) plot_freeness.py
 	cd duality && $(PY) dictionary.py
 	cd duality && $(PY) boost_mass.py
 	cd duality && $(PY) largeq_anchor.py
@@ -46,6 +47,8 @@ reproduce-slow:
 	cd syk-self-averaging && $(PY) baryons.py
 	cd syk-self-averaging && $(PY) mn_spectroscopy.py --big
 	cd syk-self-averaging && $(PY) fold_bench.py
+	cd syk-self-averaging && $(PY) fold_bench.py --scan
+	cd syk-self-averaging && $(PY) freeness.py
 	cd thooft-target && $(PY) generate_reference.py
 	cd thooft-target && $(PY) jacobi_solver.py
 	cd thooft-target && $(PY) thooft_spectrum.py --csv
