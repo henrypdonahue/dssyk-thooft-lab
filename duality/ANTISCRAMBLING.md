@@ -130,17 +130,60 @@ Honest cap, stated not silent: the scan stops at $N=20$ (the crossed 4-pt
 is $O(N^2\dim^3)$; $N=24$ is out of dense-ED reach), so an eventual
 large-$N$ crossover cannot be excluded from ED alone.
 
-## What would settle it at $N=\infty$
+## Decider #2 (2026-08-16, settled): the fold at $N=\infty$ — the obstruction is structural
 
-- Chord/exact methods at $N=\infty$ (the rung-18 toolchain) could evaluate
-  the folded 4-pt directly in the double-scaled theory — the fold is a
-  contour statement, and DSSYK chord correlators are analytic in the chord
-  angles. That would answer HZ exactly, and is adjacent to the headline
-  tower extraction.
-- The negative-temperature variant (HZ 6.12) is the $H\to-H$ reflection
-  (tested as such): for the SYK *ensemble*, $H$ and $-H$ are equidistributed
-  at $p\equiv0\bmod4$, so disorder-averaged (6.9) and (6.12) coincide —
-  the two prescriptions are ensemble-equivalent here, one less ambiguity.
+The rung-18 chord engine (`chord.py`, validated three independent ways; see
+`CHORD.md`) evaluates the folded 4-pt **exactly in the double-scaled
+theory**: `chord_fold.py` mirrors `fold_bench.py` configuration-for-
+configuration (same $\theta$'s, same (6.9) $n{=}1$ fold, same frozen path
+order — the transposition minus is *derived* here, as the fermionic
+matter-matter chord crossing sign) at $\lambda = 4.0 \to 0.5$
+(`chord_fold.json`, truncation-doubled, drifts $\le 10^{-5}$). Verdict:
+
+1. **The control behaves.** The unfolded crossed $\mathcal F/F_d$ is
+   λ-stable ($-1.65\ldots-1.67$ across the entire scan) and *exactly* real
+   (the configuration symmetry finite-$N$ ED shows becomes exact), ~10%
+   from the matched-λ ED values — the expected finite-$N$ gap.
+2. **The folded connected part is NOT suppressed at $N=\infty$.** As
+   $\lambda \to 0$ the unfolded connected fraction dies $\propto\lambda$
+   (the 1/N hierarchy), but the folded one stays $O(1)$ *and grows*:
+   $-0.21 \to -0.33$ over $\lambda = 2.7 \to 0.5$. Consequently the
+   $N$-scaled folded ratio runs away from the continued Streicher form
+   $\propto 1/\lambda$: $-1.86 \to -21.3$ against a constant $-1.92$.
+   **HZ's "continuation commutes with the semiclassical limit" fails in
+   DSSYK$_\infty$ itself** — the ED $N$-obstruction of decider #1 was
+   real, and at $N = \infty$ it is a λ-obstruction. The folded Lorentzian
+   branch develops the negative $\mathrm{Im}$ the continuation predicts
+   (sign right, magnitude amplified ~3×), so the fold *mechanism* works
+   qualitatively while its quantitative continuation assumption fails.
+3. **The fold destroys 1/N convergence from both ends — and the mechanism
+   is measured.** At matched λ with the exact finite-$N$ bridge, ED folded
+   values sit ×1.52 (N=8) and ×1.62 (N=18) above the exact $N=\infty$
+   ones — the gap *grows* over the ED window while unfolded gaps stay
+   ≤ 10%. The mechanism (`fold_edge_probe.py`, `fold_edge_probe.json`):
+   the per-instance folded connected fraction correlates with the
+   instance's **upper spectral edge** at $-0.86$ (unfolded control:
+   $+0.15$; lower edge: $-0.23$ — the (6.9) fold weights $E_{\max}$
+   specifically, as $e^{+\tau H}$ predicts), with ×35 the unfolded
+   instance-to-instance scatter. Folded correlators at ED sizes measure
+   *edge fluctuations* — a Tracy–Widom-scale finite-$N$ effect the
+   sharp-edged chord theory lacks — which is why their $1/N$ convergence
+   is slow and non-uniform.
+
+Honest caps: folded contours below $\lambda \approx 0.5$ exceed float
+cancellation headroom (measured: the λ=0.3 evaluation moves 6.6e3→3.8e4
+between truncations and is excluded); the λ-trend over $[0.5, 4]$ is
+unambiguous. For HZ's program the consequence is sharp: in the one
+bounded-spectrum, exactly-solvable microscopic candidate, the folded
+correlator is finite (their requirement holds) but does **not** approach
+the analytic continuation of the unfolded semiclassical answer — an
+anti-scrambling dS observer cannot be reached from DSSYK$_\infty$ by their
+fold without large corrections that survive every limit taken here.
+
+Also run en route: the negative-temperature variant (HZ 6.12) is the
+$H\to-H$ reflection (tested as such): for the SYK *ensemble*, $H$ and $-H$
+are equidistributed at $p\equiv0\bmod4$, so disorder-averaged (6.9) and
+(6.12) coincide — the two prescriptions are ensemble-equivalent here.
 
 ## Standing caveats (stated once, apply throughout)
 

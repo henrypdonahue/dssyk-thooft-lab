@@ -1,0 +1,16 @@
+{
+ "N": 12,
+ "p": 4,
+ "betaJ": 2.0,
+ "n_inst": 48,
+ "seed": 777,
+ "corr_Emax_folded": -0.8595391187392194,
+ "corr_Emax_unfolded": 0.15301563683428426,
+ "corr_negEmin_folded": -0.2272509281096842,
+ "folded_frac_mean": -0.4854653108896394,
+ "folded_frac_std": 0.032578836497419335,
+ "unfolded_frac_mean": -0.15210338812505275,
+ "unfolded_frac_std": 0.0009259966465994782,
+ "provenance": "fold_edge_probe.py -- the soft-edge mechanism behind the folded 4-pt's finite-N behavior (rung-26 epilogue; duality/ANTISCRAMBLING.md)",
+ "runtime_s": 51.2
+}
