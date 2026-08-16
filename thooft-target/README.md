@@ -75,8 +75,9 @@ monotonically decreasing, $f_0=+0.9428$.
 | `thooft_highprec.py` / `generate_reference.py` | mpmath solver / certified reference builder |
 | `sine_solver.py` | independent cross-check solver |
 | `eigenfunctions.py` | wavefunction-level validation + decay constants |
+| `condensate.py` | rung-21 bulk half: exact condensate (LM (6.1)), GMOR chiral corner vs the Jacobi solver (first data at α→−1: $2\lambda_0\to(2/\pi)\sqrt{a/3}$, measured NLO $\simeq\sqrt a$), and the Feynman–Hellmann vacuum-energy curve — the entire 2d counterpart of §5's "corrections" is the finite number $\varepsilon(0)=-0.0407\,N_cg^2$ |
 | `external_anchors.json` | FLZ sum rules s=1..8 + LM α≠0 tables and exact sum rules (provenance inside) |
-| `test_thooft.py`, `test_jacobi.py` / `validate.py` | asserting suites / human-readable gate (exit code) |
+| `test_thooft.py`, `test_jacobi.py`, `test_condensate.py` / `validate.py` | asserting suites / human-readable gate (exit code) |
 | `reference_spectrum.json`, `spectrum_double_precision.csv`, `jacobi_convergence.json`, `plot_spectrum.py` | outputs |
 
 ```bash
@@ -84,7 +85,8 @@ pip install -r requirements.txt
 python3 thooft_spectrum.py     # print the spectrum
 python3 validate.py            # validation report (exit code = pass/fail)
 python3 eigenfunctions.py      # wavefunction-level checks + decay constants
-pytest -q                      # 36 asserting tests (~1 min; Jacobi sweeps dominate)
+python3 condensate.py          # condensate + GMOR corner + vacuum energy
+pytest -q                      # 42 asserting tests (~1 min; Jacobi sweeps dominate)
 ```
 
 ## Result

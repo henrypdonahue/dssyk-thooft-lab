@@ -41,9 +41,29 @@ Also in this module:
   prescription and the fixed-λ scan verdict — the folded Euclidean drift
   is a genuine $N$-obstruction, not a λ-artifact (ED lab:
   `../syk-self-averaging/fold_bench.py`, `--scan`).
+- [`CHORD.md`](CHORD.md) + `chord.py`, `chord_moments.py`, `chord_fold.py`
+  — **the exact $N=\infty$ chord engine** (rung-18 toolchain): transfer
+  matrix + matter-chord contour evaluator, validated against a brute-force
+  chord-diagram enumerator, the published closed forms, a chord-free
+  Krawtchouk microscopy, and finite-$N$ ED (thermal 2-pt to 0.6–1.6%).
+  Deliverables: the rung-18 λ→0 spectral scan (**structureless continua;
+  and the $A_n$ singlet channels are exactly conserved at $N=\infty$** —
+  the tower is invisible at every order of the double-scaled expansion;
+  `chord_spectra.json`, `chord_moments.json`), and the rung-26 decider #2
+  (**the HZ fold fails in the double-scaled theory itself**;
+  `chord_fold.json`). Figure: `plot_chord.py`.
+- [`DISCRIMINATOR.md`](DISCRIMINATOR.md) — rung-24 KMS/OTOC-axis note:
+  where the three competing duals (MSS flat-space, Narovlansky–Verlinde,
+  sine-dilaton) sit against the CK no-go and this repo's measured data;
+  sine-dilaton's fake-temperature reading is the one consistent with the
+  data as-is ($\beta_{\rm fake}\lambda_L=2\pi$ tested).
 
 ```bash
 python3 dictionary.py     # print the yardstick in both conventions
 python3 antiscrambling.py # the OTOC sign table + fold map
-pytest -q                 # 38 tests: conventions, boost, large-q, anti-scrambling
+python3 chord.py --spectra   # rung-18 lambda->0 scan  (~4 min)
+python3 chord_moments.py --run  # rung-15 exact moments (~1 s)
+python3 chord_fold.py        # rung-26 decider #2       (~30 s)
+pytest -q                 # 141 tests: conventions, boost, large-q,
+                          # anti-scrambling, chord engine + verdicts
 ```

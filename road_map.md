@@ -273,11 +273,66 @@ independent; the tiers gate the ones that aren't.
   (t𝒥 ≈ 1.2, nearly N-independent) — ED cannot resolve the ln N
   scrambling-time separation where CK's statement properly lives; word
   plateaus at N ≥ 20 are SEM-limited.
-- ⬜ Open: 15 proper (exact N=∞ moments), 18, 20–22, 24, and the rung-26
-  chord-side decider #2 (the N=∞ folded 4-pt, now the sole remaining fold
-  question after decider #1's verdict); sharpest next: the O(1/q) residues
-  on the 𝓜-skeleton (17 proper) and the tomperature map (13 remainder, now
-  sign-gated by rung 25) — the gates to 18.
+- ✅ **18 tooling + first deliverable** (2026-08-16): `duality/chord.py` —
+  the exact N=∞ chord engine (transfer matrix + matter-chord contour
+  evaluator, no Askey–Wilson functions), validated three independent ways
+  (brute-force chord-diagram enumerator; published closed forms (2.30)/
+  Touchard–Riordan; chord-free Krawtchouk microscopy of q = e^(−2p²/N),
+  deviation O(p⁴/N²) measured) + ED anchors (thermal 2-pt to 0.6–1.6% at
+  N=12–16 — vs the ~30–55% large-q floor). λ→0 scan (`chord_spectra.json`):
+  every channel a STRUCTURELESS CONTINUUM at every λ down to 0.05 — zero
+  maxima, zero nodes at the semiclassical scale — converging to the
+  sech^{2Δ} transform linearly in λ; ⟨n(t)⟩ length growth exact-in-λ.
+- ✅ **15 proper** (2026-08-16): `duality/chord_moments.py` +
+  `syk-self-averaging/mn_majorana_bench.py` — exact N=∞ moments of the
+  H-derived singlet channels A_n = Σψᵢ(ad_H)ⁿψᵢ via chord words (assembly
+  verified as a per-instance operator identity): **μ₂ = μ₄ = 0 to machine
+  precision, n = 1,2,3, every λ ∈ [0.1, 4], any matter weight** — the
+  singlet bilinear tower carries NO propagating weight at strict double
+  scaling (A₁ = −2pH is the exact anchor; the O_Δ random channels DO
+  propagate: μ₂ = 2(1−q^Δ), kurt → 3+1/Δ). ED bench (p = 4, 6; N ≤ 22):
+  raw w₂ RISES along fixed p toward the λ→0 corner (the tower turns on
+  exactly where the match lives); artifact-corrected ((1−2p/N)², the
+  exact_wick p=N/2 zero) w₂ falls with N at fixed λ. THE TOWER IS A 1/N
+  EFFECT INVISIBLE AT EVERY ORDER OF THE DOUBLE-SCALED EXPANSION — the
+  exact-in-λ generalization of rung 17's cancellation; the match lives
+  strictly outside strict double scaling. Honest cap: firm asymptotics
+  need N ≫ 2p, beyond dense ED.
+- ✅ **26 decider #2** (2026-08-16, the fold question CLOSED):
+  `duality/chord_fold.py` — the HZ fold exactly at N=∞ (fold_bench
+  conventions mirrored; the crossed transposition minus DERIVED as the
+  fermionic matter-chord crossing sign). Unfolded control: λ-stable
+  (−1.65…−1.67), exactly real, ~10% from matched-λ ED. Folded: the
+  connected fraction stays O(1) and GROWS as λ→0 (−0.21→−0.33 over
+  λ = 2.7→0.5) — no 1/N suppression at N=∞ — so the N-scaled folded ratio
+  runs from the continued closed form ∝ 1/λ (−1.86→−21.3 vs −1.92
+  constant): HZ's "continuation commutes" fails IN THE DOUBLE-SCALED
+  THEORY ITSELF. ED sits ×1.5–1.6 above the exact N=∞ folded values at
+  matched λ (unfolded ≤ 10%): the fold amplifies finite-N corrections
+  (soft-edge hypothesis stated). Cap: λ ≥ 0.5 (float headroom, measured).
+- ✅ **21 bulk half** (2026-08-16): `thooft-target/condensate.py` — LM
+  2409.11324 (6.1)–(6.3) transcribed (exact condensate at any mass;
+  Zhitnitsky chiral value −Nc√(g²/12π) reproduced through the I(α)
+  near-singularity); GMOR corner vs the Jacobi solver — FIRST α→−1 data:
+  2λ₀ → (2/π)√(a/3) with measured NLO ≃ √a (solver 10-digit converged);
+  vacuum energy by Feynman–Hellmann: the ENTIRE 2d counterpart of §5's
+  fine-tuning drama is the single finite number ε(0) = −0.0407 Nc g² —
+  super-renormalizability confronted: nothing to tune. (JT-dS ε = 3/(8S)
+  derivation = the still-open theory half.)
+- ✅ **24 note** (2026-08-16): `duality/DISCRIMINATOR.md` — the KMS/OTOC
+  axis across the three programs, quote-anchored (NV §2.3 engineers
+  dS-KMS → faces the CK no-go head-on, discriminating computation = the
+  OTOC sign of their dressed operators, unpublished; sine-dilaton §1:
+  correlators thermal at the FAKE temperature, black-hole bulk,
+  sub-maximal scrambling — the one reading consistent with this repo's
+  data as-is, β_fake·λ_L = 2π tested; MSS flat-space owes the
+  sign-flipping map, and the fold is now excluded in-model).
+- ⬜ Open: 18 remainder (the tower extraction itself, now located at fixed
+  p, λ→0 — a 1/N computation from the double-scaled viewpoint), 17 proper
+  (the O(1/q) residues — theory), 13 remainder (tomperature map, sign-
+  gated), 20, 21 theory half (JT-dS ε = 3/(8S)), 22, 27 sharpening (ln N
+  onset, beyond ED); NV-sector OTOC sign (the rung-24 discriminating
+  computation; needs the two-sided constrained chord extension).
 
 ### Tier 0 — Hygiene (hours; do immediately)
 

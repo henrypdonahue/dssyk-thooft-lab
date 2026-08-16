@@ -26,6 +26,7 @@ test-all:
 # the single-realization spectroscopy (Nc = 10), and figures from saved JSON.
 reproduce:
 	cd thooft-target && $(PY) validate.py
+	cd thooft-target && $(PY) condensate.py
 	cd syk-self-averaging && $(PY) exact_wick.py
 	cd syk-self-averaging && $(PY) dirac.py
 	cd syk-self-averaging && $(PY) mn_spectroscopy.py
@@ -35,6 +36,8 @@ reproduce:
 	cd duality && $(PY) boost_mass.py
 	cd duality && $(PY) largeq_anchor.py
 	cd duality && $(PY) antiscrambling.py
+	cd duality && $(PY) chord_moments.py --run
+	cd duality && $(PY) plot_chord.py
 
 # The disorder-ensemble sweeps and high-precision reference generation that
 # produced the committed JSON/CSV artifacts.  Hours, not minutes.
@@ -49,6 +52,10 @@ reproduce-slow:
 	cd syk-self-averaging && $(PY) fold_bench.py
 	cd syk-self-averaging && $(PY) fold_bench.py --scan
 	cd syk-self-averaging && $(PY) freeness.py
+	cd syk-self-averaging && $(PY) mn_majorana_bench.py
+	cd syk-self-averaging && $(PY) fold_edge_probe.py
+	cd duality && $(PY) chord.py --spectra
+	cd duality && $(PY) chord_fold.py
 	cd thooft-target && $(PY) generate_reference.py
 	cd thooft-target && $(PY) jacobi_solver.py
 	cd thooft-target && $(PY) thooft_spectrum.py --csv

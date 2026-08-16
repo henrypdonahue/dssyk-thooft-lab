@@ -70,6 +70,13 @@ from scipy.sparse.linalg import expm_multiply
 HERE = Path(__file__).resolve().parent
 
 
+def _round6(xs):
+    """Arrays stored in campaign JSONs are rounded to 6 significant digits
+    (the verdict scalars are kept at full precision) -- keeps the committed
+    artifacts lean."""
+    return [float(f"{x:.6g}") for x in xs]
+
+
 # ---------------------------------------------------------------------------
 # q-arithmetic
 # ---------------------------------------------------------------------------
@@ -810,7 +817,7 @@ def run_spectra(lams=(2.0, 1.0, 0.5, 0.25, 0.1, 0.05),
             np.linspace(Jc, 2.05 * band, 320)]))
         row = dict(lam=lam, q=q, band=band, Jc_bridge=Jc, n_theta=n_th,
                    om_fine=[0.0, float(om_fine[-1]), len(om_fine)],
-                   om_coarse=om_coarse.tolist(),
+                   om_coarse=_round6(om_coarse),
                    channels={})
         for d in list(deltas) + [None]:
             key = "length" if d is None else f"delta={d}"
@@ -838,9 +845,9 @@ def run_spectra(lams=(2.0, 1.0, 0.5, 0.25, 0.1, 0.05),
                 sech_dev = float(np.max(np.abs(Sf2 - ssc)) /
                                  max(np.max(ssc), 1e-300))
             row['channels'][key] = dict(
-                om_fine=om_f.tolist(),
-                S_fine=Sf2.tolist(), S_coarse=Sc.tolist(),
-                S_semiclassical_fine=ssc.tolist(),
+                om_fine=_round6(om_f),
+                S_fine=_round6(Sf2), S_coarse=_round6(Sc),
+                S_semiclassical_fine=_round6(ssc),
                 quadrature_drift=drift, mu0=mu0, mu0_closed=mu0_closed,
                 mu2=mu2, mu2_closed=mu2_closed, sech_dev=sech_dev, **rep)
         # length growth curve vs the semiclassical closed form (transfer
@@ -849,9 +856,9 @@ def run_spectra(lams=(2.0, 1.0, 0.5, 0.25, 0.1, 0.05),
         ts = np.linspace(0.0, min(10.0 / Jc, 0.45 * nmax / band), 60)
         nt = n_expectation(ts, q, nmax)
         nt_sc = -(2.0 / lam) * np.log(1.0 / np.cosh(Jc * ts))
-        row['length_growth'] = dict(ts=ts.tolist(), nmax=nmax,
-                                    n_of_t=nt.tolist(),
-                                    n_of_t_semiclassical=nt_sc.tolist())
+        row['length_growth'] = dict(ts=_round6(ts), nmax=nmax,
+                                    n_of_t=_round6(nt),
+                                    n_of_t_semiclassical=_round6(nt_sc))
         points.append(row)
         ch = row['channels']
         print(f"lam={lam}: n_theta={n_th} "

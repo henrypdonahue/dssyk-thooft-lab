@@ -12,9 +12,9 @@ numerical stress-tests, each cross-checked against an independent method or anal
 
 | module | role | tests | headline anchor |
 |---|---|---|---|
-| [`thooft-target/`](thooft-target) | the yardstick: 't Hooft meson spectrum, $\alpha=0$ (Chebyshev) and $\alpha\neq0$ (matched-exponent Jacobi) | 36 | FLZ to 2e-12; six exact sum rules to ~1e-10; α≠0 spectrally accurate, externally anchored (LM tables + exact sum rules) |
-| [`syk-self-averaging/`](syk-self-averaging) | the falsifiable claims: §3.5 self-averaging + the $M_n$/CP sector + the U(N)/QED campaign (rung 19) + the baryon sector (rung 23) + freeness onset (rung 27) | 94 | RMT Bott periodicity; exact-Wick closed forms vs enumeration and ED |
-| [`duality/`](duality) | the comparison dictionary + fingerprints (built before any DSSYK number exists), boost-to-mass calibration, large-q anchor, anti-scrambling sign test (rungs 25–26) | 39 | FLZ reference table; exact Rindler spectral function; ED-locked large-q bridge; folded-correlator ED lab + fixed-λ scan verdict |
+| [`thooft-target/`](thooft-target) | the yardstick: 't Hooft meson spectrum, $\alpha=0$ (Chebyshev) and $\alpha\neq0$ (matched-exponent Jacobi); condensate/GMOR corner + vacuum energy (rung 21) | 42 | FLZ to 2e-12; six exact sum rules to ~1e-10; α≠0 spectrally accurate, externally anchored (LM tables + exact sum rules); LM (6.1) condensate + chiral-corner GMOR data |
+| [`syk-self-averaging/`](syk-self-averaging) | the falsifiable claims: §3.5 self-averaging + the $M_n$/CP sector + the U(N)/QED campaign (rung 19) + the baryon sector (rung 23) + freeness onset (rung 27) + the Majorana singlet-moment bench (rung 15) | 103 | RMT Bott periodicity; exact-Wick closed forms vs enumeration and ED |
+| [`duality/`](duality) | the comparison dictionary + fingerprints, boost-to-mass calibration, large-q anchor, anti-scrambling sign test (rungs 25–26), **the exact $N=\infty$ chord engine** (rungs 15/18/26) + KMS-axis discriminator (rung 24) | 141 | FLZ reference table; exact Rindler spectral function; ED-locked large-q bridge; chord engine validated 3 independent ways, thermal 2-pt vs ED to 0.6–1.6% |
 
 Each folder is self-contained (README, solver, cross-check, `pytest`). Install the pinned
 scientific stack once from the repo root (`pip install -e ".[dev]"`), then run `pytest -q`
@@ -72,11 +72,39 @@ sharpening the tomperature gap to "must flip the sign" — plus first SYK fold d
 scan verdict on the Euclidean $N$-trend: **a genuine $N$-obstruction, not a
 λ-artifact** — the folded connected part is not $1/N$-suppressed, so HZ's
 "continuation commutes with the semiclassical limit" fails at ED sizes
-(unfolded control $N$-stable; final $N=\infty$ word awaits the chord-side fold).
+(unfolded control $N$-stable; the chord-side fold has since settled it — next block).
 Time-ordered physics — the entire spectrum-match program — is untouched.
 
-**Still untested:** the headline spectrum match itself, and whether the DSSYK singlet
-spectrum is a discrete tower or a continuum — the real open risk.
+**The $N=\infty$ chord verdicts (2026-08-16, `duality/CHORD.md`):** the exact
+double-scaled theory is now implemented as finite linear algebra (chord transfer
+matrix + matter contours, validated three independent ways; thermal 2-pt vs ED to
+0.6–1.6%). Three results: **(rung 18)** at $T_B=\infty$, every spectral channel is a
+*structureless continuum* at every λ, converging to the semiclassical
+sech$^{2\Delta}$ transform linearly in λ — no tower emerges; **(rung 15)** sharper:
+the H-derived singlet bilinear channels $A_n=\sum_i\psi_i(\mathrm{ad}_H)^n\psi_i$
+are *exactly conserved* at $N=\infty$ (μ₂ = μ₄ = 0 to machine precision at every λ;
+$A_1=-2pH$ is the exact anchor) — **the meson tower is a 1/N effect invisible at
+every order of the double-scaled expansion**, and the ED bench shows it turning on
+along fixed $p$, λ→0 — exactly the 't Hooft corner. The match lives strictly outside
+the strict double-scaling limit; **(rung 26 decider #2)** the HZ Euclidean fold fails
+*in the double-scaled theory itself*: the folded connected part stays $O(1)$ as λ→0
+(no 1/N suppression), the $N$-scaled folded ratio runs away from the continued
+closed form $\propto1/\lambda$ — closing the fold as an anti-scrambling mechanism
+for DSSYK∞. Plus **(rung 21)** the bulk vacuum-energy half: LM's exact condensate
+transcribed and verified against the solver in the chiral corner (first
+$\alpha\to-1$ data: $2\lambda_0\to(2/\pi)\sqrt{a/3}$, measured NLO $\simeq\sqrt a$);
+the entire 2d counterpart of §5's fine-tuning drama is one finite number,
+$\varepsilon(0)=-0.0407\,N_cg^2$ — nothing to tune. And **(rung 24,
+`duality/DISCRIMINATOR.md`)** the KMS/OTOC axis now discriminates the three
+competing duals: sine-dilaton's fake-temperature black-hole reading matches the
+measured data as-is; MSS flat-space owes a sign-flipping map (the fold is now
+excluded); NV engineers dS-KMS and so faces the CK no-go head-on, pending a
+computable OTOC sign.
+
+**Still untested:** the headline spectrum match itself — now precisely located: the
+tower must be extracted along fixed $p$, λ→0 (a $1/N$ effect from the double-scaled
+viewpoint), through the rung-17 $O(1/q)$ residues or direct fixed-$p$ methods; the
+$N=\infty$ chord side is closed.
 
 ## Load-bearing corrections for any comparison
 
@@ -96,12 +124,13 @@ spectrum is a discrete tower or a continuum — the real open risk.
 
 The DSSYK meson spectrum **is** the fermion-bilinear 4-point spectrum; the $M_n$ tower is
 frequency-weighting of one object. The masses are unpublished (2506.18054 §5.3: "we don't
-know the masses…", promised for a future paper — a live race), but the starting object is
-in print: the exact $T=\infty$ chord 4-point function (arXiv:1811.02584) and closed-form
-large-$q$ 4-point functions. Remaining ladder (rungs in `road_map.md`): boost-to-mass
-dictionary (13) → $N=\infty$ moments vs sum rules (15) → large-$q$ Regge anchor (17) →
-extract the tower from the chord 4-point function (18). Discrete-vs-continuum is the first
-deliverable and is publishable either way.
+know the masses…", promised for a future paper — a live race). The first deliverable —
+discrete-vs-continuum at $N=\infty$ — is now **delivered** (`duality/CHORD.md`): the exact
+chord answer is *neither* — the singlet channels are conserved at strict double scaling,
+so the tower is a $1/N$ effect living along fixed $p$, λ→0. Remaining ladder (rungs in
+`road_map.md`): the $O(1/q)$ residues on the large-$q$ skeleton (17 proper) and/or direct
+fixed-$p$ methods at growing $p$, through the boost-to-mass map (13, sign-gated by rung
+25). The race is now for the *subleading* computation — the one the authors promised.
 
 ## Blocked / out of scope
 

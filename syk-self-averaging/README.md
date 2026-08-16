@@ -124,10 +124,11 @@ Numbers: [`results.txt`](results.txt)/`results.json`; figures
 | `largeq_bench.py` | ED ground truth for the large-q anchor (`duality/largeq_anchor.py`) |
 | `fold_bench.py` | complex-time/folded 4-pt ED lab for rungs 25–26 (`duality/ANTISCRAMBLING.md`); `--scan` = the rung-26 fixed-λ decider |
 | `freeness.py` | freeness onset: the classical→free-product transition (rung 27) |
+| `mn_majorana_bench.py` | Majorana singlet-channel moments $A_n=\sum_i\psi_i(\mathrm{ad}_H)^n\psi_i$: the ED side of rung 15 proper (chord comparison in `duality/chord_moments.py`; the raw $w_2$ *rises* toward the fixed-$p$, λ→0 corner while the artifact-corrected trend falls toward the chord $N=\infty$ zero) |
 | `validate_syk.py` | RMT level-statistics validation |
 | `self_averaging.py` | the §3.5 measurement + verdict |
 | `plot_self_averaging.py`, `plot_freeness.py` | figures (read the JSONs) |
-| `test_syk.py`, `test_qed_campaign.py`, `test_baryons.py`, `test_freeness.py` | asserting suites |
+| `test_syk.py`, `test_qed_campaign.py`, `test_baryons.py`, `test_freeness.py`, `test_mn_majorana.py` | asserting suites |
 
 ## Usage
 
