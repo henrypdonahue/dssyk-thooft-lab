@@ -292,12 +292,18 @@ independent; the tiers gate the ones that aren't.
   scaling (A₁ = −2pH is the exact anchor; the O_Δ random channels DO
   propagate: μ₂ = 2(1−q^Δ), kurt → 3+1/Δ). ED bench (p = 4, 6; N ≤ 22):
   raw w₂ RISES along fixed p toward the λ→0 corner (the tower turns on
-  exactly where the match lives); artifact-corrected ((1−2p/N)², the
-  exact_wick p=N/2 zero) w₂ falls with N at fixed λ. THE TOWER IS A 1/N
-  EFFECT INVISIBLE AT EVERY ORDER OF THE DOUBLE-SCALED EXPANSION — the
-  exact-in-λ generalization of rung 17's cancellation; the match lives
-  strictly outside strict double scaling. Honest cap: firm asymptotics
-  need N ≫ 2p, beyond dense ED.
+  exactly where the match lives). THE TOWER IS A 1/N EFFECT INVISIBLE AT
+  EVERY ORDER OF THE DOUBLE-SCALED EXPANSION — the exact-in-λ
+  generalization of rung 17's cancellation; the match lives strictly
+  outside strict double scaling. Adversarial-review corrections
+  (2026-08-16): the chord moments are i≠j PAIR amplitudes while the
+  dense-ED channel is flavor-diagonal-dominated (pair μ₀ a few percent,
+  opposite sign at N=12–14), so the bench does NOT yet probe the chord
+  zero — at the matched-λ pair the raw w₂ rises with N (honest negative,
+  asserted as such); a former (1−2p/N)² "artifact correction" was removed
+  (its motivating zero is an exact per-instance conservation SPECIAL to
+  (N,p)=(8,4), mechanism unknown — not a p=N/2 law); firm fixed-λ
+  asymptotics need N ≫ 2p, beyond dense ED.
 - ✅ **26 decider #2** (2026-08-16, the fold question CLOSED):
   `duality/chord_fold.py` — the HZ fold exactly at N=∞ (fold_bench
   conventions mirrored; the crossed transposition minus DERIVED as the
@@ -307,9 +313,12 @@ independent; the tiers gate the ones that aren't.
   λ = 2.7→0.5) — no 1/N suppression at N=∞ — so the N-scaled folded ratio
   runs from the continued closed form ∝ 1/λ (−1.86→−21.3 vs −1.92
   constant): HZ's "continuation commutes" fails IN THE DOUBLE-SCALED
-  THEORY ITSELF. ED sits ×1.5–1.6 above the exact N=∞ folded values at
-  matched λ (unfolded ≤ 10%): the fold amplifies finite-N corrections
-  (soft-edge hypothesis stated). Cap: λ ≥ 0.5 (float headroom, measured).
+  THEORY ITSELF (both branches: the folded Lorentzian Im amplification
+  grows ~1×→~45× over λ = 4→0.5, ∝ 1/λ). ED sits ×1.5–1.6 above the
+  exact N=∞ folded values at matched λ (unfolded ≤ 10%): the fold
+  amplifies finite-N corrections — mechanism MEASURED (`fold_edge_probe`:
+  per-instance folded fraction tracks the upper spectral edge at
+  corr −0.86; ×35 scatter). Cap: λ ≥ 0.5 (float headroom, measured).
 - ✅ **21 bulk half** (2026-08-16): `thooft-target/condensate.py` — LM
   2409.11324 (6.1)–(6.3) transcribed (exact condensate at any mass;
   Zhitnitsky chiral value −Nc√(g²/12π) reproduced through the I(α)
@@ -325,7 +334,9 @@ independent; the tiers gate the ones that aren't.
   OTOC sign of their dressed operators, unpublished; sine-dilaton §1:
   correlators thermal at the FAKE temperature, black-hole bulk,
   sub-maximal scrambling — the one reading consistent with this repo's
-  data as-is, β_fake·λ_L = 2π tested; MSS flat-space owes the
+  data as-is (β_fake·λ_L = 2π is definitional given β_fake ≡ β/v; the
+  quantitative θ↔v tie to their (1.7) is untested — open); MSS
+  flat-space owes the
   sign-flipping map, and the fold is now excluded in-model).
 - ⬜ Open: 18 remainder (the tower extraction itself, now located at fixed
   p, λ→0 — a 1/N computation from the double-scaled viewpoint), 17 proper

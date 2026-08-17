@@ -90,7 +90,8 @@ ax.set_xlabel(r"$\lambda$")
 ax.set_title("(c) the fold breaks the $1/N$ hierarchy at $N=\\infty$")
 ax.legend(fontsize=8)
 
-# (d) rung-15 bench
+# (d) rung-15 bench: raw widths only (the former "(1-2p/N)^2-corrected"
+# curves were removed by the adversarial review -- undeviced exponent)
 ax = axes[1, 1]
 for p, marker in [(4, "o"), (6, "s")]:
     rows = sorted((r for r in bench["points"]
@@ -99,16 +100,21 @@ for p, marker in [(4, "o"), (6, "s")]:
     lam = [r["lambda_chord"] for r in rows]
     ax.errorbar(lam, [r["w2"] for r in rows],
                 yerr=[r["w2_err"] for r in rows], marker=marker, ls="-",
-                label=f"raw $w_2$, $p={p}$")
-    ax.errorbar(lam,
-                [r["w2"] / (1 - 2 * p / r["N"]) ** 2 for r in rows],
-                yerr=[r["w2_err"] / (1 - 2 * p / r["N"]) ** 2 for r in rows],
-                marker=marker, ls="--", alpha=0.6,
-                label=f"corrected, $p={p}$")
-ax.axhline(0.0, color="k", lw=1, label="chord $N=\\infty$: 0")
+                label=f"raw $w_2$, $p={p}$ (ED)")
+# the near-matched-lambda pair: the honest negative (rises with N)
+pair = [next(r for r in bench["points"]
+             if r["p"] == 4 and r["N"] == 10 and r["n"] == 2),
+        next(r for r in bench["points"]
+             if r["p"] == 6 and r["N"] == 22 and r["n"] == 2)]
+ax.plot([r["lambda_chord"] for r in pair], [r["w2"] for r in pair],
+        "k:", marker="*", ms=11, lw=1,
+        label="matched-$\\lambda$ pair ($N{=}10\\to22$)")
+ax.axhline(0.0, color="k", lw=1,
+           label="chord $N=\\infty$ pair amplitude: 0")
 ax.set_xlabel(r"$\lambda_{\rm chord}$")
 ax.set_ylabel(r"$w_2$ ($n=2$ channel)")
-ax.set_title("(d) the tower channel: on at fixed $p$, off at $N=\\infty$")
+ax.set_title("(d) the tower channel turns on toward fixed $p$, "
+             "$\\lambda\\to0$")
 ax.legend(fontsize=7)
 
 fig.tight_layout()

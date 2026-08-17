@@ -45,8 +45,11 @@ def test_truncation_clean(data):
 
 def test_unfolded_control_stable_and_real(data):
     """The unfolded crossed OTOC ratio: lambda-stable within a narrow band,
-    exactly real (the configuration symmetry that finite-N ED shows becomes
-    exact at N = infinity), scrambling-side sign (rung 25)."""
+    scrambling-side sign (rung 25).  (The im == 0 check is a SANITY check
+    only: for real-theta configurations every chord segment and matrix is
+    real, so reality is manifest by construction -- the nontrivial reality
+    statement is the Lorentzian growth branch, asserted in
+    test_fold_breaks_reality_like_the_continuation.)"""
     res = [pt["otoc"]["re"] for pt in data["points"]]
     ims = [abs(pt["otoc"]["im"]) for pt in data["points"]]
     assert all(-1.75 < r < -1.60 for r in res)

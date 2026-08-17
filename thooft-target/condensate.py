@@ -32,19 +32,23 @@ What is computed and asserted here:
      integral has an integrable near-singularity at alpha -> -1
      (denominator ~ t(t^2/3 + a) at small t) which reproduces EXACTLY the
      pi/sqrt(3a) Zhitnitsky divergence -- asserted, plus the duality-point
-     value f(0) = (log pi - 1 - gamma_E)/(2 pi sqrt(pi)) = -0.03876...
+     value f(0) = (log pi - 1 - gamma_E)/(2 pi sqrt(pi)) = -0.038834...
   2. The GMOR corner vs the matched-exponent Jacobi solver: 2 lambda_0 at
      alpha = -1 + a approaches (2/pi) sqrt(a/3) with a measured NLO
-     (2lambda_0/LO - 1) ~= sqrt(a) -- solver converged to 10 digits at
-     K = 48 (basis exponent beta ~ sqrt(3a)/pi handled exactly).  First
-     solver data in the chiral corner.
+     (2lambda_0/LO - 1) ~= sqrt(a).  Measured basis convergence at K = 96:
+     10+ digits for a >= 0.04, ~8 digits at the a = 0.02 endpoint (the
+     subleading endpoint structure grows as beta ~ sqrt(3a)/pi shrinks) --
+     far inside every tolerance used.  First solver data in the chiral
+     corner.
   3. The vacuum-energy curve by Feynman-Hellmann in the bare mass at fixed
      g (dE_vac/dm_bare = <psibar psi>):
         eps(alpha) = [E_vac(alpha) - E_vac(-1)]/(Nc g^2)
                    = Int_{-1}^{alpha} f(a') (dm/dalpha')/g dalpha',
         dm/dalpha = g / (2 sqrt(pi (1+alpha))).
-     The integrand is FINITE all the way to the chiral point (the
-     condensate divergence is exactly compensated), and eps(0) -- the
+     In the m variable the integrand (the condensate f itself) is FINITE
+     through the chiral point; in the alpha variable it has an integrable
+     (1+alpha)^{-1/2} endpoint singularity, with integrand*sqrt(1+alpha)
+     -> f_chiral/(2 sqrt(pi)) = -1/(4 pi sqrt(3)).  eps(0) -- the
      interaction vacuum-energy shift at the duality point, in units
      Nc g^2 -- is a single finite number.  That is the entire 2d counterpart
      of Sec. 5's "vacuum energy corrections": one finite, parameter-free
@@ -136,8 +140,10 @@ def duality_point_value() -> float:
 def vacuum_energy_curve(alphas: np.ndarray) -> np.ndarray:
     """eps(alpha) = Int_{-1}^{alpha} f(a') / (2 sqrt(pi (1+a'))) da',
     the dimensionless vacuum-energy shift [E_vac(alpha) - E_vac(-1)]/(Nc g^2).
-    The integrand tends to CHIRAL_VALUE/(2 sqrt(pi a)) * sqrt(a)-compensated
-    finite value -1/(4 pi sqrt(3)) at the chiral end."""
+    The alpha-integrand has an integrable (1+alpha)^{-1/2} endpoint
+    singularity (hence the quad `points` hint below); integrand *
+    sqrt(1+alpha) -> -1/(4 pi sqrt(3)) at the chiral end, and eps is
+    finite."""
     def integrand(ap):
         return condensate_dimensionless(ap) / (2.0 * math.sqrt(
             math.pi * (1.0 + ap)))
@@ -156,7 +162,7 @@ def vacuum_energy_curve(alphas: np.ndarray) -> np.ndarray:
 # ---------------------------------------------------------------------------
 # the GMOR corner scan (solver data)
 # ---------------------------------------------------------------------------
-def gmor_corner(a_values=(0.25, 0.16, 0.09, 0.04, 0.02), K: int = 64):
+def gmor_corner(a_values=(0.25, 0.16, 0.09, 0.04, 0.02), K: int = 96):
     """2 lambda_0 from the matched-exponent Jacobi solver at alpha = -1 + a
     vs the GMOR leading order (2/pi) sqrt(a/3)."""
     from jacobi_solver import spectrum_jacobi, endpoint_exponent

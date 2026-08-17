@@ -30,12 +30,14 @@ identity component <X><Y> (T2 words).  Shape invariants (normalization- and
 flavor-count-free): w2 = mu_2/mu_0 (chord units have <H^2> = 1) and
 kurt = mu_4 mu_0 / mu_2^2.
 
-Honesty budget: the n = 1 channel must be conserved (mu_2 = mu_4 = 0
-exactly at every N -- asserted at machine precision in the ED bench
-syk-self-averaging/mn_majorana_bench.py).  The chord evaluation at finite
-Delta_psi = 1/p carries a finite-p matter-weight error, so its n = 1
-residual mu_2^{(1)}/mu_0^{(1)} is NOT exactly zero; its measured size is
-reported next to every n = 2, 3 number as the finite-p floor.
+Error budget (corrected by adversarial review, 2026-08-16): the chord
+cancellations are EXACT algebraic identities of the chord amplitudes at
+any finite matter weight Delta_psi -- there is no finite-p matter-weight
+floor (asserted across a Delta_psi scan in test_chord_moments.py).  The
+reported a1_residual is therefore the FLOAT-CANCELLATION yardstick
+|mu_2|/gross (the residual of the alternating sum relative to its
+pre-cancellation magnitude, ~1e-16), not a physical finite-p effect; it
+calibrates how much of the n = 2, 3 'zero' could be rounding noise.
 
 The lambda -> 0 asymptote of the O_Delta channel kurtosis is the
 semiclassical value 3 + 1/Delta (Fourier transform of sech^{2Delta}); the

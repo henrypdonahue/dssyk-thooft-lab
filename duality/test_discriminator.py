@@ -20,9 +20,14 @@ HERE = Path(__file__).resolve().parent
 
 @pytest.mark.parametrize("betaJ", [0.5, 2.0, 10.0])
 def test_fake_temperature_identity(betaJ):
-    """lambda_L = 2 pi v / beta  ==  2 pi / beta_fake with beta_fake =
-    beta/v: the sine-dilaton 'correlators are thermal at the fake
-    temperature' statement and rung 25's rate are the same identity."""
+    """Internal consistency of the repo's own v machinery: with beta_fake
+    DEFINED as beta/v, lambda_L = 2 pi v/beta makes beta_fake*lambda_L =
+    2 pi an algebraic identity of the large-q parametrization -- which is
+    what this test pins (post-review honesty: it is NOT an independent
+    test of sine-dilaton's beta_BH = 2 pi/sin(theta); that contact is a
+    units-level identification, and a naive chord-saddle check
+    sin(theta*) =? v does NOT close under the beta_chord bridge --
+    an open item, stated in DISCRIMINATOR.md)."""
     v = v_of_betaJ(betaJ)
     beta = betaJ                       # in units scriptJ = 1
     beta_fake = beta / v

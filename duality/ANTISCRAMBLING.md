@@ -138,12 +138,14 @@ theory**: `chord_fold.py` mirrors `fold_bench.py` configuration-for-
 configuration (same $\theta$'s, same (6.9) $n{=}1$ fold, same frozen path
 order — the transposition minus is *derived* here, as the fermionic
 matter-matter chord crossing sign) at $\lambda = 4.0 \to 0.5$
-(`chord_fold.json`, truncation-doubled, drifts $\le 10^{-5}$). Verdict:
+(`chord_fold.json`, truncation-doubled, drifts $\le 2\times10^{-5}$). Verdict:
 
 1. **The control behaves.** The unfolded crossed $\mathcal F/F_d$ is
-   λ-stable ($-1.65\ldots-1.67$ across the entire scan) and *exactly* real
-   (the configuration symmetry finite-$N$ ED shows becomes exact), ~10%
-   from the matched-λ ED values — the expected finite-$N$ gap.
+   λ-stable ($-1.65\ldots-1.67$ across the entire scan) and exactly real
+   (manifest for Euclidean configurations in the chord representation —
+   the *nontrivial* reality statement is the Lorentzian growth branch,
+   which also stays exactly real), ~10% from the matched-λ ED values —
+   the expected finite-$N$ gap.
 2. **The folded connected part is NOT suppressed at $N=\infty$.** As
    $\lambda \to 0$ the unfolded connected fraction dies $\propto\lambda$
    (the 1/N hierarchy), but the folded one stays $O(1)$ *and grows*:
@@ -153,9 +155,12 @@ matter-matter chord crossing sign) at $\lambda = 4.0 \to 0.5$
    **HZ's "continuation commutes with the semiclassical limit" fails in
    DSSYK$_\infty$ itself** — the ED $N$-obstruction of decider #1 was
    real, and at $N = \infty$ it is a λ-obstruction. The folded Lorentzian
-   branch develops the negative $\mathrm{Im}$ the continuation predicts
-   (sign right, magnitude amplified ~3×), so the fold *mechanism* works
-   qualitatively while its quantitative continuation assumption fails.
+   branch develops the negative $\mathrm{Im}$ the continuation predicts —
+   sign right everywhere, but its magnitude runs away from the continued
+   form the same way the Euclidean branch does: amplification ~0.9× at
+   λ=4 (i.e. none), ~3.5× at λ=2, ~40–50× at λ=0.5, growing ∝1/λ. The
+   fold *mechanism* works qualitatively (the sign pattern) while its
+   quantitative continuation assumption fails on both branches.
 3. **The fold destroys 1/N convergence from both ends — and the mechanism
    is measured.** At matched λ with the exact finite-$N$ bridge, ED folded
    values sit ×1.52 (N=8) and ×1.62 (N=18) above the exact $N=\infty$
@@ -182,8 +187,10 @@ fold without large corrections that survive every limit taken here.
 
 Also run en route: the negative-temperature variant (HZ 6.12) is the
 $H\to-H$ reflection (tested as such): for the SYK *ensemble*, $H$ and $-H$
-are equidistributed at $p\equiv0\bmod4$, so disorder-averaged (6.9) and
-(6.12) coincide — the two prescriptions are ensemble-equivalent here.
+are equidistributed for every even $p$ (the mean-zero coupling measure is
+$J\to-J$ symmetric, which flips $H$ while leaving the matter operators
+untouched), so disorder-averaged (6.9) and (6.12) coincide — the two
+prescriptions are ensemble-equivalent here.
 
 ## Standing caveats (stated once, apply throughout)
 

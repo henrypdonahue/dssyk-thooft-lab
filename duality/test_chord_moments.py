@@ -33,13 +33,25 @@ def test_an_channels_conserved_at_leading_order(lam, n):
     """mu_2 and mu_4 of every A_n channel vanish identically in the chord
     amplitudes at finite lambda and finite Delta_psi = 1/p -- not a small
     number: an algebraic cancellation (checked at machine precision
-    relative to mu_0)."""
+    relative to the pre-cancellation gross magnitude)."""
     q = q_of_lambda(lam)
     ch = channel_moments(q, 0.25, n)
     assert ch["mu0"] > 0
     assert ch["conserved"]
     assert ch["cancellation2"] < 1e-12       # machine-precision cancellation
     assert abs(ch["mu4"]) < 1e-11 * max(ch["gross4"], 1.0)
+
+
+@pytest.mark.parametrize("dpsi", [0.1, 0.25, 0.5, 1.0])
+def test_an_conservation_any_matter_weight(dpsi):
+    """The cancellation holds at ANY matter weight (added post-review: the
+    'any weight' clause of CHORD.md was previously asserted only at
+    Delta_psi = 1/4)."""
+    q = q_of_lambda(1.0)
+    for n in (1, 2):
+        ch = channel_moments(q, dpsi, n)
+        assert ch["conserved"]
+        assert ch["cancellation2"] < 1e-12
 
 
 @pytest.mark.parametrize("q,delta", [(0.5, 0.25), (0.8, 0.5), (0.3, 1.0)])
@@ -85,25 +97,24 @@ def test_committed_moments_json():
             assert ch["cancellation2"] < 1e-12
 
 
-def test_ed_bench_consistent_with_chord_zero():
-    """Cross-module verdict (stated with both halves): the RAW ED w2 rises
-    along fixed p as lambda falls (the tower channel turns on toward the
-    't Hooft corner -- where the chord description says it is conserved),
-    while the p = N/2-artifact-corrected w2 falls with N within each
-    fixed-p series and across the near-matched-lambda pair -- the finite-N
-    trend consistent with the chord cancellation at fixed lambda.  The
-    full assertions live in syk-self-averaging/test_mn_majorana.py; here
-    the cross-module anchor pair is pinned."""
+def test_ed_bench_scope():
+    """Cross-module scope statement, post-review: the chord computation is
+    the i != j flavor-PAIR amplitude; the ED bench measures the full
+    physical channel, which at dense-ED sizes is flavor-diagonal-dominated
+    (the pair part of mu_0 is a few percent and opposite in sign at
+    N = 12-14, p = 4 -- measured during the adversarial review).  So the
+    bench does NOT yet probe the chord cancellation: at the near-matched-
+    lambda pair the RAW w2 rises with N.  What the bench establishes is
+    the raw fixed-p turn-on toward the 't Hooft corner (asserted in
+    syk-self-averaging/test_mn_majorana.py); here the matched pair's
+    existence and the honest negative are pinned."""
     path = HERE.parent / "syk-self-averaging" / "mn_majorana_bench.json"
     with open(path) as fh:
         bench = json.load(fh)
-
-    def corrected(r):
-        return r["w2"] / (1.0 - 2.0 * r["p"] / r["N"]) ** 2
-
     r4 = next(r for r in bench["points"]
               if r["p"] == 4 and r["N"] == 10 and r["n"] == 2)
     r6 = next(r for r in bench["points"]
               if r["p"] == 6 and r["N"] == 22 and r["n"] == 2)
     assert abs(r4["lambda_chord"] - r6["lambda_chord"]) < 0.1
-    assert corrected(r6) < 0.6 * corrected(r4)
+    assert r6["w2"] > r4["w2"]      # the approach to the chord zero is
+    #                                 NOT visible at dense-ED sizes

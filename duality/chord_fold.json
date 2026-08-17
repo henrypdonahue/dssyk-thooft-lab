@@ -19,7 +19,7 @@
   3.141592653589793,
   12.566370614359172
  ],
- "runtime_s": 14.7,
+ "runtime_s": 31.3,
  "points": [
   {
    "lam": 4.0,
@@ -92,8 +92,8 @@
     "re": -0.2083993317009985,
     "im": 0.0
    },
-   "truncation_drift_fold": 0.0,
-   "runtime_s": 0.3
+   "truncation_drift_fold": 2.2677537497897567e-15,
+   "runtime_s": 0.6
   },
   {
    "lam": 3.2,
@@ -166,8 +166,8 @@
     "re": -0.1666710604742848,
     "im": 0.0
    },
-   "truncation_drift_fold": 7.762386510770994e-15,
-   "runtime_s": 0.5
+   "truncation_drift_fold": 1.6341866338465351e-15,
+   "runtime_s": 1.0
   },
   {
    "lam": 2.6666666666666665,
@@ -240,8 +240,8 @@
     "re": -0.13842441409716635,
     "im": 0.0
    },
-   "truncation_drift_fold": 6.766399792615462e-15,
-   "runtime_s": 0.5
+   "truncation_drift_fold": 2.7759588892781493e-15,
+   "runtime_s": 0.9
   },
   {
    "lam": 2.2857142857142856,
@@ -314,8 +314,8 @@
     "re": -0.11826650830059404,
     "im": 0.0
    },
-   "truncation_drift_fold": 5.04421757945398e-15,
-   "runtime_s": 0.6
+   "truncation_drift_fold": 6.972889006892182e-15,
+   "runtime_s": 1.1
   },
   {
    "lam": 2.0,
@@ -388,8 +388,8 @@
     "re": -0.10324997799096039,
     "im": 0.0
    },
-   "truncation_drift_fold": 1.976050677111454e-14,
-   "runtime_s": 0.6
+   "truncation_drift_fold": 6.44141194746775e-14,
+   "runtime_s": 1.4
   },
   {
    "lam": 1.7777777777777777,
@@ -462,8 +462,8 @@
     "re": -0.09166233696897763,
     "im": 0.0
    },
-   "truncation_drift_fold": 5.872916375309105e-14,
-   "runtime_s": 0.6
+   "truncation_drift_fold": 1.9022409827480527e-13,
+   "runtime_s": 4.8
   },
   {
    "lam": 1.6,
@@ -536,8 +536,8 @@
     "re": -0.08245785762317773,
     "im": 0.0
    },
-   "truncation_drift_fold": 3.5122702987235756e-13,
-   "runtime_s": 0.6
+   "truncation_drift_fold": 2.840806859261525e-13,
+   "runtime_s": 3.0
   },
   {
    "lam": 1.2,
@@ -610,8 +610,8 @@
     "re": -0.06194437786030102,
     "im": 0.0
    },
-   "truncation_drift_fold": 8.909642492563761e-12,
-   "runtime_s": 0.8
+   "truncation_drift_fold": 1.752055007828998e-12,
+   "runtime_s": 2.9
   },
   {
    "lam": 0.8,
@@ -684,8 +684,8 @@
     "re": -0.04156989619594858,
     "im": 0.0
    },
-   "truncation_drift_fold": 3.219657010363928e-09,
-   "runtime_s": 1.3
+   "truncation_drift_fold": 2.2764898669994233e-09,
+   "runtime_s": 4.1
   },
   {
    "lam": 0.5,
@@ -758,8 +758,8 @@
     "re": -0.026207930359405742,
     "im": 0.0
    },
-   "truncation_drift_fold": 6.5098376943745246e-06,
-   "runtime_s": 7.8
+   "truncation_drift_fold": 1.9112062848678108e-05,
+   "runtime_s": 10.4
   }
  ],
  "ed_bridge_points": [

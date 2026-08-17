@@ -637,8 +637,10 @@ def g2_engine(ts: np.ndarray, q: float, delta: float, nmax: int,
 
 def spectral_lines(q: float, delta: float, nmax: int, beta: float = 0.0):
     """Lehmann lines of S_Delta(omega): returns (omega_jk, w_jk) with
-    G(t) = sum w e^{-i omega t}; the truncated-T eigenbasis is the exact
-    Gaussian quadrature of the theta-integrals."""
+    om_jk = E_j - E_k and G(t) = sum w e^{+i om t} (the resummation used in
+    the tests; for the symmetric weights here S(om) = S(-om), so the
+    committed spectra are convention-free).  The truncated-T eigenbasis is
+    the exact Gaussian quadrature of the theta-integrals."""
     s = Sector0(nmax, q)
     c = s.V.T @ s.vac().real
     if beta != 0.0:
@@ -646,8 +648,7 @@ def spectral_lines(q: float, delta: float, nmax: int, beta: float = 0.0):
     M = s.V.T @ (s.qn(delta)[:, None] * s.V)
     W = np.outer(c, c) * M
     Z = float(c @ c)
-    om = np.subtract.outer(s.E, s.E)       # E_j - E_k -> e^{-i om t} with om = Ek-Ej... sign fixed below
-    # G(t) = sum_jk c_j c_k M_jk e^{+i(E_j - E_k) t} / Z
+    om = np.subtract.outer(s.E, s.E)
     return om.ravel(), (W / Z).ravel()
 
 

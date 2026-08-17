@@ -53,18 +53,22 @@ this axis.
 
 **3. Sine-dilaton gravity (2404.03535).** Their bulk is a **black hole**
 whose "Lorentzian spacetime probed by matter is a smooth black hole with
-Hawking temperature equal to the fake temperature
-$\beta_{BH} = 2\pi/\sin\theta$", with "all matter correlators... thermal
-at the fake temperature" (their §1), and DSSYK as a *sub-maximal
-scrambler*. That is the scrambling (AdS-sign) side of CK's dichotomy —
-**the only one of the three programs whose stated thermal structure
-matches this repo's measured OTOC data with no additional map**: fake-
-temperature KMS + scrambling is precisely $\lambda_L = 2\pi v/\beta =
-2\pi/\beta_{\rm fake}$ with $\mathrm{Re}\,a = -1$ (rung 25; the identity
-$\beta_{\rm fake}\lambda_L = 2\pi$ ties their (1.7) to this repo's $v$
-machinery and is asserted in the tests). CK pressure attaches only to the
-program's further dS3 reinterpretation (their §1 relation to Verlinde's
-proposal), not to the black-hole reading.
+Hawking temperature equal to the fake temperature" (their §1; the fake
+temperature is their Eq. (1.7), $\beta_{BH} = 2\pi/\sin\theta$), with
+"all matter correlators... thermal at the fake temperature", and DSSYK as
+a *sub-maximal scrambler*. That is the scrambling (AdS-sign) side of
+CK's dichotomy — **the program whose stated thermal structure is
+qualitatively the one this repo measures**: sub-maximal scrambling with
+$\mathrm{Re}\,a = -1$ and rate $\lambda_L = 2\pi v/\beta \equiv
+2\pi/\beta_{\rm fake}$ (rung 25). Honesty note (post-review): with
+$\beta_{\rm fake} \equiv \beta/v$ this identity is *definitional* in the
+large-q parametrization; the quantitative tie to their (1.7) — i.e.
+$\sin\theta \leftrightarrow v$ in matched units — is a units-level
+identification this repo has **not** independently verified (a naive
+chord-saddle check does not close under the $\beta_{\rm chord}$ bridge;
+open item). CK pressure attaches only to the program's further dS3
+reinterpretation (their §1 relation to Verlinde's proposal), not to the
+black-hole reading.
 
 ## Verdict of the note
 
@@ -76,9 +80,11 @@ flat-space; HZ's fold is now excluded in-model), or a demonstration that
 constrained dressing evades the chaos bound (NV; computable, unpublished).
 The meson-tower axis (rung 18) and this axis are independent: a proposal
 could pass one and fail the other. Current score on this axis:
-sine-dilaton consistent, MSS flat-space in debt, NV pending a computable
-sign.
+sine-dilaton qualitatively consistent (the quantitative θ↔v tie untested,
+see §3), MSS flat-space in debt, NV pending a computable sign.
 
 *Caveat: NV and sine-dilaton statements above are quoted from their
-papers, not re-derived here; the repo-side facts (Re a = −1, the fold
-verdicts, β_fake·λ_L = 2π) are the tested content.*
+papers, not re-derived here; the repo-side tested content is Re a = −1
+and the fold verdicts. β_fake·λ_L = 2π is definitional given
+β_fake ≡ β/v (the test pins the definition's internal consistency, not
+an independent identity — see §3).*

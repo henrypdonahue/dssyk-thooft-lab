@@ -53,8 +53,11 @@ dictionary (ω_chord = (ω/𝒥)·Jc, Jc = √λ e^{λ/8}).
 - **Zero interior maxima, zero nodes, every channel, every λ.** No
   resonance structure emerges as λ → 0; the exact spectral function
   converges to the smooth semiclassical sech^{2Δ} transform **linearly in
-  λ** (max deviation 0.375 → 0.006 over λ = 2 → 0.05, ≈ 0.13·λ). The
-  rung-13 alternative (mass-encoding *nodes*) is absent too.
+  λ** (Δ = ½ channel: max deviation 0.375 → 0.006 over λ = 2 → 0.05,
+  ≈ 0.13·λ; the worst channel, Δ = 1, obeys the same law at ≈ 0.25·λ).
+  The rung-13 alternative (mass-encoding *nodes*) is absent too. The
+  structure diagnostics are recomputed from the committed curves in the
+  tests (post-review hardening), not trusted from the campaign.
 - The chord-number growth ⟨n(t)⟩ — the de Sitter length — approaches
   −(2/λ)ln sech(Jc t) at the same linear-in-λ rate (dev 0.31 → 0.012):
   the exact-in-λ length-growth curve, new data.
@@ -66,30 +69,41 @@ from mixed chord moments by a binomial expansion that is verified as a
 per-instance **operator identity** against dense ED algebra
 (`test_mn_majorana.py`) — give
 
-> **μ₂ = μ₄ = 0 to machine precision, for n = 1, 2, 3, at every λ from 4.0
-> to 0.1 and any matter weight.** The n = 1 case is the exact conservation
-> law A₁ = −2pH; the n ≥ 2 cancellations are the same phenomenon: at
-> strict N = ∞, fixed λ, **the singlet bilinear tower carries no
-> propagating spectral weight at all.** Random O_Δ operators *do* propagate
+> **μ₂ = μ₄ = 0 to machine precision (relative to the pre-cancellation
+> gross magnitude), for n = 1, 2, 3, at every λ from 4.0 to 0.1, and
+> across a matter-weight scan Δψ ∈ [0.1, 1] (tested).** The n = 1 case is
+> the exact conservation law A₁ = −2pH; for n = 2, 3 it is a measured
+> machine-precision algebraic cancellation of the chord amplitudes (no
+> analytic proof yet — scope: n ≤ 3, moments μ₂ and μ₄). At strict
+> N = ∞, fixed λ, **the computed singlet bilinear channels carry no
+> propagating spectral weight.** Random O_Δ operators *do* propagate
 > (μ₂ = 2(1−q^Δ), kurtosis → 3 + 1/Δ semiclassically — closed forms,
 > tested); the H-correlated bilinears the duality actually needs do not.
 
 This is the exact-in-λ, all-orders-in-the-chord-limit version of the
 rung-17 finding (the tower cancels at leading order in the large-q 4-pt).
-The Majorana ED bench (`mn_majorana_bench.json`, p = 4 and 6, N up to 22)
-shows the finite-N side of the same coin:
+
+**Scope (sharpened by the adversarial review).** The chord moments are the
+i ≠ j flavor-**pair** amplitudes. The Majorana ED bench
+(`mn_majorana_bench.json`, p = 4 and 6, N up to 22) measures the full
+physical channel, which at dense-ED sizes is **flavor-diagonal-dominated**
+— the pair part of μ₀ is a few percent of the total and *opposite in
+sign* at N = 12–14, p = 4 — so the bench does not yet probe the chord
+cancellation. What the bench establishes:
 
 - along **fixed p with λ falling** — the 't Hooft-corner trajectory — the
   raw channel width w₂ *rises* (n = 2: 0.30 → 1.20 over N = 10 → 20 at
   p = 4): the tower channel **turns on** exactly where the match must be
   made, as a finite-N effect;
-- at **fixed λ with N growing**, after stripping the known p = N/2
-  proximity factor (1−2p/N)² (the exact_wick artifact; the (p=4, N=8) row
-  sits exactly on its zero and is kept as the exhibition), the corrected
-  w₂ falls monotonically with N in both p-series and across the
-  near-matched-λ anchor (p=4, N=10, λ=3.20) ↔ (p=6, N=22, λ=3.27) —
-  consistent with the chord zero. Firm asymptotics need N ≫ 2p, beyond
-  dense ED: stated cap.
+- the honest negative: at the near-matched-λ pair (p=4, N=10, λ=3.20) ↔
+  (p=6, N=22, λ=3.27) the raw w₂ *rises* with N — the approach to the
+  N = ∞ zero is **not yet visible** at dense-ED sizes (expected, given
+  the diagonal domination). A (1−2p/N)² "artifact correction" that
+  previously manufactured a falling trend was removed by the review: the
+  (p=4, N=8) all-moments zero it leaned on is an exact per-instance
+  conservation **special to (8,4)** (mechanism unknown; absent at (12,6)
+  and (16,8)), not a p = N/2 law. Firm fixed-λ asymptotics need N ≫ 2p,
+  beyond dense ED: stated cap.
 
 **Consequence for the headline program.** At T_B = ∞ the binary question
 "discrete tower or continuum?" has answer: *at N = ∞ the singlet channels

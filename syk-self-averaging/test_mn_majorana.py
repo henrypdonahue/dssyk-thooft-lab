@@ -90,21 +90,35 @@ def test_bench_n1_conserved(bench):
             assert abs(r["mu4"]) < 1e-8 * abs(r["mu0"])
 
 
-def test_bench_p_half_N_artifact_row(bench):
-    """(p=4, N=8) sits exactly ON the p = N/2 artifact (E[B_jj] ~
-    (1 - 2p/N) = 0, exact_wick.py): the n >= 2 channel moments vanish
-    identically there -- the artifact exhibited, not hidden."""
+def test_bench_84_conservation_is_special_not_p_half_N(bench):
+    """(N, p) = (8, 4): the n >= 2 channel moments vanish IDENTICALLY --
+    an exact per-instance conservation [H, A_n] = 0 special to that point.
+    Established by the adversarial review (2026-08-16): this is NOT a
+    general p = N/2 phenomenon -- asserted live here: at (12, 6) the
+    commutator is O(0.3), not zero.  Mechanism at (8, 4) unknown; the row
+    is kept as the exhibition and excluded from trend statements."""
     for r in bench["points"]:
         if r["N"] == 8 and r["p"] == 4 and r["n"] >= 2:
             assert r["w2"] == 0.0
+    # live: exact at (8,4), absent at the next p = N/2 point (12,6)
+    for (N, p, expect_zero) in [(8, 4, True), (12, 6, False)]:
+        H, psis = _instance(N, p, 11)
+        A2 = sum(P @ (H @ (H @ P - P @ H) - (H @ P - P @ H) @ H)
+                 for P in psis)
+        r = np.linalg.norm(H @ A2 - A2 @ H) / max(np.linalg.norm(A2), 1e-300)
+        if expect_zero:
+            assert r < 1e-12
+        else:
+            assert r > 0.1
 
 
 def test_bench_raw_w2_rises_toward_thooft_corner(bench):
     """Along fixed p (lambda = 2p^2/N falling), the RAW singlet-channel
     width w2 RISES: the tower channel turns on toward the fixed-p,
     lambda -> 0 corner where the 't Hooft match must live -- exactly where
-    the strict double-scaled (chord) description says the channel is
-    conserved.  (N = 2p excluded: artifact row.)"""
+    the strict double-scaled (chord) description says the per-pair
+    amplitude is conserved.  (N = 2p excluded: the special (8,4)
+    identity row.)"""
     for p in (4, 6):
         for n in (2, 3):
             rows = sorted((r for r in bench["points"]
@@ -115,30 +129,23 @@ def test_bench_raw_w2_rises_toward_thooft_corner(bench):
                 f"p={p} n={n}: {w2}"
 
 
-def test_bench_artifact_corrected_w2_falls_with_N(bench):
-    """The N -> infinity statement, extracted honestly: stripping the
-    known p = N/2-proximity factor (1 - 2p/N)^2 (heuristic, motivated by
-    the exact zero at N = 2p), the corrected w2 falls monotonically with N
-    within each fixed-p series, and at (near-)matched lambda the larger-N
-    series sits lower -- consistent with the chord-limit value w2 = 0 at
-    fixed lambda, N -> infinity (duality/chord_moments.py).  Firm
-    asymptotics need N >> 2p, beyond dense ED; this is the honest cap."""
-    def corrected(r):
-        return r["w2"] / (1.0 - 2.0 * r["p"] / r["N"]) ** 2
-
-    for p in (4, 6):
-        for n in (2, 3):
-            rows = sorted((r for r in bench["points"]
-                           if r["n"] == n and r["p"] == p and r["N"] > 2 * p),
-                          key=lambda r: r["N"])
-            cw = [corrected(r) for r in rows]
-            assert all(cw[i + 1] < cw[i] for i in range(len(cw) - 1)), \
-                f"p={p} n={n}: corrected {cw}"
-    # near-matched lambda anchor: (p=4, N=10, lam=3.20) vs
-    # (p=6, N=22, lam=3.27): the larger-N point must sit well below
+def test_bench_matched_lambda_honest_negative(bench):
+    """The honest fixed-lambda statement, post-review: at the near-matched
+    pair (p=4, N=10, lam=3.20) <-> (p=6, N=22, lam=3.27) the RAW w2
+    RISES with N (0.30 -> 0.51 for n = 2).  The approach to the chord
+    N = infinity zero is NOT yet visible at dense-ED sizes -- expected,
+    since the chord statement is about the i != j PAIR amplitude while
+    the measured channel is flavor-diagonal-dominated at these N (the
+    pair part of mu_0 is a few percent and opposite in sign; see
+    mn_majorana_bench.py docstring).  A previous (1-2p/N)^2 'artifact
+    correction' that manufactured a falling trend was removed by the
+    adversarial review: its motivating 'p = N/2 zero' does not exist for
+    the p = 6 series and its exponent was undeviced."""
     for n in (2, 3):
         r4 = next(r for r in bench["points"]
                   if r["p"] == 4 and r["N"] == 10 and r["n"] == n)
         r6 = next(r for r in bench["points"]
                   if r["p"] == 6 and r["N"] == 22 and r["n"] == n)
-        assert corrected(r6) < 0.6 * corrected(r4)
+        assert abs(r4["lambda_chord"] - r6["lambda_chord"]) < 0.1
+        # the honest negative: raw w2 larger at larger N (matched lambda)
+        assert r6["w2"] > r4["w2"]

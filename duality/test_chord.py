@@ -147,6 +147,78 @@ def test_qeff_krawtchouk(p):
 
 
 # ---------------------------------------------------------------------------
+# 3b. the CONTOUR walker (Contour.correlator) -- the path that produces
+# chord_fold.json -- pinned three ways (added post-review: previously only
+# apply_word_powers was enumerator-pinned)
+# ---------------------------------------------------------------------------
+def test_correlator_thermal_2pt_vs_closed_form():
+    """Contour.correlator with asymmetric Euclidean segments vs the
+    independent q-Pochhammer theta-integral (2.30)."""
+    from chord import Contour, g2_closed_form
+    q, delta, nmax = 0.6, 0.5, 60
+    s = Sector0(nmax, q)
+    for b1, b2 in [(0.7, 0.3), (1.4, 0.2)]:
+        c = Contour(q, nmax, {'A': delta})
+        amp = c.correlator([('A', b1), ('A', b2)])
+        z = float(s.V[0] @ (np.exp(-(b1 + b2) * s.E) * s.V[0]))
+        cf = g2_closed_form(b1, b2, q, delta, n_theta=240).real
+        assert amp.real / z == pytest.approx(cf / z, rel=1e-8)
+        assert abs(amp.imag) < 1e-12
+
+
+def test_correlator_lorentzian_vs_eig():
+    """Contour.correlator at a complex (Lorentzian) 2-pt contour vs the
+    eigenbasis route g2_engine."""
+    from chord import Contour, g2_engine
+    q, delta, nmax = 0.5, 0.25, 80
+    t = 1.3
+    c = Contour(q, nmax, {'A': delta})
+    # G(t) = <0| e^{+itT} q^{Dn} e^{-itT} |0>: segments u = -it (left of
+    # first op along the trace) and u = +it
+    amp = c.correlator([('A', -1j * t), ('A', +1j * t)])
+    ref = g2_engine(np.array([t]), q, delta, nmax)[0]
+    assert amp == pytest.approx(ref, rel=1e-9)
+
+
+@pytest.mark.parametrize("labels,path_word", [
+    (['A', 'B', 'A', 'B'], None),          # crossed
+    (['A', 'B', 'B', 'A'], None),          # nested
+    (['A', 'A', 'B', 'B'], None),          # adjacent
+])
+def test_correlator_4pt_vs_taylor_resummation(labels, path_word):
+    """Contour.correlator on 4-pt orderings with four DISTINCT complex
+    segments vs a Taylor-in-segments resummation of the enumerator-pinned
+    apply_word_powers: sum over (k1..k4) of prod (-u_j)^{k_j}/k_j! times
+    the word amplitude with H^{k_j} placed before operator j.  Pins the
+    segment-placement convention, the sector-Delta selection, and the
+    complex-u evolution path in one shot."""
+    from math import factorial
+    from chord import Contour
+    q = 0.55
+    deltas = {'A': 0.5, 'B': 0.25}
+    ferm = {'A', 'B'}
+    us = [0.22 + 0.11j, 0.17 - 0.09j, 0.25 + 0.05j, 0.14 + 0.13j]
+    c = Contour(q, 20, deltas, ferm)
+    amp = c.correlator(list(zip(labels, us)))
+    # Taylor resummation over total H-order <= K
+    K = 15
+    total = 0.0 + 0.0j
+    cw = Contour(q, 20, deltas, ferm)
+    from itertools import product
+    for ks in product(range(K + 1), repeat=4):
+        if sum(ks) > K:
+            continue
+        coeff = 1.0 + 0.0j
+        for u, k in zip(us, ks):
+            coeff *= (-u) ** k / factorial(k)
+        word = []
+        for lab, k in zip(labels, ks):
+            word += ['H'] * k + [lab]
+        total += coeff * cw.apply_word_powers(word)
+    assert amp == pytest.approx(total, rel=1e-9)
+
+
+# ---------------------------------------------------------------------------
 # 4. the two-point function: engine == theta-integral closed form (2.30)
 # ---------------------------------------------------------------------------
 @pytest.mark.parametrize("q,delta", [(0.3, 0.5), (0.7, 0.25), (0.7, 1.0),
@@ -253,26 +325,61 @@ def test_sech_anchor_smalllambda():
 # ---------------------------------------------------------------------------
 # 7. the committed rung-18 scan: the discrete-vs-continuum verdict
 # ---------------------------------------------------------------------------
+def test_structure_detector_catches_planted_features():
+    """The detector itself is falsifiable: structure_report_smooth must
+    flag a planted interior peak and a planted node (guards the verdict
+    test below against a broken-detector false-green, a hole demonstrated
+    by the adversarial review)."""
+    from chord import structure_report_smooth
+    x = np.linspace(0.0, 10.0, 500)
+    smooth = np.exp(-x)
+    assert structure_report_smooth(x, smooth)["n_local_maxima"] == 0
+    peaked = smooth.copy()
+    peaked[250] += 5.0
+    assert structure_report_smooth(x, peaked)["n_local_maxima"] >= 1
+    noded = smooth - 0.1
+    assert structure_report_smooth(x, noded)["n_sign_changes"] >= 1
+
+
 def test_committed_spectra_verdict():
     """chord_spectra.json, the rung-18 first deliverable: at N = infinity,
     T_B = infinity, every channel (O_Delta and the Delta->0 fermion-
     bilinear/length channel) is a STRUCTURELESS CONTINUUM at every lambda
-    down to 0.05 -- zero interior local maxima, zero nodes on the fine
-    window at the semiclassical scale where a 't Hooft tower would sit --
-    and the exact spectral function CONVERGES to the smooth semiclassical
-    sech^{2Delta} transform linearly in lambda.  No tower emerges at the
-    leading chord level: discreteness, if physical, must come from
-    subleading-in-1/N structure (consistent with rung 17 and with the
-    chord_moments.py conservation result)."""
+    down to 0.05, converging to the smooth semiclassical sech^{2Delta}
+    transform linearly in lambda.
+
+    Post-review hardening: the structure diagnostics are RECOMPUTED here
+    from the committed S_fine/om_fine and S_coarse/om_coarse arrays (fine
+    window at the semiclassical scale AND the full-support coarse curve),
+    and the sech deviation is recomputed from the stored arrays -- the
+    stored verdict scalars are cross-checked against them, so a corrupted
+    or wrongly-diagnosed committed curve fails the suite."""
+    from chord import structure_report_smooth
     with open(HERE / "chord_spectra.json") as fh:
         data = json.load(fh)
     pts = sorted(data["points"], key=lambda p: -p["lam"])
     assert pts[-1]["lam"] <= 0.05
     sech_devs = []
     for pt in pts:
+        om_coarse = np.array(pt["om_coarse"])
         for key, ch in pt["channels"].items():
-            assert ch["n_local_maxima"] == 0, (pt["lam"], key)
-            assert ch["n_sign_changes"] == 0, (pt["lam"], key)
+            om_f = np.array(ch["om_fine"])
+            S_f = np.array(ch["S_fine"])
+            rep = structure_report_smooth(om_f, S_f)
+            assert rep["n_local_maxima"] == 0, (pt["lam"], key)
+            assert rep["n_local_maxima"] == ch["n_local_maxima"]
+            assert rep["n_sign_changes"] == ch["n_sign_changes"] == 0
+            # full-support coarse curve: no interior structure hiding
+            # beyond the fine window (length channel: skip its om->0
+            # growth region, as in the campaign)
+            S_c = np.array(ch["S_coarse"])
+            sel = om_coarse > (0.5 * pt["Jc_bridge"] if key == "length"
+                               else 0.0)
+            # ignore float-rounding wiggles in the deep tail
+            floor = 1e-8 * np.abs(S_c).max()
+            sel &= np.abs(S_c) > floor
+            rep_c = structure_report_smooth(om_coarse[sel], S_c[sel])
+            assert rep_c["n_local_maxima"] == 0, (pt["lam"], key, "coarse")
             assert ch["quadrature_drift"] < 1e-3
             if ch["mu0_closed"] is not None:
                 # 5e-3: omega-grid trapezoid floor on the narrowest
@@ -280,12 +387,21 @@ def test_committed_spectra_verdict():
                 assert abs(ch["mu0"] - ch["mu0_closed"]) < 5e-3
             assert abs(ch["mu2"] - ch["mu2_closed"]) < 2e-3 * max(
                 ch["mu2_closed"], 1.0)
+            if ch["sech_dev"] is not None:
+                ssc = np.array(ch["S_semiclassical_fine"])
+                dev = float(np.max(np.abs(S_f - ssc)) / max(ssc.max(), 1e-300))
+                assert dev == pytest.approx(ch["sech_dev"], rel=1e-3)
         sech_devs.append(pt["channels"]["delta=0.5"]["sech_dev"])
     # linear-in-lambda convergence to the semiclassical continuum
+    # (the quoted numbers are the Delta = 1/2 channel; the worst channel,
+    # Delta = 1, obeys the same law at ~2x the coefficient)
     assert all(sech_devs[i + 1] < sech_devs[i] for i in range(len(pts) - 1))
     assert sech_devs[-1] < 0.01
     for pt, dev in zip(pts, sech_devs):
         assert dev < 0.25 * pt["lam"]
+    for pt in pts:
+        d1 = pt["channels"]["delta=1.0"]["sech_dev"]
+        assert d1 < 0.45 * pt["lam"]
 
 
 def test_committed_length_growth():

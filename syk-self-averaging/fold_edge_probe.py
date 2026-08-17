@@ -13,7 +13,8 @@ fluctuations the sharp-edged chord theory lacks.
 This module measures that mechanism directly: per-instance folded and
 unfolded connected fractions at the HZ (6.9) n = 1 configuration vs the
 instance's spectral extremes.  Findings (N = 12, p = 4, betaJ = 2,
-48 instances; fold_edge_probe.json, asserted in test_mn_majorana.py):
+48 instances; fold_edge_probe.json, asserted in
+duality/test_chord_fold.py::test_soft_edge_mechanism):
 
   * corr(E_max, folded fraction) ~ -0.86 -- the folded observable is a
     near-deterministic function of the instance's UPPER spectral edge;

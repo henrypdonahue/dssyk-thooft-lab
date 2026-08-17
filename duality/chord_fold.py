@@ -185,7 +185,7 @@ def main(quick: bool = False):
         nmax = int(max(24, min(140, 26.0 / lam + 18)))
         t1 = time.time()
         row = run_point(lam, 4, betaJ, nmax)
-        row2 = run_point(lam, 4, betaJ, nmax + 10)
+        row2 = run_point(lam, 4, betaJ, 2 * nmax)   # genuine doubling
         row["truncation_drift_fold"] = abs(
             row["fold"]["re"] - row2["fold"]["re"]) / max(
             abs(row2["fold"]["re"]), 1e-12)
