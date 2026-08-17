@@ -102,6 +102,7 @@ to their scripts.
 | `exact_wick.py` | closed-form Eq. 3.28 statistics, beyond ED |
 | `mn_spectroscopy.py` | CP-resolved Mn spectral functions |
 | `moments_pipeline.py` | CP-resolved moment invariants with statistics |
+| `moments_fast.py` | charge-sector-blocked reimplementation (8x+ faster, dense-checked to 1e-15): the Nc = 12 production point and the fixed-p trend figure |
 | `qed_campaign.py` | U(N) self-averaging + charging curves |
 | `baryons.py` | baryon sector: collapse, extensivity, hierarchy |
 | `largeq_bench.py` | ED ground truth for the large-q anchor |

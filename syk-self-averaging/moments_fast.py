@@ -80,9 +80,10 @@ import numpy as np
 
 from dirac import draw_couplings, apply_monomial, _mode_bit, _below_mask
 
-DENSE_PARTIAL = ("/private/tmp/claude-501/-Users-henrydonahue-Projects-Hologram/"
-                 "cbd3b78d-d97e-4f10-9803-bc11edcc9c43/scratchpad/"
-                 "moments_nc12_partial.json")
+# Optional path to a concurrently-computed dense-ED partial (per-seed
+# instance moments) for the live cross-check; the committed
+# moments_nc12.json already records the completed 4-seed check at 5e-15.
+DENSE_PARTIAL = None
 
 
 # --------------------------------------------------------------------------
@@ -333,6 +334,8 @@ def peak_memory_gb(Nc: int, n_list=(2, 3)):
 # production main: Nc = 12 ensemble, dense cross-check, fixed-p trend
 # --------------------------------------------------------------------------
 def _load_dense_partial(path=DENSE_PARTIAL):
+    if path is None:
+        return None
     try:
         with open(path) as fh:
             return json.load(fh)
@@ -463,6 +466,8 @@ def main():
                          "measured Nc=12 timing extrapolates below ~40 min")
     ap.add_argument("--n-inst", type=int, default=None,
                     help="override the timing-based Nc=12 instance count")
+    ap.add_argument("--dense-partial", default=None,
+                    help="path to a concurrent dense-ED partial JSON for the live cross-check")
     ap.add_argument("--plot", action="store_true",
                     help="regenerate moments_trend.png from the existing "
                          "moments_nc12.json and exit (no recompute)")
@@ -517,7 +522,7 @@ def main():
 
     # -- cross-check against the concurrent dense job ----------------------
     inst_by_seed = {seed0 + j: insts[j] for j in range(n_inst)}
-    dense_rows = _load_dense_partial()
+    dense_rows = _load_dense_partial(args.dense_partial)
     if dense_rows:
         n_chk, max_rel = crosscheck_against_dense(inst_by_seed, dense_rows)
         print(f"\ndense cross-check: {n_chk} seed(s) "

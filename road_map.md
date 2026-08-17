@@ -189,7 +189,8 @@ independent; the tiers gate the ones that aren't.
   "discrete vs continuum" question reformulated accordingly.
 - ✅ **15** (groundwork): `moments_pipeline.py` — disorder-averaged CP-resolved
   spectral-moment shape invariants (w₂, kurtosis) with errors along fixed
-  p = 4, Nc = 6→10; the map-robust targets for the exact N=∞ chord/Wick
+  p = 4, Nc = 6→12 (Nc = 12 via the charge-sector-blocked moments_fast.py,
+  landed 2026-08-17 from ws/moments-fast after review; dense-checked 5e-15); the map-robust targets for the exact N=∞ chord/Wick
   computation. (Also fixed en route: for n ≥ 3, Tr(M(t)M†) is genuinely
   ω-asymmetric since M_n is not ±Hermitian — the symmetrized correlator is the
   convention-stable object.)
