@@ -102,7 +102,7 @@ A a = mu a with mu = 2 pi^2 lambda (Gram = identity).
   The node count must RESOLVE the basis: the degree-2K top polynomial
   oscillates with wavelength ~1/(4K) mid-interval, where the tanh-sinh
   spacing is (pi/4)h; undersampling aliases the quadrature and produces
-  spurious eigenvalues (observed, violently, at K = 220 with 801 nodes).
+  spurious eigenvalues (observed at K = 220 with 801 nodes).
   Default n_ts = max(501, 12K+1), measured safe for the lowest K/2 levels.
 
   Measured accuracy of this scheme (see jacobi_convergence.json and the
@@ -125,13 +125,12 @@ solver follows the exponent-mismatch algebraic law ~K^-(4 beta) (fitted rates
 match 4 beta to 2 digits: 2.34, 1.48) and still sits at 1e-7..1e-5 at K = 128;
 the reference's K = 200 vs 160 self-consistency is ~4e-12, externally certified
 by the LM tables (their 6-digit floor) and by the 20-digit LM sum rules
-(s = 2: <= 3e-8, s >= 4: ~1e-12 relative).  Caveat, stated honestly:
-the true wavefunction also carries subleading endpoint behavior NOT in this
-basis (secondary exponent beta2 in (1,2) solving the same transcendental
-condition, plus integer-power/log terms sourced by the regular part of the
-kernel), so alpha != 0 convergence, while fast, is not guaranteed
-unbounded-spectral; at the K used here that structure is below the measured
-1e-11..1e-12 floor.  Conjectured: nothing load-bearing.
+(s = 2: <= 3e-8, s >= 4: ~1e-12 relative).  Caveat: the true
+wavefunction also carries subleading endpoint structure NOT in this basis
+(a secondary exponent beta2 in (1,2), plus integer-power/log terms from
+the regular part of the kernel), so alpha != 0 convergence, while fast,
+is not guaranteed spectral without bound; at the K used here that
+structure sits below the measured 1e-11..1e-12 floor.
 
 Conventions match thooft_spectrum.py throughout: solve_sector_jacobi returns
 (two_lambda ascending, eigenvectors, degrees); spectrum_jacobi interleaves
@@ -308,6 +307,12 @@ def build_sector_jacobi(num_basis: int, parity: int, alpha: float = 0.0,
         beta = endpoint_exponent(alpha)
     if n_ts is None:
         n_ts = _auto_n_ts(num_basis)
+    elif n_ts < 10 * num_basis + 1:
+        # below the measured-safe density the Gagliardo quadrature aliases
+        # the top basis oscillations and returns confidently wrong levels
+        raise ValueError(
+            f"n_ts = {n_ts} under-resolves num_basis = {num_basis}: "
+            f"need n_ts >= {10 * num_basis + 1} (see _auto_n_ts)")
     degrees = parity + 2 * np.arange(num_basis)
     dmax = int(degrees[-1])
     Cln = -0.5 * _log_norm_sq(degrees, beta)     # log normalization constants

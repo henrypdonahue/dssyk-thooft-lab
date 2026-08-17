@@ -59,8 +59,8 @@ as the paper's Eq. (3.28) bound demands -- now verified by exact computation
 in the regime the bound is about, not extrapolated from N <= 18 fits.  At
 fixed p (the regime where the 't Hooft comparison lives) the same formula is
 the power law rms ~ 2 p!/sqrt((p-1)!) N^{-(p-1)/2}: symmetry emergence is
-polynomially slow exactly where the spectrum match is to be made -- the
-quantitative content of correction #2's footnote.
+polynomially slow exactly where the spectrum match is to be made
+(the fixed-p caveat in the top-level README).
 
 Extension: exact disorder statistics of the singlet fourth moment m4
 --------------------------------------------------------------------
@@ -380,17 +380,6 @@ def _mean_var_m4_enumerated(N: int, p: int, filter_xor: bool = False):
     return mean, e2 - mean * mean
 
 
-def mean_m4_enumerated(N: int, p: int, filter_xor: bool = False) -> float:
-    """E[m4] summed literally over subset 4-tuples (traces via Pauli strings,
-    expectations via the Gaussian moment formula -- no Wick pairing taxonomy)."""
-    return _mean_var_m4_enumerated(N, p, filter_xor)[0]
-
-
-def var_m4_enumerated(N: int, p: int, filter_xor: bool = False) -> float:
-    """Var(m4) by squaring the literal coupling polynomial of m4."""
-    return _mean_var_m4_enumerated(N, p, filter_xor)[1]
-
-
 # ---------------------------------------------------------------------------
 # the double-scaling scan: Eq. (3.28) where ED cannot go
 # ---------------------------------------------------------------------------
@@ -484,7 +473,7 @@ if __name__ == "__main__":
                   f"{slope:>16} {exp(r['ln_ratio']):>12.3e}")
     pref = 2.0 * factorial(4) / sqrt(factorial(3))
     n_at = {eps: (pref / eps) ** (2.0 / 5.0) for eps in (1e-3, 1e-6, 1e-9)}
-    print("\n  The consequence nobody had drawn: along double scaling the")
+    print("\n  Consequence: along double scaling the")
     print("  violation is super-exponential, but at fixed p = 4 a per-element")
     print("  violation of 1e-3 / 1e-6 / 1e-9 needs N ~ "
           + " / ".join(f"{n_at[e]:.0f}" for e in (1e-3, 1e-6, 1e-9))

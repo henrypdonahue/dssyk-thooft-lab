@@ -119,10 +119,6 @@ W1_BINOMIAL_VS_ARCSINE = 1.0 - 4.0 * (np.sqrt(2.0) - 1.0) / np.pi
 # ---------------------------------------------------------------------------
 # one disorder instance
 # ---------------------------------------------------------------------------
-def _dense(op) -> np.ndarray:
-    return op.toarray() if hasattr(op, "toarray") else np.asarray(op)
-
-
 def instance_operators(N: int, p: int, rng):
     """Eigen-decompose one realization; return (lam, ops-in-eigenbasis) for
     E = i psi0 psi1, F = i psi2 psi3, a = psi0, b = psi2."""
@@ -195,7 +191,9 @@ def run_point(N: int, p: int, n_inst: int, seed: int,
             hists[i] += np.histogram(eigs, bins=_HIST_EDGES)[0]
         for k, v in r.items():
             acc.setdefault(k, []).append(v)
-    sem = 1.0 / np.sqrt(max(n_inst - 1, 1))
+    # SEM = std(ddof=1)/sqrt(n).  JSONs committed before 2026-08-17
+    # used /sqrt(n-1): ~10-15% conservative at these n_inst.
+    sem = 1.0 / np.sqrt(max(n_inst, 1))
     out = dict(N=N, p=p, n_inst=n_inst, seed=seed, scriptJ=scriptJ,
                dim=1 << (N // 2), tJ=list(tJ_grid),
                runtime_s=round(time.time() - t0, 1),

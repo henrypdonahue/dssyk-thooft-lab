@@ -133,7 +133,7 @@ audit found real defects to fix:
   challenge to observer-centric static patch holography. The same-week companion
   Harlow–Zhao 2607.14215 proposes the QM mechanism: bounded-spectrum systems with
   Euclidean-folded correlators — DSSYK's defining features — and poses the fold test
-  "in a concrete model such as the SYK model" as open. Both PDFs in repo root; this
+  "in a concrete model such as the SYK model" as open. Both papers on arXiv; this
   repo's response is rungs 25–26 (`duality/ANTISCRAMBLING.md`). Time-ordered physics
   (the entire spectrum-match program, rungs 13–18) is explicitly untouched by these
   papers; the OTOC sector is a NEW discriminator axis for rung 24.
@@ -190,7 +190,8 @@ independent; the tiers gate the ones that aren't.
 - ✅ **15** (groundwork): `moments_pipeline.py` — disorder-averaged CP-resolved
   spectral-moment shape invariants (w₂, kurtosis) with errors along fixed
   p = 4, Nc = 6→12 (Nc = 12 via the charge-sector-blocked moments_fast.py,
-  landed 2026-08-17 from ws/moments-fast after review; dense-checked 5e-15); the map-robust targets for the exact N=∞ chord/Wick
+  landed 2026-08-17 from ws/moments-fast after review; dense equivalence
+  asserted at 1e-9, measured 5e-15); the map-robust targets for the exact N=∞ chord/Wick
   computation. (Also fixed en route: for n ≥ 3, Tr(M(t)M†) is genuinely
   ω-asymmetric since M_n is not ±Hermitian — the symmetrized correlator is the
   convention-stable object.)
@@ -368,6 +369,25 @@ independent; the tiers gate the ones that aren't.
   rung-24 discriminating computation; needs the two-sided constrained
   chord extension).
 
+- ✅ **Full-repo review pass** (2026-08-17, three parallel adversarial
+  agents + independent verification; all physics claims survived —
+  pauli strings bitwise-exact vs a from-scratch construction, Wick
+  closed forms 1.000000000000 vs fresh enumeration, chord engine
+  unbroken at 6e-16 on fresh words, thooft numerics reproduced to the
+  digit). Fixes applied: the antipodal detailed-balance check made
+  NON-CIRCULAR (independent contour-engine cross-check, ≤1e-13, stored
+  as `engine_check_dev` and asserted; figure panel (d) now plots
+  residuals, not an identity); SEM convention unified to
+  std(ddof=1)/sqrt(n) (three files had /sqrt(n-1) — committed JSONs
+  predate the fix, ~10–15% conservative); sine_solver header identity
+  corrected (it stated <u,FP v> = −B, the true identity is
+  −B − <u,Vv>; code was always right); jacobi n_ts aliasing guard +
+  interleave bounds check added; chord.py walker deduplicated and dead
+  code removed; ChordCorrelators now caches its Contour (signflip
+  probe 4x faster); README precision claims aligned with committed
+  artifacts (thooft result-table digits, LM s=2 vs s≥4 rates, Nc range
+  4–10, dense-check 5e-15 with its 1e-9 gate); stale test counts and
+  timings corrected everywhere.
 - ✅ **Branch landings** (2026-08-17, each agent-reviewed before merge):
   ws/moments-fast (charge-sector-blocked Dirac moments pipeline, 8×+
   measured, dense-checked 5e-15, the Nc = 12 production point),

@@ -177,12 +177,11 @@ def growth_coefficient(v: float) -> complex:
 
 
 def growth_coefficient_numeric(betaJ: float) -> float:
-    """Re a(v) extracted numerically from otoc_ratio.  At this symmetric
-    config the third term of (3.10) vanishes identically (~5e-33), so
-    dev.real = C(v) - e^{v thL} - e^{-v thL} EXACTLY: a constant background
-    C(v) plus a decaying e^{-v thL}, with NO linear-in-thL piece.  Fit that
-    basis over a late-thL window and return the coefficient of e^{v thL}
-    (= Re a, recovered to machine precision); validates growth_coefficient."""
+    """Re a(v) extracted numerically from otoc_ratio.  At the symmetric
+    config (structure derived in growth_coefficient above)
+    dev.real = C(v) - e^{v thL} - e^{-v thL}: fit that basis over a late
+    window and return the e^{v thL} coefficient (= Re a, machine
+    precision); validates growth_coefficient."""
     v = v_of_betaJ(betaJ) if betaJ > 0 else 1e-4
     thLs = np.array([4.0, 5.0, 6.0, 7.0]) / v
     devs = np.array([complex(otoc_ratio(1.5 * np.pi + 1j * t,

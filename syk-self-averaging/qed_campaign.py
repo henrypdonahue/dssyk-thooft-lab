@@ -9,7 +9,7 @@ Majorana/O(N), while the headline claims of Miyashita-Sekino-Susskind
 (arXiv:2607.05678) are Dirac/U(N): "SM dual of DSSYK_infinity is 't Hooft
 model, QCD(2) + QED", with the SYK fermions as electrically charged quarks.
 The paper's U(1) story is anchored in one citation, at the M_0 (n = 0
-"photon") discussion (HologramsSM.tex line 918):
+"photon") discussion (arXiv:2607.05678 source, .tex line 918):
 
     "M_0 is the total conserved U(1) charge.  It has the quantum numbers of
      the time component of the photon but because it is conserved all its
@@ -140,7 +140,7 @@ interior sectors k <= q <= Nc-k (where H_q is nontrivial):
     capacitive:  E0 = a + mu x + x^2/(2C)     ("Coulomb-blockade-like")
     confining :  E0 = a + mu x + s |x|        ("linear in the charge")
 
-STATISTICS (the part that was wrong once).  The sector means E0(q) are
+STATISTICS.  The sector means E0(q) are
 measured on the SAME disorder instances for every q, and each instance's
 overall coupling scale moves all its sectors together, so the components
 of the mean vector are strongly positively correlated: measured
@@ -173,9 +173,8 @@ RELATIVE, not an absolute goodness-of-fit claim: the capacitive model
 wins in every window (GLS Delta-AIC ~ 2.1-2.5e3 generic, ~ 1.5-2.4e3 in
 the short folded c_symmetric windows, vs diagonal reference Delta-chi2
 of only ~ 90-690 -- GLS strengthens the preference because the shared
-noise mode cannot absorb a kink-vs-parabola shape difference; the OLD
-independence-fit c_symmetric Delta-AIC values 530/1027 double-counted
-mirrored sectors and are retired), but its own chi2_gls/dof is >> 1 for
+noise mode cannot absorb a kink-vs-parabola shape difference), but its
+own chi2_gls/dof is >> 1 for
 the generic curves (the data resolve corrections beyond a pure parabola
 -- quartic terms and edge effects); chi2_gls/dof is reported next to
 every fit so nobody mistakes "much better than linear" for "exactly

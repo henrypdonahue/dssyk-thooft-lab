@@ -11,6 +11,6 @@ belongs:
 - the vacuum-energy number: `thooft-target/condensate.py`
 - full assessment + progress log: [`road_map.md`](../../road_map.md)
 
-**Before sending:** fill in the repo URL + signature in `EMAIL.md`
-(`TODO(author)`), and resolve the same two author TODOs in
+**Before sending:** add your signature in `EMAIL.md` (`TODO(author)`; the
+repo URL is filled in and public), and resolve the two author TODOs in
 [`../exact-wick-note/`](../exact-wick-note/) if attaching the manuscript.

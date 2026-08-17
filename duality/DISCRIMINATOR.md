@@ -64,8 +64,11 @@ disk, and geometrically what NV's ±i β/4 dressing does. Measured
   magnitude under the shift — only the crossed correlator flips.
 - **The antipodal frame is thermal at the tomperature — exactly.** The
   shifted Wightman weights obey per-line detailed balance at
-  β_eff = β + β_fake, at any λ (an exact spectral identity, verified to
-  1e-12). At the T = ∞ hologram point this is β_eff = β_fake: the same
+  β_eff = β + β_fake, at any λ. The per-line law is exact by
+  construction; the verification with teeth is independent: the shifted
+  correlator from the contour engine (a code path with no Lehmann
+  weights) matches the per-line-shifted sum to ≤ 1e-13 on every stored
+  row. At the T = ∞ hologram point this is β_eff = β_fake: the same
   shift that flips the OTOC sign makes the 2-pt sector exactly thermal
   at the fake temperature. One map, both of CK's dS-observer
   requirements.
@@ -108,9 +111,12 @@ Four attack tests, run at the actual hologram point (β = 0):
   ratio identities: detailed balance (exact) and the trend-level flip.
 - **Rate extraction is contaminated, and we tested why**
   (`antipodal_modes.py`). The natural mechanism — the unflippable *even*
-  scramblon harmonic (rate 2κ) ending the epoch — is **refuted**:
-  shift-circle Fourier analysis gives κ₂/κ₁ ≈ 0.9–1.2, not 2, with
-  comparable harmonic weights. The exact shift-response has continuous
+  scramblon harmonic (rate 2κ) ending the epoch — is **refuted** where
+  it is testable: on the rows with a measurable growth window
+  (κ₁ > 0.05) the shift-circle Fourier analysis gives κ₂/κ₁ ≈ 0.9–1.2,
+  not 2, with comparable harmonic weights (the λ = 1.5 row has both
+  rates negative — no growth to compare — and is excluded by that
+  gate). The exact shift-response has continuous
   band content, not v-harmonics (the harmonic tower is only the λ → 0
   skeleton — the same phase/magnitude decoupling seen above). What
   survives: a flipped positive component plus a smaller unflipped

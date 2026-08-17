@@ -21,7 +21,7 @@ The structural result this module encodes (the rung-17 finding):
   * The large-q singlet 4-point function is known in closed form at ALL
     temperatures (Streicher 3.3/3.10; CMS 3.16/3.20), with every
     temperature-dependence absorbed into v.
-  * Its analytic structure in the Sommerfeld-Watson plane is METROMORPHIC
+  * Its analytic structure in the Sommerfeld-Watson plane is MEROMORPHIC
     with contributions ONLY from m = 0 (Hamiltonian exchange; the entire TOC)
     and m = +-v (the scramblon, OTOC only).  The would-be bilinear tower --
     the quantization sets M^e/M^o below, the all-temperature analog of

@@ -7,7 +7,6 @@ that proposal with numbers. No new theory. Every claim is cross-checked
 against an independent method, and every verdict is asserted by a test.
 
 Full assessment, task ladder, and progress log: [road_map.md](road_map.md).
-The paper: [2607.05678v1.pdf](2607.05678v1.pdf).
 
 ## Modules
 
@@ -17,8 +16,9 @@ The paper: [2607.05678v1.pdf](2607.05678v1.pdf).
 | [syk-self-averaging/](syk-self-averaging) | the SYK-side claims: self-averaging, the Mn/CP sector, QED and baryon campaigns, freeness, singlet moments | 146 |
 | [duality/](duality) | the dictionary and fingerprints, the exact N = ∞ chord engine, the OTOC/fold laboratory, the KMS discriminator | 165 |
 
-Install once: `pip install -e ".[dev]"`. Then `make test` (about 3 minutes)
-reruns every assertion.
+Install once: `pip install -e ".[dev]"`. Then `make test` (343 tests,
+about a minute) reruns every fast assertion; `make test-all` adds the
+slow ED sweeps (353 total).
 
 ## Main results
 

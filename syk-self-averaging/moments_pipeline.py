@@ -14,7 +14,7 @@ ED with disorder error bars along the FIXED-p trajectory (p = 4, Nc growing:
 lambda = p^2/Nc falls toward the 't Hooft-matching corner), and reports the
 dimensionless shape invariants that survive normalization ambiguities:
 
-    w2   = mu_2 / (mu_0 * <H^2>/dim-per-mode-ish)   -- mean-square frequency
+    w2   = mu_2 / (mu_0 * Tr(H^2)/dim)              -- mean-square frequency
            in units of the instance's own energy scale sqrt(Tr H^2/dim),
     kurt = mu_4 mu_0 / mu_2^2                       -- shape (kurtosis-like).
 

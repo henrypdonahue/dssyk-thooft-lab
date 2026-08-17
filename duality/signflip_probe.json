@@ -1197,7 +1197,8 @@
    "dtau_c": 0.8650734268192563,
    "beta_eff": 1.7411607599365762,
    "beta_fake_c": 1.7301468536385125,
-   "max_line_deviation": 3.2862601528904634e-14
+   "max_line_deviation": 3.2862601528904634e-14,
+   "engine_check_dev": 3.4334507575991745e-15
   },
   {
    "lam": 2.0,
@@ -1207,7 +1208,8 @@
    "dtau_c": 1.1704066811221778,
    "beta_eff": 3.442203992050723,
    "beta_fake_c": 2.3408133622443557,
-   "max_line_deviation": 3.019806626980426e-14
+   "max_line_deviation": 3.019806626980426e-14,
+   "engine_check_dev": 3.547500554510611e-15
   },
   {
    "lam": 1.0,
@@ -1217,7 +1219,8 @@
    "dtau_c": 1.3862922000897193,
    "beta_eff": 2.7902343382311305,
    "beta_fake_c": 2.7725844001794386,
-   "max_line_deviation": 4.844125101044483e-12
+   "max_line_deviation": 4.844125101044483e-12,
+   "engine_check_dev": 7.520443538233412e-15
   },
   {
    "lam": 1.0,
@@ -1227,7 +1230,8 @@
    "dtau_c": 1.875592987451194,
    "beta_eff": 5.516179780071579,
    "beta_fake_c": 3.751185974902388,
-   "max_line_deviation": 4.845901457883883e-12
+   "max_line_deviation": 4.845901457883883e-12,
+   "engine_check_dev": 1.0210598608984251e-13
   }
  ],
  "calibrated": [
@@ -1334,5 +1338,5 @@
   "chord_lam1_unshifted": "down",
   "chord_lam1_antipodal": "up"
  },
- "runtime_s": 47.2
+ "runtime_s": 13.3
 }

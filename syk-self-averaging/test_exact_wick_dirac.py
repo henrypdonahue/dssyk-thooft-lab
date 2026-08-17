@@ -141,9 +141,9 @@ def test_var_offdiag_ed_ensemble():
     Nc, p, n_inst = 6, 4, 400
     rng = np.random.default_rng(2026)
     b01, b00 = [], []
-    H_cache_cs = annihilators(Nc)
+    ann = annihilators(Nc)
     dim = 1 << Nc
-    c0, c1 = H_cache_cs[0], H_cache_cs[1]
+    c0, c1 = ann[0], ann[1]
     for _ in range(n_inst):
         coup = draw_couplings(Nc, p, rng, "c_symmetric")
         H = dirac_hamiltonian(Nc, p, couplings=coup)

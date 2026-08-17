@@ -31,7 +31,7 @@ Exact structural checks built in:
 
 What this is NOT: the duality test.  At Nc = 10-12 and p = 4 the coupling is
 lambda = p^2/Nc ~ 1.3-1.6, far from the lambda -> 0 corner where the 't Hooft
-match is expected (correction #2), and Nc is far from large-N.  Expect broad
+match is expected, and Nc is far from large-N.  Expect broad
 spectral distributions, not sharp meson peaks; the deliverables are the
 pipeline, the conserved-mode checks, the CP-channel resolution, and a first
 data point for how the weight organizes -- inputs for the moments-vs-sum-rules

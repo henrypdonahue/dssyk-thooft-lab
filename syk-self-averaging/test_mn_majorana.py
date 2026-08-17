@@ -140,7 +140,7 @@ def test_bench_matched_lambda_honest_negative(bench):
     mn_majorana_bench.py docstring).  A previous (1-2p/N)^2 'artifact
     correction' that manufactured a falling trend was removed by the
     adversarial review: its motivating 'p = N/2 zero' does not exist for
-    the p = 6 series and its exponent was undeviced."""
+    the p = 6 series and its exponent was underived."""
     for n in (2, 3):
         r4 = next(r for r in bench["points"]
                   if r["p"] == 4 and r["N"] == 10 and r["n"] == n)

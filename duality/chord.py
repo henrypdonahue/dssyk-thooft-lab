@@ -145,7 +145,6 @@ class Sector0:
         self.nmax, self.q = nmax, q
         self.off = np.sqrt(qints(nmax, q)[1:])          # sqrt([1]..[nmax])
         self.E, self.V = eigh_tridiagonal(np.zeros(nmax + 1), self.off)
-        self.c0 = self.V[0, :]                          # <n=0|theta_j>
 
     def vac(self) -> np.ndarray:
         v = np.zeros(self.nmax + 1, dtype=complex)
@@ -327,67 +326,58 @@ class Contour:
         return out
 
     # -- the walk --
+    def _apply_label(self, state, label, open_stack, sector):
+        """Open or close the matter chord `label` (mutates open_stack);
+        returns (state, sector).  After a crossed close the remaining open
+        chord is the old top, so open_stack keeps governing the deltas."""
+        if label not in open_stack:
+            if sector == 0:
+                state = self._open_first(state)
+            elif sector == 1:
+                state = self._open_second(state)
+            else:
+                raise ValueError(">2 open matter chords unsupported")
+            open_stack.append(label)
+            return state, sector + 1
+        if sector == 1:
+            state = self._close_single(state, self.deltas[label])
+        else:
+            d_bot, d_top = (self.deltas[open_stack[0]],
+                            self.deltas[open_stack[1]])
+            if label == open_stack[0]:                  # crossed closing
+                sgn = -1.0 if (label in self.fermionic
+                               and open_stack[1] in self.fermionic) else 1.0
+                state = self._close_bottom_of_two(state, d_bot, d_top, sgn)
+            else:                                       # nested closing
+                state = self._close_top_of_two(state, d_top)
+        open_stack.remove(label)
+        return state, sector - 1
+
+    def _open_delta(self, open_stack) -> float:
+        """Delta that drives evolution with matter open: 1 open = that
+        chord; 2 open = the top chord (the bottom is inert)."""
+        return self.deltas[open_stack[-1]]
+
     def correlator(self, ops: list) -> complex:
         """ops = [(label, u_after), ...] in trace order; returns the
-        normalized ensemble-averaged trace (Z-normalization is the caller's
-        business -- divide by <0|e^{-beta T}|0> for thermal correlators)."""
-        seq = list(reversed(ops))          # rightmost operator acts first
+        ensemble-averaged trace amplitude (Z-normalization is the caller's
+        business -- divide by <0|e^{-beta T}|0> for thermal correlators).
+        The walker processes ops right to left (rightmost acts first on
+        |0>); u_after is the segment to the operator's LEFT in the word."""
         state = self.s0.vac()
-        open_stack = []                    # labels, bottom -> top
-        sector = 0
-        for k, (label, u_after) in enumerate(seq):
-            # segment BEFORE this operator in ket-order is u of previous op;
-            # we apply operator first, then its u_after (the segment that
-            # sits to its LEFT in the trace word, i.e. later on the walk).
+        open_stack, sector = [], 0
+        for label, u_after in reversed(ops):
             if label is not None:
-                if label not in open_stack:
-                    # opening
-                    if sector == 0:
-                        state = self._open_first(state)
-                        sector = 1
-                    elif sector == 1:
-                        state = self._open_second(state)
-                        sector = 2
-                    else:
-                        raise ValueError(">2 open matter chords unsupported")
-                    open_stack.append(label)
-                else:
-                    # closing
-                    if sector == 1:
-                        assert open_stack == [label]
-                        state = self._close_single(state, self.deltas[label])
-                        open_stack.remove(label)
-                        sector = 0
-                    else:
-                        d_bot, d_top = (self.deltas[open_stack[0]],
-                                        self.deltas[open_stack[1]])
-                        if label == open_stack[0]:      # crossed closing
-                            sgn = -1.0 if (
-                                label in self.fermionic
-                                and open_stack[1] in self.fermionic) else 1.0
-                            state = self._close_bottom_of_two(
-                                state, d_bot, d_top, sgn)
-                            # remaining chord is the old top; its delta
-                            # governs the 1-matter sector from here on
-                        else:                            # nested closing
-                            state = self._close_top_of_two(state, d_top)
-                        open_stack.remove(label)
-                        sector = 1
+                state, sector = self._apply_label(state, label,
+                                                  open_stack, sector)
             if u_after != 0:
                 if sector == 0:
                     state = self.s0.evolve(state, u_after)
                 else:
-                    delta_now = self.deltas[open_stack[-1]] if sector == 2 \
-                        else self.deltas[open_stack[0]]
-                    if sector == 1 and len(open_stack) == 1:
-                        # general 1-matter evolution: T depends on the open
-                        # chord's dimension
-                        state = self.sector(delta_now).evolve(state, u_after)
-                    else:
-                        # two open: bottom chord inert, top chord's delta
-                        state = self.sector(
-                            self.deltas[open_stack[1]]).evolve(state, u_after)
-        assert sector == 0 and not open_stack, "unbalanced operator labels"
+                    state = self.sector(
+                        self._open_delta(open_stack)).evolve(state, u_after)
+        if sector != 0 or open_stack:
+            raise ValueError("unbalanced operator labels")
         return complex(state[0])
 
     def apply_word_powers(self, word: list) -> complex:
@@ -403,48 +393,20 @@ class Contour:
         if any(w != 'H' for w in word):
             while word[-1] == 'H':
                 word = word[-1:] + word[:-1]
-        seq = list(reversed(word))
         state = self.s0.vac()
         open_stack, sector = [], 0
-        for w in seq:
+        for w in reversed(word):
             if w == 'H':
                 if sector == 0:
                     state = self.s0.apply_T(state)
                 else:
-                    delta_now = self.deltas[open_stack[1]] if sector == 2 \
-                        else self.deltas[open_stack[0]]
-                    state = self.sector(delta_now).apply_T(state)
+                    state = self.sector(
+                        self._open_delta(open_stack)).apply_T(state)
             else:
-                label = w
-                if label not in open_stack:
-                    if sector == 0:
-                        state = self._open_first(state)
-                        sector = 1
-                    elif sector == 1:
-                        state = self._open_second(state)
-                        sector = 2
-                    else:
-                        raise ValueError(">2 open matter chords unsupported")
-                    open_stack.append(label)
-                else:
-                    if sector == 1:
-                        state = self._close_single(state, self.deltas[label])
-                        open_stack.remove(label)
-                        sector = 0
-                    else:
-                        d_bot, d_top = (self.deltas[open_stack[0]],
-                                        self.deltas[open_stack[1]])
-                        if label == open_stack[0]:
-                            sgn = -1.0 if (
-                                label in self.fermionic
-                                and open_stack[1] in self.fermionic) else 1.0
-                            state = self._close_bottom_of_two(
-                                state, d_bot, d_top, sgn)
-                        else:
-                            state = self._close_top_of_two(state, d_top)
-                        open_stack.remove(label)
-                        sector = 1
-        assert sector == 0 and not open_stack, "unbalanced word"
+                state, sector = self._apply_label(state, w,
+                                                  open_stack, sector)
+        if sector != 0 or open_stack:
+            raise ValueError("unbalanced word")
         return complex(state[0])
 
 
@@ -541,19 +503,6 @@ def rho_theta(theta: np.ndarray, q: float) -> np.ndarray:
 def energy_theta(theta: np.ndarray, q: float) -> np.ndarray:
     """E(theta) = 2 cos(theta)/sqrt(1-q)  [review (2.21)]."""
     return 2.0 * np.cos(theta) / math.sqrt(1.0 - q)
-
-
-def vertex2(th1: float, th2: float, q: float, delta: float) -> float:
-    """|<theta_1|M_Delta|theta_2>|^2 = (qt^2; q)_inf /
-    prod_{s1,s2 = +-} (qt e^{i(s1 th1 + s2 th2)}; q)_inf,  qt = q^Delta
-    [review (2.30)/(4.7)]."""
-    qt = q ** delta
-    num = qpoch(qt * qt, q).real
-    den = 1.0 + 0.0j
-    for s1 in (+1, -1):
-        for s2 in (+1, -1):
-            den *= qpoch(qt * np.exp(1j * (s1 * th1 + s2 * th2)), q)
-    return float(num / den.real)
 
 
 def vertex2_matrix(th: np.ndarray, q: float, delta: float) -> np.ndarray:
@@ -658,18 +607,8 @@ def length_channel_lines(q: float, nmax: int):
 
 
 # ---------------------------------------------------------------------------
-# binned spectral function + structure diagnostics (rung-18 deliverable)
+# smooth spectral function + structure diagnostics (rung-18 deliverable)
 # ---------------------------------------------------------------------------
-def binned_spectrum(om: np.ndarray, w: np.ndarray, bins: np.ndarray):
-    """Histogram Lehmann lines into S(omega) on the given bin edges
-    (weights summed, divided by bin width)."""
-    idx = np.digitize(om, bins) - 1
-    S = np.zeros(len(bins) - 1)
-    ok = (idx >= 0) & (idx < len(S))
-    np.add.at(S, idx[ok], np.real(w[ok]))
-    return S / np.diff(bins)
-
-
 def _vertex2_pairs(th1: np.ndarray, th2: np.ndarray, q: float,
                    delta: float) -> np.ndarray:
     """<th1|q^{Delta n}|th2> elementwise on paired theta arrays (the (2.30)

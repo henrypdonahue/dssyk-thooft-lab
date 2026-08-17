@@ -277,9 +277,8 @@ def test_wavefunction_crosscheck_sine():
 def test_decay_constants_structure():
     """In the physical phi_n(0+) > 0 convention (canonicalize_signs), the
     decay constants are ALL POSITIVE, monotonically decreasing, with f_0
-    dominant.  (Without a stated convention the signs are arbitrary LAPACK
-    output -- an earlier draft asserted an 'alternation' that was exactly
-    that artifact.)"""
+    dominant.  (Without a stated convention the signs are arbitrary
+    LAPACK output.)"""
     from eigenfunctions import decay_constants
     f, _ = decay_constants(200, num_levels=8)
     assert f[0] > 0.9

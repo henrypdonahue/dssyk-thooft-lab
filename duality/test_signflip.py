@@ -56,14 +56,17 @@ def test_chord_flip_is_semiclassical(data):
 
 
 def test_antipodal_frame_thermal_at_tomperature(data):
-    """Exact per-line detailed balance of the shifted Wightman weights at
-    beta_eff = beta + 2 dtau, any lambda; with dtau = beta_fake/2 this is
+    """Per-line detailed balance of the shifted Wightman weights at
+    beta_eff = beta + 2 dtau; with dtau = beta_fake/2 this is
     beta_eff = beta + beta_fake -> the tomperature at the T = infinity
-    hologram point."""
+    hologram point.  The line law is exact by construction
+    (max_line_deviation is a float-level consistency check); the
+    verification with teeth is engine_check_dev: the shifted correlator
+    from the contour engine (no Lehmann weights in that code path) must
+    match the per-line-shifted sum."""
     for r in data["detailed_balance"]:
         assert r["max_line_deviation"] < 1e-9
-        assert r["beta_eff"] == pytest.approx(r["beta_c"] + r["beta_fake_c"],
-                                              rel=1e-12)
+        assert r["engine_check_dev"] < 1e-8
     # the hologram-point statement: at betaJ -> 0, beta_eff ~ beta_fake
     small = [r for r in data["detailed_balance"] if r["betaJ"] < 0.1]
     assert small

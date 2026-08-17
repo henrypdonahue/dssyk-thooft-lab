@@ -56,7 +56,8 @@ from pathlib import Path
 import numpy as np
 
 from antiscrambling import G2_thermal, otoc_ratio
-from chord_fold import CONFIG_CROSSED, ChordCorrelators
+from chord import Contour, Sector0, beta_chord_from_betaJ, q_of_lambda
+from chord_fold import CONFIG_CROSSED, CONFIG_TOC, ChordCorrelators
 from largeq_anchor import v_of_betaJ
 
 HERE = Path(__file__).resolve().parent
@@ -65,12 +66,13 @@ HERE = Path(__file__).resolve().parent
 # ---------------------------------------------------------------------------
 # level 1: closed form
 # ---------------------------------------------------------------------------
-def growth_coefficient_shifted(v: float, delta: float) -> complex:
+def growth_coefficient_shifted(v: float, delta: float,
+                               config=CONFIG_CROSSED) -> complex:
     """Coefficient of exp(v thL) in the closed-form crossed ratio, with the
     (theta1, theta2) pair shifted by `delta` in Euclidean angle.  Complex
     least-squares fit on the basis {1, e^{v thL}, e^{-v thL}} over a late
     window (the same technique antiscrambling.py validates at delta = 0)."""
-    t1, t2, t3, t4 = CONFIG_CROSSED
+    t1, t2, t3, t4 = config
     thLs = np.array([4.0, 5.0, 6.0, 7.0]) / v
     vals = np.array([complex(otoc_ratio(t1 + delta + 1j * t, t2 + delta + 1j * t,
                                         t3, t4, v)) for t in thLs])
@@ -123,7 +125,6 @@ def chord_scan(lam: float, betaJ: float, p: int = 4, nmax: int = 70,
     truncation check at the antipodal endpoint."""
     v = v_of_betaJ(betaJ)
     Nflav = 2.0 * p * p / lam
-    from chord import beta_chord_from_betaJ
     beta_c = beta_chord_from_betaJ(betaJ, lam)
     cc = ChordCorrelators(lam, p, beta_c, nmax)
     t1, t2, t3, t4 = CONFIG_CROSSED
@@ -154,16 +155,30 @@ def chord_scan(lam: float, betaJ: float, p: int = 4, nmax: int = 70,
 # ---------------------------------------------------------------------------
 def detailed_balance(lam: float, betaJ: float, p: int = 4,
                      nmax: int = 120) -> dict:
-    """Exact spectral statement: shifting one probe operator by Euclidean
-    time dtau multiplies each Lehmann line (j, k) by exp(-dtau (Ej - Ek)),
-    so the shifted-frame weights obey detailed balance at
-    beta_eff = beta + 2 dtau -- an exact identity at ANY lambda, checked
-    per line here.  Physics: the sign-flipping shift is dtau =
-    beta_fake/2, so at the T = infinity hologram point (beta -> 0) the
-    antipodal frame satisfies EXACT detailed balance at the tomperature:
-    beta_eff = beta_fake.  (This is also what NV's +-i beta/4 splitting
-    produces, with their beta_dS identified as the fake temperature.)"""
-    from chord import Sector0, beta_chord_from_betaJ, q_of_lambda
+    """The antipodal frame is thermal at beta_eff = beta + 2 dtau.
+
+    The statement has two parts with different logical status, and the
+    returned dict separates them:
+
+    * The per-line LAW.  In the Lehmann representation, shifting one
+      probe operator by Euclidean time dtau multiplies each line (j, k)
+      by exp(-dtau (Ej - Ek)); with the symmetric vertex M this forces
+      detailed balance at beta_eff = beta + 2 dtau for any dtau.  That
+      is arithmetic, not a measurement -- `max_line_deviation` only
+      confirms the construction (float-level).
+    * The independent CHECK (`engine_check_dev`).  The same shifted
+      correlator is evaluated on the contour engine -- the stack walker
+      with matter-sector `expm_multiply`, a code path that contains no
+      Lehmann weights -- and compared against the per-line-shifted sum,
+      at two Lorentzian times and both shift signs.  This is what makes
+      the Lehmann representation (and so the law) a verified property
+      of the chord theory rather than of this function.
+
+    Physics: the sign-flipping shift is dtau = beta_fake/2, so at the
+    T = infinity hologram point (beta -> 0) the antipodal frame obeys
+    detailed balance at the tomperature, beta_eff = beta_fake.  (This is
+    what NV's +-i beta/4 splitting produces, with their beta_dS
+    identified as the fake temperature.)"""
     v = v_of_betaJ(betaJ)
     q = q_of_lambda(lam)
     beta_c = beta_chord_from_betaJ(betaJ, lam)
@@ -175,18 +190,35 @@ def detailed_balance(lam: float, betaJ: float, p: int = 4,
     # G_W(t) = sum_jk W_jk e^{i(Ej-Ek)t},  W_jk = v0_j v0_k M_jk e^{-b Ej}
     W = np.outer(v0 * np.exp(-beta_c * s.E), v0) * M
     dE = np.subtract.outer(s.E, s.E)
-    # shift one operator by Euclidean dtau (increasing the separation):
-    # each line picks up e^{-dtau (Ej - Ek)}
     Wsh = W * np.exp(-dtau_c * dE)
     beta_eff = beta_c + 2.0 * dtau_c
     mask = np.abs(W) > 1e-10 * np.abs(W).max()
     ratio = np.log(np.abs(Wsh[mask] / Wsh.T[mask]))
     ideal = -beta_eff * dE[mask]
     dev = float(np.max(np.abs(ratio - ideal)))
+    # independent check: contour engine vs the per-line-shifted Lehmann
+    # sum, R(u) = sum W e^{u dE} = walker[('A', u), ('A', beta - u)]
+    nmax_chk = min(nmax, 60)
+    s2 = Sector0(nmax_chk, q)
+    v02 = s2.V[0, :]
+    M2 = s2.V.T @ ((q ** ((1.0 / p) * np.arange(nmax_chk + 1)))[:, None]
+                   * s2.V)
+    W2 = np.outer(v02 * np.exp(-beta_c * s2.E), v02) * M2
+    dE2 = np.subtract.outer(s2.E, s2.E)
+    eng = Contour(q, nmax_chk, {'A': 1.0 / p})
+    dev_eng = 0.0
+    for t in (0.4, 1.1):
+        for sgn in (+1.0, -1.0):
+            u = sgn * dtau_c + 1j * t
+            lehmann = complex(np.sum(W2 * np.exp(u * dE2)))
+            walker = eng.correlator([('A', u), ('A', beta_c - u)])
+            dev_eng = max(dev_eng, abs(walker - lehmann)
+                          / max(abs(lehmann), 1e-300))
     return dict(lam=lam, betaJ=betaJ, v=v, beta_c=beta_c,
                 dtau_c=dtau_c, beta_eff=beta_eff,
                 beta_fake_c=beta_c / v,
-                max_line_deviation=dev)
+                max_line_deviation=dev,
+                engine_check_dev=float(dev_eng))
 
 
 # ---------------------------------------------------------------------------
@@ -203,7 +235,6 @@ def calibrated_scan(lam: float, betaJ: float, p: int = 4,
     phase period of the growing mode is set by the large-q v while its
     magnitude grows faster -- phase and magnitude rates decouple at
     finite lambda.  kappa itself is a new measured number."""
-    from chord import beta_chord_from_betaJ
     v = v_of_betaJ(betaJ)
     Nflav = 2.0 * p * p / lam
     cc = ChordCorrelators(lam, p, beta_chord_from_betaJ(betaJ, lam), nmax)
@@ -234,11 +265,9 @@ def toc_control(lam: float, betaJ: float, p: int = 4,
     """The time-ordered 4-pt under the same shift: it must stay bounded
     (no exponential growth) while the crossed one flips.  Reports the max
     magnitude ratio shifted/unshifted over the Lorentzian grid."""
-    from chord import beta_chord_from_betaJ
     v = v_of_betaJ(betaJ)
     Nflav = 2.0 * p * p / lam
     cc = ChordCorrelators(lam, p, beta_chord_from_betaJ(betaJ, lam), nmax)
-    from chord_fold import CONFIG_TOC
     t1, t2, t3, t4 = CONFIG_TOC
     d = math.pi / v
     m0, m1 = [], []
@@ -260,20 +289,8 @@ def config_b_scan(betaJ: float) -> dict:
     chord flip repeats at lambda = 1."""
     v = v_of_betaJ(betaJ)
     t1, t2, t3, t4 = CONFIG_CROSSED_B
-
-    def coeff(delta):
-        thLs = np.array([4.0, 5.0, 6.0, 7.0]) / v
-        vals = np.array([complex(otoc_ratio(t1 + delta + 1j * t,
-                                            t2 + delta + 1j * t,
-                                            t3, t4, v)) for t in thLs])
-        A = np.vstack([np.ones_like(thLs), np.exp(v * thLs),
-                       np.exp(-v * thLs)]).T
-        c, *_ = np.linalg.lstsq(A.astype(complex), vals, rcond=None)
-        return complex(c[1])
-
-    a0 = coeff(0.0)
-    a1 = coeff(math.pi / v)
-    from chord import beta_chord_from_betaJ
+    a0 = growth_coefficient_shifted(v, 0.0, CONFIG_CROSSED_B)
+    a1 = growth_coefficient_shifted(v, math.pi / v, CONFIG_CROSSED_B)
     lam, p = 1.0, 4
     Nflav = 2.0 * p * p / lam
     cc = ChordCorrelators(lam, p, beta_chord_from_betaJ(betaJ, lam), 80)
@@ -349,9 +366,9 @@ def hologram_point(lam: float, p: int = 4, nmax: int = 100,
 def thermal_shape(lam: float, p: int = 4, nmax: int = 140) -> dict:
     """The SHAPE of the antipodal observer's 2-pt at the hologram point.
 
-    Measured verdict (both candidate shapes FAIL, worse as lambda -> 0):
-    the shifted 2-pt exceeds unity and grows along the shift --
-    |G_obs(0)| ~ 2.3 at lambda = 0.25 -- because the antipodal excursion
+    Measured verdict (both candidate shapes FAIL, worse as lambda -> 0;
+    numbers in signflip_deep.json): the shifted 2-pt exceeds unity and
+    grows along the shift, because the antipodal excursion
     is a FOLD-ADJACENT contour: its e^{+tau(Ej-Ek)} weights are dominated
     by the spectral edge, exactly like the Harlow-Zhao fold
     (ANTISCRAMBLING.md decider #2, fold_edge_probe).  Neither the
@@ -360,7 +377,6 @@ def thermal_shape(lam: float, p: int = 4, nmax: int = 140) -> dict:
     the detailed-balance RATIO identity (exact at any lambda) and the
     trend-level OTOC flip: shapes do not.  Both failed targets and the
     periodicity deviation are recorded as the measured negatives."""
-    from chord import Sector0, q_of_lambda
     Jc = math.sqrt(lam) * math.exp(lam / 8.0)
     beta_f = math.pi / Jc
     tau_s = 0.5 * beta_f
@@ -433,7 +449,6 @@ def observer_rate(lam: float, betaJ: float = 2.0, p: int = 4,
     2 pi/beta_eff.  Fit kappa_obs from the antipodal curve where the flip
     is robust; compare against 2 pi v/beta_c (= 2 pi/beta_fake) and
     2 pi/beta_eff."""
-    from chord import beta_chord_from_betaJ
     v = v_of_betaJ(betaJ)
     Nflav = 2.0 * p * p / lam
     beta_c = beta_chord_from_betaJ(betaJ, lam)

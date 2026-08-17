@@ -1,8 +1,8 @@
 # Draft email to the authors of arXiv:2607.05678
 
 *Keep it under one screen. The repo carries the detail; the email earns
-the click. `TODO(author)`: make the repo public before sending, and add
-your signature.*
+the click. `TODO(author)`: add your signature before sending (the repo
+is already public at the URL below).*
 
 ---
 
@@ -37,7 +37,7 @@ scans, and — taking the static-patch motivation seriously — a
 quantitative statement of what the tomperature map must do at OTOC level
 (flip the scrambling sign; the Euclidean fold does not do this, even at
 N = ∞). The engine is validated four independent ways, and everything is
-asserted by a test suite (`make test`, 353 tests, about 3 minutes).
+asserted by a test suite (`make test`, 343 fast tests, about a minute).
 
 https://github.com/henrypdonahue/dssyk-thooft-lab
 

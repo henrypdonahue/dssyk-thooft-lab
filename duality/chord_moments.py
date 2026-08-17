@@ -30,7 +30,7 @@ identity component <X><Y> (T2 words).  Shape invariants (normalization- and
 flavor-count-free): w2 = mu_2/mu_0 (chord units have <H^2> = 1) and
 kurt = mu_4 mu_0 / mu_2^2.
 
-Error budget (corrected by adversarial review, 2026-08-16): the chord
+Error budget: the chord
 cancellations are EXACT algebraic identities of the chord amplitudes at
 any finite matter weight Delta_psi -- there is no finite-p matter-weight
 floor (asserted across a Delta_psi scan in test_chord_moments.py).  The

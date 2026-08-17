@@ -30,9 +30,9 @@ lives.
   with `BOOST.md`: masses are not boost-frequency peak positions.
 - The ED bench confirms the transcription end to end: ⟨H²⟩ matches the
   bridge exactly, and G(t) = sech(√2 p t)^(2/p) matches ED with no free
-  parameters at the O(1/p) level (measured deviations 0.07–0.10 at p = 4
-  against 1/p = 0.25; the deviation plateaus rather than vanishing as
-  λ → 0 — the intrinsic 1/p error survives).
+  parameters at the O(1/p) level (measured deviations 0.065–0.095 at
+  p = 4 against 1/p = 0.25; the deviations do not shrink as λ → 0 — the
+  intrinsic 1/p error survives).
 
 ## En-route finding
 

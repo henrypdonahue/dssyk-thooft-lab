@@ -247,8 +247,7 @@ if __name__ == "__main__":
     for (N, p, rv) in rows:
         print(f"    N={N:4d}  p={p:3d}  relVar(m2) = {rv:.3e}")
 
-    # exact vs leading-order asymptotic, so nobody mistakes the leading form
-    # for the whole story
+    # exact vs leading-order asymptotic: the subleading terms are sizable
     N_big, p_big, rv_big = rows[-1]
     leading = -0.5 * np.sqrt(N_big) * np.log(N_big)
     print(f"\n    Asymptotics at N={N_big}: ln(2/C) = {log(rv_big):.1f} vs the "

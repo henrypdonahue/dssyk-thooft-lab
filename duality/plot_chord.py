@@ -90,8 +90,8 @@ ax.set_xlabel(r"$\lambda$")
 ax.set_title("(c) the fold breaks the $1/N$ hierarchy at $N=\\infty$")
 ax.legend(fontsize=8)
 
-# (d) rung-15 bench: raw widths only (the former "(1-2p/N)^2-corrected"
-# curves were removed by the adversarial review -- undeviced exponent)
+# (d) rung-15 bench: raw widths only (no artifact-corrected curves;
+# see mn_majorana_bench.py for why)
 ax = axes[1, 1]
 for p, marker in [(4, "o"), (6, "s")]:
     rows = sorted((r for r in bench["points"]

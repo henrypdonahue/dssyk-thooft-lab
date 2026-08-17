@@ -8,8 +8,10 @@ signflip_deep.json).  Reads the JSONs only; nothing recomputed.
     (up = anti-scrambling), with the unshifted control;
 (c) the hologram point: the transient anti-scrambling window vs lambda
     (in Jc units), with its ~ half ln(1/lambda) growth;
-(d) the frame's thermality: per-line detailed-balance beta_eff vs
-    beta + beta_fake (exact identity), all lambda.
+(d) the frame's thermality at beta_eff = beta + beta_fake: the residuals.
+    The per-line law is exact by construction, so the panel shows what is
+    actually measured -- the independent contour-engine check and the
+    float-level line residual, per (lambda, betaJ) row.
 """
 import json
 import sys
@@ -72,20 +74,22 @@ ax.set_ylabel(r"anti-scrambling window  $t^*\,J_c$")
 ax.set_title("(c) hologram point: a semiclassical dS epoch")
 ax.legend(fontsize=8)
 
-# (d) detailed balance
+# (d) detailed-balance residuals (the honest panel: the per-line law is
+# exact by construction; what is measured is the independent engine check)
 ax = axes[1, 1]
-rows = deep.get("detailed_balance", probe.get("detailed_balance", []))
-if not rows:
-    rows = probe["detailed_balance"]
+rows = probe["detailed_balance"]
 x = np.arange(len(rows))
-ax.bar(x - 0.18, [r["beta_eff"] for r in rows], 0.36,
-       label=r"measured $\beta_{\rm eff}$")
-ax.bar(x + 0.18, [r["beta_c"] + r["beta_fake_c"] for r in rows], 0.36,
-       label=r"$\beta + \beta_{\rm fake}$")
+ax.bar(x - 0.18, [max(r["engine_check_dev"], 1e-17) for r in rows], 0.36,
+       color="crimson", label="independent engine check")
+ax.bar(x + 0.18, [max(r["max_line_deviation"], 1e-17) for r in rows], 0.36,
+       color="steelblue", label="per-line residual (float)")
+ax.set_yscale("log")
+ax.set_ylabel("relative residual")
 ax.set_xticks(x)
 ax.set_xticklabels([f"$\\lambda={r['lam']}$\n$\\beta J={r['betaJ']}$"
                     for r in rows], fontsize=7)
-ax.set_title("(d) the frame is thermal at the tomperature (exact)")
+ax.set_title(r"(d) thermality at $\beta_{\rm eff}=\beta+\beta_{\rm fake}$:"
+             " residuals")
 ax.legend(fontsize=8)
 
 fig.tight_layout()

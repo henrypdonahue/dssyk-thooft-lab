@@ -21,24 +21,26 @@ behaviour, so it converges only algebraically -- fine for a 3-4 digit
 cross-check, useless for high precision.  That mismatch is the point: agreement
 between the two methods cannot be an artefact of a shared discretization.
 
-The finite-part (hypersingular) operator is handled through its exact weak form.
-For any u, v vanishing at the endpoints,
+The finite-part (hypersingular) operator is handled through its exact weak
+form.  For any u, v vanishing at the endpoints,
 
-    Int_0^1 u(x) [ FP-Int_0^1 v(y)/(y-x)^2 dy ] dx
-        = - (1/2) Int_0^1 Int_0^1 [u(x)-u(y)][v(x)-v(y)] / (x-y)^2  dx dy .
+    <u, FP v> = -B[u, v] - <u, V v>,      V(x) = 1/x + 1/(1-x),
+    B[u, v]   = (1/2) Int Int [u(x)-u(y)][v(x)-v(y)] / (x-y)^2 dx dy
 
-The right-hand integrand is *regular* on the diagonal (it tends to u'(x)v'(x) as
-y -> x), so it is evaluated by an ordinary tensor Gauss-Legendre rule.  't
-Hooft's equation in FLZ normalization,
+(the same Gagliardo identity stated in jacobi_solver.py).  The B integrand
+is *regular* on the diagonal (it tends to u'(x)v'(x) as y -> x), so an
+ordinary tensor Gauss-Legendre rule evaluates it.  't Hooft's equation in
+FLZ normalization,
 
-    2 pi^2 lambda phi = alpha (1/x + 1/(1-x)) phi - FP-Int phi(y)/(y-x)^2 dy,
+    2 pi^2 lambda phi = alpha V(x) phi - FP-Int phi(y)/(y-x)^2 dy,
 
 then becomes the generalized eigenproblem
 
-    (alpha * Pi - W) a = pi^2 lambda' G a,     2 lambda = mu / pi^2,
+    ((alpha + 1) Pi - W) a = mu G a,     mu = 2 pi^2 lambda,
 
-with G_{nm} = <sin_n, sin_m>, Pi_{nm} = <sin_n, (1/x+1/(1-x)) sin_m>, and
-W_{nm} the weak-form finite-part matrix above.  (mu = 2 pi^2 lambda.)
+with G_{nm} = <sin_n, sin_m>, Pi_{nm} = <sin_n, V sin_m>, and W = -B the
+weak-form matrix assembled below.  The alpha -> alpha + 1 shift is the
+bare-mass endpoint self-energy hidden in the finite part (see solve()).
 """
 
 from __future__ import annotations

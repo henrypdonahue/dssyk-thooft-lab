@@ -15,9 +15,12 @@ Two instruments, one verdict:
 1. Shift-circle Fourier analysis (primary; no exponential fitting):
    sample the curve at M shifts around the full fake circle and DFT in
    Delta.  If the tower were harmonic, |c_n(thL)| would grow at rates
-   kappa_n = n kappa_1.  MEASURED: kappa_2/kappa_1 ~ 0.9-1.2, nowhere
-   near 2, with comparable weights |c_2/c_1| ~ 0.7-1.0 -- the harmonic
-   mechanism is REFUTED at finite lambda.  The reason is structural: the
+   kappa_n = n kappa_1.  MEASURED: kappa_2/kappa_1 ~ 0.9-1.2 on the
+   rows with a measurable growth window (kappa_1 > 0.05; the lam = 1.5
+   row has both rates negative -- decaying modes, ratio undefined as a
+   growth comparison -- and is excluded by that gate in the tests), with
+   comparable weights |c_2/c_1| ~ 0.7-1.0 -- the harmonic mechanism is
+   REFUTED at finite lambda where it is testable.  The reason is structural: the
    exact shift-response has CONTINUOUS frequency content set by the
    energy band (each Lehmann line contributes its own e^{-dtau dE}), not
    v-harmonics; the harmonic tower is only the strict lambda -> 0

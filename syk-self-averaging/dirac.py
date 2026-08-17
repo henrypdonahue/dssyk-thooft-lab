@@ -26,8 +26,7 @@ Operator identities encoded here (and asserted in the tests):
   *  M_1 = -(p/2) i H                 (NOT the paper's M_1 = H; forced by
                                        symmetry: Qdot = 0 makes M_1
                                        anti-Hermitian, so it cannot equal a
-                                       nonzero Hermitian H.  README correction
-                                       #3.)
+                                       nonzero Hermitian H.)
   *  M_2 = - sum_i cdot^dag_i cdot_i  (because M_1 is conserved,
                                        d/dt M_1 = sum ci^dag cddot_i
                                        + sum cdot^dag cdot_i = 0; the paper's

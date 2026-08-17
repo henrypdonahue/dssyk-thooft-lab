@@ -164,6 +164,11 @@ def interleave_levels(ev_sym, ev_anti, num_levels: int, alpha: float) -> list:
     limit alpha -> -1).  Interleaving is proven at alpha = 0 (FLZ) and holds
     at every alpha tested.  Shared by thooft_spectrum and jacobi_solver."""
     n_pairs = (num_levels + 1) // 2
+    if n_pairs > min(len(ev_sym), len(ev_anti)):
+        raise ValueError(
+            f"num_levels = {num_levels} needs {n_pairs} levels per sector; "
+            f"got {len(ev_sym)} (sym), {len(ev_anti)} (anti) -- "
+            f"raise num_basis")
     for m in range(n_pairs):
         if not ev_sym[m] < ev_anti[m]:
             raise RuntimeError(

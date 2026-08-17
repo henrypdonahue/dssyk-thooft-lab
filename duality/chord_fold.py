@@ -80,24 +80,22 @@ class ChordCorrelators:
         self.dpsi = 1.0 / p
         s = Sector0(nmax, self.q)
         self.Z = float(s.V[0] @ (np.exp(-beta_c * s.E) * s.V[0]))
-
-    def _contour(self):
-        return Contour(self.q, self.nmax,
-                       {'A': self.dpsi, 'B': self.dpsi},
-                       fermionic={'A', 'B'})
+        # one Contour per instance: its Sector0 eigendecomposition and
+        # cached SectorM matrices are reused across every g2/f4 call
+        self._c = Contour(self.q, self.nmax,
+                          {'A': self.dpsi, 'B': self.dpsi},
+                          fermionic={'A', 'B'})
 
     def g2(self, z1: complex, z2: complex) -> complex:
-        c = self._contour()
         us = _segments([z1, z2], self.beta_c)
-        return c.correlator([('A', us[0]), ('A', us[1])]) / self.Z
+        return self._c.correlator([('A', us[0]), ('A', us[1])]) / self.Z
 
     def f4(self, labels, zs_path) -> complex:
         """Path-ordered 4-pt: labels in path order (e.g. A B A B crossed),
         zs_path the matching slot times."""
-        c = self._contour()
         us = _segments(list(zs_path), self.beta_c)
         ops = [(lab, u) for lab, u in zip(labels, us)]
-        return c.correlator(ops) / self.Z
+        return self._c.correlator(ops) / self.Z
 
     def f4_physical(self, thetas, kind: str) -> complex:
         """fold_bench's F at a theta configuration.  kind 'c' freezes the

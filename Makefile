@@ -1,6 +1,6 @@
 # Reproduction entry points for the DSSYK <-> 't Hooft stress-test repo.
 #
-#   make test            fast test suites of all three modules   (~15 s)
+#   make test            fast test suites of all three modules   (~1 min)
 #   make test-all        full suites including slow ED sweeps    (~minutes)
 #   make reproduce       fast deterministic checks + figures     (~1 min)
 #   make reproduce-slow  ED sweeps behind the saved JSON         (~hours)

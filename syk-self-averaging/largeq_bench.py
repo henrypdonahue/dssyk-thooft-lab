@@ -28,8 +28,8 @@ dynamical probe.  The first genuinely dynamical member of the Majorana tower
 is sum psidot psidot, by the same conservation identity that fixes M_2.)
 
 Conventions: Var(J) = p!/N^{p-1} (papers' Eq. 3.8, script-J = 1), Majoranas
-psi_a^2 = 1.  With this normalization <H^2>/dim = C(N,p) p!/N^{p-1} ~ N/p...
-times p!-combinatorics -- the bench stores <H^2>/dim per instance so any
+psi_a^2 = 1.  With this normalization <H^2>/dim = C(N,p) p!/N^{p-1} -- the
+bench stores <H^2>/dim per instance so any
 formula's energy-scale convention can be matched exactly rather than assumed.
 """
 
@@ -80,7 +80,9 @@ def two_point_ed(N: int, p: int, ts, n_inst: int = 8, seed: int = 0):
         sf_rows.append(float(WO[np.abs(omega) < 1e-9].sum() / WO.sum()))
     G = np.array(G_rows)
     C = np.array(C_rows)
-    sem = 1.0 / np.sqrt(max(n_inst - 1, 1))
+    # SEM = std(ddof=1)/sqrt(n).  JSONs committed before 2026-08-17
+    # used /sqrt(n-1): ~10-15% conservative at these n_inst.
+    sem = 1.0 / np.sqrt(max(n_inst, 1))
     return dict(
         N=N, p=p, n_inst=n_inst, ts=ts.tolist(),
         G_re=np.mean(G.real, 0).tolist(),

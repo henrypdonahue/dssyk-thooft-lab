@@ -107,11 +107,8 @@ if __name__ == "__main__":
     mp.dps = 35
     K = 90
     print(f"Arbitrary precision (mp.dps={mp.dps}, basis K={K} per sector)\n")
-    print("NOTE: with a truncated basis the accuracy floor is set by the basis")
-    print("size K, NOT by mp.dps -- the matrix elements are exact rationals, so")
-    print("arithmetic is not the bottleneck.  At this modest K the last couple of")
-    print("printed digits are basis-truncation noise.  The certified table is")
-    print("reference_spectrum.json (built at K=160 vs K=220 in generate_reference.py).\n")
+    print("NOTE: the accuracy floor is the basis size K, not mp.dps (matrix")
+    print("elements are exact rationals).  Certified table: reference_spectrum.json.\n")
 
     sym = solve_sector_mp(K, parity=0)
     anti = solve_sector_mp(K, parity=1)

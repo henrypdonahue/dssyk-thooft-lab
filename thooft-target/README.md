@@ -14,13 +14,13 @@ and, at nonzero quark mass, Litvinov–Meshcheriakov
     2π²λ φ(x) = α (1/x + 1/(1−x)) φ(x) − FP∫ φ(y)/(y−x)² dy
 
 with a Hadamard finite-part integral, φ(0) = φ(1) = 0, and
-α = π mq²/g² − 1 per quark. Masses are Mn² = 2π g² λn; we report
+α = π m_bare²/g² − 1 per quark. Masses are Mn² = 2π g² λn; we report
 2λn = Mn²/(π g²).
 
-The duality needs **renormalized mq² = 0**. With mq² = m_bare² − g²/π this
-is α = 0 — FLZ's exactly studied case, a regular gapped theory, **not**
-the chiral limit (α = −1). Endpoint behavior: φ ~ √(x(1−x)), from
-πβ cot(πβ) = −α.
+The duality needs **renormalized m_q² = 0**. With m_q² = m_bare² − g²/π
+this is α = 0 — FLZ's exactly studied case, a regular gapped theory,
+**not** the chiral limit (α = −1). Endpoint behavior: φ ~ √(x(1−x)),
+from πβ cot(πβ) = −α.
 
 ## Method
 
@@ -43,9 +43,9 @@ basis is only algebraic.
 | FLZ Tables 1–2 (n ≤ 29) | worst deviation 2e-12 — FLZ's own rounding floor |
 | Exact sum rules s = 2, 3, 4, both parities | 7ζ(3) and 2 to ~1e-10; s = 3, 4 closed forms to ~3e-12 |
 | α ≠ 0, external (`external_anchors.json`) | LM tables matched at their 6-digit floor; LM exact sum rules to 1e-5–2e-4 |
-| Eigenfunctions (`eigenfunctions.py`) | Parseval to 3e-6; weak-form Rayleigh quotient to ~1e-6; cross-solver overlap > 0.9999 |
+| Eigenfunctions (`eigenfunctions.py`) | Parseval to 3e-6; weak-form Rayleigh quotient to 1e-6–6e-6 (n ≤ 2); cross-solver overlap > 0.9999 |
 | Independent solver (`sine_solver.py`) | different basis, no shared code; validates the quark-mass machinery |
-| Jacobi solver at α ≠ 0 | β = ½ anchor to ~5e-13; α = ±0.5 ground state < 1e-11 by K = 32; LM sum rules to ~1e-12 |
+| Jacobi solver at α ≠ 0 | β = ½ anchor to ~5e-13; α = ±0.5 ground state < 1e-11 by K = 32; LM sum rules s = 2 to ~3e-8, s ≥ 4 to ~1e-12 |
 | Asymptotics | 2λn → n + 3/4; matrix elements vs quadrature to machine precision |
 
 **Decay constants** (new data — no published wavefunction tables exist):
@@ -81,7 +81,7 @@ python3 thooft_spectrum.py   # print the spectrum
 python3 validate.py          # validation report (exit code = pass/fail)
 python3 eigenfunctions.py    # wavefunction checks + decay constants
 python3 condensate.py        # condensate + GMOR corner + vacuum energy
-pytest -q                    # 42 tests (~1 min)
+pytest -q                    # 42 tests (~15 s)
 ```
 
 ## Result
@@ -92,8 +92,8 @@ pytest -q                    # 42 tests (~1 min)
 | n | 2λn | parity | CP |
 |--:|--------------:|:------:|:--:|
 | 0 | 0.737061746292690 | sym | − |
-| 1 | 1.753731336917500 | anti | + |
-| 2 | 2.748160912370600 | sym | − |
-| 3 | 3.751057581705400 | anti | + |
-| 4 | 4.749295381037500 | sym | − |
-| 5 | 5.750492623648700 | anti | + |
+| 1 | 1.753731336917499 | anti | + |
+| 2 | 2.748160912370602 | sym | − |
+| 3 | 3.751057581705472 | anti | + |
+| 4 | 4.749295381037520 | sym | − |
+| 5 | 5.750492623648781 | anti | + |

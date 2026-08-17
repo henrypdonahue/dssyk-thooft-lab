@@ -47,7 +47,7 @@ charged-vs-singlet spectral scales. The capacitive-vs-confining question
 is stated with ΔAIC, not asserted.
 
 **Baryon sector, first contact** (`baryons.py`): epsilon-tensor baryons at
-Nc = 4–8 — exact 2-point collapse onto charge sectors, mass extensivity,
+Nc = 4–10 — exact 2-point collapse onto charge sectors, mass extensivity,
 and the edge-curvature hierarchy. First data on the paper's underived
 inter-baryon-force claim; hierarchy claims kept honest.
 
@@ -99,11 +99,11 @@ to their scripts.
 | `syk.py` | sparse Jordan–Wigner operators (slow reference builders) |
 | `pauli_strings.py` | bitwise Hamiltonian assembly (10–100×, equivalence-tested) |
 | `dirac.py` | complex SYK: [H,Q] = 0, the Mn tower, unitary CP machinery |
-| `exact_wick.py` | closed-form Eq. 3.28 statistics, beyond ED; plus exact E[m4], Var(m4): relVar(m4) = 4 relVar(m2), the second self-averaging anchor |
+| `exact_wick.py` | closed-form Eq. 3.28 statistics, beyond ED; plus exact E[m4], Var(m4): relVar(m4) = 4 relVar(m2) (1 + o(1)), the second self-averaging anchor |
 | `exact_wick_dirac.py` | the Dirac-side counterpart: exact Var(B_ij) for U(N) emergence (rms ~ Nc^(−(p−1)/2)), and ED-free exact singlet-moment anchors |
 | `mn_spectroscopy.py` | CP-resolved Mn spectral functions |
 | `moments_pipeline.py` | CP-resolved moment invariants with statistics |
-| `moments_fast.py` | charge-sector-blocked reimplementation (8x+ faster, dense-checked to 1e-15): the Nc = 12 production point and the fixed-p trend figure |
+| `moments_fast.py` | charge-sector-blocked reimplementation (~140x at Nc = 12; dense equivalence asserted at 1e-9, measured 5e-15): the Nc = 12 production point and the fixed-p trend figure |
 | `qed_campaign.py` | U(N) self-averaging + charging curves |
 | `baryons.py` | baryon sector: collapse, extensivity, hierarchy |
 | `largeq_bench.py` | ED ground truth for the large-q anchor |
@@ -128,7 +128,7 @@ python3 qed_campaign.py         # QED campaign
 python3 baryons.py              # baryon campaign
 python3 freeness.py             # freeness campaign (hours)
 python3 mn_majorana_bench.py    # singlet-moment bench (~1 h)
-pytest -q -m 'not slow'         # fast asserts (~1 min)
+pytest -q -m 'not slow'         # fast asserts (~40 s)
 ```
 
 ## Scope

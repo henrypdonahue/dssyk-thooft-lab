@@ -84,7 +84,7 @@ transposition minus is *derived* here as the fermionic chord-crossing
 sign). Scan λ = 4.0 → 0.5, truncation-doubled, drifts ≤ 2e−5. Verdict:
 
 1. **The control behaves.** The unfolded ratio is λ-stable
-   (−1.65 … −1.67), exactly real (manifest for Euclidean contours in the
+   (−1.649 … −1.677), exactly real (manifest for Euclidean contours in the
    chord representation; the growth branch stays real too), and ~10% from
    matched-λ ED — the expected finite-N gap.
 2. **The folded connected part is not suppressed at N = ∞.** As λ → 0 the
@@ -103,9 +103,10 @@ sign). Scan λ = 4.0 → 0.5, truncation-doubled, drifts ≤ 2e−5. Verdict:
    35× the scatter. Folded correlators at ED sizes measure edge
    fluctuations — a finite-N effect the sharp-edged chord theory lacks.
 
-Stated cap: folded contours below λ ≈ 0.5 exceed float headroom
-(measured; the λ = 0.3 point does not converge in truncation and is
-excluded). The λ-trend over [0.5, 4] is unambiguous.
+Stated cap: folded contours below λ ≈ 0.5 exceed float headroom (the
+λ = 0.3 point fails truncation-doubling and is excluded; the committed
+fold drifts grow 2e-15 → 2e-5 over λ = 4 → 0.5). The λ-trend over
+[0.5, 4] is unambiguous.
 
 Consequence for HZ: in the one bounded-spectrum, exactly solvable
 candidate model, folded correlators are finite (their requirement holds)

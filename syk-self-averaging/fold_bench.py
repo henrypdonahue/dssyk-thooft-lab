@@ -28,8 +28,8 @@ duality/antiscrambling.py; asserted in duality/test_antiscrambling.py):
     fields costs one (-1).  It is cross-validated against the independently
     transcribed Streicher (3.10) closed form.  The wrong sign is not a mere
     normalization: F ~= F_d here (the connected part is a small difference), so
-    flipping F's sign moves the connected RATIO N*(F - F_d)/F_d by ~2N -- that
-    is the "x25" one sees downstream, a ratio distortion, not a fudge factor.
+    flipping F's sign moves the connected RATIO N*(F - F_d)/F_d by ~2N
+    (the x25 sign-discrimination margin quoted in ANTISCRAMBLING.md).
   * At finite dimension the ordered-trace expression is an ENTIRE function
     of the four thetas, so the FOLD -- Harlow-Zhao's continuation (6.9),
     theta^QM = (-t1, 2pi n - t2, 2pi - t3, 2pi(n+1) - t4) -- is evaluated by
@@ -230,7 +230,9 @@ def run_point(N: int, p: int, betaJ: float, n_inst: int, seed: int,
             samples[key][2].append(bilocal2(E, psis, beta, zs[2], zs[3]))
 
     g2, g2f = np.array(g2_rows), np.array(g2f_rows)
-    sem = 1.0 / np.sqrt(max(n_inst - 1, 1))
+    # SEM = std(ddof=1)/sqrt(n).  JSONs committed before 2026-08-17
+    # used /sqrt(n-1): ~10-15% conservative at these n_inst.
+    sem = 1.0 / np.sqrt(max(n_inst, 1))
     out = dict(N=N, p=p, betaJ=betaJ, beta=beta, scriptJ=scriptJ,
                n_inst=n_inst, seed=seed, thL_grid=list(thL_grid),
                fold_n=fold_n, config_crossed=list(CONFIG_CROSSED),

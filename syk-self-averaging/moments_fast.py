@@ -80,12 +80,6 @@ import numpy as np
 
 from dirac import draw_couplings, apply_monomial, _mode_bit, _below_mask
 
-# Optional path to a concurrently-computed dense-ED partial (per-seed
-# instance moments) for the live cross-check; the committed
-# moments_nc12.json already records the completed 4-seed check at 5e-15.
-DENSE_PARTIAL = None
-
-
 # --------------------------------------------------------------------------
 # sector bookkeeping
 # --------------------------------------------------------------------------
@@ -333,7 +327,7 @@ def peak_memory_gb(Nc: int, n_list=(2, 3)):
 # --------------------------------------------------------------------------
 # production main: Nc = 12 ensemble, dense cross-check, fixed-p trend
 # --------------------------------------------------------------------------
-def _load_dense_partial(path=DENSE_PARTIAL):
+def _load_dense_partial(path=None):
     if path is None:
         return None
     try:
@@ -388,7 +382,7 @@ def trend_table(new_rows, n_list=(2, 3)):
             split = wrong["w2"] - right["w2"]
             split_err = float(np.hypot(wrong["w2_err"], right["w2_err"]))
             trend.append(dict(
-                n=n, Nc=Nc, lam=16.0 / Nc, inv_Nc=1.0 / Nc,
+                n=n, Nc=Nc, lam=right["p"] ** 2 / Nc, inv_Nc=1.0 / Nc,
                 n_inst=right["n_inst"],
                 w2_right=right["w2"], w2_right_err=right["w2_err"],
                 w2_wrong=wrong["w2"], w2_wrong_err=wrong["w2_err"],

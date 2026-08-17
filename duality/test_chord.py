@@ -319,10 +319,8 @@ def test_sech_anchor_smalllambda():
 
 
 # ---------------------------------------------------------------------------
-# 6. the finite-N ED anchor (fold_bench.json): chord vs exact diagonalization
-# ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
-# 7. the committed rung-18 scan: the discrete-vs-continuum verdict
+# 6. the committed rung-18 scan: the discrete-vs-continuum verdict
+#    (the finite-N ED anchor test sits at the end of the file)
 # ---------------------------------------------------------------------------
 def test_structure_detector_catches_planted_features():
     """The detector itself is falsifiable: structure_report_smooth must

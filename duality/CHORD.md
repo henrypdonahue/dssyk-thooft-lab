@@ -32,8 +32,9 @@ thermal 2-pt agrees to **0.6–1.6%** (the large-q closed forms sit at a
 30–55% floor at the same sizes).
 
 Stated caps: at most 2 open matter chords (covers all 2-pt and 4-pt
-orderings); folded contours below λ ≈ 0.5 exceed float headroom
-(measured, `chord_fold.py`).
+orderings); folded contours below λ ≈ 0.5 exceed float headroom (the
+λ = 0.3 point fails truncation-doubling; drifts stored per row in
+`chord_fold.json`).
 
 ## Discrete tower or continuum? — Continuum. Sharper: the channels are conserved.
 
@@ -56,8 +57,9 @@ assembled by a binomial expansion verified as a per-instance operator
 identity against dense ED (`test_mn_majorana.py`):
 
 > **μ₂ = μ₄ = 0 to machine precision (relative to the pre-cancellation
-> gross sum), for n = 1, 2, 3, at every λ in [0.1, 4], across a
-> matter-weight scan Δψ ∈ [0.1, 1].** For n = 1 this is the exact law
+> gross sum), for n = 1, 2, 3, at every λ in [0.1, 4].** The
+> matter-weight scan Δψ ∈ [0.1, 1] is asserted for n = 1, 2 (n = 3 is
+> asserted at Δψ = ¼ across the λ grid). For n = 1 this is the exact law
 > A₁ = −2pH. For n = 2, 3 it is a measured algebraic cancellation — no
 > analytic proof yet; scope is n ≤ 3, moments μ₂ and μ₄. Random O_Δ
 > operators *do* propagate (μ₂ = 2(1−q^Δ), kurtosis → 3 + 1/Δ; closed
