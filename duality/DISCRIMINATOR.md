@@ -106,9 +106,16 @@ Four attack tests, run at the actual hologram point (β = 0):
   (deviations grow toward semiclassics, the fold pattern), and show no
   fake-period recurrence. What survives edge domination is exactly the
   ratio identities: detailed balance (exact) and the trend-level flip.
-- **Rate extraction is contaminated** by a faster scrambling-reasserting
-  mode (fitted growth > 2π/β_fake > 2π/β_eff): whether the flipped mode
-  grows at the dS rate 2π/β_eff needs mode separation — open.
+- **Rate extraction is contaminated, and we tested why**
+  (`antipodal_modes.py`). The natural mechanism — the unflippable *even*
+  scramblon harmonic (rate 2κ) ending the epoch — is **refuted**:
+  shift-circle Fourier analysis gives κ₂/κ₁ ≈ 0.9–1.2, not 2, with
+  comparable harmonic weights. The exact shift-response has continuous
+  band content, not v-harmonics (the harmonic tower is only the λ → 0
+  skeleton — the same phase/magnitude decoupling seen above). What
+  survives: a flipped positive component plus a smaller unflipped
+  negative one wherever the flip operates. The dS-rate question stays
+  open, now with its obstruction understood.
 
 Net: the mechanism is real and semiclassical — an anti-scrambling epoch
 with exact effective detailed balance, at Susskind's own tomperature —
