@@ -64,6 +64,6 @@ python3 antiscrambling.py # the OTOC sign table + fold map
 python3 chord.py --spectra   # rung-18 lambda->0 scan  (~4 min)
 python3 chord_moments.py --run  # rung-15 exact moments (~1 s)
 python3 chord_fold.py        # rung-26 decider #2       (~30 s)
-pytest -q                 # 141 tests: conventions, boost, large-q,
+pytest -q                 # 151 tests: conventions, boost, large-q,
                           # anti-scrambling, chord engine + verdicts
 ```
