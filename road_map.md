@@ -342,11 +342,15 @@ independent; the tiers gate the ones that aren't.
   candidate tomperature map that works: the antipodal half-fake-period
   shift (Δ = π/v; NV's ±iβ/4 dressing, geometrically) flips the OTOC sign
   EXACTLY in the closed form (a(Δ) = a(0)e^{−ivΔ}, Re a: −1 → +1, every
-  temperature; shifted 2-pt finite and positive, margin π/2 from the
-  pole) and, exact-in-λ, for λ ≤ 1.6 (absent at λ = 2.0; unshifted
-  control scrambles at every λ; truncation-clean). Necessary, not
-  sufficient — the sign-gate of the tomperature map is now OPEN
-  semiclassically; the NV dressed-OTOC computation remains the closer.
+  temperature, two configs; shifted 2-pt finite/positive; TOC unchanged)
+  and, exact-in-λ, for λ ≤ 1.7 (not λ ≥ 1.8; unshifted control scrambles
+  at every λ; truncation-clean). PLUS: the same shift makes the Wightman
+  sector EXACTLY thermal at β_eff = β + β_fake (per-line detailed
+  balance, any λ) → the tomperature at the T=∞ hologram point — one map,
+  both CK dS-observer signatures. Phase period set by v, not the
+  measured growth κ ≈ 0.83–0.88 > v: no recalibration rescues strong
+  coupling. Necessary, not sufficient — the sign-gate of the tomperature
+  map is OPEN semiclassically; the NV dressed-OTOC remains the closer.
 - ⬜ Open: 18 remainder (the tower extraction itself, now located at fixed
   p, λ→0 — a 1/N computation from the double-scaled viewpoint), 17 proper
   (the O(1/q) residues — theory), 13 remainder (tomperature map: the

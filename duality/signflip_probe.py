@@ -149,19 +149,164 @@ def chord_scan(lam: float, betaJ: float, p: int = 4, nmax: int = 70,
                 rows=out_rows, truncation_drift=float(drift))
 
 
+# ---------------------------------------------------------------------------
+# level 4: the antipodal frame is thermal at the tomperature (exact)
+# ---------------------------------------------------------------------------
+def detailed_balance(lam: float, betaJ: float, p: int = 4,
+                     nmax: int = 120) -> dict:
+    """Exact spectral statement: shifting one probe operator by Euclidean
+    time dtau multiplies each Lehmann line (j, k) by exp(-dtau (Ej - Ek)),
+    so the shifted-frame weights obey detailed balance at
+    beta_eff = beta + 2 dtau -- an exact identity at ANY lambda, checked
+    per line here.  Physics: the sign-flipping shift is dtau =
+    beta_fake/2, so at the T = infinity hologram point (beta -> 0) the
+    antipodal frame satisfies EXACT detailed balance at the tomperature:
+    beta_eff = beta_fake.  (This is also what NV's +-i beta/4 splitting
+    produces, with their beta_dS identified as the fake temperature.)"""
+    from chord import Sector0, beta_chord_from_betaJ, q_of_lambda
+    v = v_of_betaJ(betaJ)
+    q = q_of_lambda(lam)
+    beta_c = beta_chord_from_betaJ(betaJ, lam)
+    dtau_c = 0.5 * beta_c / v                 # half the fake period
+    s = Sector0(nmax, q)
+    v0 = s.V[0, :]
+    M = s.V.T @ ((q ** ((1.0 / p) * np.arange(nmax + 1)))[:, None] * s.V)
+    # Wightman ordering (the object KMS is about):
+    # G_W(t) = sum_jk W_jk e^{i(Ej-Ek)t},  W_jk = v0_j v0_k M_jk e^{-b Ej}
+    W = np.outer(v0 * np.exp(-beta_c * s.E), v0) * M
+    dE = np.subtract.outer(s.E, s.E)
+    # shift one operator by Euclidean dtau (increasing the separation):
+    # each line picks up e^{-dtau (Ej - Ek)}
+    Wsh = W * np.exp(-dtau_c * dE)
+    beta_eff = beta_c + 2.0 * dtau_c
+    mask = np.abs(W) > 1e-10 * np.abs(W).max()
+    ratio = np.log(np.abs(Wsh[mask] / Wsh.T[mask]))
+    ideal = -beta_eff * dE[mask]
+    dev = float(np.max(np.abs(ratio - ideal)))
+    return dict(lam=lam, betaJ=betaJ, v=v, beta_c=beta_c,
+                dtau_c=dtau_c, beta_eff=beta_eff,
+                beta_fake_c=beta_c / v,
+                max_line_deviation=dev)
+
+
+# ---------------------------------------------------------------------------
+# level 5: self-calibrated shift at strong coupling (honest negative)
+# ---------------------------------------------------------------------------
+def calibrated_scan(lam: float, betaJ: float, p: int = 4,
+                    nmax: int = 80) -> dict:
+    """Measure the exact growth exponent kappa from the unshifted curve
+    (three-point log-difference), then try the flip with Delta = pi/kappa
+    as well as the large-q Delta = pi/v.  Two findings.  (1) At strong
+    coupling both shifts fail: the flip is genuinely semiclassical, not a
+    rate-calibration artifact.  (2) Where the flip works (lam <= 1.7), it
+    works with pi/v and NOT with pi/kappa, even though kappa > v: the
+    phase period of the growing mode is set by the large-q v while its
+    magnitude grows faster -- phase and magnitude rates decouple at
+    finite lambda.  kappa itself is a new measured number."""
+    from chord import beta_chord_from_betaJ
+    v = v_of_betaJ(betaJ)
+    Nflav = 2.0 * p * p / lam
+    cc = ChordCorrelators(lam, p, beta_chord_from_betaJ(betaJ, lam), nmax)
+    t1, t2, t3, t4 = CONFIG_CROSSED
+    h, thLs = 0.5, (0.5, 1.0, 1.5, 2.0)
+    r = [cc.connected_ratio((t1 + 1j * t, t2 + 1j * t, t3, t4),
+                            'c', Nflav).real for t in thLs]
+    d1, d2, d3 = r[1] - r[0], r[2] - r[1], r[3] - r[2]
+    kappa = 0.5 * (math.log(abs(d2 / d1)) + math.log(abs(d3 / d2))) / h
+    out = dict(lam=lam, betaJ=betaJ, v_largeq=v, kappa=float(kappa))
+    for name, d in [("largeq", math.pi / v), ("calibrated", math.pi / kappa)]:
+        rs = [cc.connected_ratio((t1 + d + 1j * t, t2 + d + 1j * t, t3, t4),
+                                 'c', Nflav).real for t in (0.0, 1.0, 2.0)]
+        out[name] = dict(delta=float(d), re_move=rs[-1] - rs[0],
+                         direction="up" if rs[-1] > rs[0] else "down")
+    return out
+
+
+# ---------------------------------------------------------------------------
+# level 6: TOC control and configuration robustness
+# ---------------------------------------------------------------------------
+CONFIG_CROSSED_B = (1.6 * math.pi, 0.6 * math.pi, 1.1 * math.pi,
+                    0.1 * math.pi)
+
+
+def toc_control(lam: float, betaJ: float, p: int = 4,
+                nmax: int = 80) -> dict:
+    """The time-ordered 4-pt under the same shift: it must stay bounded
+    (no exponential growth) while the crossed one flips.  Reports the max
+    magnitude ratio shifted/unshifted over the Lorentzian grid."""
+    from chord import beta_chord_from_betaJ
+    v = v_of_betaJ(betaJ)
+    Nflav = 2.0 * p * p / lam
+    cc = ChordCorrelators(lam, p, beta_chord_from_betaJ(betaJ, lam), nmax)
+    from chord_fold import CONFIG_TOC
+    t1, t2, t3, t4 = CONFIG_TOC
+    d = math.pi / v
+    m0, m1 = [], []
+    for thL in (0.0, 1.0, 2.0):
+        u = cc.connected_ratio((t1 + 1j * thL, t2 + 1j * thL, t3, t4),
+                               'u', Nflav)
+        s_ = cc.connected_ratio((t1 + d + 1j * thL, t2 + d + 1j * thL,
+                                 t3, t4), 'u', Nflav)
+        m0.append(abs(u))
+        m1.append(abs(s_))
+    return dict(lam=lam, max_unshifted=max(m0), max_shifted=max(m1),
+                bounded=bool(max(m1) < 20.0 * max(max(m0), 1.0)))
+
+
+def config_b_scan(betaJ: float) -> dict:
+    """Second crossed configuration: the closed-form rotation law
+    a(Delta) = a(0) exp(-i v Delta) is configuration-independent, so
+    Re a flips sign at Delta = pi/v wherever it starts; and the exact
+    chord flip repeats at lambda = 1."""
+    v = v_of_betaJ(betaJ)
+    t1, t2, t3, t4 = CONFIG_CROSSED_B
+
+    def coeff(delta):
+        thLs = np.array([4.0, 5.0, 6.0, 7.0]) / v
+        vals = np.array([complex(otoc_ratio(t1 + delta + 1j * t,
+                                            t2 + delta + 1j * t,
+                                            t3, t4, v)) for t in thLs])
+        A = np.vstack([np.ones_like(thLs), np.exp(v * thLs),
+                       np.exp(-v * thLs)]).T
+        c, *_ = np.linalg.lstsq(A.astype(complex), vals, rcond=None)
+        return complex(c[1])
+
+    a0 = coeff(0.0)
+    a1 = coeff(math.pi / v)
+    from chord import beta_chord_from_betaJ
+    lam, p = 1.0, 4
+    Nflav = 2.0 * p * p / lam
+    cc = ChordCorrelators(lam, p, beta_chord_from_betaJ(betaJ, lam), 80)
+    d = math.pi / v
+    rs0 = [cc.connected_ratio((t1 + 1j * t, t2 + 1j * t, t3, t4),
+                              'c', Nflav).real for t in (0.0, 1.0, 2.0)]
+    rs1 = [cc.connected_ratio((t1 + d + 1j * t, t2 + d + 1j * t, t3, t4),
+                              'c', Nflav).real for t in (0.0, 1.0, 2.0)]
+    return dict(betaJ=betaJ, re_a0=a0.real, re_a_antipodal=a1.real,
+                rotation_error=abs(a1 + a0) / abs(a0),
+                chord_lam1_unshifted="down" if rs0[-1] < rs0[0] else "up",
+                chord_lam1_antipodal="up" if rs1[-1] > rs1[0] else "down")
+
+
 def main():
     t0 = time.time()
     betaJ = 2.0
     payload = dict(
-        provenance="signflip_probe.py -- exploratory probe of the "
-                   "antipodal half-fake-period shift as a candidate "
-                   "OTOC-sign-flipping map (DISCRIMINATOR.md); necessary, "
-                   "not sufficient",
+        provenance="signflip_probe.py -- the antipodal half-fake-period "
+                   "shift as a candidate OTOC-sign-flipping map "
+                   "(DISCRIMINATOR.md); necessary, not sufficient",
         closed_form=[closed_form_scan(bJ) for bJ in (0.5, 2.0, 5.0)],
         g2=g2_along_shift(betaJ),
         chord=[chord_scan(lam, betaJ, nmax=80,
                           thL_grid=(0.0, 0.5, 1.0, 1.5, 2.0))
-               for lam in (2.0, 1.6, 1.2, 1.0, 0.8, 0.6)])
+               for lam in (2.0, 1.8, 1.7, 1.6, 1.5, 1.2, 1.0, 0.8, 0.6)],
+        detailed_balance=[detailed_balance(lam, bJ)
+                          for lam in (2.0, 1.0)
+                          for bJ in (0.02, 2.0)],
+        calibrated=[calibrated_scan(lam, betaJ)
+                    for lam in (4.0, 3.0, 2.0, 1.0, 0.6)],
+        toc=[toc_control(lam, betaJ) for lam in (2.0, 1.0)],
+        config_b=config_b_scan(betaJ))
     payload["runtime_s"] = round(time.time() - t0, 1)
     out = HERE / "signflip_probe.json"
     with open(out, "w") as fh:

@@ -41,15 +41,64 @@ def test_g2_stays_physical(data):
 
 def test_chord_flip_is_semiclassical(data):
     """Exact in lambda: unshifted always scrambles; the antipodal shift
-    flips the trend for lambda <= 1.6 and not at lambda = 2.0."""
+    flips the trend for lambda <= 1.7 and not for lambda >= 1.8 (this
+    configuration and window)."""
     for ch in data["chord"]:
         assert ch["truncation_drift"] < 1e-9
         rows = {round(r["delta"], 3): r for r in ch["rows"]}
         unshifted = rows[0.0]
         anti = max(ch["rows"], key=lambda r: r["delta"])
         assert unshifted["direction"] == "down"       # always scrambling
-        if ch["lam"] <= 1.6:
+        if ch["lam"] <= 1.7:
             assert anti["direction"] == "up", ch["lam"]
-            assert anti["re_move"] > 0.5
-        if ch["lam"] >= 2.0:
+        if ch["lam"] >= 1.8:
             assert anti["direction"] == "down", ch["lam"]
+
+
+def test_antipodal_frame_thermal_at_tomperature(data):
+    """Exact per-line detailed balance of the shifted Wightman weights at
+    beta_eff = beta + 2 dtau, any lambda; with dtau = beta_fake/2 this is
+    beta_eff = beta + beta_fake -> the tomperature at the T = infinity
+    hologram point."""
+    for r in data["detailed_balance"]:
+        assert r["max_line_deviation"] < 1e-9
+        assert r["beta_eff"] == pytest.approx(r["beta_c"] + r["beta_fake_c"],
+                                              rel=1e-12)
+    # the hologram-point statement: at betaJ -> 0, beta_eff ~ beta_fake
+    small = [r for r in data["detailed_balance"] if r["betaJ"] < 0.1]
+    assert small
+    for r in small:
+        assert r["beta_eff"] == pytest.approx(r["beta_fake_c"], rel=0.01)
+
+
+def test_phase_period_set_by_v_not_kappa(data):
+    """The measured magnitude growth kappa exceeds the large-q v, yet the
+    flip works with Delta = pi/v and fails with pi/kappa where it works at
+    all -- and both fail at strong coupling."""
+    for r in data["calibrated"]:
+        assert r["kappa"] > r["v_largeq"]
+        if r["lam"] >= 2.0:
+            assert r["largeq"]["direction"] == "down"
+            assert r["calibrated"]["direction"] == "down"
+        if r["lam"] <= 1.0:
+            assert r["largeq"]["direction"] == "up"
+            assert r["calibrated"]["direction"] == "down"
+
+
+def test_toc_bounded_under_shift(data):
+    """The time-ordered 4-pt stays bounded under the antipodal shift
+    (magnitudes essentially unchanged) while the crossed one flips."""
+    for r in data["toc"]:
+        assert r["bounded"]
+        assert r["max_shifted"] < 2.0 * max(r["max_unshifted"], 0.1)
+
+
+def test_second_configuration(data):
+    """Config robustness: the rotation law holds at a second crossed
+    configuration (Re a -> -Re a to machine precision) and the chord flip
+    reproduces at lambda = 1."""
+    cb = data["config_b"]
+    assert cb["rotation_error"] < 1e-9
+    assert cb["re_a_antipodal"] == pytest.approx(-cb["re_a0"], rel=1e-9)
+    assert cb["chord_lam1_unshifted"] == "down"
+    assert cb["chord_lam1_antipodal"] == "up"

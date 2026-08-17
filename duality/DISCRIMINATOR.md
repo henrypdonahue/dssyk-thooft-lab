@@ -54,23 +54,36 @@ further dS3 reinterpretation, not to the black-hole reading.
 One shift does flip the sign: displace the probe pair by **half the fake
 period** (Δ = π/v in Euclidean angle) — an antipodal shift on the fake
 disk, and geometrically what NV's ±i β/4 dressing does. Measured
-(`signflip_probe.json`):
+(`signflip_probe.json`, seven assertions in `test_signflip.py`):
 
 - **Closed form: the flip is exact.** The growth coefficient obeys
   a(Δ) = a(0)·exp(−ivΔ), so Re a goes −1 → +1 at Δ = π/v, at every
-  temperature tested. The shifted 2-pt stays finite and positive; the
-  antipodal point sits margin π/2 from the propagator pole.
-- **Exact in λ: the flip is semiclassical.** The antipodal trend flips to
-  anti-scrambling for λ ≤ 1.6 and does not flip at λ = 2.0 (this
-  configuration and window), while the unshifted control scrambles at
-  every λ. λ-corrections oppose the mechanism at strong coupling.
+  temperature tested, and at a second crossed configuration to machine
+  precision. The shifted 2-pt stays finite and positive (margin π/2 from
+  the propagator pole), and the time-ordered 4-pt is unchanged in
+  magnitude under the shift — only the crossed correlator flips.
+- **The antipodal frame is thermal at the tomperature — exactly.** The
+  shifted Wightman weights obey per-line detailed balance at
+  β_eff = β + β_fake, at any λ (an exact spectral identity, verified to
+  1e-12). At the T = ∞ hologram point this is β_eff = β_fake: the same
+  shift that flips the OTOC sign makes the 2-pt sector exactly thermal
+  at the fake temperature. One map, both of CK's dS-observer
+  requirements.
+- **Exact in λ: the flip is semiclassical.** The antipodal trend turns
+  anti-scrambling for λ ≤ 1.7 and not for λ ≥ 1.8 (this configuration
+  and window), while the unshifted control scrambles at every λ.
+- **The phase period is set by v, not by the growth rate.** The measured
+  magnitude exponent κ ≈ 0.83–0.88 exceeds v ≈ 0.47, yet the flip works
+  with Δ = π/v and fails with Δ = π/κ everywhere: phase and magnitude
+  rates of the growing mode decouple at finite λ. This is why no rate
+  recalibration rescues strong coupling.
 
-Honesty: a sign flip under a contour shift is a *necessary* condition for
-this candidate map, not a dictionary. The full correlator suite must stay
-consistent, and the algebra story — why the observer's operators live at
-the antipodal point — is exactly NV's construction to complete. But this
-is the first map tested in this repo that produces the dS sign in the
-exact theory anywhere in parameter space.
+Honesty: a sign flip plus effective thermality under a contour shift are
+*necessary* conditions for this candidate map, not a dictionary. The
+algebra story — why the observer's operators live at the antipodal
+point — is exactly NV's construction to complete. But this is the first
+map tested here that produces both dS-observer signatures in the exact
+theory anywhere in parameter space.
 
 ## Verdict
 
