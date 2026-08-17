@@ -1,7 +1,7 @@
 # Draft email to the authors of arXiv:2607.05678
 
 *Keep it under a screen. The repo carries the detail; the email earns the
-click. `TODO(author)`: fill in the repo URL after publishing, and your
+click. `TODO(author)`: make the repo public before sending, and add your
 signature.*
 
 ---
@@ -40,7 +40,7 @@ tomperature map must accomplish at OTOC level (it must flip the scrambling
 sign; the Euclidean-fold mechanism does not do this even at N = ∞).
 Everything is asserted by a test suite (`make test`, 296 tests, ~3 min).
 
-[REPO URL]
+https://github.com/henrypdonahue/dssyk-thooft-lab
 
 I'd welcome any correction or comment — the point of the exercise is to make
 the proposal's best test runnable.
