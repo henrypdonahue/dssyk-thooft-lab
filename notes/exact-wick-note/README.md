@@ -2,7 +2,7 @@
 
 `main.tex` — a ~6-page standalone manuscript of the repo's exact results
 (`exact_wick.py` closed forms, triple verification, double-scaling and fixed-p
-consequences, and the corrected $M_n$/CP operator dictionary). Figure:
+consequences, and the corrected Mn/CP operator dictionary). Figure:
 `self_averaging.png` (copied from `syk-self-averaging/`; regenerate there).
 
 **Status: draft for the author's review — not for distribution.** Two `TODO(author)`

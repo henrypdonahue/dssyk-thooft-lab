@@ -1,69 +1,61 @@
 # The comparison dictionary
 
 Every convention needed to compare a DSSYK∞ number against the 't Hooft
-yardstick, encoded once, unit-tested, and built **before** the DSSYK side of the
-comparison exists — so that when a number finally appears there is exactly one
-place an index offset, factor of 2, or normalization can hide.
+yardstick, encoded once and unit-tested — built **before** the DSSYK side
+existed, so an index offset, factor of 2, or normalization has exactly one
+place to hide.
 
 | encoded fact | source |
 |---|---|
-| $n_{\text{paper}} = n_{\text{FLZ}} + 2$ (photon/graviton relabeling) | correction #1 |
-| CP $=(-1)^{n+1}$, consistent with FLZ wavefunction parity through the offset | paper §4.2–4.3 |
-| $M_1 = -(p/2)\,iH$ (`m1_coefficient`) | correction #3, tested in `syk-self-averaging` |
-| paper $\lambda = p^2/N$ **vs** chord $\lambda_{\text{chord}} = 2p^2/N$, $q=e^{-\lambda_{\text{chord}}}$ | the factor-2 landmine |
-| $\bar\alpha = \bar g^2 N = p^2$, $\bar g^2 = \lambda$, $\tau = p^2 m_q^2$ | paper §4.1–4.2 |
+| n_paper = n_FLZ + 2 (photon/graviton relabeling) | correction #1 |
+| CP = (−1)^(n+1), consistent with FLZ parity through the offset | paper §4.2–4.3 |
+| M₁ = −(p/2) iH (`m1_coefficient`) | correction #3, tested in `syk-self-averaging` |
+| paper λ = p²/N **vs** chord λ = 2p²/N, q = exp(−λ_chord) | the factor-2 landmine |
+| ᾱ = ḡ²N = p², ḡ² = λ, τ = p² mq² | paper §4.1–4.2 |
 
 ## The fingerprints (what a DSSYK tower must reproduce)
 
-Built from `thooft-target/reference_spectrum.json`; both are **parameter-free**
-(no units, no fitted constants):
+Built from `thooft-target/reference_spectrum.json`. Both are parameter-free.
 
-1. **Mass-squared ratios** $M_n^2/M_\eta^2$: 1, 2.3794, 3.7285, 5.0892, …
-2. **Interleave splittings**: a *single* alternating-CP trajectory with
-   near-unit gaps 1.0167, 0.9944, 1.0029, … → 1. Pairwise-degenerate CP
-   doublets would falsify the identification. (This also fixes the reading of
-   the paper's "two degenerate Regge trajectories… on top of one another":
-   equal slopes and interleaving — adjacent levels are *not* degenerate.)
+1. **Mass-squared ratios** Mn²/Mη²: 1, 2.3794, 3.7285, 5.0892, …
+2. **Interleave splittings**: one alternating-CP trajectory with near-unit
+   gaps 1.0167, 0.9944, 1.0029, … → 1. Degenerate CP doublets would
+   falsify the identification. (This also settles the paper's "two
+   degenerate Regge trajectories" wording: equal slopes, interleaved —
+   adjacent levels are *not* degenerate.)
 
-Also in this module:
+## Also in this module
 
-- [`BOOST.md`](BOOST.md) + `boost_mass.py` — rung-13 boost-to-mass
-  calibration: one mass = a boost-frequency *continuum with nodes*; the
-  "tomperature" map is the stated open question.
-- [`LARGEQ.md`](LARGEQ.md) + `largeq_anchor.py` — rung-17 large-q
-  $\lambda\to0$ anchor (conventions bridge $\mathcal J=\sqrt2\,p$, ED-locked);
-  the meson tower cancels at leading order, so the anchor lives at $O(1/q)$.
-- [`ANTISCRAMBLING.md`](ANTISCRAMBLING.md) + `antiscrambling.py` —
-  rung-25/26 response to Cui–Kolchmeyer 2607.13665 and Harlow–Zhao
-  2607.14215: DSSYK∞ *scrambles* at every temperature
-  ($\mathrm{Re}\,a=-1$ exactly), so the flat dictionary cannot produce dS
-  anti-scrambling; plus the first SYK data on the HZ Euclidean-fold
-  prescription and the fixed-λ scan verdict — the folded Euclidean drift
-  is a genuine $N$-obstruction, not a λ-artifact (ED lab:
-  `../syk-self-averaging/fold_bench.py`, `--scan`).
-- [`CHORD.md`](CHORD.md) + `chord.py`, `chord_moments.py`, `chord_fold.py`
-  — **the exact $N=\infty$ chord engine** (rung-18 toolchain): transfer
-  matrix + matter-chord contour evaluator, validated against a brute-force
-  chord-diagram enumerator, the published closed forms, a chord-free
-  Krawtchouk microscopy, and finite-$N$ ED (thermal 2-pt to 0.6–1.6%).
-  Deliverables: the rung-18 λ→0 spectral scan (**structureless continua;
-  and the $A_n$ singlet channels are exactly conserved at $N=\infty$** —
-  the tower is invisible at every order of the double-scaled expansion;
-  `chord_spectra.json`, `chord_moments.json`), and the rung-26 decider #2
-  (**the HZ fold fails in the double-scaled theory itself**;
-  `chord_fold.json`). Figure: `plot_chord.py`.
-- [`DISCRIMINATOR.md`](DISCRIMINATOR.md) — rung-24 KMS/OTOC-axis note:
-  where the three competing duals (MSS flat-space, Narovlansky–Verlinde,
-  sine-dilaton) sit against the CK no-go and this repo's measured data;
-  sine-dilaton's fake-temperature reading is the one consistent with the
-  data as-is ($\beta_{\rm fake}\lambda_L=2\pi$ tested).
+- [BOOST.md](BOOST.md) + `boost_mass.py` — boost-to-mass calibration.
+  One mass gives a boost-frequency *continuum with nodes*, not a peak.
+  The "tomperature" map is the stated open question.
+- [LARGEQ.md](LARGEQ.md) + `largeq_anchor.py` — the large-q, λ → 0 anchor
+  (conventions bridge 𝒥 = √2 p, ED-locked). The meson tower cancels at
+  leading order; the anchor lives at O(1/q).
+- [ANTISCRAMBLING.md](ANTISCRAMBLING.md) + `antiscrambling.py` — the OTOC
+  sign test and the Euclidean fold. DSSYK∞ scrambles at every temperature
+  (Re a = −1 exactly), so the flat dictionary cannot give dS
+  anti-scrambling. The fold does not repair it: a genuine N-obstruction at
+  ED sizes (`../syk-self-averaging/fold_bench.py --scan`) and a
+  λ-obstruction at N = ∞ (`chord_fold.py`).
+- [CHORD.md](CHORD.md) + `chord.py`, `chord_moments.py`, `chord_fold.py` —
+  **the exact N = ∞ chord engine**: transfer matrix plus matter-chord
+  contours, validated four independent ways (enumerator, closed forms,
+  Krawtchouk microscopy, finite-N ED to 0.6–1.6%). Results: structureless
+  spectra at every λ; the singlet channels carry zero propagating weight
+  at N = ∞; the fold fails in the double-scaled theory itself.
+  Figure: `plot_chord.py`.
+- [DISCRIMINATOR.md](DISCRIMINATOR.md) — where the three competing duals
+  (MSS flat-space, Narovlansky–Verlinde, sine-dilaton) sit against the
+  chaos-bound no-go and this repo's data. Sine-dilaton's black-hole
+  reading is qualitatively consistent with the data; its quantitative
+  θ ↔ v tie is untested.
 
 ```bash
-python3 dictionary.py     # print the yardstick in both conventions
-python3 antiscrambling.py # the OTOC sign table + fold map
-python3 chord.py --spectra   # rung-18 lambda->0 scan  (~4 min)
-python3 chord_moments.py --run  # rung-15 exact moments (~1 s)
-python3 chord_fold.py        # rung-26 decider #2       (~30 s)
-pytest -q                 # 151 tests: conventions, boost, large-q,
-                          # anti-scrambling, chord engine + verdicts
+python3 dictionary.py        # print the yardstick in both conventions
+python3 antiscrambling.py    # the OTOC sign table + fold map
+python3 chord.py --spectra   # the lambda->0 spectral scan (~4 min)
+python3 chord_moments.py --run  # exact N = inf moments    (~1 s)
+python3 chord_fold.py        # the fold at N = inf         (~30 s)
+pytest -q                    # 151 tests
 ```

@@ -1,155 +1,137 @@
-# DSSYK self-averaging, the $M_n$ tower, and the QED sector
+# DSSYK self-averaging, the Mn tower, and the QED sector
 
-Tests of the *falsifiable* corner of Miyashita–Sekino–Susskind
-([arXiv:2607.05678](https://arxiv.org/abs/2607.05678)): §3.5's self-averaging
-claims, plus the operator content of the U(N)/Dirac sector its "standard model"
-story needs. Model (Eq. 3.2): $H=i^{p/2}\sum J_{i_1\dots i_p}\psi_{i_1}\cdots\psi_{i_p}$,
-$\mathrm{Var}(J)=p!/N^{p-1}$ (Eq. 3.8), $\lambda=p^2/N$, $\langle W\rangle=\mathrm{Tr}(W)/\dim$.
+Tests of the falsifiable corner of the paper: the §3.5 self-averaging
+claims, plus the operator content its U(N)/Dirac "standard model" story
+needs. Model (Eq. 3.2): H = i^(p/2) Σ J ψψ...ψ with Var(J) = p!/N^(p−1),
+λ = p²/N, ⟨W⟩ = Tr(W)/dim.
 
 | claim | eq. | verdict |
 |---|---|---|
-| singlet $\mathrm{Var}\langle W\rangle\sim p!/N^p$ | 3.27 | confirmed, rate exactly $2/\binom{N}{p}$ |
-| adjoint violations $\le e^{-a\sqrt N}$ | 3.28 | **verified exactly in double scaling** (`exact_wick.py`) |
+| singlet Var⟨W⟩ ~ p!/N^p | 3.27 | confirmed; rate exactly 2/C(N,p) |
+| adjoint violations ≤ exp(−a√N) | 3.28 | verified exactly in double scaling (`exact_wick.py`) |
 
 ## Results
 
-**Eq. 3.27.** The singlet rate is exactly $2/\binom{N}{p}$ — one over the number
-of couplings; equals the paper's $p!/N^p$ times $2\prod(1-k/N)^{-1}$, an $O(1)$
-factor in double scaling. Along $p=\sqrt N$: $\sim10^{-46}$ by $N=640$ (leading
-form $e^{-\frac12\sqrt N\ln N}$; subleading terms are sizable). *Caveats:* the
-$m_2$ identity holds regardless of the paper's diagrammatics (its ED match is a
-code check); the non-tautological content is $m_4,m_6$ self-averaging at the
-same rate (confirmed by ED at $N\le18$, within the ~10% noise of 200 draws),
-and only $H^{2k}$ singlets are probed.
+**Eq. 3.27.** The singlet rate is exactly 2/C(N,p) — one over the number
+of couplings. It equals the paper's p!/N^p times an O(1) factor. Caveats:
+the m₂ identity holds regardless of the paper's diagrammatics; the
+non-tautological content is m₄ and m₆ self-averaging at the same rate
+(confirmed by ED at N ≤ 18, within ~10% statistics).
 
-**Eq. 3.28 — settled beyond ED.** $B_{jk}=\mathrm{Tr}(\psi_jH\psi_kH)/\dim$ is
-quadratic in the couplings, so Wick gives closed forms at any $(N,p)$:
-$$\mathrm{Var}(B_{jk})=4\sigma^4\binom{N-2}{p-1},\qquad
-  \mathbb{E}[B_{jj}]=\sigma^2\binom{N}{p}\Big(1-\tfrac{2p}{N}\Big),$$
-verified against literal contraction enumeration (exact) and ED (~1%). Along
-$p=\sqrt N$: $\ln\mathrm{rms}=-\tfrac14\sqrt N\ln N\,(1+o(1))$ — beats
-$e^{-a\sqrt N}$ for every $a$, verified in the regime the claim is about
-(scanned to $N=1600$). At fixed $p$ (the match regime, $\lambda\to0$) the
-scan (rung 16) shows emergence is only **polynomial**: local slopes converge
-onto $N^{-(p-1)/2}$ with prefactor $2\,p!/\sqrt{(p-1)!}$, and the per-element
-violation $\mathrm{rms}(B_{jk})/\mathbb{E}[B_{jj}]\sim N^{-(p+1)/2}$ — e.g.
-$10^{-6}$ needs $N\sim826$ at $p=4$: the emergent symmetry is quantitatively
-weakest exactly where the spectrum match is to be made.
-$\mathbb{E}[B_{jj}]=0$ at $p=N/2$ *derives* the ratio artifact flagged below.
+**Eq. 3.28 — settled beyond ED.** B_jk = Tr(ψⱼHψₖH)/dim is quadratic in
+the couplings, so Wick gives closed forms at any (N, p):
 
-**$M_n$ tower and CP, measured** (`dirac.py`, `mn_spectroscopy.py`). Exact and
-asserted: $[H,Q]=0$; $M_0=Q$; $M_1=-(p/2)iH$ (paper's $M_1=H$ fails at $O(1)$);
-$M_2=-\sum\dot c^\dagger\dot c$ (paper's $+$ sign is wrong);
-$M_n^\dagger=(-1)^nM_n$ only for $n\le2$. The paper's CP must be the **unitary**
-particle-hole map, $C c_i C^\dagger=(-1)^{N_c-1}c_i^\dagger$ ($M_1\propto iH$
-rules out antiunitary). CP$(M_0)=-1$, CP$(M_1)=+1$ exact on C-invariant
-instances; raw $M_{n\ge2}$ are CP-*mixtures* (~15–65% wrong channel, varying
-with $n$, $N_c$, instance), so CP$=(-1)^{n+1}$ lives in CP-resolved
-correlators — `mn_spectroscopy.py` computes them (first data: conserved
-$n=0,1$ machine-exact at $\omega=0$; broad continua at $\lambda=1.6$; not the
-$\lambda\to0$ match regime).
+    Var(B_jk) = 4σ⁴ C(N−2, p−1),    E[B_jj] = σ² C(N,p) (1 − 2p/N),
 
-**U(N)/QED campaign** (rung 19, `qed_campaign.py`): U(N)-class self-averaging
-made exact (Dirac analog of the Wick closed forms, verified by enumeration and
-ED), disorder-averaged charging curves $E_0(q)$ with full covariance + GLS
-model fits, and the charged-vs-singlet spectral-scale comparison — closing the
-"Majorana numerics vs Dirac claims" gap. Honest verdict inside: at ED sizes
-the capacitive-vs-confining discrimination is stated with ΔAIC, not asserted.
+verified against literal contraction enumeration (exact) and ED (~1%).
+Along p = √N: ln rms = −¼ √N ln N — beats exp(−a√N) for every a, scanned
+to N = 1600. At fixed p (the match regime, λ → 0) emergence is only
+**polynomial**: violation amplitude N^(−(p−1)/2), per-element violation
+N^(−(p+1)/2). Reaching 10⁻⁶ needs N ≈ 826 at p = 4: the emergent symmetry
+is weakest exactly where the spectrum match is to be made. E[B_jj] = 0 at
+p = N/2 derives the ratio artifact flagged below.
 
-**Baryon sector first contact** (rung 23, `baryons.py`): $\epsilon$-tensor
-baryon operators at $N_c=4$–8 — exact 2-point collapse onto charge sectors,
-$M_B$ extensivity scaling, and the edge-curvature hierarchy, the first data on
-the paper's wholly-underived inter-baryon-force claim (hierarchy claims kept
-honest: spectral widths, rejected-fit error inflation documented).
+**Mn tower and CP, measured** (`dirac.py`, `mn_spectroscopy.py`). Exact
+and asserted: [H, Q] = 0; M₀ = Q; M₁ = −(p/2)iH (the paper's M₁ = H fails
+at O(1)); M₂ = −Σ ċ†ċ (the paper's + sign is wrong); Mn† = (−1)ⁿMn only
+for n ≤ 2. CP must be the **unitary** particle-hole map (M₁ ∝ iH rules
+out antiunitary). CP(M₀) = −1 and CP(M₁) = +1 are exact; raw Mn for n ≥ 2
+are CP-mixtures (15–65% wrong channel), so CP = (−1)^(n+1) lives in
+CP-resolved correlators. `mn_spectroscopy.py` computes them — first data:
+conserved n = 0, 1 exact at ω = 0; broad continua at λ = 1.6.
 
-**Shape-invariant moments** (rung 15 groundwork, `moments_pipeline.py`):
-disorder-averaged CP-resolved spectral-moment invariants ($w_2$, kurtosis)
-along fixed $p=4$ — the map-robust targets for the exact $N=\infty$
-chord/Wick computation. **Large-q ED bench** (`largeq_bench.py`): ground
-truth for `duality/largeq_anchor.py`.
+**U(N)/QED campaign** (`qed_campaign.py`): U(N)-class self-averaging made
+exact (Dirac analog of the Wick closed forms, verified by enumeration and
+ED); disorder-averaged charging curves with full covariance and GLS fits;
+charged-vs-singlet spectral scales. The capacitive-vs-confining question
+is stated with ΔAIC, not asserted.
 
-**Freeness onset — the free-product transition, first data** (rung 27,
-`freeness.py`): Cui–Kolchmeyer (2607.13665 §4) argue early/late observer
-algebras combine as a *free product* past the scrambling time; at $T_B=\infty$
-the state is the trace, so this is measurable. For the bosonic pair
-$E=i\psi_0\psi_1$, $F(t)=i\psi_2(t)\psi_3(t)$ (both $\pm1$ symmetries,
-commuting and classically independent at $t=0$), freeness is equivalent to
-$\mathrm{spec}(E{+}F(t))$ = the **arcsine law** (free convolution
-Bernoulli$\boxplus$Bernoulli; classical = binomial). Measured, $N=12..24$
-(dim 64..4096): the spectrum lands ON the arcsine law — the $W_1$ distance
-plateau falls strictly with every $N$ step, $\sim\mathrm{dim}^{-0.9}$
-(the $\sim1/\mathrm{dim}$ floor of a rigid spectrum, far below the
-$\mathrm{dim}^{-1/2}$ of unstructured sampling), so the free product is exact
-in the limit by this trend. Alternating words ($\tau[(EF)^k]$, the Majorana
-OTOC $\tau[abab]$: free prediction 0 for all) land on 0 to their
-statistics-limited floors. **Honest caveats:** the distributional crossover
-sits at the *dissipation* time $t\mathcal J\approx1.2$, nearly
-$N$-independent — ED sizes cannot resolve the $\ln N$ scrambling-time
-separation CK's statement lives at (the word $\tau[abab]$ shows only a weak
-drift, $t_{1/2}\mathcal J\approx2.1\to2.6$ over dim $64\to4096$); and the
-word plateaus at $N\ge20$ are SEM-limited (6 instances at $N=24$). First
-exhibition of the free-product transition in a microscopic dS-candidate
-model, either way.
+**Baryon sector, first contact** (`baryons.py`): epsilon-tensor baryons at
+Nc = 4–8 — exact 2-point collapse onto charge sectors, mass extensivity,
+and the edge-curvature hierarchy. First data on the paper's underived
+inter-baryon-force claim; hierarchy claims kept honest.
 
-Numbers: [`results.txt`](results.txt)/`results.json`; figures
-`self_averaging.png`, `mn_spectra.png` (+ `mn_spectra_big.*` at $N_c=12$),
-`qed_campaign.png`, `baryons.png`, `freeness.png`; data `moments.json`,
-`largeq_bench.json`, `qed_campaign.json`, `baryons.json`, `freeness.json`.
+**Shape-invariant moments** (`moments_pipeline.py`): CP-resolved spectral
+moment invariants (w₂, kurtosis) along fixed p = 4 — map-robust targets.
+**Large-q ED bench** (`largeq_bench.py`): ground truth for
+`duality/largeq_anchor.py`.
+
+**Freeness onset, first data** (`freeness.py`): Cui–Kolchmeyer argue
+early/late observer algebras combine as a *free product* past the
+scrambling time. For the pair E = iψ₀ψ₁, F(t) = iψ₂(t)ψ₃(t), freeness
+means spec(E + F(t)) = the arcsine law. Measured at N = 12–24: the
+spectrum lands on the arcsine law, with the W₁ plateau falling like
+dim^(−0.9) (a rigid-spectrum floor, far below sampling noise), and all
+alternating words → 0. Caveats: the crossover sits at the *dissipation*
+time (t𝒥 ≈ 1.2, nearly N-independent) — ED cannot resolve the ln N
+scrambling-time separation where the claim properly lives; word plateaus
+at N ≥ 20 are statistics-limited. First exhibition of the free-product
+transition in a microscopic dS-candidate model.
+
+**Majorana singlet-moment bench** (`mn_majorana_bench.py`): the ED side
+of the exact chord computation in `duality/chord_moments.py`. The raw
+width w₂ rises along fixed p toward the λ → 0 corner — the tower channel
+turning on. Scope, per adversarial review: the chord result is an i ≠ j
+pair amplitude, and at dense-ED sizes the measured channel is
+flavor-diagonal-dominated, so the bench does not yet probe the chord
+N = ∞ zero (at matched λ the raw w₂ rises with N — the honest negative).
+The (8,4) point is an exact per-instance conservation special to (8,4);
+mechanism unknown.
+
+Numbers: `results.txt` / `results.json`. Figures and data JSONs live next
+to their scripts.
 
 ## Why the numbers are trustworthy
 
-- Instance-level ED caps at $N\sim18$–20 ($\dim 2^{N/2}$) and cannot reach the
-  double-scaling regime — every double-scaling statement here is exact
-  combinatorics, not extrapolation; ED-window fits carry error bars and ΔAIC
-  verdicts that say when models are indistinguishable.
-- Construction validated before physics: Clifford algebra and $[H,P]=0$ to
-  machine precision; $N\bmod8$ RMT Bott periodicity reproduced (GUE/GSE/GOE
-  across $N=10..20$; parity-sector resolution is mandatory, $p\equiv0\bmod4$
-  table guarded).
+- Instance-level ED caps near N = 20 and cannot reach double scaling —
+  every double-scaling statement here is exact combinatorics, not
+  extrapolation. ED-window fits carry error bars and ΔAIC verdicts.
+- Construction validated before physics: Clifford algebra and parity to
+  machine precision; the N mod 8 RMT pattern (GUE/GSE/GOE) reproduced
+  with parity-sector resolution.
 - Fast bitwise builders are equivalence-tested against independent sparse
-  constructions; read `rms_off`, not the $p\sim N/2$-artifacted ratio.
+  constructions. Read `rms_off`, not the p = N/2-artifacted ratio.
 
 ## Files
 
 | file | purpose |
 |------|---------|
-| `syk.py` | sparse JW operators — slow reference builders |
+| `syk.py` | sparse Jordan–Wigner operators (slow reference builders) |
 | `pauli_strings.py` | bitwise Hamiltonian assembly (10–100×, equivalence-tested) |
-| `dirac.py` | complex SYK: $[H,Q]=0$, $M_n$ tower, unitary CP machinery, shared spectral-weight convention |
+| `dirac.py` | complex SYK: [H,Q] = 0, the Mn tower, unitary CP machinery |
 | `exact_wick.py` | closed-form Eq. 3.28 statistics, beyond ED |
-| `mn_spectroscopy.py` | CP-resolved $M_n$ spectral functions |
-| `moments_pipeline.py` | CP-resolved spectral-moment shape invariants with statistics (rung 15) |
-| `qed_campaign.py` | U(N) self-averaging exact + charging curves + charged/singlet scales (rung 19) |
-| `baryons.py` | ε-tensor baryon sector: collapse, extensivity, hierarchy (rung 23) |
-| `largeq_bench.py` | ED ground truth for the large-q anchor (`duality/largeq_anchor.py`) |
-| `fold_bench.py` | complex-time/folded 4-pt ED lab for rungs 25–26 (`duality/ANTISCRAMBLING.md`); `--scan` = the rung-26 fixed-λ decider |
-| `freeness.py` | freeness onset: the classical→free-product transition (rung 27) |
-| `mn_majorana_bench.py` | Majorana singlet-channel moments $A_n=\sum_i\psi_i(\mathrm{ad}_H)^n\psi_i$: the ED side of rung 15 proper (chord comparison in `duality/chord_moments.py`; the raw $w_2$ *rises* toward the fixed-$p$, λ→0 corner while the artifact-corrected trend falls toward the chord $N=\infty$ zero) |
-| `validate_syk.py` | RMT level-statistics validation |
-| `self_averaging.py` | the §3.5 measurement + verdict |
+| `mn_spectroscopy.py` | CP-resolved Mn spectral functions |
+| `moments_pipeline.py` | CP-resolved moment invariants with statistics |
+| `qed_campaign.py` | U(N) self-averaging + charging curves |
+| `baryons.py` | baryon sector: collapse, extensivity, hierarchy |
+| `largeq_bench.py` | ED ground truth for the large-q anchor |
+| `fold_bench.py` | folded/complex-time 4-pt ED lab; `--scan` = the fixed-λ decider |
+| `fold_edge_probe.py` | the fold's spectral-edge mechanism, measured |
+| `freeness.py` | the classical → free-product transition |
+| `mn_majorana_bench.py` | Majorana singlet-channel moments (ED side of the chord computation) |
+| `validate_syk.py`, `self_averaging.py` | RMT validation; the §3.5 measurement |
 | `plot_self_averaging.py`, `plot_freeness.py` | figures (read the JSONs) |
-| `test_syk.py`, `test_qed_campaign.py`, `test_baryons.py`, `test_freeness.py`, `test_mn_majorana.py` | asserting suites |
+| `test_*.py` | asserting suites |
 
 ## Usage
 
 ```bash
 pip install -r requirements.txt
 python3 validate_syk.py         # RMT validation (~7 s)
-python3 self_averaging.py       # §3.5 measurement (~2 min; writes results.*)
-python3 exact_wick.py           # exact Eq. 3.28 + double-scaling scan (~1 s)
+python3 self_averaging.py       # the 3.27 measurement (~2 min)
+python3 exact_wick.py           # exact 3.28 + double-scaling scan (~1 s)
 python3 dirac.py                # Dirac/QED identities + CP report (~5 s)
-python3 mn_spectroscopy.py      # Mn spectral functions (seconds; --big = Nc 12, minutes)
-python3 qed_campaign.py         # rung 19 campaign (writes qed_campaign.*)
-python3 baryons.py              # rung 23 campaign (writes baryons.*)
-python3 freeness.py             # rung 27 campaign (hours; writes freeness.json)
-python3 plot_self_averaging.py  # figure
-python3 plot_freeness.py        # figure (reads freeness.json)
+python3 mn_spectroscopy.py      # Mn spectral functions (seconds)
+python3 qed_campaign.py         # QED campaign
+python3 baryons.py              # baryon campaign
+python3 freeness.py             # freeness campaign (hours)
+python3 mn_majorana_bench.py    # singlet-moment bench (~1 h)
 pytest -q -m 'not slow'         # fast asserts (~1 min)
 ```
 
 ## Scope
 
 This settles §3.5 (both equations, one exactly) and the operator-level
-prerequisites of the U(N) story. It does not touch the headline spectrum match;
-the CP-resolved spectroscopy is the pipeline for it, pending the boost-to-mass
-dictionary and the $\lambda\to0$ regime (road_map rungs 13, 15–18).
+prerequisites of the U(N) story. The headline spectrum match itself lives
+at fixed p, λ → 0 (see `duality/CHORD.md` for why), with the CP-resolved
+spectroscopy as its pipeline.

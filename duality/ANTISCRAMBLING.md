@@ -1,205 +1,128 @@
 # Anti-scrambling vs DSSYK∞: the sign test and the Euclidean fold
 
-*Rungs 25–26 (2026-07-23). Code: `antiscrambling.py` (closed forms, verified
-transcription), `syk-self-averaging/fold_bench.py` (ED laboratory,
-`fold_bench.json`), asserted in `test_antiscrambling.py`.*
+*Code: `antiscrambling.py` (verified closed-form transcription),
+`syk-self-averaging/fold_bench.py` (ED lab), `chord_fold.py` (N = ∞).
+Verdicts asserted in `test_antiscrambling.py` and `test_chord_fold.py`.*
 
 ## Why this exists
 
-Two papers of July 2026 turned the OTOC sector into a sharp external
-constraint on the duality this repo stress-tests:
+Two July 2026 papers made the OTOC sector a sharp external constraint:
 
-- **Cui–Kolchmeyer** ([2607.13665](https://arxiv.org/abs/2607.13665)): dS
-  shockwaves at the cosmological horizon have a **negative** eikonal phase
-  (time *advance*). Writing the semiclassical OTOC as
-  $\mathrm{OTOC/TOC} = 1 - i\,c\,e^{T} h_Ah_B e^{\cdots}/(\sinh\cdot\sinh)$
-  (their Eq. 2.74), AdS has $c>0$ (scrambling), dS needs $c<0$
-  (*anti-scrambling*). The MSS chaos bound forces $c>0$ for any unitary QM
-  in a KMS state at the dS temperature — dS violates the KMS assumption, the
-  Hartle–Hawking state fails to be a trace on the observer's crossed-product
-  algebra, and observer-centric static patch holography is challenged.
-  2607.05678 (this repo's target) is their ref. [12]. Its $T_B=\infty$
-  hologram is **not** a KMS state at the dS temperature, so it dodges the
-  letter of the no-go — but then *something* in the dictionary must produce
-  $c<0$.
-- **Harlow–Zhao** ([2607.14215](https://arxiv.org/abs/2607.14215)): same
-  bulk physics (observer 2-pt thermal/KMS, 4-pt anti-scrambles,
-  $F(w)\to F(-w)$), plus a proposed QM mechanism: a system with spectrum
-  **bounded above and below**, evaluated on a **Euclidean fold** — their
-  continuation (6.9), $\tau^{QM} = (-\tau_1,\,2\pi n-\tau_2,\,2\pi-\tau_3,\,
-  2\pi(n{+}1)-\tau_4)$, which flips $w\to-w$. They pose the test verbatim:
-  *"It would be interesting to study the validity of this assumption in a
-  concrete model such as the SYK model."* Finite-$N$ SYK is bounded both
-  ways; every folded correlator is exactly computable by ED. That test is
-  what `fold_bench.py` runs.
+- **Cui–Kolchmeyer** ([2607.13665](https://arxiv.org/abs/2607.13665)):
+  dS shockwaves produce a time *advance*, so a dS observer's OTOC must
+  have coefficient c < 0 ("anti-scrambling"). AdS/black holes have c > 0.
+  The chaos bound forces c > 0 for any unitary system in a KMS state at
+  the dS temperature. The target paper's T = ∞ hologram is not such a KMS
+  state, so it dodges the letter of the no-go — but then its dictionary
+  must produce c < 0 some other way.
+- **Harlow–Zhao** ([2607.14215](https://arxiv.org/abs/2607.14215)):
+  a proposed mechanism. Systems with spectra bounded above and below allow
+  **Euclidean-folded** correlators (their Eq. 6.9), and the fold flips the
+  relevant sign — if the folded correlator equals the analytic
+  continuation of the semiclassical answer. They pose the test: *"study
+  the validity of this assumption in a concrete model such as the SYK
+  model."* This repo ran it.
 
-## Result 1 (rung 25, settled): DSSYK∞ scrambles — the flat dictionary cannot anti-scramble
+## Result 1: DSSYK∞ scrambles — the flat dictionary cannot anti-scramble
 
-Streicher's exact large-$q$ closed forms (all temperatures, transcription
-from the arXiv LaTeX source, conventions bridge $\mathcal J=\sqrt2\,p$
-ED-locked) give, at the symmetric crossed configuration
-$\theta=(3\pi/2,\pi/2,\pi,0)$ with Lorentzian $\theta$-time on the
-$(\theta_1,\theta_2)$ pair:
+Streicher's exact large-q closed forms (all temperatures, transcription
+verified; bridge 𝒥 = √2 p, ED-locked) give, at the symmetric crossed
+configuration:
 
-$$\mathcal F/F_d \sim a(v)\,e^{v\,\theta_L},\qquad
-  a(v) = -\frac{e^{-i\pi v/2}}{\cos(\pi v/2)},\qquad
-  \boxed{\ \mathrm{Re}\,a(v) = -1\ \text{ exactly, at every temperature}\ }$$
+> F/F_d grows as a(v)·exp(v θ_L), with a(v) = −exp(−iπv/2)/cos(πv/2),
+> so **Re a(v) = −1 exactly, at every temperature**,
+> rate λ_L = 2πv/β → 2𝒥 at T = ∞.
 
-with rate $\lambda_L = 2\pi v/\beta \to 2\mathcal J$ as $T_B\to\infty$: the
-scrambling (AdS/time-delay, CK's $c>0$) sign, **unsuppressed at the
-$T_B=\infty$ hologram point**.
+That is the scrambling sign (c > 0), unsuppressed at the hologram point.
 
-What ED adds, and what it does not. ED independently confirms the OTOC
-*magnitude growth* at all orders in $1/N,1/q$: $\mathrm{Re}\,\mathcal F/F_d$
-moves monotonically away from its time-ordered value at every measured
-$(N,\beta\mathcal J)$, by well over $100\sigma$ (drop/err $\approx130$–$200$;
-`test_bench_scrambling_sign_verdict`). The *sign* that makes this
-"scrambling" rather than "anti-scrambling," however, is **analytic**
-(Streicher-transcribed): it rides on the crossed-operator ordering, which is
-fixed empirically to match Streicher (the opposite order is off by ×25; see
-caveats). So ED gives an independent measurement of the growth, not an
-independent measurement of the sign — do not read this as ED alone deciding
-scrambling vs. anti-scrambling.
+What ED adds, and what it does not: ED confirms the *growth* at every
+measured (N, βJ), beyond 100σ. The *sign* is analytic
+(Streicher-transcribed) and rides on a crossed-operator ordering fixed
+empirically — ED does not measure the sign independently.
 
-**Consequence.** Under the flat identification (boundary time = observer
-proper time), DSSYK∞ has the wrong OTOC sign to be CK's dS observer — at
-any temperature, including $T_B=\infty$. This is falsification pressure on
-assumption #1 of 2607.05678 *unless* the dictionary contains a nontrivial
-time/state map (fold, fake-disk complexification, tomperature) that flips
-the sign. It sharpens rung 13's "tomperature map" gap from "unstated" to
-"must anti-scramble."
+**Consequence.** With boundary time read as observer time, DSSYK∞ has the
+wrong OTOC sign to be a dS observer, at every temperature. The
+"tomperature" gap sharpens from "unstated" to "must flip the sign."
 
-## Result 2 (rung 26, first data): the fold works mechanically; whether it commutes with large N is genuinely open
+## Result 2: the fold works mechanically; the large-N question opened
 
-`fold_bench.py` evaluates the HZ fold (6.9, $n=1$) of the same crossed
-configuration: the ordered-trace correlator is an **entire function** of the
-four $\theta$'s at finite dimension, so the continuation is unambiguous —
-freeze the operator sequence at its standard-configuration path order, move
-the arguments (this produces the $e^{+\tau H}$ segments; finite because the
-SYK spectrum is bounded — exactly HZ's requirement). Findings at
-$p=6,\ \beta\mathcal J\in\{2,0.5\},\ N\in\{12,14,16\}$:
+`fold_bench.py` evaluates the HZ fold (6.9, n = 1). At finite N the
+ordered-trace correlator is entire in the four angles, so the fold is
+unambiguous: freeze the operator order, move the arguments. Findings at
+p = 6, N = 12–16:
 
-1. **Mechanics work.** Every folded correlator (2-pt and 4-pt) is finite and
-   well-behaved; the folded 2-pt rises above 1 (Euclidean growth), the
-   qualitative signature of the continued closed form.
-2. **The Lorentzian fold response tracks the continuation.** The unfolded
-   ED OTOC is exactly real (configuration symmetry); the *folded* ED
-   correlator develops an $\mathrm{Im}\,\mathcal F/F_d$ that is nonzero,
-   negative, and monotone — matching the analytically continued closed form
-   to ~10% at the best point ($N{=}12$, $\beta\mathcal J{=}2$) and in
-   sign/trend everywhere. The fold breaks the reality symmetry *exactly the
-   way the continuation predicts*.
-3. **The open question, made quantitative.** Unfolded observables converge
-   toward the closed forms as $N$ grows at fixed $p$ (2-pt deviation ratios
-   $0.35\to0.44\to0.52$ for $N=12\to14\to16$). The *folded* Euclidean 4-pt
-   starts near the continued form at $N{=}12$ (ratio $\approx1.05$) but
-   drifts **away** as $N$ grows ($\approx1.21$ at $N{=}14$, $\approx1.42$ at
-   $N{=}16$); near the continuation's poles (the folded 2-pt at
-   $\theta=-\pi$, the small-$v$ folded 4-pt) the ED values converge slowly
-   or not visibly. Two readings, initially not distinguishable at ED sizes:
-   (a) $\lambda=p^2/N$ corrections simply behave differently under folds,
-   or (b) a genuine Stokes-type obstruction to HZ's "continuation commutes
-   with the semiclassical limit" assumption is developing.
+1. **Mechanics work.** Every folded correlator is finite (the bounded
+   spectrum — HZ's requirement).
+2. **The fold response tracks the continuation in form.** The unfolded ED
+   OTOC is exactly real; the folded one develops a negative, monotone
+   imaginary part — matching the continued closed form to ~10% at the
+   best point, and in sign and trend everywhere.
+3. **But the folded Euclidean 4-pt drifts away from the continued form as
+   N grows** (ratio 1.05 → 1.21 → 1.42 for N = 12 → 16), while unfolded
+   observables converge. λ-artifact, or a real obstruction?
 
-## The fixed-λ scan decided it (decider #1, `fold_bench.py --scan`)
+## Decider #1: a genuine N-obstruction (`fold_bench.py --scan`)
 
-$p=4$, $N=8..20$ at $\beta\mathcal J=2$ ($\lambda=16/N\in[0.8,2.0]$), plus
-the matched-$\lambda$ anchor $(p{=}6,N{=}18)\leftrightarrow(p{=}4,N{=}8)$,
-both $\lambda=2.0$ (`fold_scan.json`; asserted in
-`test_antiscrambling.py`). Verdict: **reading (b) — a genuine
-$N$-obstruction, not a $\lambda$-artifact:**
+p = 4, N = 8–20 at βJ = 2, plus a matched-λ anchor (`fold_scan.json`):
 
-- **The control isolates the fold.** The *unfolded* crossed OTOC ratio
-  (ED/closed form) is $N$-stable across the entire series ($1.80\to1.84$,
-  the expected $O(1/p)$ offset), while the *folded* ratio explodes,
-  $1.52\to8.19$, at the same points, same instances.
-- **$\lambda$-corrections are refuted as the driver.** The folded drift
-  *grows* as $\lambda$ shrinks at fixed $p$ — opposite to a correction
-  that vanishes toward the semiclassical regime — and at matched
-  $\lambda=2.0$ the larger-$N$ point drifts further
-  ($1.700\pm0.004$ at $p{=}6,N{=}18$ vs $1.522\pm0.027$ at $p{=}4,N{=}8$),
-  despite its *smaller* $1/p$ error.
-- **The $1/N$ hierarchy itself collapses under the fold.** The folded
-  connected fraction $(F-F_d)/F_d$ grows monotonically $-0.37\to-0.79$
-  over $N=8\to20$: the folded connected part is *not* $1/N$-suppressed —
-  the $e^{+\tau H}$ segments amplify it to $O(1)$. At ED sizes, HZ's
-  "continuation commutes with the semiclassical limit" fails for the
-  folded 4-pt, increasingly badly with system size.
+- The unfolded control is N-stable (ED/closed 1.80 → 1.84). The folded
+  ratio explodes (1.52 → 8.19), same points, same instances.
+- The drift grows as λ shrinks — opposite to a semiclassical correction —
+  and at matched λ = 2.0 the larger-N point drifts further
+  (1.700 ± 0.004 vs 1.522 ± 0.027).
+- The folded connected fraction reaches O(1): −0.37 → −0.79 over
+  N = 8 → 20. The 1/N hierarchy itself collapses under the fold.
 
-Honest cap, stated not silent: the scan stops at $N=20$ (the crossed 4-pt
-is $O(N^2\dim^3)$; $N=24$ is out of dense-ED reach), so an eventual
-large-$N$ crossover cannot be excluded from ED alone.
+Stated cap: dense ED stops at N = 20, so a large-N crossover could not be
+excluded from ED alone. That question went to the chord engine.
 
-## Decider #2 (2026-08-16, settled): the fold at $N=\infty$ — the obstruction is structural
+## Decider #2: the fold fails at N = ∞ — the obstruction is structural
 
-The rung-18 chord engine (`chord.py`, validated three independent ways; see
-`CHORD.md`) evaluates the folded 4-pt **exactly in the double-scaled
-theory**: `chord_fold.py` mirrors `fold_bench.py` configuration-for-
-configuration (same $\theta$'s, same (6.9) $n{=}1$ fold, same frozen path
-order — the transposition minus is *derived* here, as the fermionic
-matter-matter chord crossing sign) at $\lambda = 4.0 \to 0.5$
-(`chord_fold.json`, truncation-doubled, drifts $\le 2\times10^{-5}$). Verdict:
+`chord_fold.py` evaluates the fold exactly in the double-scaled theory,
+mirroring `fold_bench.py` point for point (same angles, same fold; the
+transposition minus is *derived* here as the fermionic chord-crossing
+sign). Scan λ = 4.0 → 0.5, truncation-doubled, drifts ≤ 2e−5. Verdict:
 
-1. **The control behaves.** The unfolded crossed $\mathcal F/F_d$ is
-   λ-stable ($-1.65\ldots-1.67$ across the entire scan) and exactly real
-   (manifest for Euclidean configurations in the chord representation —
-   the *nontrivial* reality statement is the Lorentzian growth branch,
-   which also stays exactly real), ~10% from the matched-λ ED values —
-   the expected finite-$N$ gap.
-2. **The folded connected part is NOT suppressed at $N=\infty$.** As
-   $\lambda \to 0$ the unfolded connected fraction dies $\propto\lambda$
-   (the 1/N hierarchy), but the folded one stays $O(1)$ *and grows*:
-   $-0.21 \to -0.33$ over $\lambda = 2.7 \to 0.5$. Consequently the
-   $N$-scaled folded ratio runs away from the continued Streicher form
-   $\propto 1/\lambda$: $-1.86 \to -21.3$ against a constant $-1.92$.
-   **HZ's "continuation commutes with the semiclassical limit" fails in
-   DSSYK$_\infty$ itself** — the ED $N$-obstruction of decider #1 was
-   real, and at $N = \infty$ it is a λ-obstruction. The folded Lorentzian
-   branch develops the negative $\mathrm{Im}$ the continuation predicts —
-   sign right everywhere, but its magnitude runs away from the continued
-   form the same way the Euclidean branch does: amplification ~0.9× at
-   λ=4 (i.e. none), ~3.5× at λ=2, ~40–50× at λ=0.5, growing ∝1/λ. The
-   fold *mechanism* works qualitatively (the sign pattern) while its
-   quantitative continuation assumption fails on both branches.
-3. **The fold destroys 1/N convergence from both ends — and the mechanism
-   is measured.** At matched λ with the exact finite-$N$ bridge, ED folded
-   values sit ×1.52 (N=8) and ×1.62 (N=18) above the exact $N=\infty$
-   ones — the gap *grows* over the ED window while unfolded gaps stay
-   ≤ 10%. The mechanism (`fold_edge_probe.py`, `fold_edge_probe.json`):
-   the per-instance folded connected fraction correlates with the
-   instance's **upper spectral edge** at $-0.86$ (unfolded control:
-   $+0.15$; lower edge: $-0.23$ — the (6.9) fold weights $E_{\max}$
-   specifically, as $e^{+\tau H}$ predicts), with ×35 the unfolded
-   instance-to-instance scatter. Folded correlators at ED sizes measure
-   *edge fluctuations* — a Tracy–Widom-scale finite-$N$ effect the
-   sharp-edged chord theory lacks — which is why their $1/N$ convergence
-   is slow and non-uniform.
+1. **The control behaves.** The unfolded ratio is λ-stable
+   (−1.65 … −1.67), exactly real (manifest for Euclidean contours in the
+   chord representation; the growth branch stays real too), and ~10% from
+   matched-λ ED — the expected finite-N gap.
+2. **The folded connected part is not suppressed at N = ∞.** As λ → 0 the
+   unfolded connected fraction dies like λ; the folded one stays O(1) and
+   grows (−0.21 → −0.33 over λ = 2.7 → 0.5). The N-scaled folded ratio
+   runs away from the continued form like 1/λ: −1.86 → −21.3 against a
+   constant −1.92. The folded imaginary branch keeps the predicted sign
+   but its magnitude runs away the same way (about 1× at λ = 4, 3.5× at
+   λ = 2, 40–50× at λ = 0.5). **The continuation assumption fails in the
+   double-scaled theory itself, on both branches.**
+3. **Why finite N converges so badly on folds — measured.** At matched λ,
+   ED folded values sit 1.5–1.6× above the exact N = ∞ ones while
+   unfolded gaps stay ≤ 10%. `fold_edge_probe.py`: the per-instance
+   folded fraction tracks the sample's *upper spectral edge* at
+   correlation −0.86 (unfolded control +0.15; lower edge −0.23), with
+   35× the scatter. Folded correlators at ED sizes measure edge
+   fluctuations — a finite-N effect the sharp-edged chord theory lacks.
 
-Honest caps: folded contours below $\lambda \approx 0.5$ exceed float
-cancellation headroom (measured: the λ=0.3 evaluation moves 6.6e3→3.8e4
-between truncations and is excluded); the λ-trend over $[0.5, 4]$ is
-unambiguous. For HZ's program the consequence is sharp: in the one
-bounded-spectrum, exactly-solvable microscopic candidate, the folded
-correlator is finite (their requirement holds) but does **not** approach
-the analytic continuation of the unfolded semiclassical answer — an
-anti-scrambling dS observer cannot be reached from DSSYK$_\infty$ by their
-fold without large corrections that survive every limit taken here.
+Stated cap: folded contours below λ ≈ 0.5 exceed float headroom
+(measured; the λ = 0.3 point does not converge in truncation and is
+excluded). The λ-trend over [0.5, 4] is unambiguous.
 
-Also run en route: the negative-temperature variant (HZ 6.12) is the
-$H\to-H$ reflection (tested as such): for the SYK *ensemble*, $H$ and $-H$
-are equidistributed for every even $p$ (the mean-zero coupling measure is
-$J\to-J$ symmetric, which flips $H$ while leaving the matter operators
-untouched), so disorder-averaged (6.9) and (6.12) coincide — the two
-prescriptions are ensemble-equivalent here.
+Consequence for HZ: in the one bounded-spectrum, exactly solvable
+candidate model, folded correlators are finite (their requirement holds)
+but do not approach the continued semiclassical answer. The fold does not
+turn DSSYK∞ into an anti-scrambler.
 
-## Standing caveats (stated once, apply throughout)
+Also run: the negative-temperature variant (HZ 6.12) is the H → −H
+reflection. The mean-zero coupling measure is J → −J symmetric, which
+flips H for every even p, so the disorder-averaged (6.9) and (6.12)
+prescriptions coincide here.
 
-Large-$q$ closed forms at ED sizes carry an $O(1/p,\lambda)$ floor measured
-in-line (2-pt deviation ratios ~0.3–0.55, TOC ~0.5–0.8 of the closed form):
-all 4-pt comparisons are sign/trend-level, each read against the same-size
-unfolded calibration. The connected ratio uses
-$N(\langle F\rangle - \langle G\rangle\langle G\rangle)$, which includes the
-disorder-replica piece (that is what the ladder resums). The crossed-path
-sign convention is fixed empirically (the alternative is off by ×25) and the
-fold configuration in the JSON is asserted equal to `fold_map` of the
-crossed configuration, tying ED and closed forms together.
+## Standing caveats
+
+Large-q closed forms at ED sizes carry a measured O(1/p, λ) floor (2-pt
+deviation ratios ~0.3–0.55), so all finite-N 4-pt comparisons are
+sign/trend-level, read against same-size unfolded calibration. The
+connected ratio includes the disorder-replica piece (that is what the
+ladder resums). The crossed-path sign convention is fixed empirically
+(the alternative is off by 25×), and the fold configuration in the JSON
+is asserted equal to `fold_map` of the crossed configuration.

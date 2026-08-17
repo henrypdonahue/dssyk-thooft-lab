@@ -1,56 +1,39 @@
 #!/usr/bin/env python3
 r"""
-The exact N = infinity chord engine (rung-18 toolchain).
-========================================================
+The exact N = infinity chord engine.
+====================================
 
-Double-scaled SYK at N = infinity, lambda_chord = 2p^2/N fixed, is EXACTLY
-solvable by chord combinatorics (Berkooz-Isachenkov-Narovlansky-Torrents,
-arXiv:1811.02584; conventions here follow the review Berkooz-Mamroud,
-arXiv:2407.09396, both PDFs fetched and equation-checked 2026-08-15).  This
-module implements that solution as finite sparse linear algebra -- NO
-Askey-Wilson special functions, no 8phi7 -- and validates every convention
-against an independent brute-force chord-diagram enumerator plus the
-published closed forms:
+Double-scaled SYK at N = infinity (lambda = 2p^2/N fixed) is exactly
+solvable by chord combinatorics (Berkooz-Isachenkov-Narovlansky-Torrents
+1811.02584; conventions from the review Berkooz-Mamroud 2407.09396, both
+equation-checked).  This module implements the solution as finite sparse
+linear algebra.  No special functions.
 
-  * transfer matrix [review (2.15)-(2.16)]:  T = a^dag + a on chord-number
-    states |n>, <m|n> = delta_mn [n]_q!;  in the sqrt-scaled (orthonormal)
-    basis T is symmetric tridiagonal with off-diagonal sqrt([n]_q).
-    Moments <Tr H^k>/<Tr H^2>^{k/2} = <0|T^k|0> = sum over chord diagrams
-    of q^{#crossings} (Touchard-Riordan); spectrum E(theta) =
-    2 cos(theta)/sqrt(1-q), theta in [0, pi]  [review (2.21)].
-  * matter operator of dimension Delta [review (2.26)-(2.30)]: an H-chord
-    crossing the M-chord weighs qt = q^Delta; the T = infinity 2-pt function
-    is EXACTLY  G_Delta(t) = <0| e^{+itT} q^{Delta n} e^{-itT} |0>  and its
-    Euclidean version <0|e^{-beta_1 T} q^{Delta n} e^{-beta_2 T}|0>
-    [review (2.29)], with the theta-integral closed form (2.30) as an
-    independent cross-check (q-Pochhammer route, coded separately).
-  * one/two matter chords on the contour: the stack construction (regions of
-    H-chords separated by matter chords; closing an object crosses everything
-    opened after it that is still open).  This reproduces the one-particle
-    transfer matrices [review (5.18)-(5.20)] and evaluates ANY operator
-    ordering -- crossed (OTOC) and Harlow-Zhao-folded contours included --
-    as products of segment propagators on a finite truncated lattice.
-    Matter-matter crossings weigh q^{Delta_1 Delta_2} times a fermionic
-    transposition sign (-1) when both operators are single Majoranas (odd
-    fermion parity) -- the same derived minus sign as
-    syk-self-averaging/fold_bench.py.
+  * Transfer matrix [review (2.15)-(2.16)]: T|n> = |n+1> + [n]_q |n-1>.
+    Moments <Tr H^k>/<Tr H^2>^{k/2} = <0|T^k|0>; spectrum
+    E(theta) = 2 cos(theta)/sqrt(1-q)  [review (2.21)].
+  * Matter of dimension Delta [review (2.26)-(2.30)]: an H-chord crossing
+    the M-chord weighs q^Delta.  The T = infinity 2-pt function is exactly
+    <0| e^{+itT} q^{Delta n} e^{-itT} |0>  [review (2.29)]; the
+    theta-integral (2.30) is coded separately as a cross-check.
+  * One and two matter chords on the contour (stack construction: closing
+    an object crosses everything opened after it that is still open).
+    This reproduces the one-particle transfer matrices [review
+    (5.18)-(5.20)] and evaluates ANY operator ordering on ANY complex
+    contour -- crossed and Euclidean-folded included.  Matter-matter
+    crossings weigh q^{Delta_1 Delta_2} times a fermionic sign (-1) for
+    single-Majorana matter: the same minus that fold_bench.py derives.
 
-Units.  The chord Hamiltonian is normalized to <H^2> = 1.  The exact bridge
-to repo units (psi^2 = 1, Var J = p!/N^{p-1}, J = 1) is
+Units: the chord Hamiltonian has <H^2> = 1.  Exact bridge to repo units
+(psi^2 = 1, Var J = p!/N^{p-1}):  sigma_H^2 = C(N,p) p!/N^{p-1}, and
+t_chord = t_repo * sigma_H.  In double scaling this gives
+beta_chord = betaJ * e^{-lambda/8}/sqrt(lambda), with scriptJ = sqrt(2) p.
 
-    sigma_H(N, p)^2 = <Tr H^2>/dim = C(N,p) p!/N^{p-1}   (exact, any N),
-    t_chord = t_repo * sigma_H;      sigma_H --> sqrt(N) e^{-lambda/8}
-    in double scaling (prod_{k<p}(1-k/N) -> e^{-lambda/4}), so at fixed
-    beta*scriptJ (scriptJ = sqrt(2) p) the chord inverse temperature is
-    beta_chord = (beta scriptJ) e^{-lambda/8} / sqrt(lambda).
-
-Truncation.  Every result is computed on a finite chord lattice n <= nmax;
-amplitudes converge because q^n suppresses large chord numbers (and, in
-Lorentzian time, chord growth is linear).  Campaign JSONs store paired
-(nmax, nmax') values; tests assert stability.
-
-Provenance of every load-bearing equation is in the docstrings of the
-functions that implement it.  Validation battery: test_chord.py.
+Truncation: finite chord lattice n <= nmax; q^n suppresses large n.
+Campaign JSONs store paired truncations, and the tests assert stability.
+Per-equation provenance lives in the function docstrings.  Validation:
+test_chord.py (enumerator, closed forms, Krawtchouk microscopy, ED
+anchors).
 """
 
 from __future__ import annotations

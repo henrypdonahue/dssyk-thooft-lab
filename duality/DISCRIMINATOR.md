@@ -1,90 +1,64 @@
 # The KMS/OTOC axis: discriminating the three competing duals
 
-*Rung 24 (KMS-axis note, 2026-08-16). Companion to `ANTISCRAMBLING.md`
-(rungs 25–26) and `CHORD.md` (rungs 15/18). Sources fetched and read for
-this note: Narovlansky–Verlinde 2310.16994 (§2.3, §3), Blommaert–Mertens–
-Papalini 2404.03535 (§1), Cui–Kolchmeyer 2607.13665 and Harlow–Zhao
-2607.14215 (repo root). Repo-side numbers quoted here are asserted from
-committed JSONs in `test_discriminator.py`.*
+*Companion to `ANTISCRAMBLING.md` and `CHORD.md`. Sources read for this
+note: Narovlansky–Verlinde 2310.16994, Blommaert–Mertens–Papalini
+2404.03535, Cui–Kolchmeyer 2607.13665, Harlow–Zhao 2607.14215. Repo-side
+numbers are asserted in `test_discriminator.py`.*
 
 ## The axis
 
-Cui–Kolchmeyer: a dS observer's OTOC must **anti-scramble** (negative
-eikonal phase, their $c<0$), and the MSS chaos bound forces $c>0$
-(scrambling) for **any unitary QM in a KMS state at the dS temperature** —
-so a dS hologram must break one of: unitarity, KMS-at-$\beta_{dS}$, or the
-remaining MSS hypotheses. This repo's measured/exact facts on that axis:
+Cui–Kolchmeyer: a dS observer's OTOC must **anti-scramble** (their c < 0).
+The chaos bound forces c > 0 for any unitary system in a KMS state at the
+dS temperature. So a dS hologram must break one of: unitarity, dS-KMS, or
+another hypothesis of the bound. This repo's facts on that axis:
 
-- **Rung 25:** under the flat dictionary DSSYK$_\infty$ scrambles at every
-  temperature — the growing OTOC term has $\mathrm{Re}\,a(v) = -1$
-  exactly, rate $\lambda_L = 2\pi v/\beta$.
-- **Rung 26 (both deciders):** the Harlow–Zhao Euclidean fold — the one
-  proposed *mechanism* for converting a bounded-spectrum scrambler into an
-  anti-scrambler — fails quantitatively in DSSYK: the folded connected
-  part is not $1/N$-suppressed at ED sizes (decider #1) **nor at
-  $N=\infty$, where it grows toward the semiclassical corner** (decider
-  #2, `chord_fold.json`).
+- Under the flat dictionary, DSSYK∞ **scrambles at every temperature**:
+  Re a = −1 exactly, rate λ_L = 2πv/β.
+- The Harlow–Zhao fold — the one proposed repair — **fails**: the folded
+  connected part is not 1/N-suppressed at ED sizes, and at N = ∞ it grows
+  toward the semiclassical corner (`chord_fold.json`).
 
 ## Where each program sits
 
-**1. MSS flat-space ('t Hooft dual, 2607.05678 — this repo's target).**
-The hologram is the $T_B=\infty$ maximal-entropy state: *not* KMS at the
-dS temperature, so the CK no-go is dodged in letter. But then the
-dictionary owes an explanation of how a dS observer's thermal physics
-(and its $c<0$) emerges — the "tomperature" map. Rungs 25/26 sharpen the
-debt: the map must flip the OTOC sign, and the HZ fold cannot be that map
-in this model. **Status: open falsification pressure; the OTOC axis is
-where this proposal is weakest.**
+**1. MSS flat-space (this repo's target, 2607.05678).** The hologram is
+the T = ∞ maximal-entropy state — not KMS at the dS temperature, so the
+no-go is dodged in letter. But the dictionary then owes the map that
+produces a dS observer's thermal physics and its c < 0: the "tomperature"
+map. Our data sharpens the debt: the map must flip the OTOC sign, and the
+fold cannot be that map. **Status: open pressure. This is the proposal's
+weakest axis.**
 
-**2. Narovlansky–Verlinde doubled DSSYK (2310.16994).** Their physical
-operators are dressed and **shifted by $\pm i\beta_{dS}/4$, with
-$\beta_{dS}$ "adjusted... to match the KMS property of the correlation
-functions in the de Sitter vacuum"** (their §2.3). The construction
-*engineers* KMS at the dS temperature — exactly the CK hypothesis. So the
-NV program faces the no-go head-on: unitary QM + their KMS structure ⇒
-MSS scrambling, while their dS interpretation needs anti-scrambling —
-unless the equal-energy constraint / dressing (their crossed-product-like
-structure, §2.3) breaks an MSS hypothesis. **The discriminating
-computation, not yet published by anyone: the OTOC sign of NV's dressed
-$\mathcal O^\pm_\Delta$.** The chord engine here evaluates ordinary
-DSSYK contours; the NV objects need the two-sided constrained ($H_L=H_R$)
-sector — adjacent tooling, flagged as the sharpest next computation on
-this axis.
+**2. Narovlansky–Verlinde doubled DSSYK (2310.16994).** Their operators
+are dressed and shifted by ±i β_dS/4, with β_dS "adjusted... to match the
+KMS property" (their §2.3). That engineers KMS at the dS temperature —
+exactly the no-go's hypothesis. So NV must show their constrained dressing
+breaks another hypothesis of the bound. **The discriminating computation,
+unpublished by anyone: the OTOC sign of their dressed operators.** It
+needs the two-sided constrained sector — adjacent to this repo's chord
+engine, and the sharpest next computation on this axis.
 
-**3. Sine-dilaton gravity (2404.03535).** Their bulk is a **black hole**
-whose "Lorentzian spacetime probed by matter is a smooth black hole with
-Hawking temperature equal to the fake temperature" (their §1; the fake
-temperature is their Eq. (1.7), $\beta_{BH} = 2\pi/\sin\theta$), with
-"all matter correlators... thermal at the fake temperature", and DSSYK as
-a *sub-maximal scrambler*. That is the scrambling (AdS-sign) side of
-CK's dichotomy — **the program whose stated thermal structure is
-qualitatively the one this repo measures**: sub-maximal scrambling with
-$\mathrm{Re}\,a = -1$ and rate $\lambda_L = 2\pi v/\beta \equiv
-2\pi/\beta_{\rm fake}$ (rung 25). Honesty note (post-review): with
-$\beta_{\rm fake} \equiv \beta/v$ this identity is *definitional* in the
-large-q parametrization; the quantitative tie to their (1.7) — i.e.
-$\sin\theta \leftrightarrow v$ in matched units — is a units-level
-identification this repo has **not** independently verified (a naive
-chord-saddle check does not close under the $\beta_{\rm chord}$ bridge;
-open item). CK pressure attaches only to the program's further dS3
-reinterpretation (their §1 relation to Verlinde's proposal), not to the
-black-hole reading.
+**3. Sine-dilaton gravity (2404.03535).** Their bulk is a black hole:
+"a smooth black hole with Hawking temperature equal to the fake
+temperature" (their §1; the fake temperature is their Eq. (1.7),
+β_BH = 2π/sin θ), with "all matter correlators... thermal at the fake
+temperature," and DSSYK as a sub-maximal scrambler. That is qualitatively
+what this repo measures: sub-maximal scrambling with Re a = −1 and rate
+λ_L = 2π/β_fake. Honesty note: with β_fake defined as β/v, that identity
+is definitional. The quantitative tie sin θ ↔ v in matched units is
+untested here — a naive chord-saddle check does not close under the
+β_chord bridge. Open item. CK pressure attaches only to this program's
+further dS3 reinterpretation, not to the black-hole reading.
 
-## Verdict of the note
+## Verdict
 
-The OTOC-sign/KMS axis is now a working discriminator, with data:
-DSSYK$_\infty$ as measured here is a fake-temperature scrambler
-(sine-dilaton's reading). Making it a *de Sitter* hologram requires either
-a sign-flipping state/time map that no current proposal supplies (MSS
-flat-space; HZ's fold is now excluded in-model), or a demonstration that
-constrained dressing evades the chaos bound (NV; computable, unpublished).
-The meson-tower axis (rung 18) and this axis are independent: a proposal
-could pass one and fail the other. Current score on this axis:
-sine-dilaton qualitatively consistent (the quantitative θ↔v tie untested,
-see §3), MSS flat-space in debt, NV pending a computable sign.
+Measured, DSSYK∞ is a fake-temperature scrambler — sine-dilaton's reading,
+qualitatively. Making it a *de Sitter* hologram requires either a
+sign-flipping state/time map that no current proposal supplies (the fold
+is excluded in-model), or a demonstration that constrained dressing evades
+the chaos bound (NV; computable, unpublished). This axis and the
+meson-tower axis are independent: a proposal can pass one and fail the
+other.
 
-*Caveat: NV and sine-dilaton statements above are quoted from their
-papers, not re-derived here; the repo-side tested content is Re a = −1
-and the fold verdicts. β_fake·λ_L = 2π is definitional given
-β_fake ≡ β/v (the test pins the definition's internal consistency, not
-an independent identity — see §3).*
+*Caveat: NV and sine-dilaton statements are quoted from their papers, not
+re-derived. The repo-side tested content is Re a = −1 and the fold
+verdicts.*
