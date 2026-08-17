@@ -120,7 +120,7 @@ def majorana_hamiltonian_fast(N: int, p: int, rng, dense: bool = True):
 
 if __name__ == "__main__":
     import time
-    from syk import majorana_hamiltonian, majorana_operators
+    from syk import majorana_hamiltonian
 
     for (N, p) in [(10, 4), (12, 4), (12, 6)]:
         rng1 = np.random.default_rng(42)

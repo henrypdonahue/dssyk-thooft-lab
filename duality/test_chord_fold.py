@@ -18,7 +18,6 @@ fold_scan.json (decider #1) posed at ED sizes.  Verdict encoded here:
 """
 
 import json
-import math
 from pathlib import Path
 
 import pytest

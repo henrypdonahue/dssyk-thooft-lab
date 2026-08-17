@@ -297,9 +297,9 @@ if __name__ == "__main__":
     print("C. Symmetry violation by ED: off-diagonal adjoint bilinear vs N")
     print("=" * 70)
     n_inst_sv = 120
-    print(f"\n  B_jk = Tr(psi_j H psi_k H)/dim.  rms_off = RMS_(j!=k) B_jk is the")
-    print(f"  trustworthy monotone signal; the ratio rms_off/rms_diag has a spurious")
-    print(f"  bump near p ~ N/2 (its denominator collapses there), so we FIT rms_off.")
+    print("\n  B_jk = Tr(psi_j H psi_k H)/dim.  rms_off = RMS_(j!=k) B_jk is the")
+    print("  trustworthy monotone signal; the ratio rms_off/rms_diag has a spurious")
+    print("  bump near p ~ N/2 (its denominator collapses there), so we FIT rms_off.")
     print(f"  {n_inst_sv} realizations each; rms_off carries its standard error.")
     results["C_symmetry_violation"] = {}
     for p in (4, 6):

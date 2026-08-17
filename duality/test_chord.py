@@ -21,9 +21,8 @@ import pytest
 
 from chord import (Contour, Sector0, bruteforce_word, g2_closed_form,
                    g2_engine, spectral_lines, length_channel_lines,
-                   n_expectation, qint, qpoch, rho_theta, energy_theta,
-                   sigma_H, lambda_chord_of, beta_chord_from_betaJ,
-                   q_of_lambda, binned_spectrum)
+                   n_expectation, rho_theta, energy_theta,
+                   sigma_H, lambda_chord_of)
 
 HERE = Path(__file__).resolve().parent
 

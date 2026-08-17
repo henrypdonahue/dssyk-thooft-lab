@@ -135,7 +135,6 @@ def test_bench_g2_calibration_floor(bench):
     form)."""
     ratios_by_N = {}
     for pt in bench:
-        v = v_of_betaJ(pt["betaJ"])
         for th, g in zip(pt["th_g2"], pt["g2_mean"]):
             cf = complex(G2_thermal(th, pt["betaJ"], pt["p"])).real
             r = (g - 1) / (cf - 1)

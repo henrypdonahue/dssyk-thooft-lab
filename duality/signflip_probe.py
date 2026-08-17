@@ -56,7 +56,7 @@ from pathlib import Path
 import numpy as np
 
 from antiscrambling import G2_thermal, otoc_ratio
-from chord_fold import CONFIG_CROSSED, ChordCorrelators, thetas_to_z
+from chord_fold import CONFIG_CROSSED, ChordCorrelators
 from largeq_anchor import v_of_betaJ
 
 HERE = Path(__file__).resolve().parent

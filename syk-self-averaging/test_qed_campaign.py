@@ -15,7 +15,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from dirac import (annihilators, coupling_variance_dirac, dirac_hamiltonian,
+from dirac import (annihilators, dirac_hamiltonian,
                    draw_couplings, mn_tower)
 from qed_campaign import (charging_curve, enumerated_m2_stats,
                           enumerated_mu2_charged, fit_charging,
@@ -25,7 +25,7 @@ from qed_campaign import (charging_curve, enumerated_m2_stats,
                           monomial_matrix, mu2_charged_by_commutator,
                           relvar_m2_exact_dirac, relvar_m2_leading,
                           sector_indices, sector_spectra, t_ab_exact,
-                          trace_pair_matrix, stored_keys, var_m2_exact)
+                          trace_pair_matrix, var_m2_exact)
 
 
 # --------------------------------------------------------------------------

@@ -42,7 +42,6 @@ import argparse
 import json
 import math
 import time
-from itertools import permutations
 from pathlib import Path
 
 import numpy as np
@@ -405,9 +404,6 @@ class Contour:
             while word[-1] == 'H':
                 word = word[-1:] + word[:-1]
         seq = list(reversed(word))
-        ops, i = [], 0
-        # compress into (label, k_H_after) in reversed order, then rebuild
-        # as correlator-style processing with T-powers
         state = self.s0.vac()
         open_stack, sector = [], 0
         for w in seq:
@@ -471,7 +467,6 @@ def bruteforce_word(q: float, word: list, deltas: dict,
     microscopic Wick weights -- it is the ground truth the engine is
     validated against (test_chord.py)."""
     fermionic = fermionic if fermionic is not None else set()
-    n = len(word)
     h_pos = [i for i, w in enumerate(word) if w == 'H']
     labels = sorted({w for w in word if w != 'H'})
     m_chords = []

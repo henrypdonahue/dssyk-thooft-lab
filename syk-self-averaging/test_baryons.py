@@ -19,7 +19,7 @@ from dirac import (apply_monomial, coupling_variance_dirac,
                    dirac_hamiltonian, dirac_hamiltonian_reference,
                    draw_couplings)
 from baryons import (baryon_correlator_ed, baryon_dagger, baryon_sign,
-                     instance_charging_curve, csym_edge_estimate, dense_sector_blocks,
+                     csym_edge_estimate, dense_sector_blocks,
                      deltaE_from_couplings, ensemble_run, fit_mass_models,
                      instance_observables, power_exponent_fit,
                      reassemble_dense, sector_hamiltonian, sector_m2_enumerate,

@@ -4,7 +4,6 @@
 Run with:  pytest -q     (the RMT test is marked slow; deselect with -m 'not slow')
 """
 
-from math import comb
 
 import numpy as np
 import pytest

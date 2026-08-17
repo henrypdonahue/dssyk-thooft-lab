@@ -4,7 +4,6 @@ wreck a DSSYK <-> 't Hooft comparison is pinned here."""
 
 import math
 
-import numpy as np
 import pytest
 
 from dictionary import (m1_coefficient, lambda_paper, lambda_chord,

@@ -56,6 +56,8 @@ reproduce-slow:
 	cd syk-self-averaging && $(PY) fold_edge_probe.py
 	cd duality && $(PY) chord.py --spectra
 	cd duality && $(PY) chord_fold.py
+	cd duality && $(PY) signflip_probe.py
+	cd duality && $(PY) signflip_probe.py --deep
 	cd thooft-target && $(PY) generate_reference.py
 	cd thooft-target && $(PY) jacobi_solver.py
 	cd thooft-target && $(PY) thooft_spectrum.py --csv

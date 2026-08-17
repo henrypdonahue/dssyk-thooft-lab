@@ -62,7 +62,6 @@ Output: condensate.json (curve + corner scan + the numbers above).
 
 from __future__ import annotations
 
-import argparse
 import json
 import math
 import time
@@ -141,22 +140,21 @@ def vacuum_energy_curve(alphas: np.ndarray) -> np.ndarray:
     """eps(alpha) = Int_{-1}^{alpha} f(a') / (2 sqrt(pi (1+a'))) da',
     the dimensionless vacuum-energy shift [E_vac(alpha) - E_vac(-1)]/(Nc g^2).
     The alpha-integrand has an integrable (1+alpha)^{-1/2} endpoint
-    singularity (hence the quad `points` hint below); integrand *
-    sqrt(1+alpha) -> -1/(4 pi sqrt(3)) at the chiral end, and eps is
-    finite."""
-    def integrand(ap):
-        return condensate_dimensionless(ap) / (2.0 * math.sqrt(
-            math.pi * (1.0 + ap)))
-
-    out = []
-    prev_a, acc = -1.0, 0.0
-    for al in alphas:
-        v, _ = quad(integrand, prev_a, al, limit=200,
-                    points=[prev_a + 1e-9] if prev_a == -1.0 else None)
-        acc += v
-        out.append(acc)
-        prev_a = al
-    return np.array(out)
+    singularity; the substitution u = sqrt(1+alpha) removes it exactly
+    (d alpha = 2u du), leaving the smooth integrand f(u^2-1)/sqrt(pi),
+    which tends to -1/(2 pi sqrt(3)) at the chiral end."""
+    # evaluate f once on a dense u-grid and integrate its cubic-spline
+    # antiderivative -- no nested adaptive quadrature, smooth integrand,
+    # ~1e-8 accuracy.  The u = 0 endpoint value is the exact chiral limit.
+    u_grid = np.linspace(0.0, 1.0, 801)
+    f_grid = np.empty_like(u_grid)
+    f_grid[0] = CHIRAL_VALUE / math.sqrt(math.pi)
+    for i, u in enumerate(u_grid[1:], 1):
+        f_grid[i] = condensate_dimensionless(u * u - 1.0) / math.sqrt(math.pi)
+    from scipy.interpolate import CubicSpline
+    anti = CubicSpline(u_grid, f_grid).antiderivative()
+    us = np.sqrt(1.0 + np.asarray(alphas))
+    return anti(us) - anti(0.0)
 
 
 # ---------------------------------------------------------------------------

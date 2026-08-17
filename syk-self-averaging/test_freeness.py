@@ -15,7 +15,7 @@ import pytest
 
 import freeness
 from freeness import (W1_BINOMIAL_VS_ARCSINE, arcsine_cdf, binomial_cdf,
-                      heisenberg, instance_operators, run_point, w1_distance)
+                      heisenberg, instance_operators, run_point)
 
 
 def test_w1_constant_closed_form():

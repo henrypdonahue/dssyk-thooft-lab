@@ -15,14 +15,13 @@ coupling, not just at large q.
 """
 
 import json
-import math
 from pathlib import Path
 
 import numpy as np
 import pytest
 
 from chord import q_of_lambda, spectral_lines
-from chord_moments import channel_moments, odelta_moments, MomentTable
+from chord_moments import channel_moments, odelta_moments
 
 HERE = Path(__file__).resolve().parent
 

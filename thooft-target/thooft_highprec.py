@@ -128,5 +128,5 @@ if __name__ == "__main__":
 
     print(f"\nGround state (K={K}):")
     print(f"  2*lambda_0 = {nstr(sym[0], 20)}")
-    print(f"  FLZ Pade   = 0.737061746292690  (16 digits published)")
-    print(f"  reference  = 0.737061746292690  (reference_spectrum.json, ~15 digits)")
+    print("  FLZ Pade   = 0.737061746292690  (16 digits published)")
+    print("  reference  = 0.737061746292690  (reference_spectrum.json, ~15 digits)")

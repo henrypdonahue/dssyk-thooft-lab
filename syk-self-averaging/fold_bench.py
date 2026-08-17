@@ -123,7 +123,6 @@ def bilocal4_uncrossed(E, psis, beta: float, zs) -> complex:
     z1, z2, z3, z4 = zs
     N = len(psis)
     rho = np.exp(-beta * E)
-    dE = np.subtract.outer(E, E)
 
     def pair_sum(w):
         d = np.exp(1j * w * E)
@@ -146,7 +145,7 @@ def bilocal4_crossed(E, psis, beta: float, zs) -> complex:
     Evaluated at arbitrary complex z's (Lorentzian continuation and HZ
     folds).  O(N^2) batched matmuls."""
     z1, z2, z3, z4 = zs
-    N, dim = psis.shape[0], psis.shape[1]
+    N = psis.shape[0]
     rho = np.exp(-beta * E)
     dE = np.subtract.outer(E, E)
     P1 = psis * np.exp(1j * z1 * dE)          # psi_i(z1), batched
