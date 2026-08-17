@@ -351,6 +351,13 @@ independent; the tiers gate the ones that aren't.
   measured growth κ ≈ 0.83–0.88 > v: no recalibration rescues strong
   coupling. Necessary, not sufficient — the sign-gate of the tomperature
   map is OPEN semiclassically; the NV dressed-OTOC remains the closer.
+  DEEP campaign (--deep): at the hologram point (β=0) the frame
+  anti-scrambles in a TRANSIENT window growing ~½ln(1/λ) (t·Jc 0.57→1.14
+  over λ 1.0→0.3) — a semiclassical dS EPOCH, scrambling reasserts after;
+  MSS evasion located (phase winds at constant |a|: no strip-KMS);
+  measured costs: the shifted contour is FOLD-ADJACENT (edge-dominated
+  shapes, no Gibbs/sech form, no fake-period recurrence — ratio
+  identities survive, shapes don't); rate extraction mode-contaminated.
 - ⬜ Open: 18 remainder (the tower extraction itself, now located at fixed
   p, λ→0 — a 1/N computation from the double-scaled viewpoint), 17 proper
   (the O(1/q) residues — theory), 13 remainder (tomperature map: the

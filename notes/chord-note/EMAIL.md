@@ -37,7 +37,7 @@ scans, and — taking the static-patch motivation seriously — a
 quantitative statement of what the tomperature map must do at OTOC level
 (flip the scrambling sign; the Euclidean fold does not do this, even at
 N = ∞). The engine is validated four independent ways, and everything is
-asserted by a test suite (`make test`, 303 tests, about 3 minutes).
+asserted by a test suite (`make test`, 307 tests, about 3 minutes).
 
 https://github.com/henrypdonahue/dssyk-thooft-lab
 

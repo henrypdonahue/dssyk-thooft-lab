@@ -288,6 +288,203 @@ def config_b_scan(betaJ: float) -> dict:
                 chord_lam1_antipodal="up" if rs1[-1] > rs1[0] else "down")
 
 
+# ---------------------------------------------------------------------------
+# the DEEP campaign (--deep): the hologram point, the beta.J = pi shape
+# prediction, the MSS-evasion locator, and the observer rate
+# ---------------------------------------------------------------------------
+def _ratio_z(cc, zs_path, Nflav):
+    """Connected crossed ratio from explicit path-ordered slot times
+    (works at beta_c = 0, where the theta parametrization degenerates)."""
+    F = -cc.f4(['A', 'B', 'A', 'B'], zs_path)
+    z1, z3, z2, z4 = zs_path
+    Fd = cc.g2(z1, z2) * cc.g2(z3, z4)
+    return Nflav * (F - Fd) / Fd
+
+
+def hologram_point(lam: float, p: int = 4, nmax: int = 100,
+                   ts=(0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0)) -> dict:
+    """The flip at the ACTUAL hologram point, beta_c = 0.  The tomperature
+    is beta_f = pi/Jc there (equivalently lambda_L = 2 Jc = 2 pi/beta_f).
+    W-pair regulator: Euclidean split 2*eps with eps = 0.15 beta_f
+    (stated convention).  Finding: the antipodal frame anti-scrambles in
+    a TRANSIENT window whose extent grows as lambda falls -- scrambling
+    reasserts at later times, consistent with a semiclassical mechanism
+    fought by lambda-corrections."""
+    Jc = math.sqrt(lam) * math.exp(lam / 8.0)
+    beta_f = math.pi / Jc
+    tau_s = 0.5 * beta_f
+    eps = 0.15 * beta_f
+    Nflav = 2.0 * p * p / lam
+    cc = ChordCorrelators(lam, p, 0.0, nmax)
+
+    def curve(shift):
+        out = []
+        for t in ts:
+            zs = [-1j * (shift + eps) + t, -1j * eps,
+                  -1j * (shift - eps) + t, +1j * eps]
+            out.append(float(_ratio_z(cc, zs, Nflav).real))
+        return out
+
+    un, an = curve(0.0), curve(tau_s)
+    # the anti-scrambling window: largest t up to which the antipodal
+    # curve is still rising
+    t_window = 0.0
+    for i in range(1, len(ts)):
+        if an[i] > an[i - 1]:
+            t_window = ts[i]
+        else:
+            break
+    cc2 = ChordCorrelators(lam, p, 0.0, nmax + 20)
+    zs = [-1j * (tau_s + eps) + 1.0, -1j * eps,
+          -1j * (tau_s - eps) + 1.0, +1j * eps]
+    drift = abs(_ratio_z(cc, zs, Nflav) - _ratio_z(cc2, zs, Nflav)) / max(
+        abs(_ratio_z(cc2, zs, Nflav)), 1e-12)
+    return dict(lam=lam, beta_f=beta_f, tau_s=tau_s, eps=eps,
+                ts=list(ts), unshifted=un, antipodal=an,
+                t_window=t_window, Jc=Jc,
+                window_in_Jc_units=t_window * Jc,
+                truncation_drift=float(drift))
+
+
+def thermal_shape(lam: float, p: int = 4, nmax: int = 140) -> dict:
+    """The SHAPE of the antipodal observer's 2-pt at the hologram point.
+
+    Measured verdict (both candidate shapes FAIL, worse as lambda -> 0):
+    the shifted 2-pt exceeds unity and grows along the shift --
+    |G_obs(0)| ~ 2.3 at lambda = 0.25 -- because the antipodal excursion
+    is a FOLD-ADJACENT contour: its e^{+tau(Ej-Ek)} weights are dominated
+    by the spectral edge, exactly like the Harlow-Zhao fold
+    (ANTISCRAMBLING.md decider #2, fold_edge_probe).  Neither the
+    continued sech nor the Gibbs betaJ = pi shape describes it, and the
+    fake-period recurrence is absent.  What survives edge domination is
+    the detailed-balance RATIO identity (exact at any lambda) and the
+    trend-level OTOC flip: shapes do not.  Both failed targets and the
+    periodicity deviation are recorded as the measured negatives."""
+    from chord import Sector0, q_of_lambda
+    Jc = math.sqrt(lam) * math.exp(lam / 8.0)
+    beta_f = math.pi / Jc
+    tau_s = 0.5 * beta_f
+    q = q_of_lambda(lam)
+    dpsi = 1.0 / p
+    s = Sector0(nmax, q)
+    v0 = s.V[0, :]
+    M = s.V.T @ ((q ** (dpsi * np.arange(nmax + 1)))[:, None] * s.V)
+
+    def g_obs_at(t):
+        return complex((v0 * np.exp((tau_s + 1j * t) * s.E)) @ M
+                       @ (v0 * np.exp(-(tau_s + 1j * t) * s.E)))
+
+    ts = np.linspace(0.0, 2.0 / Jc, 25)
+    g_obs = np.array([g_obs_at(t) for t in ts])
+    # (a) the continued-sech target
+    z = Jc * (tau_s + 1j * ts)
+    g_sech = np.abs(1.0 / np.cosh(z)) ** (2 * dpsi)
+    dev_sech = float(np.max(np.abs(np.abs(g_obs) - g_sech)
+                            / np.maximum(g_sech, 1e-12)))
+    # (b) the naive Gibbs guess (negative control)
+    v_f = v_of_betaJ(math.pi)
+    g_th = (np.cos(np.pi * v_f / 2.0)
+            / np.cosh(np.pi * v_f * ts / beta_f)) ** (2 * dpsi)
+    dev_gibbs = float(np.max(np.abs(np.abs(g_obs) - g_th) / g_th))
+    # periodicity with the fake period
+    tp = np.linspace(0.0, 0.9 * beta_f, 10)
+    per = [abs(g_obs_at(t + beta_f)) / max(abs(g_obs_at(t)), 1e-300)
+           for t in tp]
+    per_dev = float(np.max(np.abs(np.array(per) - 1.0)))
+    return dict(lam=lam, v_f=v_f, beta_f=beta_f,
+                ts=[float(x) for x in ts],
+                g_obs_abs=[float(abs(x)) for x in g_obs],
+                g_sech_pred=[float(x) for x in g_sech],
+                g_gibbs_pred=[float(x) for x in g_th],
+                max_rel_dev_sech=dev_sech,
+                max_rel_dev_gibbs=dev_gibbs,
+                fake_periodicity_dev=per_dev)
+
+
+def mss_strip(betaJ: float = 2.0, n_y: int = 33) -> dict:
+    """Where does the observer frame break the chaos-bound hypotheses?
+    Scan the closed-form growth coefficient around the observer's full
+    fake circle: Re a(Delta + y) = Re[a(0) e^{-i v (Delta+y)}] oscillates,
+    so there is NO Euclidean placement of the four operators at which the
+    observer's regularized OTOC has the definite-sign structure the MSS
+    proof requires globally -- the correlator is unbounded on the strip
+    (|a| is constant while the phase winds).  The located evasion: the
+    observer's effective thermality is a detailed-balance statement, not
+    the strip-analytic KMS structure the bound assumes."""
+    v = v_of_betaJ(betaJ)
+    ys = np.linspace(0.0, 2.0 * math.pi / v, n_y)
+    re_a = []
+    for y in ys:
+        a = growth_coefficient_shifted(v, math.pi / v + float(y))
+        re_a.append(float(a.real))
+    re_a = np.array(re_a)
+    return dict(betaJ=betaJ, v=v, ys=ys.tolist(), re_a=re_a.tolist(),
+                oscillates=bool(re_a.max() > 0.5 and re_a.min() < -0.5),
+                abs_a_constant=bool(np.allclose(
+                    [abs(complex(growth_coefficient_shifted(v, d)))
+                     for d in (0.0, math.pi / v, 1.7 * math.pi / v)],
+                    abs(complex(growth_coefficient_shifted(v, 0.0))),
+                    rtol=1e-6)))
+
+
+def observer_rate(lam: float, betaJ: float = 2.0, p: int = 4,
+                  nmax: int = 80) -> dict:
+    """Growth exponent of the FLIPPED mode vs the dS expectation
+    2 pi/beta_eff.  Fit kappa_obs from the antipodal curve where the flip
+    is robust; compare against 2 pi v/beta_c (= 2 pi/beta_fake) and
+    2 pi/beta_eff."""
+    from chord import beta_chord_from_betaJ
+    v = v_of_betaJ(betaJ)
+    Nflav = 2.0 * p * p / lam
+    beta_c = beta_chord_from_betaJ(betaJ, lam)
+    cc = ChordCorrelators(lam, p, beta_c, nmax)
+    t1, t2, t3, t4 = CONFIG_CROSSED
+    d = math.pi / v
+    h, thLs = 0.5, (0.5, 1.0, 1.5, 2.0)
+    r = [cc.connected_ratio((t1 + d + 1j * t, t2 + d + 1j * t, t3, t4),
+                            'c', Nflav).real for t in thLs]
+    d1, d2, d3 = r[1] - r[0], r[2] - r[1], r[3] - r[2]
+    kap = 0.5 * (math.log(abs(d2 / d1)) + math.log(abs(d3 / d2))) / h
+    # rates are per theta_L; convert to chord time: t_c = beta_c thL/(2 pi)
+    to_time = 2.0 * math.pi / beta_c
+    return dict(lam=lam, betaJ=betaJ,
+                kappa_obs_time=kap * to_time,
+                rate_fake=2.0 * math.pi / (beta_c / v),
+                rate_eff=2.0 * math.pi / (beta_c + beta_c / v))
+
+
+def main_deep():
+    t0 = time.time()
+    payload = dict(
+        provenance="signflip_probe.py --deep -- does the antipodal map "
+                   "pan out: the hologram point (transient window), the "
+                   "beta.J = pi shape prediction, the MSS-evasion "
+                   "locator, and the observer rate",
+        hologram=[hologram_point(lam) for lam in (1.0, 0.6, 0.4, 0.3)],
+        shape=[thermal_shape(lam) for lam in (2.0, 1.0, 0.5, 0.25)],
+        mss=mss_strip(),
+        rate=[observer_rate(lam) for lam in (1.0, 0.8, 0.6)])
+    payload["runtime_s"] = round(time.time() - t0, 1)
+    out = HERE / "signflip_deep.json"
+    with open(out, "w") as fh:
+        json.dump(payload, fh, indent=1)
+    for h in payload["hologram"]:
+        print(f"hologram lam={h['lam']}: window t*Jc = "
+              f"{h['window_in_Jc_units']:.2f}  drift={h['truncation_drift']:.1e}")
+    for s_ in payload["shape"]:
+        print(f"shape lam={s_['lam']}: dev vs continued-sech = "
+              f"{s_['max_rel_dev_sech']:.3f}  vs Gibbs (neg. control) = "
+              f"{s_['max_rel_dev_gibbs']:.3f}  fake-periodicity dev = "
+              f"{s_['fake_periodicity_dev']:.3f}")
+    print(f"mss: coefficient phase winds = {payload['mss']['oscillates']}, "
+          f"|a| constant = {payload['mss']['abs_a_constant']}")
+    for r in payload["rate"]:
+        print(f"rate lam={r['lam']}: kappa_obs={r['kappa_obs_time']:.3f} "
+              f"vs 2pi/beta_fake={r['rate_fake']:.3f} "
+              f"2pi/beta_eff={r['rate_eff']:.3f}")
+    print(f"wrote {out} ({payload['runtime_s']} s)")
+
+
 def main():
     t0 = time.time()
     betaJ = 2.0
@@ -325,4 +522,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--deep" in sys.argv:
+        main_deep()
+    else:
+        main()

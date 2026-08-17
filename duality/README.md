@@ -62,5 +62,5 @@ python3 antiscrambling.py    # the OTOC sign table + fold map
 python3 chord.py --spectra   # the lambda->0 spectral scan (~4 min)
 python3 chord_moments.py --run  # exact N = inf moments    (~1 s)
 python3 chord_fold.py        # the fold at N = inf         (~30 s)
-pytest -q                    # 158 tests
+pytest -q                    # 162 tests
 ```

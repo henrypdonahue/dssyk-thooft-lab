@@ -85,6 +85,38 @@ point — is exactly NV's construction to complete. But this is the first
 map tested here that produces both dS-observer signatures in the exact
 theory anywhere in parameter space.
 
+## Does it pan out? The deep campaign (`--deep`, `signflip_deep.json`)
+
+Four attack tests, run at the actual hologram point (β = 0):
+
+- **A semiclassical dS epoch, not eternal dS.** The antipodal frame
+  anti-scrambles in a transient window that grows as λ falls
+  (t·Jc ≈ 0.57 → 1.14 over λ = 1.0 → 0.3, consistent with ~½ ln(1/λ));
+  scrambling reasserts afterward. The unshifted control scrambles from
+  the start at every λ.
+- **The MSS evasion is located.** The growth coefficient's phase winds
+  around the fake circle while its magnitude stays constant: there is no
+  Euclidean operator placement with the definite-sign strip structure
+  the chaos-bound proof requires. The frame's thermality is detailed
+  balance, not strip-analytic KMS — that is how c < 0 coexists with the
+  theorem.
+- **The costs, measured.** The shifted contour is *fold-adjacent*: its
+  correlator shapes are spectral-edge-dominated (|G(0)| > 1, growing
+  along the shift), match neither the continued-sech nor a Gibbs form
+  (deviations grow toward semiclassics, the fold pattern), and show no
+  fake-period recurrence. What survives edge domination is exactly the
+  ratio identities: detailed balance (exact) and the trend-level flip.
+- **Rate extraction is contaminated** by a faster scrambling-reasserting
+  mode (fitted growth > 2π/β_fake > 2π/β_eff): whether the flipped mode
+  grows at the dS rate 2π/β_eff needs mode separation — open.
+
+Net: the mechanism is real and semiclassical — an anti-scrambling epoch
+with exact effective detailed balance, at Susskind's own tomperature —
+but the observer frame is not a Gibbs-like state, and its correlators
+inherit the edge sensitivity of folded contours. Whether a full dS
+dictionary can live on such a frame is precisely the NV-algebra
+question.
+
 ## Verdict
 
 Measured, DSSYK∞ is a fake-temperature scrambler — sine-dilaton's reading,
