@@ -1,0 +1,208 @@
+{
+ "meta": {
+  "description": "Exact disorder statistics on the U(N)/Dirac side: adjoint bilinear B_ij and singlet M_2 moments, c_symmetric ensemble (see exact_wick_dirac.py docstring for derivations and caveats)",
+  "conventions": "dirac.py: sigma^2 = (k!)^2 2^p/Nc^(p-1), k = p/2; channel 'odd' = CP-odd = pipeline 'right' for n=2",
+  "ed_reference": "moments.json (moments_pipeline.py ED ensembles)"
+ },
+ "part1_varB": {
+  "closed_forms": {
+   "var_offdiag": "4 sigma^4 C(Nc-2,k-1) C(Nc-k-1,k) / 4^(p+1) = (k!)^4 C(Nc-2,k-1) C(Nc-k-1,k) / Nc^(2p-2)",
+   "mean_offdiag": "0 (exact)",
+   "mean_diag": "sigma^2 C(Nc-1,k) C(Nc-k-1,k) / 2^(p+1) = E[m2] (Nc-p)/(2Nc)",
+   "fixed_p_rate": "rms(B_ij) -> sqrt(k) k! Nc^-(p-1)/2, same power as Majorana rms ~ 2 p!/sqrt((p-1)!) N^-(p-1)/2"
+  },
+  "enumeration_checks": [
+   {
+    "Nc": 5,
+    "p": 4,
+    "var_exact": 0.003072,
+    "var_enumerated": 0.0030719999999999996,
+    "mean_offdiag_enumerated": 0.0,
+    "mean_diag_exact": 0.096,
+    "mean_diag_enumerated": 0.096
+   },
+   {
+    "Nc": 6,
+    "p": 4,
+    "var_exact": 0.004115226337448559,
+    "var_enumerated": 0.004115226337448559,
+    "mean_offdiag_enumerated": 0.0,
+    "mean_diag_exact": 0.2777777777777778,
+    "mean_diag_enumerated": 0.27777777777777773
+   },
+   {
+    "Nc": 7,
+    "p": 4,
+    "var_exact": 0.004079932681110762,
+    "var_enumerated": 0.004079932681110761,
+    "mean_offdiag_enumerated": 0.0,
+    "mean_diag_exact": 0.5247813411078717,
+    "mean_diag_enumerated": 0.5247813411078717
+   }
+  ],
+  "rows": [
+   {
+    "Nc": 6,
+    "p": 4,
+    "var_offdiag": 0.004115226337448559,
+    "rms_offdiag": 0.06415002990995841,
+    "rms_large_nc_law": 0.19245008972987526,
+    "mean_diag": 0.2777777777777778,
+    "rms_majorana_same_modes": 0.3042903097250923
+   },
+   {
+    "Nc": 8,
+    "p": 4,
+    "var_offdiag": 0.003662109375,
+    "rms_offdiag": 0.06051536478449089,
+    "rms_large_nc_law": 0.12500000000000003,
+    "mean_diag": 0.8203125,
+    "rms_majorana_same_modes": 0.22357950033209664
+   },
+   {
+    "Nc": 10,
+    "p": 4,
+    "var_offdiag": 0.002688,
+    "rms_offdiag": 0.05184592558726288,
+    "rms_large_nc_law": 0.08944271909999159,
+    "mean_diag": 1.5120000000000002,
+    "rms_majorana_same_modes": 0.1713942822850284
+   },
+   {
+    "Nc": 14,
+    "p": 4,
+    "var_offdiag": 0.0014024768591318242,
+    "rms_offdiag": 0.03744965766374673,
+    "rms_large_nc_law": 0.053994924715603895,
+    "mean_diag": 3.126822157434402,
+    "rms_majorana_same_modes": 0.1114945957782679
+   },
+   {
+    "Nc": 20,
+    "p": 4,
+    "var_offdiag": 0.000612,
+    "rms_offdiag": 0.024738633753705965,
+    "rms_large_nc_law": 0.0316227766016838,
+    "mean_diag": 5.814,
+    "rms_majorana_same_modes": 0.06888577501923021
+   },
+   {
+    "Nc": 40,
+    "p": 4,
+    "var_offdiag": 9.885937499999999e-05,
+    "rms_offdiag": 0.009942805187672139,
+    "rms_large_nc_law": 0.011180339887498949,
+    "mean_diag": 15.4220625,
+    "rms_majorana_same_modes": 0.025858010726852135
+   },
+   {
+    "Nc": 10,
+    "p": 8,
+    "var_offdiag": 9.289727999999998e-07,
+    "rms_offdiag": 0.000963832350567255,
+    "rms_large_nc_law": 0.015178932768808221,
+    "mean_diag": 0.018144,
+    "rms_majorana_same_modes": 0.011238747972972791
+   },
+   {
+    "Nc": 14,
+    "p": 8,
+    "var_offdiag": 8.276480445320605e-07,
+    "rms_offdiag": 0.0009097516389279332,
+    "rms_large_nc_law": 0.004675123765231914,
+    "mean_diag": 0.2461346887776352,
+    "rms_majorana_same_modes": 0.004847203290187458
+   },
+   {
+    "Nc": 20,
+    "p": 8,
+    "var_offdiag": 2.2555259999999996e-07,
+    "rms_offdiag": 0.0004749237833589722,
+    "rms_large_nc_law": 0.0013416407864998738,
+    "mean_diag": 1.1904165,
+    "rms_majorana_same_modes": 0.00174849607643165
+   }
+  ],
+  "mean_vanishing_artifact": {
+   "statement": "E[B_ii] = 0 and Var(B_ij) = 0 exactly at Nc = p (every coupling touches every mode); in Majorana units N = 2Nc this is the same (1-2p/N) factor as the p = N/2 artifact of exact_wick.py",
+   "example": {
+    "Nc": 4,
+    "p": 4,
+    "mean_diag": 0.0,
+    "var_offdiag": 0.0
+   }
+  }
+ },
+ "part2_mu0": {
+  "method": "M_2 = sum x_u x_v G_uv; E[mu0] by the three Isserlis pairings over coupling pairs; traces numeric, no ED, no sampling",
+  "exact": {
+   "Nc6": {
+    "odd": 13.82716049382716,
+    "even": 14.320987654320987,
+    "total": 28.148148148148145,
+    "n_pairs": 45
+   },
+   "Nc8": {
+    "odd": 37.32421875,
+    "even": 30.76171875,
+    "total": 68.0859375,
+    "n_pairs": 210
+   }
+  },
+  "vs_moments_json": [
+   {
+    "Nc": 6,
+    "n": 2,
+    "channel": "odd (pipeline 'right')",
+    "mu0_exact": 13.82716049382716,
+    "mu0_ed": 13.996261961514566,
+    "mu0_ed_sem": 1.0698673389874982,
+    "ed_n_inst": 40,
+    "z": -0.1580583512788052
+   },
+   {
+    "Nc": 6,
+    "n": 2,
+    "channel": "even (pipeline 'wrong')",
+    "mu0_exact": 14.320987654320987,
+    "mu0_ed": 14.359451214156206,
+    "mu0_ed_sem": 1.1382927276431403,
+    "ed_n_inst": 40,
+    "z": -0.03379056977273144
+   },
+   {
+    "Nc": 8,
+    "n": 2,
+    "channel": "odd (pipeline 'right')",
+    "mu0_exact": 37.32421875,
+    "mu0_ed": 36.94493870220065,
+    "mu0_ed_sem": 1.246238243250355,
+    "ed_n_inst": 40,
+    "z": 0.30433992043939795
+   },
+   {
+    "Nc": 8,
+    "n": 2,
+    "channel": "even (pipeline 'wrong')",
+    "mu0_exact": 30.76171875,
+    "mu0_ed": 30.513121230216314,
+    "mu0_ed_sem": 1.1231943398572908,
+    "ed_n_inst": 40,
+    "z": 0.22133081601468224
+   }
+  ]
+ },
+ "part2_mu2": {
+  "exact_nc6": {
+   "odd": 11.12025605852766,
+   "even": 13.461362597165063,
+   "n_pairs": 45
+  },
+  "ratio_of_means_w2_nc6": {
+   "odd": 0.48253968253968244,
+   "even": 0.5639846743295018,
+   "caveat": "ratio of exact means; moments.json w2 is a mean of per-instance ratios -- differs at O(relVar), do not compare within SEM"
+  },
+  "nc8_cost_note": "E[mu2] at Nc = 8 needs the irreducible triple sum S_AB ~ n_pairs^3 = 210^3 ~ 9.3e6 evaluations, each ~6 dense 256x256 products (~2-4 ms): order days on this machine per channel.  Delivered exactly at Nc = 6 (45^3, ~20 s) instead; Nc = 8 mu2 stays with the ED pipeline."
+ }
+}

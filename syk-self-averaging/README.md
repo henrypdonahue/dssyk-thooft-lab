@@ -99,7 +99,8 @@ to their scripts.
 | `syk.py` | sparse Jordan–Wigner operators (slow reference builders) |
 | `pauli_strings.py` | bitwise Hamiltonian assembly (10–100×, equivalence-tested) |
 | `dirac.py` | complex SYK: [H,Q] = 0, the Mn tower, unitary CP machinery |
-| `exact_wick.py` | closed-form Eq. 3.28 statistics, beyond ED |
+| `exact_wick.py` | closed-form Eq. 3.28 statistics, beyond ED; plus exact E[m4], Var(m4): relVar(m4) = 4 relVar(m2), the second self-averaging anchor |
+| `exact_wick_dirac.py` | the Dirac-side counterpart: exact Var(B_ij) for U(N) emergence (rms ~ Nc^(−(p−1)/2)), and ED-free exact singlet-moment anchors |
 | `mn_spectroscopy.py` | CP-resolved Mn spectral functions |
 | `moments_pipeline.py` | CP-resolved moment invariants with statistics |
 | `moments_fast.py` | charge-sector-blocked reimplementation (8x+ faster, dense-checked to 1e-15): the Nc = 12 production point and the fixed-p trend figure |

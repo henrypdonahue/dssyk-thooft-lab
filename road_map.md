@@ -368,6 +368,16 @@ independent; the tiers gate the ones that aren't.
   rung-24 discriminating computation; needs the two-sided constrained
   chord extension).
 
+- ✅ **Branch landings** (2026-08-17, each agent-reviewed before merge):
+  ws/moments-fast (charge-sector-blocked Dirac moments pipeline, 8×+
+  measured, dense-checked 5e-15, the Nc = 12 production point),
+  ws/wick-m4 (exact E[m4]/Var(m4): relVar(m4) = 4·relVar(m2)(1+o(1)) —
+  the second self-averaging anchor; verified by independent re-derivation
+  + exact enumeration to 1e-13 + MC), and ws/wick-dirac (exact Dirac-side
+  U(N)-emergence rate Var(B_ij), rms ~ Nc^{-(p-1)/2}, MC-verified ≤1.3σ;
+  ED-free singlet-moment anchors). All three prior-session worktree
+  branches are now merged and deleted.
+
 ### Tier 0 — Hygiene (hours; do immediately)
 
 1. **`git init` and commit.** The repo has a `.gitignore` but is not a git repository.

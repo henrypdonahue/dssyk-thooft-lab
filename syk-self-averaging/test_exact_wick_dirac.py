@@ -104,7 +104,7 @@ def test_instance_quadratic_form_identity():
 
 
 def test_large_nc_rate_and_stable_log():
-    """Fixed-p law: Var -> k (k!)^3 / Nc^(p-1); and the lgamma form of
+    """Fixed-p law: Var -> k (k!)^2 / Nc^(p-1); and the lgamma form of
     ln rms agrees with the direct closed form."""
     p, k = 4, 2
     for Nc in [10, 20, 40]:

@@ -64,5 +64,5 @@ python3 chord_moments.py --run  # exact N = inf moments    (~1 s)
 python3 chord_fold.py        # the fold at N = inf         (~30 s)
 python3 signflip_probe.py    # the antipodal map            (~1 min)
 python3 signflip_probe.py --deep  # its deep campaign       (~20 s)
-pytest -q                    # 162 tests
+pytest -q                    # 165 tests
 ```
