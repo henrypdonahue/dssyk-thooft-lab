@@ -338,12 +338,23 @@ independent; the tiers gate the ones that aren't.
   quantitative θ↔v tie to their (1.7) is untested — open); MSS
   flat-space owes the
   sign-flipping map, and the fold is now excluded in-model).
+- ✅ **13/24 probe** (2026-08-17): `duality/signflip_probe.py` — the first
+  candidate tomperature map that works: the antipodal half-fake-period
+  shift (Δ = π/v; NV's ±iβ/4 dressing, geometrically) flips the OTOC sign
+  EXACTLY in the closed form (a(Δ) = a(0)e^{−ivΔ}, Re a: −1 → +1, every
+  temperature; shifted 2-pt finite and positive, margin π/2 from the
+  pole) and, exact-in-λ, for λ ≤ 1.6 (absent at λ = 2.0; unshifted
+  control scrambles at every λ; truncation-clean). Necessary, not
+  sufficient — the sign-gate of the tomperature map is now OPEN
+  semiclassically; the NV dressed-OTOC computation remains the closer.
 - ⬜ Open: 18 remainder (the tower extraction itself, now located at fixed
   p, λ→0 — a 1/N computation from the double-scaled viewpoint), 17 proper
-  (the O(1/q) residues — theory), 13 remainder (tomperature map, sign-
-  gated), 20, 21 theory half (JT-dS ε = 3/(8S)), 22, 27 sharpening (ln N
-  onset, beyond ED); NV-sector OTOC sign (the rung-24 discriminating
-  computation; needs the two-sided constrained chord extension).
+  (the O(1/q) residues — theory), 13 remainder (tomperature map: the
+  antipodal shift passes the sign gate semiclassically, see above; the
+  full dictionary is open), 20, 21 theory half (JT-dS ε = 3/(8S)), 22,
+  27 sharpening (ln N onset, beyond ED); NV-sector OTOC sign (the
+  rung-24 discriminating computation; needs the two-sided constrained
+  chord extension).
 
 ### Tier 0 — Hygiene (hours; do immediately)
 

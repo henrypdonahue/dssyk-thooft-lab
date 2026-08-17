@@ -15,7 +15,7 @@ The paper: [2607.05678v1.pdf](2607.05678v1.pdf).
 |---|---|---|
 | [thooft-target/](thooft-target) | the yardstick: 't Hooft meson spectrum (12+ digits), condensate, vacuum energy | 42 |
 | [syk-self-averaging/](syk-self-averaging) | the SYK-side claims: self-averaging, the Mn/CP sector, QED and baryon campaigns, freeness, singlet moments | 103 |
-| [duality/](duality) | the dictionary and fingerprints, the exact N = ∞ chord engine, the OTOC/fold laboratory, the KMS discriminator | 151 |
+| [duality/](duality) | the dictionary and fingerprints, the exact N = ∞ chord engine, the OTOC/fold laboratory, the KMS discriminator | 154 |
 
 Install once: `pip install -e ".[dev]"`. Then `make test` (about 3 minutes)
 reruns every assertion.

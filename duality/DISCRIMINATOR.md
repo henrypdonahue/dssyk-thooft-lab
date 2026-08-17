@@ -49,15 +49,38 @@ untested here — a naive chord-saddle check does not close under the
 β_chord bridge. Open item. CK pressure attaches only to this program's
 further dS3 reinterpretation, not to the black-hole reading.
 
+## A candidate map that works — semiclassically (`signflip_probe.py`)
+
+One shift does flip the sign: displace the probe pair by **half the fake
+period** (Δ = π/v in Euclidean angle) — an antipodal shift on the fake
+disk, and geometrically what NV's ±i β/4 dressing does. Measured
+(`signflip_probe.json`):
+
+- **Closed form: the flip is exact.** The growth coefficient obeys
+  a(Δ) = a(0)·exp(−ivΔ), so Re a goes −1 → +1 at Δ = π/v, at every
+  temperature tested. The shifted 2-pt stays finite and positive; the
+  antipodal point sits margin π/2 from the propagator pole.
+- **Exact in λ: the flip is semiclassical.** The antipodal trend flips to
+  anti-scrambling for λ ≤ 1.6 and does not flip at λ = 2.0 (this
+  configuration and window), while the unshifted control scrambles at
+  every λ. λ-corrections oppose the mechanism at strong coupling.
+
+Honesty: a sign flip under a contour shift is a *necessary* condition for
+this candidate map, not a dictionary. The full correlator suite must stay
+consistent, and the algebra story — why the observer's operators live at
+the antipodal point — is exactly NV's construction to complete. But this
+is the first map tested in this repo that produces the dS sign in the
+exact theory anywhere in parameter space.
+
 ## Verdict
 
 Measured, DSSYK∞ is a fake-temperature scrambler — sine-dilaton's reading,
-qualitatively. Making it a *de Sitter* hologram requires either a
-sign-flipping state/time map that no current proposal supplies (the fold
-is excluded in-model), or a demonstration that constrained dressing evades
-the chaos bound (NV; computable, unpublished). This axis and the
-meson-tower axis are independent: a proposal can pass one and fail the
-other.
+qualitatively. Making it a *de Sitter* hologram requires a sign-flipping
+state/time map. The fold is excluded in-model; the antipodal
+half-fake-period shift now works semiclassically (above) and connects
+directly to NV's dressing — whose dressed OTOC sign remains the
+discriminating computation. This axis and the meson-tower axis are
+independent: a proposal can pass one and fail the other.
 
 *Caveat: NV and sine-dilaton statements are quoted from their papers, not
 re-derived. The repo-side tested content is Re a = −1 and the fold

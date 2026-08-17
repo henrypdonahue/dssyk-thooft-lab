@@ -50,6 +50,10 @@ Built from `thooft-target/reference_spectrum.json`. Both are parameter-free.
   chaos-bound no-go and this repo's data. Sine-dilaton's black-hole
   reading is qualitatively consistent with the data; its quantitative
   θ ↔ v tie is untested.
+- `signflip_probe.py` — the first candidate dS map that works: an
+  antipodal half-fake-period shift flips the OTOC sign exactly in the
+  closed form and, in the exact theory, for λ ≤ 1.6. Necessary, not
+  sufficient; connects to NV's dressing.
 
 ```bash
 python3 dictionary.py        # print the yardstick in both conventions
@@ -57,5 +61,5 @@ python3 antiscrambling.py    # the OTOC sign table + fold map
 python3 chord.py --spectra   # the lambda->0 spectral scan (~4 min)
 python3 chord_moments.py --run  # exact N = inf moments    (~1 s)
 python3 chord_fold.py        # the fold at N = inf         (~30 s)
-pytest -q                    # 151 tests
+pytest -q                    # 154 tests
 ```
