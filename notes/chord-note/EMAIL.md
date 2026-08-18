@@ -17,7 +17,7 @@ result seems worth sending before your meson-mass computation appears.
 Using the exact chord solution of double-scaled SYK, I find — and can
 prove — that the singlet bilinear channels Aₙ = Σᵢ ψᵢ (ad_H)ⁿ ψᵢ carry
 **zero propagating spectral weight at N = ∞, at every λ and every matter
-weight**. The mechanism: in the pair channel the fermion pair factors
+weight** (per flavor pair — the object the chord expansion computes). The mechanism: in the pair channel the fermion pair factors
 through the zero-chord sector as a dressed propagator
 C(m) = close∘T_Mᵐ∘open, and a three-term recursion with scalar
 coefficients forces C(m) to be a polynomial in the chord transfer matrix
@@ -27,7 +27,8 @@ conserved charge is X̂₂ = (1−q^Δ)²T² + (1−q^(2Δ)). Random matter
 operators propagate normally (q^(Δn̂) does not commute with T): the
 conservation is specific to bilinears built from H's own couplings —
 that is, your Mₙ tower. Finite-N diagonalization shows the channels
-turning on along fixed p, λ → 0.
+turning on along fixed p, λ → 0. The derivation is a four-page note in
+the repository; the recursion takes minutes to check.
 
 The consequence: the meson tower is a 1/N effect, invisible at every
 order of the double-scaled expansion. The spectrum match must be
@@ -43,7 +44,7 @@ scans, and — taking the static-patch motivation seriously — a
 quantitative statement of what the tomperature map must do at OTOC level
 (flip the scrambling sign; the Euclidean fold does not do this, even at
 N = ∞). The engine is validated four independent ways, and everything is
-asserted by a test suite (`make test`, 361 fast tests, about a minute).
+asserted by a test suite (`make test`, 362 fast tests, about a minute).
 
 https://github.com/henrypdonahue/dssyk-thooft-lab
 

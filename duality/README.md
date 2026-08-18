@@ -67,5 +67,5 @@ python3 chord_charges.py     # the conserved-channel theorem (~1 s)
 python3 chord_fold.py        # the fold at N = inf         (~30 s)
 python3 signflip_probe.py    # the antipodal map            (~15 s)
 python3 signflip_probe.py --deep  # its deep campaign       (~20 s)
-pytest -q                    # 183 tests
+pytest -q                    # 184 tests
 ```

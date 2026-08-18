@@ -164,12 +164,27 @@ def channel_moments(q: float, delta_psi: float, n: int) -> dict:
 
 def odelta_moments(q: float, delta: float) -> dict:
     """Closed forms for the random-operator O_Delta channel (checked
-    against the engine in the tests): mu_2 = 2(1-qt),
-    mu_4 = 2(2+q) + 6 - 8(2+q) qt + 6(1+q) qt^2."""
+    against the engine in the tests), qt = q^Delta:
+
+        mu_2 = 2 (1 - qt)
+        mu_4 = 2(2+q) + 6 - 8(2+q) qt + 6(1+q) qt^2
+        mu_6 = (70 + 42q + 6q^2 + 2q^3)
+               - 4 (35 + 38q + 14q^2 + 3q^3) qt
+               + 30 (1+q)(3 + 2q + q^2) qt^2
+               - 20 (1+q)(1 + q + q^2) qt^3
+
+    Structural pins: mu_k(qt = 1) = 0 identically (the identity operator),
+    and mu_k(qt -> 0) = sum_s (-1)^s C(k,s) m_{k-s} m_s with m_k the
+    Touchard-Riordan chord moments (the fully blocking matter chord
+    factorizes the correlator through the vacuum)."""
     qt = q ** delta
     mu2 = 2.0 * (1.0 - qt)
     mu4 = 2.0 * (2.0 + q) + 6.0 - 8.0 * (2.0 + q) * qt + 6.0 * (1.0 + q) * qt * qt
-    return dict(mu0=1.0, mu2=mu2, mu4=mu4, w2=mu2,
+    mu6 = ((70.0 + 42.0 * q + 6.0 * q * q + 2.0 * q ** 3)
+           - 4.0 * (35.0 + 38.0 * q + 14.0 * q * q + 3.0 * q ** 3) * qt
+           + 30.0 * (1.0 + q) * (3.0 + 2.0 * q + q * q) * qt * qt
+           - 20.0 * (1.0 + q) * (1.0 + q + q * q) * qt ** 3)
+    return dict(mu0=1.0, mu2=mu2, mu4=mu4, mu6=mu6, w2=mu2,
                 kurt=(mu4 / mu2 ** 2) if mu2 != 0 else float('nan'),
                 kurt_semiclassical=3.0 + 1.0 / delta)
 
@@ -206,10 +221,12 @@ def run(p: int = 4,
         q = q_of_lambda(1.0)
         for n in (1, 2, 3, 4, 5):
             ch = channel_moments(q, dp, n)
-            dpsi_scan.append(dict(lam=1.0, delta_psi=dp, n=n,
-                                  cancellation2=ch['cancellation2'],
-                                  cancellation6=ch['cancellation6'],
-                                  conserved=ch['conserved']))
+            dpsi_scan.append(dict(
+                lam=1.0, delta_psi=dp, n=n,
+                cancellation2=ch['cancellation2'],
+                cancellation4=abs(ch['mu4']) / max(ch['gross4'], 1e-300),
+                cancellation6=ch['cancellation6'],
+                conserved=ch['conserved']))
     payload = dict(
         provenance="chord_moments.py -- rung 15 proper: exact N=infinity "
                    "T_B=infinity singlet-channel spectral moments from the "

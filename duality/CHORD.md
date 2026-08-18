@@ -59,10 +59,10 @@ binomial expansion verified as a per-instance operator identity against
 dense ED (`test_mn_majorana.py`):
 
 > **Measured: μ₂ = μ₄ = μ₆ = 0 to machine precision (relative to the
-> pre-cancellation gross sum), for n = 1 … 5, at every λ in [0.1, 4] and
-> across the matter-weight scan Δψ ∈ [0.1, 1] (committed in
-> `chord_moments.json`). Proven: every spectral moment μ_k, k ≥ 1, of
-> every A_n pair channel vanishes at N = ∞.** The mechanism: in a
+> pre-cancellation gross sum), for n = 1 … 5, on the λ grid [0.1, 4] at
+> Δψ = ¼ and across the matter-weight scan Δψ ∈ [0.1, 1] at λ = 1
+> (committed in `chord_moments.json`). Proven: every spectral moment
+> μ_k, k ≥ 1, of every A_n pair channel vanishes at N = ∞.** The mechanism: in a
 > sequential pair word the fermion pair factors through the zero-chord
 > sector as a dressed propagator C(m) = close∘T_Mᵐ∘open, and a
 > three-term recursion with scalar coefficients (close_j T_M =

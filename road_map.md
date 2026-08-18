@@ -361,7 +361,12 @@ independent; the tiers gate the ones that aren't.
   shapes, no Gibbs/sech form, no fake-period recurrence — ratio
   identities survive, shapes don't); rate extraction mode-contaminated.
 - ⬜ Open: 18 remainder (the tower extraction itself, now located at fixed
-  p, λ→0 — a 1/N computation from the double-scaled viewpoint), 17 proper
+  p, λ→0 — a 1/N computation from the double-scaled viewpoint; with the
+  conserved-channel theorem in hand, the sharpest tractable first bite is
+  the EXACT finite-N disorder-averaged pair moments of A_n by Wick — a
+  3-pairing Isserlis sum over three coupling pairs, exact_wick-style, no
+  ED noise — which would exhibit the measured approach to the proven
+  N = ∞ zero), 17 proper
   (the O(1/q) residues — theory), 13 remainder (tomperature map: the
   antipodal shift passes the sign gate semiclassically, see above; the
   full dictionary is open), 20, 21 theory half (JT-dS ε = 3/(8S)), 22,

@@ -57,13 +57,23 @@ def test_an_conservation_any_matter_weight(dpsi):
 @pytest.mark.parametrize("q,delta", [(0.5, 0.25), (0.8, 0.5), (0.3, 1.0)])
 def test_odelta_closed_forms(q, delta):
     """The propagating O_Delta channel: engine Lehmann moments equal the
-    closed forms mu_2 = 2(1-qt), mu_4 = 2(2+q)+6-8(2+q)qt+6(1+q)qt^2."""
-    om, w = spectral_lines(q, delta, 40)
-    mu2 = float(np.sum(np.real(w) * om ** 2))
-    mu4 = float(np.sum(np.real(w) * om ** 4))
+    closed forms mu_2, mu_4, mu_6 of odelta_moments."""
+    om, w = spectral_lines(q, delta, 60)
     cf = odelta_moments(q, delta)
-    assert mu2 == pytest.approx(cf["mu2"], rel=1e-10)
-    assert mu4 == pytest.approx(cf["mu4"], rel=1e-10)
+    for k in (2, 4, 6):
+        mu = float(np.sum(np.real(w) * om ** k))
+        assert mu == pytest.approx(cf[f"mu{k}"], rel=1e-9), k
+
+
+def test_odelta_mu6_structural_pins():
+    """mu_6(qt = 1) = 0 identically, and mu_6(qt -> 0) equals the
+    vacuum-factorized value 2 m_6 + 30 m_4 m_2 with the Touchard-Riordan
+    chord moments m_2 = 1, m_4 = 2 + q, m_6 = 5 + 6q + 3q^2 + q^3."""
+    for q in (0.1, 0.5, 0.9):
+        assert odelta_moments(q, 1e-12)["mu6"] == pytest.approx(0.0, abs=1e-8)
+        m4, m6 = 2 + q, 5 + 6 * q + 3 * q ** 2 + q ** 3
+        big = odelta_moments(q, 400.0)["mu6"]
+        assert big == pytest.approx(2 * m6 + 30 * m4, rel=1e-12)
 
 
 def test_odelta_kurtosis_semiclassical_limit():
@@ -100,7 +110,8 @@ def test_committed_moments_json():
     assert len(data["dpsi_scan"]) >= 20
     for r in data["dpsi_scan"]:
         assert r["conserved"]
-        assert r["cancellation2"] < 1e-12 and r["cancellation6"] < 1e-12
+        for key in ("cancellation2", "cancellation4", "cancellation6"):
+            assert r[key] < 1e-12, (r["n"], r["delta_psi"], key)
 
 
 def test_ed_bench_scope():

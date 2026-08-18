@@ -98,16 +98,19 @@ def test_xhat_commutes_with_T(q, dpsi):
 @pytest.mark.parametrize("q,dpsi", [(0.5, 0.25), (0.85, 0.25), (0.2, 0.7)])
 def test_all_moments_vanish_word_level(q, dpsi):
     """The theorem through the INDEPENDENT engine route: the chord_moments
-    word assembly gives |mu_k|/gross <= 1e-12 for n <= 5, k = 1..6, each
-    operator ordering separately (odd k included -- stronger than the
-    original mu_2/mu_4 discovery)."""
+    word assembly gives |mu_k|/gross <= 1e-12 for n <= 5, even k <= 6,
+    each operator ordering separately.  (Odd k vanishes trivially -- every
+    T4 word then has an odd H-count, so each term is zero by parity; only
+    even k carries the cancellation content.)  A nonzero gross magnitude
+    is asserted so the check cannot pass vacuously."""
     from chord_moments import MomentTable, _mu_ordered, _mu_ordered_swapped
     tab = MomentTable(q, dpsi)
     for n in range(1, 6):
-        for k in range(1, 7):
+        for k in (2, 4, 6):
             for fn in (_mu_ordered, _mu_ordered_swapped):
                 v, g = fn(tab, n, k)
-                assert abs(v) <= 1e-12 * max(g, 1e-300), (n, k, fn.__name__)
+                assert g > 0.1, (n, k)          # genuine cancellation, not 0/0
+                assert abs(v) <= 1e-12 * g, (n, k, fn.__name__)
 
 
 def test_motzkin_low_orders_by_hand():

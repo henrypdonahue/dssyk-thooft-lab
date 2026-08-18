@@ -14,11 +14,11 @@ Full assessment, task ladder, and progress log: [road_map.md](road_map.md).
 |---|---|---|
 | [thooft-target/](thooft-target) | the yardstick: 't Hooft meson spectrum (12+ digits), condensate, vacuum energy | 42 |
 | [syk-self-averaging/](syk-self-averaging) | the SYK-side claims: self-averaging, the Mn/CP sector, QED and baryon campaigns, freeness, singlet moments | 146 |
-| [duality/](duality) | the dictionary and fingerprints, the exact N = ∞ chord engine, the conserved-channel theorem, the OTOC/fold laboratory, the KMS discriminator | 183 |
+| [duality/](duality) | the dictionary and fingerprints, the exact N = ∞ chord engine, the conserved-channel theorem, the OTOC/fold laboratory, the KMS discriminator | 184 |
 
-Install once: `pip install -e ".[dev]"`. Then `make test` (361 tests,
+Install once: `pip install -e ".[dev]"`. Then `make test` (362 tests,
 about a minute) reruns every fast assertion; `make test-all` adds the
-slow ED sweeps (371 total).
+slow ED sweeps (372 total).
 
 ## Main results
 
@@ -26,8 +26,8 @@ slow ED sweeps (371 total).
   singlet channels carry zero propagating weight at N = ∞: the chord
   representation of every A_n = Σψ(ad_H)ⁿψ is a polynomial in the chord
   Hamiltonian (a three-term recursion proves it; A₁ = −2pH is the n = 1
-  case), so every spectral moment vanishes — measured to n = 5 and μ₆ at
-  every λ and matter weight. The tower is a 1/N effect. It lives at fixed
+  case), so every spectral moment vanishes — measured to n = 5 and μ₆ on
+  the λ and matter-weight grids. The tower is a 1/N effect. It lives at fixed
   p, λ → 0 — exactly where symmetry emergence is weakest. The paper's
   "best test" is now located. → [duality/CHORD.md](duality/CHORD.md)
 - **Self-averaging holds exactly**, sharper than the paper claims
