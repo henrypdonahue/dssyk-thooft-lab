@@ -81,8 +81,17 @@ GAMMA_E = 0.5772156649015329
 def I_alpha(alpha: float) -> float:
     """I(alpha) = (1/4) Int dt/t^2 (sinh2t - 2t)/[cosh t (alpha sinh t
     + t cosh t)]; even integrand, near-singular ~ 4/(t^2 + 3a) at small t
-    when a = 1 + alpha -> 0 (handled by an explicit small-t split)."""
+    when a = 1 + alpha -> 0 (handled by an explicit small-t split).
+
+    Validated domain: a = 1 + alpha >= 1e-6 (measured accuracy 7e-14 at
+    alpha = 0 degrading to ~2e-9 by a = 1e-3; below a ~ 1e-6 the split
+    quadrature silently loses digits -- refuse rather than degrade)."""
     a = 1.0 + alpha
+    if 0 < a < 1e-6:
+        raise ValueError(
+            f"I_alpha: a = 1 + alpha = {a:.2e} is below the validated "
+            "quadrature floor 1e-6; use the Zhitnitsky asymptotic "
+            "I ~ pi/sqrt(3 a) instead")
 
     def integrand(t):
         if t < 1e-6:

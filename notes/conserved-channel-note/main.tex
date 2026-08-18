@@ -1,0 +1,289 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\ad}{\operatorname{ad}}
+\newcommand{\cl}{\mathrm{cl}}
+\newcommand{\op}{\mathrm{op}}
+
+\title{Conserved singlet channels in double-scaled SYK:\\
+the bilinear tower cannot propagate at $N=\infty$}
+
+% TODO(author): confirm author line and affiliation before circulating.
+\author{Henry Donahue}
+\date{August 2026 --- draft, not for distribution}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+In the proposed duality between double-scaled SYK at infinite temperature and
+the 't~Hooft model [arXiv:2607.05678], the meson tower is to be matched
+against correlators of the singlet bilinears
+$A_n=\sum_i\psi_i(\ad_H)^n\psi_i$. We prove that at strict double scaling
+($N=\infty$, any $\lambda$) these channels cannot propagate: in the chord
+representation, the insertion of $A_n$ into a pair correlator acts as a
+\emph{polynomial in the chord Hamiltonian}, so every spectral moment
+$\mu_k$, $k\ge1$, of every $A_n$ pair channel vanishes identically --- at
+every coupling and every matter weight. The mechanism is a closed three-term
+recursion for the ``dressed propagator'' $C(m)=\cl\circ T_M^m\circ\op$
+(open a matter chord, apply the one-particle transfer matrix $m$ times,
+close it), whose coefficients are scalars; $C(m)$ is the Motzkin-path
+polynomial of $T$ with flat weight $q^{\Delta+j}T$, down weight $[j]_q$ and
+up weight $1-q^{2\Delta+j}$ at height $j$. The first conserved charges are
+$\widehat A_1=-(1-q^{\Delta})\,T$ (the chord image of the exact identity
+$A_1=-2pH$) and $\widehat A_2=(1-q^{\Delta})^2T^2+(1-q^{2\Delta})$. By
+contrast a random matter operator inserts $q^{\Delta\hat n}$, which does not
+commute with $T$ and therefore propagates. Consequently the meson tower of
+the proposed duality is a $1/N$ effect, invisible at every order of the
+double-scaled expansion; the quantitative spectrum match must be performed
+at fixed $p$, $\lambda\to0$, where the emergent gauge symmetry is only
+polynomially accurate. Every statement is machine-verified in an
+accompanying repository.
+\end{abstract}
+
+\section{Setting and statement}
+
+Double-scaled SYK ($N$ Majorana fermions, $H=i^{p/2}\sum J\,\psi^p$,
+$\lambda_{\rm chord}=2p^2/N$ fixed, $q=e^{-\lambda_{\rm chord}}$) is solved
+at $N=\infty$ by chord combinatorics \cite{BINT,BM}. Ensemble-averaged
+traces reduce to amplitudes on the chord Hilbert space
+$\{\,|n\rangle\,\}_{n\ge0}$, with the chord Hamiltonian acting (in the
+formal basis, units $\langle H^2\rangle=1$) as
+\begin{equation}
+T\,|n\rangle=|n+1\rangle+[n]_q\,|n-1\rangle,
+\qquad [n]_q=\frac{1-q^n}{1-q}.
+\end{equation}
+A matter operator of dimension $\Delta$ opens a matter chord; while it is
+open the Hamiltonian acts by the one-particle transfer matrix $T_M$ on
+states $|n_0,n_1\rangle$ ($n_0$ H-chords opened before the matter chord,
+$n_1$ after):
+\begin{equation}
+T_M\,|n_0,n_1\rangle=|n_0,n_1{+}1\rangle+[n_1]\,|n_0,n_1{-}1\rangle
++q^{\Delta+n_1}[n_0]\,|n_0{-}1,n_1\rangle ,
+\label{eq:TM}
+\end{equation}
+the three terms being: open a new H-chord; close one opened after the
+matter chord; close one opened before it (crossing the matter chord, weight
+$q^{\Delta}$, and the $n_1$ later chords, weight $q^{n_1}$)
+\cite{BINT,BM}. The matter chord itself opens and closes via
+\begin{equation}
+\op\,|n\rangle=|n,0\rangle,
+\qquad
+\cl\,|n_0,n_1\rangle=q^{\Delta n_1}\,|n_0+n_1\rangle .
+\end{equation}
+
+For flavors $i\neq j$, the ensemble average of a \emph{sequential} pair
+word factorizes through the zero-chord sector,
+\begin{equation}
+\Big\langle\Tr\big[\,H^{a}\psi_i H^{b}\psi_i\,H^{c}\psi_j H^{d}\psi_j\big]
+\Big\rangle_J
+=\langle0|\;T^{a}\,C(b)\;T^{c}\,C(d)\;|0\rangle,
+\qquad
+C(m):=\cl\circ T_M^{\,m}\circ\op ,
+\label{eq:factor}
+\end{equation}
+with $\Delta=\Delta_\psi$ the single-fermion weight ($\Delta_\psi=1/p$ for
+the leading chord weight; nothing below depends on its value). We call
+$C(m)$ the \emph{dressed propagator}: it is the two-point insertion
+$\psi\,H^m\,\psi$ seen from the zero-chord sector.
+
+The channels of interest are the singlet bilinears of \cite{MSS2607},
+\begin{equation}
+A_n=\sum_i\psi_i(\ad_H)^n\psi_i,
+\qquad
+(\ad_H)^n\psi=\sum_{r=0}^{n}(-1)^r\binom{n}{r}H^{\,n-r}\psi H^{\,r}.
+\end{equation}
+By \eqref{eq:factor} and linearity, inserting $A_n$ (per flavor pair) acts
+on the chord line as
+\begin{equation}
+\widehat A_n=\sum_{r=0}^{n}(-1)^r\binom{n}{r}\,C(n-r)\,T^{\,r}
+\;=\;\frac{d^n}{dt^n}\Big[\,C(t)\,e^{-tT}\Big]_{t=0},
+\qquad C(t):=\cl\,e^{tT_M}\op ,
+\label{eq:Ahat}
+\end{equation}
+and the spectral moments of the pair channel are
+\begin{equation}
+\mu_k \;=\; \big\langle\Tr\big[\ad_H^k(X)\,Y\big]\big\rangle_J
+\;=\;\langle0|\,\ad_T^k\big(\widehat A_n\big)\,\widehat B_n\,|0\rangle ,
+\label{eq:moments}
+\end{equation}
+where $X=\psi_i(\ad^n\psi_i)$, $Y=X^\dagger$ on flavor $j$, and
+$\widehat B_n$ is the chord image of the $Y$ block (its form is irrelevant
+below). Our result:
+
+\begin{theorem}[conserved channels]
+$C(m)$ is a polynomial in $T$ for every $m$. Hence $\widehat A_n$ is a
+polynomial in $T$, $\ad_T^k(\widehat A_n)=0$, and every moment
+\eqref{eq:moments} vanishes for every $n\ge1$ and every $k\ge1$ --- at
+every $q\in[0,1)$ and every matter weight $\Delta$.
+\end{theorem}
+
+\section{The recursion}
+
+For $j\ge0$ define the $j$-fold closes
+\begin{equation}
+\cl_j\,|n_0,n_1\rangle
+=[n_1][n_1{-}1]\cdots[n_1{-}j{+}1]\;q^{\Delta(n_1-j)}\,|n_0+n_1-j\rangle ,
+\qquad \cl_0=\cl ,
+\end{equation}
+(zero if $n_1<j$).
+
+\begin{lemma}[three-term recursion, scalar coefficients]
+\begin{equation}
+\cl_j\circ T_M
+=q^{\Delta+j}\;T\circ \cl_j
+\;+\;[j]_q\;\cl_{j-1}
+\;+\;\big(1-q^{2\Delta+j}\big)\;\cl_{j+1}.
+\label{eq:rec}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Apply both sides to $|n_0,n_1\rangle$ and match the two chord-number
+sectors. Write $[n_1]^{(j)}=[n_1]\cdots[n_1{-}j{+}1]$ and
+$G=n_0+n_1$. Raising sector ($|G-j+1\rangle$): the left side receives only
+the open term of \eqref{eq:TM}, giving $[n_1{+}1]^{(j)}q^{\Delta(n_1+1-j)}$;
+the right side gives $q^{\Delta+j}[n_1]^{(j)}q^{\Delta(n_1-j)}$ from
+$T\,\cl_j$ plus $c_j\,[n_1]^{(j-1)}q^{\Delta(n_1-j+1)}$ from $\cl_{j-1}$.
+Using $[n_1{+}1]^{(j)}=[n_1{+}1]\,[n_1]^{(j-1)}$ and
+$[n_1]^{(j)}=[n_1]^{(j-1)}[n_1{-}j{+}1]$, the matching condition is
+\begin{equation}
+c_j=[n_1{+}1]-q^{\,j}\,[n_1{-}j{+}1]
+=\frac{(1-q^{n_1+1})-q^j(1-q^{n_1-j+1})}{1-q}=[j]_q ,
+\end{equation}
+independent of $n_1$. Lowering sector ($|G-j-1\rangle$): the left side
+receives the two close terms of \eqref{eq:TM},
+$[n_1]^{(j+1)}q^{\Delta(n_1-1-j)}+q^{\Delta+n_1}[n_0][n_1]^{(j)}q^{\Delta(n_1-j)}$;
+on the right, $T\,\cl_j$ contributes
+$q^{\Delta+j}[n_1]^{(j)}\big([n_1{-}j]+q^{\,n_1-j}[n_0]\big)q^{\Delta(n_1-j)}$
+(using $[G-j]=[n_1{-}j]+q^{\,n_1-j}[n_0]$) and $\cl_{j+1}$ contributes
+$d_j\,[n_1]^{(j+1)}q^{\Delta(n_1-j-1)}$. The $[n_0]$ terms cancel
+identically, and with $[n_1]^{(j+1)}=[n_1]^{(j)}[n_1{-}j]$ the remaining
+condition is $q^{-\Delta}=q^{\Delta+j}+d_j\,q^{-\Delta}$, i.e.
+$d_j=1-q^{2\Delta+j}$, again independent of $n_1$ (and of $n_0$).
+\end{proof}
+
+Iterating \eqref{eq:rec} from $\cl_0$, every application of $T_M$ replaces
+$\cl_j$ by a combination of $\cl_{j'}$ with prefactors that are scalars or
+scalar multiples of $T$ acting on the left. Since
+$\cl_{j}\circ\op=\delta_{j0}$, projecting onto $j=0$ after $m$ steps gives
+\begin{equation}
+\boxed{\;C(m)=P_m(T)\;}
+\end{equation}
+with $P_m$ the \emph{Motzkin-path polynomial}: sum over paths
+$0\to0$ of length $m$ in the auxiliary height $j$, a flat step at height
+$j$ contributing $q^{\Delta+j}\,T$, a down step $[j]_q$, an up step
+$1-q^{2\Delta+j}$. Equivalently, $\sum_m P_m(T)\,t^m$ is the $(0,0)$
+resolvent of the auxiliary tridiagonal operator --- the continued fraction
+\begin{equation}
+\sum_{m\ge0}P_m(T)\,t^m=
+\cfrac{1}{1-t\,q^{\Delta}T-
+ \cfrac{t^2\,(1-q^{2\Delta})[1]}{1-t\,q^{\Delta+1}T-
+  \cfrac{t^2\,(1-q^{2\Delta+1})[2]}{1-\cdots}}} \; .
+\end{equation}
+The first cases are
+\begin{equation}
+C(0)=1,\qquad
+C(1)=q^{\Delta}\,T,\qquad
+C(2)=q^{2\Delta}\,T^2+\big(1-q^{2\Delta}\big),
+\end{equation}
+and from \eqref{eq:Ahat}
+\begin{equation}
+\widehat A_1=-(1-q^{\Delta})\,T,
+\qquad
+\widehat A_2=(1-q^{\Delta})^2\,T^2+\big(1-q^{2\Delta}\big).
+\end{equation}
+$\widehat A_1\propto T$ is the $N=\infty$ image of the finite-$N$ operator
+identity $A_1=-2pH$ (exact per disorder instance); $\widehat A_2$ is, to
+our knowledge, the first explicit higher conserved charge of the tower.
+
+\section{Corollaries and consequences}
+
+\begin{corollary}[what propagates and what cannot]
+A random matter operator $O_\Delta$ (independent Gaussian couplings)
+inserts $q^{\Delta\hat n}$, which does not commute with $T$; its channel
+propagates, with $\mu_2=2(1-q^{\Delta})$. The $H$-derived bilinears insert
+polynomials in $T$ and cannot propagate. The distinction is not the size of
+the operator but the correlation of its couplings with those of $H$.
+\end{corollary}
+
+\begin{corollary}[the meson tower is a $1/N$ effect]
+In the proposed DSSYK$_\infty$--'t~Hooft correspondence
+\cite{MSS2607,MSS2506}, the singlet tower $M_n$ maps to the $A_n$ channels.
+At strict double scaling their connected pair correlators are
+time-independent to all orders of the $\lambda$-expansion: any meson tower
+must arise entirely from $1/N$ corrections to the chord solution. The
+quantitative spectrum match the authors propose as ``the best test'' must
+therefore be performed at fixed $p$ (fixed $\bar\alpha=p^2$), $\lambda\to0$
+--- the regime where, as shown in the companion note on exact disorder
+statistics, the emergent gauge symmetry is only polynomially accurate
+(symmetry violations $\sim N^{-(p-1)/2}$). This sharpens, exactly in
+$\lambda$, the large-$q$ observation that the bilinear-tower couplings
+first appear at $O(1/q^2)$ \cite{GR}.
+\end{corollary}
+
+Two scope remarks. First, the theorem concerns the $i\neq j$ pair
+amplitude at strict $N=\infty$ --- precisely the object the chord expansion
+computes; finite-$N$ corrections and the flavor-diagonal part of the
+physical channel are untouched (numerically, at exact-diagonalization
+sizes, the raw channel width grows toward the fixed-$p$ corner). Second,
+conservation here is a statement about moments of the connected pair
+correlator, $\mu_k=0$ for all $k\ge1$; the weight $\mu_0$ itself is
+nonzero.
+
+\paragraph{Verification.}
+Every step is machine-verified in the accompanying
+repository:\footnote{\texttt{duality/chord\_charges.py} and
+\texttt{test\_chord\_charges.py}; the original numerical discovery and the
+$n\le5$, $\mu_{2,4,6}$ scans are \texttt{duality/chord\_moments.py}.} the
+recursion \eqref{eq:rec} as a matrix identity for $j\le5$; $C(m)=P_m(T)$
+and $[C(m),T]=0$ for $m\le8$; the closed forms above; and, through an
+independent transfer-matrix evaluation of the trace words (itself validated
+against brute-force chord-diagram enumeration), the vanishing of
+$|\mu_k|$ relative to its pre-cancellation gross magnitude at the level of
+$10^{-17}$ for $n\le5$, $k\le6$, across $\lambda\in[0.1,4]$ and matter
+weights $\Delta_\psi\in[0.1,1]$.
+
+\paragraph{Acknowledgments.}
+% TODO(author): acknowledgments as appropriate.
+This note grew out of a computational stress-test of \cite{MSS2607}; all
+code and machine-verified derivations are available from the author.
+
+\begin{thebibliography}{9}
+
+\bibitem{MSS2607}
+S.~Miyashita, Y.~Sekino and L.~Susskind,
+``Holograms and Standard Models,''
+arXiv:2607.05678 [hep-th].
+
+\bibitem{MSS2506}
+S.~Miyashita, Y.~Sekino and L.~Susskind,
+``DSSYK at infinite temperature: the flat-space limit and the 't~Hooft model,''
+JHEP \textbf{11} (2025) 107, arXiv:2506.18054 [hep-th].
+
+\bibitem{BINT}
+M.~Berkooz, M.~Isachenkov, V.~Narovlansky and G.~Torrents,
+``Towards a full solution of the large $N$ double-scaled SYK model,''
+JHEP \textbf{03} (2019) 079, arXiv:1811.02584 [hep-th].
+
+\bibitem{BM}
+M.~Berkooz and O.~Mamroud,
+``A Cordial Introduction to Double Scaled SYK,''
+Rept.\ Prog.\ Phys.\ \textbf{88} (2025) 036001, arXiv:2407.09396 [hep-th].
+
+\bibitem{GR}
+D.~J.~Gross and V.~Rosenhaus,
+``The bulk dual of SYK: cubic couplings,''
+JHEP \textbf{05} (2017) 092, arXiv:1702.08016 [hep-th].
+
+\end{thebibliography}
+
+\end{document}

@@ -6,8 +6,8 @@ is already public at the URL below).*
 
 ---
 
-**Subject:** The Mₙ tower at strict double scaling — a result relevant to
-your promised meson computation
+**Subject:** The Mₙ tower cannot propagate at strict double scaling — a
+theorem relevant to your promised meson computation
 
 Dear Professors Miyashita, Sekino, and Susskind,
 

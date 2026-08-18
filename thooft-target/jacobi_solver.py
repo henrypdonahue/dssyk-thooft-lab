@@ -305,6 +305,13 @@ def build_sector_jacobi(num_basis: int, parity: int, alpha: float = 0.0,
     """
     if beta is None:
         beta = endpoint_exponent(alpha)
+    if beta < 0.05:
+        # the tanh-sinh intermediates are validated for beta > 0.05
+        # (alpha > ~ -0.992); deeper chiral-corner values are untested
+        import warnings
+        warnings.warn(f"beta = {beta:.4f} < 0.05 (alpha = {alpha}): "
+                      "outside the validated tanh-sinh window; results "
+                      "unverified", stacklevel=2)
     if n_ts is None:
         n_ts = _auto_n_ts(num_basis)
     elif n_ts < 10 * num_basis + 1:
