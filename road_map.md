@@ -369,6 +369,25 @@ independent; the tiers gate the ones that aren't.
   rung-24 discriminating computation; needs the two-sided constrained
   chord extension).
 
+- ✅ **The conserved-channel THEOREM** (2026-08-17, `duality/chord_charges.py`;
+  upgrades rung 15 proper from measurement to proof): in a sequential pair
+  word the fermion pair factors through the zero-chord sector as the
+  dressed propagator C(m) = close∘T_Mᵐ∘open, and the three-term recursion
+  close_j T_M = q^(Δ+j) T close_j + [j] close_{j−1} + (1−q^(2Δ+j)) close_{j+1}
+  (scalar coefficients — two n₁-independence miracles) forces C(m) = P_m(T),
+  the Motzkin-path polynomial (flat q^(Δ+j)T, down [j], up 1−q^(2Δ+j)).
+  Hence the chord representation of EVERY A_n is a polynomial in T:
+  **every spectral moment μ_k (k ≥ 1, both orderings, odd k included) of
+  every A_n pair channel vanishes at N = ∞, every λ, every matter
+  weight.** Explicit charges: X̂₁ = −(1−q^Δ)T (the A₁ = −2pH image),
+  X̂₂ = (1−q^Δ)²T² + (1−q^(2Δ)). The O_Δ contrast is now algebraic:
+  q^(Δn̂) does not commute with T, so random matter propagates while the
+  H-derived tower cannot. Verified: recursion as a matrix identity
+  (j ≤ 5), C(m) ≡ P_m(T) and [C(m),T] = 0 (m ≤ 8), closed forms, and the
+  word-level zeros extended to n ≤ 5, k ≤ 6 (|μ_k|/gross ≤ 3e-17) across
+  the λ grid and the committed Δψ scan (18 new tests + extended
+  chord_moments.json). Scope unchanged: the i≠j pair amplitude at strict
+  N = ∞; finite-N and the flavor-diagonal channel stay with the ED bench.
 - ✅ **Full-repo review pass** (2026-08-17, three parallel adversarial
   agents + independent verification; all physics claims survived —
   pauli strings bitwise-exact vs a from-scratch construction, Wick

@@ -14,14 +14,20 @@ Dear Professors Miyashita, Sekino, and Susskind,
 I have been stress-testing the DSSYK ↔ 't Hooft proposal numerically. One
 result seems worth sending before your meson-mass computation appears.
 
-Using the exact chord solution of double-scaled SYK, I find that the
-singlet bilinear channels Aₙ = Σᵢ ψᵢ (ad_H)ⁿ ψᵢ carry **zero propagating
-spectral weight at N = ∞, at every λ**. For n = 1 this is the exact
-identity A₁ = −2pH. For n = 2, 3 the chord amplitudes cancel to machine
-precision, at every coupling and matter weight tested. Random operators
-propagate normally; the cancellation is specific to bilinears built from
-H's own couplings — that is, your Mₙ tower. Finite-N diagonalization
-shows the channels turning on along fixed p, λ → 0.
+Using the exact chord solution of double-scaled SYK, I find — and can
+prove — that the singlet bilinear channels Aₙ = Σᵢ ψᵢ (ad_H)ⁿ ψᵢ carry
+**zero propagating spectral weight at N = ∞, at every λ and every matter
+weight**. The mechanism: in the pair channel the fermion pair factors
+through the zero-chord sector as a dressed propagator
+C(m) = close∘T_Mᵐ∘open, and a three-term recursion with scalar
+coefficients forces C(m) to be a polynomial in the chord transfer matrix
+— so the chord representation of every Aₙ is itself a polynomial in H
+and cannot propagate. A₁ = −2pH is the n = 1 case; the first nontrivial
+conserved charge is X̂₂ = (1−q^Δ)²T² + (1−q^(2Δ)). Random matter
+operators propagate normally (q^(Δn̂) does not commute with T): the
+conservation is specific to bilinears built from H's own couplings —
+that is, your Mₙ tower. Finite-N diagonalization shows the channels
+turning on along fixed p, λ → 0.
 
 The consequence: the meson tower is a 1/N effect, invisible at every
 order of the double-scaled expansion. The spectrum match must be
@@ -37,7 +43,7 @@ scans, and — taking the static-patch motivation seriously — a
 quantitative statement of what the tomperature map must do at OTOC level
 (flip the scrambling sign; the Euclidean fold does not do this, even at
 N = ∞). The engine is validated four independent ways, and everything is
-asserted by a test suite (`make test`, 343 fast tests, about a minute).
+asserted by a test suite (`make test`, 361 fast tests, about a minute).
 
 https://github.com/henrypdonahue/dssyk-thooft-lab
 

@@ -126,6 +126,12 @@ def run_point(lam: float, p: int, betaJ: float, nmax: int,
               thL_grid=(0.0, 0.4, 0.8, 1.2), fold_n: int = 1,
               beta_c: float | None = None) -> dict:
     """All fold_bench objects at one lambda, exact N = infinity."""
+    if lam < 0.5:
+        import warnings
+        warnings.warn(
+            f"lam = {lam} < 0.5: folded contours exceed float headroom "
+            "here (the lam = 0.3 point fails truncation-doubling); folded "
+            "outputs are OUTSIDE the validated window", stacklevel=2)
     if beta_c is None:
         beta_c = beta_chord_from_betaJ(betaJ, lam)
     Nflav = 2.0 * p * p / lam

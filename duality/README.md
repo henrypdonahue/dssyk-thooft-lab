@@ -38,12 +38,14 @@ Built from `thooft-target/reference_spectrum.json`. Both are parameter-free.
   anti-scrambling. The fold does not repair it: a genuine N-obstruction at
   ED sizes (`../syk-self-averaging/fold_bench.py --scan`) and a
   λ-obstruction at N = ∞ (`chord_fold.py`).
-- [CHORD.md](CHORD.md) + `chord.py`, `chord_moments.py`, `chord_fold.py` —
-  **the exact N = ∞ chord engine**: transfer matrix plus matter-chord
-  contours, validated four independent ways (enumerator, closed forms,
-  Krawtchouk microscopy, finite-N ED to 0.6–1.6%). Results: structureless
-  spectra at every λ; the singlet channels carry zero propagating weight
-  at N = ∞; the fold fails in the double-scaled theory itself.
+- [CHORD.md](CHORD.md) + `chord.py`, `chord_moments.py`,
+  `chord_charges.py`, `chord_fold.py` — **the exact N = ∞ chord engine**:
+  transfer matrix plus matter-chord contours, validated four independent
+  ways (enumerator, closed forms, Krawtchouk microscopy, finite-N ED to
+  0.6–1.6%). Results: structureless spectra at every λ; the singlet
+  channels carry zero propagating weight at N = ∞ — now a **theorem**
+  (their chord representation is a polynomial in the chord Hamiltonian);
+  the fold fails in the double-scaled theory itself.
   Figure: `plot_chord.py`.
 - [DISCRIMINATOR.md](DISCRIMINATOR.md) — where the three competing duals
   (MSS flat-space, Narovlansky–Verlinde, sine-dilaton) sit against the
@@ -60,9 +62,10 @@ Built from `thooft-target/reference_spectrum.json`. Both are parameter-free.
 python3 dictionary.py        # print the yardstick in both conventions
 python3 antiscrambling.py    # the OTOC sign table + fold map
 python3 chord.py --spectra   # the lambda->0 spectral scan (~4 min)
-python3 chord_moments.py --run  # exact N = inf moments    (~1 s)
+python3 chord_moments.py --run  # exact N = inf moments    (~5 s)
+python3 chord_charges.py     # the conserved-channel theorem (~1 s)
 python3 chord_fold.py        # the fold at N = inf         (~30 s)
-python3 signflip_probe.py    # the antipodal map            (~1 min)
+python3 signflip_probe.py    # the antipodal map            (~15 s)
 python3 signflip_probe.py --deep  # its deep campaign       (~20 s)
-pytest -q                    # 165 tests
+pytest -q                    # 183 tests
 ```

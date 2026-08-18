@@ -1,7 +1,8 @@
 # The exact N = ∞ chord engine, and what it says about the tower
 
 *Code: `chord.py` (engine + spectral scan), `chord_moments.py` (singlet
-moments), `chord_fold.py` (the fold at N = ∞), and the ED side
+moments), `chord_charges.py` (the conserved-channel theorem),
+`chord_fold.py` (the fold at N = ∞), and the ED side
 `syk-self-averaging/mn_majorana_bench.py`. Every verdict below is asserted
 from the committed JSONs in `test_chord*.py`.*
 
@@ -51,22 +52,33 @@ at T_B = ∞ for Δ ∈ {1, ½, ¼} and the Δ → 0 length channel, at
 - The chord-number growth ⟨n(t)⟩ — the de Sitter length — approaches
   −(2/λ) ln sech(Jc t) at the same linear rate. New exact-in-λ data.
 
-**The moments make the verdict algebraic** (`chord_moments.py`). For the
-paper's own channels — the singlet bilinears A_n = Σᵢ ψᵢ (ad_H)ⁿ ψᵢ,
-assembled by a binomial expansion verified as a per-instance operator
-identity against dense ED (`test_mn_majorana.py`):
+**The moments make the verdict algebraic — and it is now a theorem**
+(`chord_moments.py`, proof in `chord_charges.py`). For the paper's own
+channels — the singlet bilinears A_n = Σᵢ ψᵢ (ad_H)ⁿ ψᵢ, assembled by a
+binomial expansion verified as a per-instance operator identity against
+dense ED (`test_mn_majorana.py`):
 
-> **μ₂ = μ₄ = 0 to machine precision (relative to the pre-cancellation
-> gross sum), for n = 1, 2, 3, at every λ in [0.1, 4].** The
-> matter-weight scan Δψ ∈ [0.1, 1] is asserted for n = 1, 2 (n = 3 is
-> asserted at Δψ = ¼ across the λ grid). For n = 1 this is the exact law
-> A₁ = −2pH. For n = 2, 3 it is a measured algebraic cancellation — no
-> analytic proof yet; scope is n ≤ 3, moments μ₂ and μ₄. Random O_Δ
+> **Measured: μ₂ = μ₄ = μ₆ = 0 to machine precision (relative to the
+> pre-cancellation gross sum), for n = 1 … 5, at every λ in [0.1, 4] and
+> across the matter-weight scan Δψ ∈ [0.1, 1] (committed in
+> `chord_moments.json`). Proven: every spectral moment μ_k, k ≥ 1, of
+> every A_n pair channel vanishes at N = ∞.** The mechanism: in a
+> sequential pair word the fermion pair factors through the zero-chord
+> sector as a dressed propagator C(m) = close∘T_Mᵐ∘open, and a
+> three-term recursion with scalar coefficients (close_j T_M =
+> q^(Δ+j) T close_j + [j] close_{j−1} + (1−q^(2Δ+j)) close_{j+1}) forces
+> C(m) to be a **polynomial in the transfer matrix T** — the Motzkin-path
+> polynomial with flat weight q^(Δ+j)T, down [j], up 1−q^(2Δ+j). The
+> chord representation of A_n is then itself a polynomial in T:
+> conserved. Explicitly, X̂₁ = −(1−q^Δ)T (the N = ∞ image of the exact
+> law A₁ = −2pH) and X̂₂ = (1−q^Δ)²T² + (1−q^(2Δ)). Random O_Δ
 > operators *do* propagate (μ₂ = 2(1−q^Δ), kurtosis → 3 + 1/Δ; closed
-> forms, tested). The H-correlated bilinears the duality needs do not.
+> forms, tested) — their insertion q^(Δn̂) does **not** commute with T.
+> The H-correlated bilinears the duality needs cannot propagate; the
+> random ones can. Every step is asserted in `test_chord_charges.py`.
 
 This is the exact-in-λ version of the known large-q cancellation
-(LARGEQ.md).
+(LARGEQ.md), now with its algebraic origin.
 
 **Scope, sharpened by adversarial review.** The chord moments are i ≠ j
 flavor-*pair* amplitudes. The ED bench measures the full channel, which at

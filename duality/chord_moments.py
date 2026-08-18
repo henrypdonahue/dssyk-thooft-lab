@@ -6,7 +6,7 @@ Exact N = infinity singlet-channel spectral moments (rung 15 proper).
 The DSSYK side of the moments-vs-sum-rules contact: EXACT N = infinity,
 T_B = infinity spectral moments of the Majorana singlet bilinear channels
 
-    A_n = sum_i psi_i (ad_H)^n psi_i ,        n = 1, 2, 3,
+    A_n = sum_i psi_i (ad_H)^n psi_i ,        n = 1 .. 5,
 
 computed from the chord expansion with two single-fermion matter chords
 (Delta_psi = 1/p, weight qt = q^{1/p}).  Everything reduces to finite exact
@@ -30,14 +30,17 @@ identity component <X><Y> (T2 words).  Shape invariants (normalization- and
 flavor-count-free): w2 = mu_2/mu_0 (chord units have <H^2> = 1) and
 kurt = mu_4 mu_0 / mu_2^2.
 
-Error budget: the chord
-cancellations are EXACT algebraic identities of the chord amplitudes at
-any finite matter weight Delta_psi -- there is no finite-p matter-weight
-floor (asserted across a Delta_psi scan in test_chord_moments.py).  The
+Error budget: the chord cancellations are EXACT algebraic identities of
+the chord amplitudes at any finite matter weight Delta_psi -- there is no
+finite-p matter-weight floor (asserted across a Delta_psi scan in
+test_chord_moments.py), and they are now PROVEN: the chord representation
+of every A_n insertion is a polynomial in the transfer matrix T, so every
+moment mu_k (k >= 1) vanishes at every n (chord_charges.py -- the
+dressed-propagator recursion; discovered numerically here first).  The
 reported a1_residual is therefore the FLOAT-CANCELLATION yardstick
 |mu_2|/gross (the residual of the alternating sum relative to its
 pre-cancellation magnitude, ~1e-16), not a physical finite-p effect; it
-calibrates how much of the n = 2, 3 'zero' could be rounding noise.
+calibrates how much of the measured 'zero' could be rounding noise.
 
 The lambda -> 0 asymptote of the O_Delta channel kurtosis is the
 semiclassical value 3 + 1/Delta (Fourier transform of sech^{2Delta}); the
@@ -132,11 +135,11 @@ def _trace_part(tab: MomentTable, n: int) -> float:
 
 
 def channel_moments(q: float, delta_psi: float, n: int) -> dict:
-    """Symmetrized traceless mu_0, mu_2, mu_4 of the A_n channel, per
-    flavor pair, chord units."""
+    """Symmetrized traceless mu_0, mu_2, mu_4, mu_6 of the A_n channel,
+    per flavor pair, chord units."""
     tab = MomentTable(q, delta_psi)
     mu, gross = {}, {}
-    for k in (0, 2, 4):
+    for k in (0, 2, 4, 6):
         v1, g1 = _mu_ordered(tab, n, k)
         v2, g2 = _mu_ordered_swapped(tab, n, k)
         mu[k] = 0.5 * (v1 + v2)
@@ -148,9 +151,10 @@ def channel_moments(q: float, delta_psi: float, n: int) -> dict:
     # 'zero' judged against the pre-cancellation gross magnitude (float
     # noise scales with it as q -> 1)
     conserved = abs(mu[2]) < 1e-11 * max(gross[2], 1.0)
-    return dict(mu0=mu[0], mu2=mu[2], mu4=mu[4],
-                gross2=gross[2], gross4=gross[4],
+    return dict(mu0=mu[0], mu2=mu[2], mu4=mu[4], mu6=mu[6],
+                gross2=gross[2], gross4=gross[4], gross6=gross[6],
                 cancellation2=abs(mu[2]) / max(gross[2], 1e-300),
+                cancellation6=abs(mu[6]) / max(gross[6], 1e-300),
                 conserved=bool(conserved),
                 w2=(mu[2] / mu[0]) if mu[0] != 0 else float('nan'),
                 kurt=None if conserved
@@ -184,7 +188,7 @@ def run(p: int = 4,
     for lam in lams:
         q = q_of_lambda(lam)
         row = dict(lam=lam, q=q, p=p, delta_psi=dpsi, channels={})
-        for n in (1, 2, 3):
+        for n in (1, 2, 3, 4, 5):
             row['channels'][f"n={n}"] = channel_moments(q, dpsi, n)
         row['channels']['O_delta=2/p'] = odelta_moments(q, 2.0 / p)
         row['channels']['O_delta=1'] = odelta_moments(q, 1.0)
@@ -192,17 +196,29 @@ def run(p: int = 4,
         # gross magnitude -- the float-noise yardstick)
         row['a1_residual'] = row['channels']['n=1']['cancellation2']
         points.append(row)
-        c2 = row['channels']['n=2']
+        c2, c5 = row['channels']['n=2'], row['channels']['n=5']
         print(f"lam={lam}: n=2 mu2/mu0={c2['w2']:.2e} "
-              f"conserved={c2['conserved']}  "
-              f"a1_residual={row['a1_residual']:.2e}", flush=True)
+              f"conserved={c2['conserved']}  n=5 canc6={c5['cancellation6']:.1e}"
+              f"  a1_residual={row['a1_residual']:.2e}", flush=True)
+    # the matter-weight scan: the theorem's 'any Delta_psi' clause, on disk
+    dpsi_scan = []
+    for dp in (0.1, 0.4, 0.7, 1.0):
+        q = q_of_lambda(1.0)
+        for n in (1, 2, 3, 4, 5):
+            ch = channel_moments(q, dp, n)
+            dpsi_scan.append(dict(lam=1.0, delta_psi=dp, n=n,
+                                  cancellation2=ch['cancellation2'],
+                                  cancellation6=ch['cancellation6'],
+                                  conserved=ch['conserved']))
     payload = dict(
         provenance="chord_moments.py -- rung 15 proper: exact N=infinity "
                    "T_B=infinity singlet-channel spectral moments from the "
                    "chord expansion (Delta_psi = 1/p matter chords, exact "
-                   "integer-power transfer-matrix words); ED comparison: "
-                   "syk-self-averaging/mn_majorana_bench.json",
-        p=p, runtime_s=round(time.time() - t0, 1), points=points)
+                   "integer-power transfer-matrix words); the zeros are "
+                   "proven in chord_charges.py (conserved-channel theorem); "
+                   "ED comparison: syk-self-averaging/mn_majorana_bench.json",
+        p=p, runtime_s=round(time.time() - t0, 1), points=points,
+        dpsi_scan=dpsi_scan)
     out = Path(out_path) if out_path else HERE / "chord_moments.json"
     with open(out, "w") as fh:
         json.dump(payload, fh, indent=1)

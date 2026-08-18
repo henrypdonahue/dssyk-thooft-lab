@@ -2,9 +2,10 @@
 
 The load-bearing verdict encoded here: at strict N = infinity, fixed
 lambda, the H-derived singlet bilinear channels A_n = sum_i psi_i ad^n
-psi_i carry ZERO spectral weight away from omega = 0 -- mu_2 = mu_4 = 0 to
-machine precision for n = 1, 2, 3 at every lambda tested, while the
-random-operator O_Delta channels propagate (mu_2 = 2(1-q^Delta) != 0).
+psi_i carry ZERO spectral weight away from omega = 0 -- mu_2 = mu_4 =
+mu_6 = 0 to machine precision for n = 1..5 at every lambda tested (and
+PROVEN for all n and all moments: chord_charges.py + its tests), while
+the random-operator O_Delta channels propagate (mu_2 = 2(1-q^Delta) != 0).
 The word-expansion assembly behind this is validated as a per-instance
 operator identity in syk-self-averaging/test_mn_majorana.py; the engine
 amplitudes behind it are validated against the brute-force enumerator in
@@ -90,10 +91,16 @@ def test_committed_moments_json():
         cf = 2.0 * (1.0 - q ** (2.0 / row["p"]))
         assert row["channels"]["O_delta=2/p"]["w2"] == pytest.approx(cf,
                                                                      rel=1e-12)
-        for n in (2, 3):
+        for n in (2, 3, 4, 5):
             ch = row["channels"][f"n={n}"]
             assert ch["conserved"]
             assert ch["cancellation2"] < 1e-12
+            assert ch["cancellation6"] < 1e-12
+    # the committed matter-weight scan: the theorem's 'any Delta_psi' clause
+    assert len(data["dpsi_scan"]) >= 20
+    for r in data["dpsi_scan"]:
+        assert r["conserved"]
+        assert r["cancellation2"] < 1e-12 and r["cancellation6"] < 1e-12
 
 
 def test_ed_bench_scope():

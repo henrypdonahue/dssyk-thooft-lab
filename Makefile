@@ -37,6 +37,7 @@ reproduce:
 	cd duality && $(PY) largeq_anchor.py
 	cd duality && $(PY) antiscrambling.py
 	cd duality && $(PY) chord_moments.py --run
+	cd duality && $(PY) chord_charges.py
 	cd duality && $(PY) plot_chord.py
 
 # The disorder-ensemble sweeps and high-precision reference generation that
