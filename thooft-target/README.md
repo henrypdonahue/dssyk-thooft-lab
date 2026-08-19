@@ -36,7 +36,7 @@ Jacobi basis [x(1−x)]^β with β solving πβ cot(πβ) = −α exactly. That
 restores spectral accuracy off the duality point, where the Chebyshev
 basis is only algebraic.
 
-## Validation (42 tests)
+## Validation (43 tests)
 
 | check | result |
 |---|---|
@@ -81,7 +81,7 @@ python3 thooft_spectrum.py   # print the spectrum
 python3 validate.py          # validation report (exit code = pass/fail)
 python3 eigenfunctions.py    # wavefunction checks + decay constants
 python3 condensate.py        # condensate + GMOR corner + vacuum energy
-pytest -q                    # 42 tests (~15 s)
+pytest -q                    # 43 tests (~15 s)
 ```
 
 ## Result

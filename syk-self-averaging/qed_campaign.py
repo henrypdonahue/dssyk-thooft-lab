@@ -9,7 +9,8 @@ Majorana/O(N), while the headline claims of Miyashita-Sekino-Susskind
 (arXiv:2607.05678) are Dirac/U(N): "SM dual of DSSYK_infinity is 't Hooft
 model, QCD(2) + QED", with the SYK fermions as electrically charged quarks.
 The paper's U(1) story is anchored in one citation, at the M_0 (n = 0
-"photon") discussion (arXiv:2607.05678 source, .tex line 918):
+"photon") discussion (arXiv:2607.05678 source .tex line 918; local
+copy in papers/):
 
     "M_0 is the total conserved U(1) charge.  It has the quantum numbers of
      the time component of the photon but because it is conserved all its
@@ -356,11 +357,17 @@ def mean_mu2_charged_exact(Nc: int, p: int, ensemble: str = "generic") -> float:
 # 1b. literal enumeration (verification route -- shares no assembly code
 #     with the closed forms: sparse-operator traces + full Isserlis Wick)
 # --------------------------------------------------------------------------
+@lru_cache(maxsize=None)
+def _dirac_ops(Nc: int):
+    """One JW operator set per Nc (monomial_matrix is called per key)."""
+    from syk import dirac_operators
+    return dirac_operators(Nc)
+
+
 def monomial_matrix(Nc: int, A, B) -> np.ndarray:
     """Dense O_(A,B) = c^dag_A c_B from the sparse Jordan-Wigner operators of
     syk.dirac_operators (independent of dirac.apply_monomial)."""
-    from syk import dirac_operators
-    c, cdag = dirac_operators(Nc)
+    c, cdag = _dirac_ops(Nc)
     dim = 1 << Nc
     O = np.eye(dim, dtype=complex)
     for a in A:
@@ -420,8 +427,7 @@ def enumerated_m2_stats(Nc: int, p: int, ensemble: str):
 def enumerated_mu2_charged(Nc: int, p: int, ensemble: str) -> float:
     """E[mu2_charged] = (sigma^2/Nc) sum_i sum_alpha ||[O_alpha, c_i]||_F^2/dim
     with literal commutators of numeric matrices (verification route)."""
-    from syk import dirac_operators
-    c, _ = dirac_operators(Nc)
+    c, _ = _dirac_ops(Nc)
     keys = stored_keys(Nc, p, ensemble)
     dim = 1 << Nc
     sigma2 = coupling_variance_dirac(Nc, p)

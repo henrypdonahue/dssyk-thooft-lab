@@ -6,29 +6,15 @@ large-n asymptotic expansion."""
 import sys
 
 import numpy as np
-from scipy.special import zeta, polygamma
+from scipy.special import zeta
 
 from thooft_spectrum import solve_sector, spectrum
 import sine_solver
+from flz_reference import (FLZ_EVEN, FLZ_ODD, FLZ_PADE_LAMBDA0,
+                           sum_inv_sq_with_tail)
 
 PI = np.pi
 
-# --- FLZ Tables 1 & 2, last column 2*lambda_n^(num) (14 sig. digits) ----------
-FLZ_EVEN = {  # symmetric sector, FLZ even n
-    0: 0.73706174629269, 2: 2.7481609123706, 4: 4.7492953810375,
-    6: 6.7496294196488, 8: 8.7497715807892, 10: 10.749845089160,
-    12: 12.749888008416, 14: 14.749915244446, 16: 16.749933611057,
-    18: 18.749946584034, 20: 20.749956088173, 22: 22.749963259761,
-    24: 24.749968804883, 26: 26.749973181145, 28: 28.749976695731,
-}
-FLZ_ODD = {  # antisymmetric sector, FLZ odd n
-    1: 1.7537313369175, 3: 3.7510575817054, 5: 5.7504926236487,
-    7: 7.7502843971925, 9: 9.7501851352539, 11: 11.750130142515,
-    13: 13.750096503972, 15: 15.750074428438, 17: 17.750059159035,
-    19: 19.750048157169, 21: 21.750039967130, 23: 23.750033705317,
-    25: 25.750028810060, 27: 27.750024910394, 29: 29.750021753287,
-}
-FLZ_PADE_LAMBDA0 = 0.737061746292690  # FLZ Eq. (4.37), Pade estimate
 
 
 def compare_tables(num_basis=300):
@@ -66,21 +52,8 @@ def check_sum_rules(num_basis=400, n_cut=120):
         tail = sum_{n=n0,n0+2,...} 4/(n+3/4)^2 = polygamma(1, (n0+3/4)/2)."""
     ev_sym, _, _ = solve_sector(num_basis, parity=0)
     ev_anti, _, _ = solve_sector(num_basis, parity=1)
-
-    def sum_inv_sq(evs, offset):
-        total = 0.0
-        n = offset
-        for two_lam in evs:
-            if n > n_cut:
-                break
-            total += 4.0 / two_lam ** 2  # 1/lambda_n^2
-            n += 2
-        # analytic tail from the next level n (leading asymptotic n+3/4)
-        total += polygamma(1, (n + 0.75) / 2.0)
-        return total
-
-    G2p = sum_inv_sq(ev_sym, 0)
-    G2m = sum_inv_sq(ev_anti, 1)
+    G2p = sum_inv_sq_with_tail(ev_sym, 0, n_cut)
+    G2m = sum_inv_sq_with_tail(ev_anti, 1, n_cut)
     print("\nExact sum rules (FLZ Eq. 1.8):")
     print(f"  G2+ = sum 1/lambda_2m^2   = {G2p:.12f}   "
           f"target 7*zeta(3) = {7*zeta(3):.12f}   |diff|={abs(G2p-7*zeta(3)):.1e}")

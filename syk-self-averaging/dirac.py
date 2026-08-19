@@ -375,8 +375,7 @@ if __name__ == "__main__":
     print(f"  M_2 + sum cdot^dag cdot     : {np.abs(M2 + sum_cdd).max():.2e}")
 
     print("\nHermiticity parity M_n^dag = (-1)^n M_n (exact for n <= 2 only):")
-    for n in range(5):
-        Mn = mn_operator(H, cs, n)
+    for n, Mn in enumerate(mn_tower(H, cs, 4)):
         dev = np.abs(Mn.conj().T - (-1) ** n * Mn).max() / max(np.abs(Mn).max(), 1e-300)
         print(f"  n={n}: relative deviation = {dev:.2e}")
 
@@ -395,8 +394,7 @@ if __name__ == "__main__":
           f"{np.abs(mn_operator(Hc, cs, 1) + (p/2)*1j*Hc).max():.2e}")
     print("\n  wrong-CP-channel Frobenius weight of traceless M_n "
           "(0 = pure CP=(-1)^(n+1)):")
-    for n in range(6):
-        Mn = mn_operator(Hc, cs, n)
+    for n, Mn in enumerate(mn_tower(Hc, cs, 5)):
         Mb = Mn - np.trace(Mn) / dim * np.eye(dim)
         w = wrong_channel_weight(U, Mb, (-1) ** (n + 1))
         tag = "exact" if w < 1e-12 else "CP-mixture -> use CP-resolved correlators"

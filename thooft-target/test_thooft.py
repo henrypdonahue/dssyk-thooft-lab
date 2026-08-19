@@ -19,20 +19,8 @@ import sine_solver
 
 PI = np.pi
 
-# FLZ Tables 1 & 2 (arXiv:0905.2280), 2*lambda_n, 14 significant digits.
-FLZ = {
-    0: 0.73706174629269, 1: 1.7537313369175, 2: 2.7481609123706,
-    3: 3.7510575817054, 4: 4.7492953810375, 5: 5.7504926236487,
-    6: 6.7496294196488, 7: 7.7502843971925, 8: 8.7497715807892,
-    9: 9.7501851352539, 10: 10.749845089160, 11: 11.750130142515,
-    12: 12.749888008416, 13: 13.750096503972, 14: 14.749915244446,
-    15: 15.750074428438, 16: 16.749933611057, 17: 17.750059159035,
-    18: 18.749946584034, 19: 19.750048157169, 20: 20.749956088173,
-    21: 21.750039967130, 22: 22.749963259761, 23: 23.750033705317,
-    24: 24.749968804883, 25: 25.750028810060, 26: 26.749973181145,
-    27: 27.750024910394, 28: 28.749976695731, 29: 29.750021753287,
-}
-FLZ_PADE_LAMBDA0 = 0.737061746292690  # FLZ Eq. (4.37)
+# FLZ Tables 1 & 2 anchors: one provenance-checked copy (flz_reference.py)
+from flz_reference import FLZ, FLZ_PADE_LAMBDA0, sum_inv_sq_with_tail
 
 
 @pytest.fixture(scope="module")
@@ -64,18 +52,8 @@ def test_sum_rules():
     ev_anti, _, _ = solve_sector(400, parity=1)
     n_cut = 120
 
-    def sum_inv_sq(evs, offset):
-        total, n = 0.0, offset
-        for two_lam in evs:
-            if n > n_cut:
-                break
-            total += 4.0 / two_lam ** 2
-            n += 2
-        total += polygamma(1, (n + 0.75) / 2.0)  # analytic tail, 2lam ~ n+3/4
-        return total
-
-    assert abs(sum_inv_sq(ev_sym, 0) - 7 * zeta(3)) < 1e-8
-    assert abs(sum_inv_sq(ev_anti, 1) - 2.0) < 1e-8
+    assert abs(sum_inv_sq_with_tail(ev_sym, 0, n_cut) - 7 * zeta(3)) < 1e-8
+    assert abs(sum_inv_sq_with_tail(ev_anti, 1, n_cut) - 2.0) < 1e-8
 
 
 def test_variational_from_above():
@@ -313,3 +291,16 @@ def test_sine_converges_to_chebyshev():
 
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))
+
+
+def test_highprec_alpha_nonzero_path():
+    """The mpmath Cholesky path (alpha != 0) agrees with the double-precision
+    Chebyshev solver -- the only coverage of that branch (it has no other
+    caller)."""
+    from mpmath import mp
+    from thooft_highprec import solve_sector_mp
+    mp.dps = 30
+    K, alpha = 16, 0.5
+    mp_ev = [float(v) for v in solve_sector_mp(K, parity=0, alpha=alpha)]
+    ev, _, _ = solve_sector(K, parity=0, alpha=alpha)
+    assert max(abs(mp_ev[n] - ev[n]) for n in range(5)) < 1e-12

@@ -18,7 +18,8 @@ venv/
 # macOS
 .DS_Store
 
-# Third-party arXiv material: kept locally, not distributed
-# (arXiv default license does not permit third-party redistribution)
-2607.*.pdf
-arXiv-2607.05678v1/
+# Third-party arXiv material (papers/): kept locally, not distributed
+# (arXiv default license does not permit third-party redistribution).
+# papers/README.md is tracked and lists the fetch commands.
+papers/*
+!papers/README.md

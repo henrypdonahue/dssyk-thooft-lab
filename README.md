@@ -12,13 +12,13 @@ Full assessment, task ladder, and progress log: [road_map.md](road_map.md).
 
 | module | role | tests |
 |---|---|---|
-| [thooft-target/](thooft-target) | the yardstick: 't Hooft meson spectrum (12+ digits), condensate, vacuum energy | 42 |
+| [thooft-target/](thooft-target) | the yardstick: 't Hooft meson spectrum (12+ digits), condensate, vacuum energy | 43 |
 | [syk-self-averaging/](syk-self-averaging) | the SYK-side claims: self-averaging, the Mn/CP sector, QED and baryon campaigns, freeness, singlet moments | 146 |
 | [duality/](duality) | the dictionary and fingerprints, the exact N = ∞ chord engine, the conserved-channel theorem, the OTOC/fold laboratory, the KMS discriminator | 184 |
 
-Install once: `pip install -e ".[dev]"`. Then `make test` (362 tests,
+Install once: `pip install -e ".[dev]"`. Then `make test` (363 tests,
 about a minute) reruns every fast assertion; `make test-all` adds the
-slow ED sweeps (372 total).
+slow ED sweeps (373 total).
 
 ## Main results
 
@@ -36,9 +36,12 @@ slow ED sweeps (372 total).
 - **The operator dictionary needs four corrections**, each forced and
   tested: M₁ = −(p/2)iH, the sign of M₂, CP as the unitary particle-hole
   map, and the λ-convention factor of two. → [duality/](duality)
-- **A de Sitter dictionary must meet a measured spec.** It must flip the
-  OTOC sign (Re a = −1 at every temperature). The Euclidean fold cannot do
-  it — it fails even at N = ∞. Engineered dS-KMS meets the chaos bound.
+- **A de Sitter dictionary must meet a measured spec — and one candidate
+  map passes it semiclassically.** The map must flip the OTOC sign
+  (DSSYK∞ scrambles: Re a = −1 at every temperature) and make the
+  observer thermal at the tomperature. The Euclidean fold fails, even at
+  N = ∞; the antipodal half-fake-period shift does both — exactly in the
+  closed form, and in the exact theory for λ ≲ 1.7.
   → [duality/ANTISCRAMBLING.md](duality/ANTISCRAMBLING.md),
   [duality/DISCRIMINATOR.md](duality/DISCRIMINATOR.md)
 - **The 2d vacuum energy is one finite number**: ε(0) = −0.0407 Nc g².

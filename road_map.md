@@ -133,7 +133,8 @@ audit found real defects to fix:
   challenge to observer-centric static patch holography. The same-week companion
   Harlow–Zhao 2607.14215 proposes the QM mechanism: bounded-spectrum systems with
   Euclidean-folded correlators — DSSYK's defining features — and poses the fold test
-  "in a concrete model such as the SYK model" as open. Both papers on arXiv; this
+  "in a concrete model such as the SYK model" as open. Both papers on arXiv
+  (local copies: papers/); this
   repo's response is rungs 25–26 (`duality/ANTISCRAMBLING.md`). Time-ordered physics
   (the entire spectrum-match program, rungs 13–18) is explicitly untouched by these
   papers; the OTOC sector is a NEW discriminator axis for rung 24.

@@ -49,7 +49,8 @@ exact closed forms
     mu_2(Delta) = 2 (1 - qt),
     mu_4(Delta) = 2(2+q) + 6 - 8(2+q) qt + 6(1+q) qt^2 ,   qt = q^Delta
 
-are asserted against the engine in test_chord_moments.py.
+and the mu_6 closed form (odelta_moments) are asserted against the engine
+in test_chord_moments.py.
 
 Output: chord_moments.json (the comparison against the ED bench and the
 Dirac moments.json trend lives in the tests + CHORD.md).
@@ -60,7 +61,6 @@ from __future__ import annotations
 import argparse
 import json
 import time
-from functools import lru_cache
 from math import comb
 from pathlib import Path
 
@@ -70,23 +70,29 @@ HERE = Path(__file__).resolve().parent
 
 
 class MomentTable:
-    """Memoized mixed chord moments at fixed (q, delta_psi)."""
+    """Memoized mixed chord moments at fixed (q, delta_psi); per-instance
+    caches (a class-level lru_cache would pin instances alive)."""
 
     def __init__(self, q: float, delta_psi: float, nmax: int = 14):
         self.q, self.d = q, delta_psi
         self.c = Contour(q, nmax, {'A': delta_psi, 'B': delta_psi},
                          fermionic={'A', 'B'})
+        self._t4: dict = {}
+        self._t2: dict = {}
 
-    @lru_cache(maxsize=None)
     def t4(self, a: int, b: int, c: int, d: int) -> float:
-        word = (['H'] * a + ['A'] + ['H'] * b + ['A']
-                + ['H'] * c + ['B'] + ['H'] * d + ['B'])
-        return self.c.apply_word_powers(word).real
+        key = (a, b, c, d)
+        if key not in self._t4:
+            word = (['H'] * a + ['A'] + ['H'] * b + ['A']
+                    + ['H'] * c + ['B'] + ['H'] * d + ['B'])
+            self._t4[key] = self.c.apply_word_powers(word).real
+        return self._t4[key]
 
-    @lru_cache(maxsize=None)
     def t2(self, a: int, b: int) -> float:
-        word = ['H'] * a + ['A'] + ['H'] * b + ['A']
-        return self.c.apply_word_powers(word).real
+        if (a, b) not in self._t2:
+            word = ['H'] * a + ['A'] + ['H'] * b + ['A']
+            self._t2[(a, b)] = self.c.apply_word_powers(word).real
+        return self._t2[(a, b)]
 
 
 def _mu_ordered(tab: MomentTable, n: int, k: int):

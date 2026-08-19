@@ -5,7 +5,7 @@ baryon claims in the one-flavor U(N)/Dirac-SYK dictionary.
 =======================================================================
 
 What the paper actually says about baryons -- quoted in full, because it is
-short (arXiv:2607.05678 source, line numbers of its .tex):
+short (arXiv:2607.05678 source; local copy papers/arXiv-2607.05678v1/):
 
   line 273:  "The SM has features closely resembling the real Standard
       Model: A U(1) x SU(N) gauge theory, aka QED x QCD; electric forces;
