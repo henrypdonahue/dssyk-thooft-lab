@@ -362,12 +362,11 @@ independent; the tiers gate the ones that aren't.
   shapes, no Gibbs/sech form, no fake-period recurrence — ratio
   identities survive, shapes don't); rate extraction mode-contaminated.
 - ⬜ Open: 18 remainder (the tower extraction itself, now located at fixed
-  p, λ→0 — a 1/N computation from the double-scaled viewpoint; with the
-  conserved-channel theorem in hand, the sharpest tractable first bite is
-  the EXACT finite-N disorder-averaged pair moments of A_n by Wick — a
-  3-pairing Isserlis sum over three coupling pairs, exact_wick-style, no
-  ED noise — which would exhibit the measured approach to the proven
-  N = ∞ zero), 17 proper
+  p, λ→0 — a 1/N computation from the double-scaled viewpoint; the exact
+  finite-N pair moments above are its first bite and give the target
+  laws — |μ₂| ~ N⁻⁴ at fixed p = 4, ≈ c/(pN), c ≈ 29–30, at λ = 2 — that the
+  analytic 1/N chord correction must reproduce; extending the exact
+  computation to μ₄ or n ≥ 3 needs 4-subset Venn profiles), 17 proper
   (the O(1/q) residues — theory), 13 remainder (tomperature map: the
   antipodal shift passes the sign gate semiclassically, see above; the
   full dictionary is open), 20, 21 theory half (JT-dS ε = 3/(8S)), 22,
@@ -375,6 +374,26 @@ independent; the tiers gate the ones that aren't.
   rung-24 discriminating computation; needs the two-sided constrained
   chord extension).
 
+- ✅ **18 first bite — the exact finite-N pair moments** (2026-08-19,
+  `syk-self-averaging/exact_pair_moments.py`; the measured approach to the
+  theorem's zero, no ED): Isserlis over H-slot matchings with the
+  chord-diagram sign law (collapse argument, Γ² = +1) and the subset sums
+  collapsed to EXACT integer Venn-profile expectations, factorized over
+  connected components of the crossing graph (σ cancels in chord units:
+  t4bar = Σ_matchings E[sign]).  μ₀ and μ₂ of the n = 1, 2 pair channels
+  at any (N, p) — N = 1024 in seconds.  MEASURED: |μ₂(n=2)| monotone to
+  the zero on both scans; fixed p = 4 tail slope → N⁻⁴; double-scaling
+  λ = 2 falls ≈ c/(pN), c ≈ 29–30 drifting slowly over (4,16)–(10,100)
+  (measured c: 28.9, 28.9, 29.4, 29.8;
+  exponent ≈ 1.5 in N — the analytic 1/N chord correction reproducing
+  these laws is the open theory half).  Pair μ₀ changes sign near
+  N = 12 at p = 4 (the exact version of the review's ED observation).
+  Validation: literal Isserlis enumeration (exact, 0.0 deviation), dense
+  ED (|z| ≤ 0.6), chord limit at the Krawtchouk N⁻² rate, and the
+  per-row gate (N−1)μ₂^pair(n=1) + μ₂^diag(n=1) = 0 (A₁ = −2pH) at
+  machine precision.  Scope: n ≤ 2, μ₀/μ₂ (K ≤ 6; μ₄ or n = 3 need
+  4-subset profiles).  Assembly imported from chord_moments.py — the
+  finite-N and N = ∞ computations share it by construction.
 - ✅ **The conserved-channel THEOREM** (2026-08-17, `duality/chord_charges.py`;
   upgrades rung 15 proper from measurement to proof): in a sequential pair
   word the fermion pair factors through the zero-chord sector as the

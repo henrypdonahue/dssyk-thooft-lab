@@ -78,6 +78,23 @@ N = ∞ zero (at matched λ the raw w₂ rises with N — the honest negative).
 The (8,4) point is an exact per-instance conservation special to (8,4);
 mechanism unknown.
 
+**The approach to the conserved-channel zero, exact**
+(`exact_pair_moments.py`): the chord theorem
+(`duality/chord_charges.py`) makes every pair moment of A_n vanish at
+N = ∞. This module computes the same moments EXACTLY at finite N — Wick
+over H-slot matchings, subset sums collapsed to integer
+intersection-parity profiles; no ED, no sampling noise. Measured:
+|μ₂(n = 2)| falls monotonically to the zero along both scans — fixed
+p = 4 with tail slope → N⁻⁴, and the double-scaling line λ = 2 like
+≈ c/(pN), c ≈ 29–30 drifting slowly upward over
+(p, N) = (4,16)–(10,100) (an observed regularity;
+the analytic 1/N chord correction behind it is open). The pair μ₀
+changes sign near N = 12 at p = 4 — the exact version of the review's
+ED observation. Per-row gate: A₁ = −2pH forces
+(N−1) μ₂^pair + μ₂^diag = 0, held at machine precision. Validated
+against literal Isserlis enumeration (exact match), dense ED, and the
+chord limit (words converge at the Krawtchouk N⁻² rate).
+
 Numbers: `results.txt` / `results.json`. Figures and data JSONs live next
 to their scripts.
 
@@ -101,6 +118,7 @@ to their scripts.
 | `dirac.py` | complex SYK: [H,Q] = 0, the Mn tower, unitary CP machinery |
 | `exact_wick.py` | closed-form Eq. 3.28 statistics, beyond ED; plus exact E[m4], Var(m4): relVar(m4) = 4 relVar(m2) (1 + o(1)), the second self-averaging anchor |
 | `exact_wick_dirac.py` | the Dirac-side counterpart: exact Var(B_ij) for U(N) emergence (rms ~ Nc^(−(p−1)/2)), and ED-free exact singlet-moment anchors |
+| `exact_pair_moments.py` | exact finite-N pair moments of A_n (Wick profile sums, no ED): the measured approach to the chord theorem's N = ∞ zero |
 | `mn_spectroscopy.py` | CP-resolved Mn spectral functions |
 | `moments_pipeline.py` | CP-resolved moment invariants with statistics |
 | `moments_fast.py` | charge-sector-blocked reimplementation (~140x at Nc = 12; dense equivalence asserted at 1e-9, measured 5e-15): the Nc = 12 production point and the fixed-p trend figure |
@@ -122,13 +140,14 @@ pip install -r requirements.txt
 python3 validate_syk.py         # RMT validation (~7 s)
 python3 self_averaging.py       # the 3.27 measurement (~2 min)
 python3 exact_wick.py           # exact 3.28 + double-scaling scan (~1 s)
+python3 exact_pair_moments.py   # the approach to the chord zero (~90 s)
 python3 dirac.py                # Dirac/QED identities + CP report (~5 s)
 python3 mn_spectroscopy.py      # Mn spectral functions (seconds)
 python3 qed_campaign.py         # QED campaign
 python3 baryons.py              # baryon campaign
 python3 freeness.py             # freeness campaign (hours)
 python3 mn_majorana_bench.py    # singlet-moment bench (~1 h)
-pytest -q -m 'not slow'         # fast asserts (~40 s)
+pytest -q -m 'not slow'         # fast asserts (~45 s)
 ```
 
 ## Scope

@@ -78,7 +78,12 @@ dense ED (`test_mn_majorana.py`):
 > random ones can. Every step is asserted in `test_chord_charges.py`.
 
 This is the exact-in-λ version of the known large-q cancellation
-(LARGEQ.md), now with its algebraic origin.
+(LARGEQ.md), now with its algebraic origin. The finite-N approach to the
+zero is computed exactly (Wick profile sums, no ED) in
+`syk-self-averaging/exact_pair_moments.py`: |μ₂(n = 2)| falls like
+~N⁻⁴ along fixed p = 4 and ≈ c/(pN) (c ≈ 29–30, drifting slowly)
+along λ_chord = 2 — the first
+quantitative data on the 1/N tower weight.
 
 **Scope, sharpened by adversarial review.** The chord moments are i ≠ j
 flavor-*pair* amplitudes. The ED bench measures the full channel, which at

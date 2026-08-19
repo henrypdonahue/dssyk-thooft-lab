@@ -2,7 +2,7 @@
 #
 #   make test            fast test suites of all three modules   (~1 min)
 #   make test-all        full suites including slow ED sweeps    (~minutes)
-#   make reproduce       fast deterministic checks + figures     (~1 min)
+#   make reproduce       fast deterministic checks + figures     (~3 min)
 #   make reproduce-slow  ED sweeps behind the saved JSON         (~hours)
 #
 # Scripts are run from inside their module directory (module READMEs assume
@@ -28,6 +28,7 @@ reproduce:
 	cd thooft-target && $(PY) validate.py
 	cd thooft-target && $(PY) condensate.py
 	cd syk-self-averaging && $(PY) exact_wick.py
+	cd syk-self-averaging && $(PY) exact_pair_moments.py
 	cd syk-self-averaging && $(PY) dirac.py
 	cd syk-self-averaging && $(PY) mn_spectroscopy.py
 	cd syk-self-averaging && $(PY) plot_self_averaging.py
