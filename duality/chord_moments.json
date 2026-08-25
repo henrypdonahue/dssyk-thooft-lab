@@ -1,7 +1,7 @@
 {
  "provenance": "chord_moments.py -- exact N=infinity T_B=infinity singlet-channel spectral moments from the chord expansion (Delta_psi = 1/p matter chords, exact integer-power transfer-matrix words); the zeros are proven in chord_charges.py (conserved-channel theorem); ED comparison: syk-self-averaging/mn_majorana_bench.json",
  "p": 4,
- "runtime_s": 4.2,
+ "runtime_s": 4.1,
  "points": [
   {
    "lam": 4.0,

@@ -70,7 +70,11 @@ words → 0. This is the first exhibition of the free-product transition in
 a microscopic dS-candidate model. Caveat: the crossover sits at the
 *dissipation* time (t𝒥 ≈ 1.2, nearly N-independent), so ED cannot
 resolve the ln N scrambling-time separation where the claim properly
-lives, and word plateaus at N ≥ 20 are statistics-limited.
+lives, and word plateaus at N ≥ 20 are statistics-limited. The crossover
+is not quite N-independent either: t𝒥 runs 1.191, 1.172, 1.233, 1.273 over
+N = 12–24, and the N = 16 → 24 rise is ~4σ against a measured resolution
+of ~0.011. A drift is resolved; four points over a factor 2 in N simply
+cannot say whether it is ln N or finite-size.
 
 **Shape-invariant moments** (`moments_pipeline.py`, `moments_fast.py`):
 CP-resolved spectral moment invariants (w₂, kurtosis) along fixed p = 4 —
@@ -148,7 +152,7 @@ Read `rms_off`, not the p = N/2-artifacted ratio.
 | `mn_majorana_bench.py` | Majorana singlet-channel moments (ED side of the chord computation) |
 | `validate_syk.py`, `self_averaging.py` | RMT validation; the §3.5 measurement |
 | `plot_self_averaging.py`, `plot_freeness.py`, `plot_pair_moments.py` | figures (read the JSONs) |
-| `test_*.py` | asserting suites (177 tests, 166 fast) |
+| `test_*.py` | asserting suites (179 tests, 168 fast) |
 
 ## Usage
 
@@ -164,7 +168,7 @@ python3 qed_campaign.py         # QED campaign
 python3 baryons.py              # baryon campaign
 python3 freeness.py             # freeness campaign (hours)
 python3 mn_majorana_bench.py    # singlet-moment bench (~1 h)
-pytest -q -m 'not slow'         # 166 fast asserts (~30 s)
+pytest -q -m 'not slow'         # 168 fast asserts (~30 s)
 ```
 
 ## Scope

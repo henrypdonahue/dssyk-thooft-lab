@@ -9,6 +9,7 @@ marked slow).
 """
 
 import json
+import math
 from math import comb
 from pathlib import Path
 
@@ -172,7 +173,8 @@ def test_edge_sectors_and_particle_hole():
     Hg = dirac_hamiltonian(Nc, p, couplings=Jg)
     top = Hg[np.ix_(sectors[Nc], sectors[Nc])]
     assert top.shape == (1, 1)
-    assert abs(top[0, 0]) > 1e-8      # J_AA break particle-hole symmetry
+    assert abs(top[0, 0]) > 1e-8      # nonzero, but its MEAN is zero:
+    # the mean asymmetry comes from the overlapping keys, not from J_AA
 
 
 def test_charging_curve_shapes_and_edges():
@@ -240,7 +242,8 @@ def test_fit_charging_folds_c_symmetric():
     enters (3 unique interior points at Nc = 8, not 5).  The fit drops the
     linear term (K = 2; mu = 0 exactly by the symmetry).  The recorded
     mirror deviation of the means is at roundoff level.  Generic is NOT
-    folded (the J_AA break particle-hole symmetry)."""
+    folded: its overlapping keys (A n B != empty) break particle-hole
+    symmetry."""
     curve = charging_curve(8, 4, "c_symmetric", n_inst=12, seed=22)
     f = fit_charging(curve)
     assert f["folded"] is True
@@ -448,3 +451,81 @@ def test_w2_anchor_ensemble_dependence():
 
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))
+
+
+def test_particle_hole_breaking_is_overlap_not_diagonal_couplings():
+    """WHAT breaks particle-hole symmetry in the generic ensemble.
+
+    The module used to attribute it to the diagonal couplings J_AA (the
+    1-dimensional top sector).  That is wrong twice over: E0(Nc) is a sum
+    of zero-mean Gaussians, so its disorder MEAN is zero and it cannot
+    shift the mean curve at all; and removing every J_AA leaves the mean
+    asymmetry essentially intact.
+
+    The real cause is overlap: under the unitary C an overlapping monomial
+    (A n B != empty) normal-orders into lower-degree contraction terms, so
+    only a disjoint-key ensemble is C-invariant -- which is exactly why
+    c_symmetric is.  Reality of the couplings is not the point either: a
+    disjoint ensemble with COMPLEX Hermitian couplings is still symmetric.
+    """
+    Nc, p, n_inst = 6, 4, 40
+    pops = np.array([bin(s).count("1") for s in range(1 << Nc)])
+
+    def mean_curve(drop_diagonal=False, disjoint_only=False):
+        acc = {q: [] for q in range(Nc + 1)}
+        for j in range(n_inst):
+            c = draw_couplings(Nc, p, np.random.default_rng(500 + j), "generic")
+            if drop_diagonal:
+                c = {k: (0.0 if k[0] == k[1] else v) for k, v in c.items()}
+            if disjoint_only:
+                c = {k: v for k, v in c.items() if not (set(k[0]) & set(k[1]))}
+            H = dirac_hamiltonian(Nc, p, couplings=c)
+            for q in range(Nc + 1):
+                idx = np.flatnonzero(pops == q)
+                acc[q].append(float(np.linalg.eigvalsh(
+                    H[np.ix_(idx, idx)])[0]) if idx.size else 0.0)
+        return {q: float(np.mean(v)) for q, v in acc.items()}
+
+    full = mean_curve()
+    no_diag = mean_curve(drop_diagonal=True)
+    disjoint = mean_curve(disjoint_only=True)
+
+    asym = lambda m: m[2] - m[Nc - 2]                            # noqa: E731
+    assert abs(asym(full)) > 0.5                       # generic is asymmetric
+    # killing J_AA barely dents it: the diagonal couplings are not the cause
+    assert abs(asym(no_diag)) > 0.75 * abs(asym(full))
+    assert no_diag[Nc] == pytest.approx(0.0, abs=1e-12)   # top sector is gone
+    # disjointness restores the symmetry EXACTLY, sector by sector
+    for q in range(Nc + 1):
+        assert disjoint[q] == pytest.approx(disjoint[Nc - q], abs=1e-9), q
+
+
+def test_capacitance_carries_an_inflated_uncertainty():
+    """C is a fitted curvature from a fit the data reject (chi2_gls/dof runs
+    4-131), so it must not be quoted bare.  Pin that every charging fit
+    emits an uncertainty, that it is sqrt(chi2/dof)-inflated where the fit
+    is bad, and that the resulting band is wide enough to forbid the
+    three-decimal reading the module used to print."""
+    path = Path(__file__).resolve().parent / "qed_campaign.json"
+    if not path.exists():
+        pytest.skip("run qed_campaign.py first")
+    rows = json.loads(path.read_text())["charging"]
+    assert rows
+    for ch in rows:
+        f = ch["fits"]
+        cap = f["capacitive_x2"]
+        assert f["capacitance_err"] > 0
+        # the band is at least ~2%, i.e. the third decimal is never meaningful
+        assert f["capacitance_err"] / abs(f["capacitance"]) > 0.015
+        # inflation tracks the misfit: sqrt(chi2/dof) whenever chi2 > dof
+        chi2_per_dof = cap["chi2_gls_per_dof"]
+        expected = math.sqrt(chi2_per_dof) if chi2_per_dof > 1.0 else 1.0
+        assert cap["err_inflation"] == pytest.approx(expected, rel=1e-9)
+        assert cap["err_inflation"] > 1.0        # every window misfits
+    # C is O(1) and rises with Nc in both ensembles
+    for ens in ("generic", "c_symmetric"):
+        cs = [(ch["Nc"], ch["fits"]["capacitance"])
+              for ch in rows if ch["ensemble"] == ens]
+        cs.sort()
+        assert all(0.5 < c < 3.0 for _, c in cs)
+        assert cs[-1][1] > cs[0][1]

@@ -140,11 +140,15 @@ coupling_variance_dirac normalization statement Tr H^2/dim ~ Nc.
 Measured results (p = 4, Nc = 4..10, production run -> baryons.json)
 --------------------------------------------------------------------
   *  M_B grows strongly and monotonically in both ensembles.  Weighted fits:
-     generic:      best a*Nc^gamma with gamma = 0.795 +- 0.021 (Delta-AIC 4.0
-                   over a*Nc + b with a = 0.73 +- 0.02, b = 1.19 +- 0.13);
-     c_symmetric:  best a*Nc + b with a = 0.619 +- 0.004, b = -1.04 +- 0.03
-                   (Delta-AIC 115 over the power law; gamma alone = 1.30
-                   because of the negative offset).
+     generic:      nominal lead a*Nc^gamma, gamma = 0.795 +- 0.021 (Delta-AIC
+                   4.0 over a*Nc + b with a = 0.73 +- 0.02, b = 1.19 +- 0.13);
+     c_symmetric:  nominal lead a*Nc + b with a = 0.619 +- 0.004,
+                   b = -1.04 +- 0.03 (Delta-AIC 115 over the power law;
+                   gamma alone = 1.30 because of the negative offset).
+     Both are reported by fit_verdict as "cannot discriminate": the window
+     Nc = 4..10 spans 2.5x, well under the decade the guard requires, so a
+     2-parameter selection cannot identify an asymptotic form no matter how
+     large the nominal AIC lead.
      Honest verdict: the window is CONSISTENT with "baryon mass ~ N".  Both
      ensembles are well described by a linear law with an O(1) offset, and
      pure a*Nc is strongly rejected in-window by finite-size offsets.  But
@@ -716,7 +720,7 @@ if __name__ == "__main__":
                            for v, e in zip(d["params"], d["param_errs"]))
             print(f"    {name:12s}: [{ps}]  chi2/dof = "
                   f"{d['chi2']:.1f}/{d['dof']}  AIC = {d['aic']:7.1f}")
-        print(f"    -> {fit_verdict(f)}")
+        print(f"    -> {fit_verdict(f, ns)}")
 
     print("\n4. The hierarchy: Delta2 vs the many-body spectral width")
     print("-" * 74)

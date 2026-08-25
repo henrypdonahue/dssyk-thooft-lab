@@ -14,12 +14,12 @@ Assessment of the paper, the open problems, and why they are hard:
 | module | role | tests |
 |---|---|---|
 | [thooft-target/](thooft-target) | the yardstick: 't Hooft meson spectrum (12+ digits), condensate, vacuum energy | 45 |
-| [syk-self-averaging/](syk-self-averaging) | the SYK-side claims: self-averaging, the Mₙ/CP sector, QED and baryon campaigns, freeness, singlet moments | 177 |
+| [syk-self-averaging/](syk-self-averaging) | the SYK-side claims: self-averaging, the Mₙ/CP sector, QED and baryon campaigns, freeness, singlet moments | 179 |
 | [duality/](duality) | the dictionary, the exact N = ∞ chord engine, the conserved-channel theorem, the OTOC/fold laboratory, the KMS discriminator | 195 |
 
-Install once: `pip install -e ".[dev]"`. Then `make test` runs the 406
+Install once: `pip install -e ".[dev]"`. Then `make test` runs the 408
 fast assertions in about 40 s; `make test-all` adds the slow ED sweeps,
-417 in total.
+419 in total.
 
 ## Main results
 

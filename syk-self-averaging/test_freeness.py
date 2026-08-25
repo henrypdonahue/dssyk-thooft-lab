@@ -90,10 +90,17 @@ def test_json_freeness_verdict():
     (b) The spectrum actually lands on the arcsine law: W1_bin plateaus at
         W1(binomial, arcsine) itself.  That is, the distance to the
         classical prediction saturates because spec(E+F) IS arcsine.
-    (c) ONSET: the crossover sits at the DISSIPATION time t ~ 1.2/J, and
-        is nearly N-independent.  Any ln N drift is below resolution
-        here.  The distribution-level crossover is not a scrambling-time
-        phenomenon at ED sizes (see README caveats).
+    (c) ONSET: the crossover sits at the DISSIPATION time t ~ 1.2/J over
+        the whole range N = 12..24.  It is NOT N-independent: t_x_J runs
+        1.191, 1.172, 1.233, 1.273, and the N = 16 -> 24 rise of +0.101 is
+        about 4 sigma given the measured resolution (sigma(t_x_J) ~ 0.011
+        at n_inst = 24, ~0.019 at n_inst = 12, from reruns at N = 12).  So
+        a drift IS resolved -- but it is non-monotone (it dips at N = 16),
+        the lever arm is a factor 2 in N, and ln(24/16) = 0.41, so these
+        four points cannot separate a ln N scrambling time from a
+        finite-size effect.  Either way the crossover sits at the
+        dissipation scale, two decades of N short of where CK's statement
+        lives (see README caveats).
     (d) Every alternating word lands on its free-prediction 0 within the
         (statistics-limited) floor."""
     data = _load_json()
@@ -109,6 +116,12 @@ def test_json_freeness_verdict():
         assert 1.0 < pt["t_x_J"] < 1.5
         assert pt["plateau_m2"] < 0.005
         assert pt["plateau_w4"] < 0.005
+    # the drift is real and non-monotone: pin both, so "N-independent"
+    # cannot creep back into the narrative
+    tx = [pt["t_x_J"] for pt in pts]
+    assert tx[-1] - tx[1] > 0.05                 # resolved rise, N = 16 -> 24
+    assert tx[1] < tx[0]                         # and non-monotone at N = 16
+    assert max(tx) - min(tx) < 0.15              # still all at t*J ~ 1.2
 
 
 if __name__ == "__main__":

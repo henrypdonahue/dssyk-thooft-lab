@@ -132,8 +132,21 @@ Exact sector facts (all tested):
   * the top sector q = Nc is 1-dimensional with H = sum_A J_AA * (sign).
     It vanishes for c_symmetric (no diagonal couplings) but NOT for
     generic.  The generic ensemble is NOT particle-hole symmetric even in
-    distribution (the J_AA break it), while c_symmetric instances obey
-    E0(q) = E0(Nc - q) exactly, sector by sector.
+    distribution, while c_symmetric instances obey E0(q) = E0(Nc - q)
+    exactly, sector by sector.
+
+    What breaks it is DISJOINTNESS, not the diagonal couplings.  Under the
+    unitary C, an overlapping monomial (A n B != empty) normal-orders into
+    lower-degree contraction terms -- dirac.draw_couplings says exactly
+    this: "no leftover contraction terms only when A and B share no mode"
+    -- so every one of the 364 overlapping keys at (Nc, p) = (8, 4) breaks
+    the symmetry, and J_AA are just the |A n B| = k extreme.  Measured at
+    Nc = 8, p = 4 over 120 draws: the mean asymmetry E0(2) - E0(6) is
+    +2.61 for generic, +2.44 with every J_AA zeroed (only 6% removed), and
+    exactly 0.0000 for a disjoint-key ensemble with COMPLEX Hermitian
+    couplings.  Note also E[E0(Nc)] = 0 for generic -- E0(Nc) is a sum of
+    zero-mean Gaussians -- so the 1-dim top sector contributes variance but
+    no mean asymmetry at all.
 
 The charging curve is the disorder mean E0(q) +- SEM at Nc = 8, 10, p = 4,
 both ensembles.  Around half filling, x = q - Nc/2, we compare on the
@@ -165,8 +178,8 @@ correlation +1), and an independence fit would double-count every
 off-center deviation.  The fit folds to q <= Nc/2: 3 unique interior
 points at Nc = 8, not 5.  It also drops the linear term (mu = 0 exactly by
 the same symmetry), leaving K = 2 parameters per model.  Generic curves
-keep all interior points and K = 3 (the J_AA particle-hole breaking makes
-mu physical).
+keep all interior points and K = 3: its overlapping keys break
+particle-hole symmetry, so mu is physical there.
 
 Within each window both models have the same K, so AIC = chi2_gls + 2K
 gives Delta-AIC = Delta chi2_gls.  Delta-AIC < 2 means the window cannot
@@ -192,6 +205,18 @@ Coulomb/capacitive bulk reading.  The positive physical content is the
 measured curvature (the capacitance C and its Nc trend), not the win
 over the strawman.  This is the first U(1)-sector energetics data for
 the duality.
+
+    HOW WELL IS C ACTUALLY MEASURED?  Not to the three decimals the fit
+    prints.  chi2_gls/dof runs 4-131, i.e. the 2-parameter forms do not
+    describe the curve, so the GLS parameter errors are inflated by
+    sqrt(chi2/dof) before being quoted (capacitance_err in the JSON).
+    That gives C = 1.080 +- 0.128 and 1.346 +- 0.026 at Nc = 8 (generic,
+    c_symmetric) and 1.415 +- 0.184, 1.708 +- 0.076 at Nc = 10.  On top of
+    that sits a MODEL systematic: adding a quartic term, or shrinking the
+    window, moves C by a further 10-15%, because the residual structure
+    the huge chi2 is reporting is real curvature beyond x^2.  So the
+    honest statement is C = O(1), rising slowly with Nc -- not a
+    three-digit number.
 
 --------------------------------------------------------------------------
 3. Charged vs singlet spectral weight
@@ -260,7 +285,7 @@ from __future__ import annotations
 import argparse
 import json
 from functools import lru_cache
-from math import comb, factorial
+from math import comb, factorial, sqrt
 from pathlib import Path
 
 import numpy as np
@@ -517,7 +542,9 @@ def _gls_fit(A: np.ndarray, y: np.ndarray, cov: np.ndarray,
     y.  When cov was estimated from n_cov samples, the Hartlap factor
     (n_cov - rank - 2)/(n_cov - 1) corrects the mean bias of the inverse
     (it rescales chi2 only; the coefficients are scale-invariant).
-    Returns (coef, chi2, rank, cond, hartlap)."""
+    Also returns the GLS parameter covariance (A^T Cinv A)^-1, which is
+    what a capacitance uncertainty has to come from.
+    Returns (coef, chi2, rank, cond, hartlap, pcov)."""
     w, U = np.linalg.eigh(0.5 * (cov + cov.T))
     tol = w.max() * 1e-10
     good = w > tol
@@ -532,7 +559,8 @@ def _gls_fit(A: np.ndarray, y: np.ndarray, cov: np.ndarray,
     r = y - A @ coef
     chi2 = hartlap * float(r @ Cinv @ r)
     cond = float(w.max() / w[good].min())
-    return coef, chi2, rank, cond, hartlap
+    pcov = np.linalg.inv(AtC @ A)
+    return coef, chi2, rank, cond, hartlap, pcov
 
 
 def fit_charging(curve: dict) -> dict:
@@ -584,10 +612,17 @@ def fit_charging(curve: dict) -> dict:
         cols = ([np.ones_like(x), col] if folded
                 else [np.ones_like(x), x, col])
         A = np.vstack(cols).T
-        coef, chi2, rank, cond, hartlap = _gls_fit(A, y, C, n_cov)
+        coef, chi2, rank, cond, hartlap, pcov = _gls_fit(A, y, C, n_cov)
+        # chi2/dof is O(10-100) here: the 2-parameter forms do not describe
+        # the curve, so the raw GLS errors understate the real spread.
+        # Inflate by sqrt(chi2/dof), the standard treatment of a bad fit.
+        infl = sqrt(chi2 / dof) if dof > 0 and chi2 > dof else 1.0
+        coef_err = np.sqrt(np.clip(np.diag(pcov), 0.0, None)) * infl
         coefd, *_ = np.linalg.lstsq(A / s[:, None], y / s, rcond=None)
         chi2_diag = float(np.sum(((y - A @ coefd) / s) ** 2))
         out[name] = dict(coef=[float(c) for c in coef],
+                         coef_err=[float(e) for e in coef_err],
+                         err_inflation=float(infl),
                          chi2_gls=chi2, aic=chi2 + 2 * K,
                          chi2_gls_per_dof=chi2 / dof if dof > 0 else np.nan,
                          chi2_diag=chi2_diag,
@@ -595,7 +630,13 @@ def fit_charging(curve: dict) -> dict:
                                             else np.nan),
                          cov_rank=rank, cov_cond=cond, hartlap=hartlap)
     quad_c = out["capacitive_x2"]["coef"][-1]
+    quad_e = out["capacitive_x2"]["coef_err"][-1]
     out["capacitance"] = float(1.0 / (2.0 * quad_c)) if quad_c != 0 else np.inf
+    # C = 1/(2 a) so dC/C = da/a; the band is the inflated GLS error only,
+    # and does NOT include the model systematic (a cubic/quartic term moves
+    # C by 10-15%), which the docstring states separately.
+    out["capacitance_err"] = (abs(out["capacitance"]) * abs(quad_e / quad_c)
+                              if quad_c != 0 else np.inf)
     daic = out["confining_absx"]["aic"] - out["capacitive_x2"]["aic"]
     out["delta_aic_conf_minus_cap"] = daic
     out["delta_chi2_diag_conf_minus_cap"] = (
@@ -765,7 +806,7 @@ def make_figure(results: dict, out_png: Path) -> None:
     axM.legend(frameon=False, fontsize=8)
     axM.grid(True, alpha=0.2)
     axM.text(0.5, 0.9,
-             "generic top sector is 1-dim ($J_{AA}$ only):\n"
+             "generic keys overlap ($A\\cap B\\neq\\emptyset$):\n"
              "particle-hole asymmetry is real, not noise",
              transform=axM.transAxes, fontsize=7.5, color="0.4",
              ha="center", va="top")
@@ -894,7 +935,10 @@ def main(big: bool = False) -> dict:
             print(f"    capacitive:  {cap_str}   "
                   f"chi2_gls/dof = {cap['chi2_gls_per_dof']:.1f} "
                   f"({f['n_points']} pts, dof {f['dof']}); "
-                  f"C = {f['capacitance']:.3f}")
+                  f"C = {f['capacitance']:.3f} +- "
+                  f"{f['capacitance_err']:.3f} (GLS, "
+                  f"x{cap['err_inflation']:.1f} chi2-inflated; add ~10-15% "
+                  f"model systematic)")
             print(f"    confining :  {con_str}   "
                   f"chi2_gls/dof = {con['chi2_gls_per_dof']:.1f}")
             print(f"    -> {f['verdict']}  [GLS Delta-chi2; diagonal-"
