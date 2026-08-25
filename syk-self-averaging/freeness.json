@@ -1,5 +1,5 @@
 {
- "provenance": "freeness.py -- rung 27 (CK 2607.13665 Sec. 4): classical->free crossover of (E, F(t)) at T_B = infinity; W1 distances of spec(E+F(t)) to binomial (classical) and arcsine (free) laws; alternating-word battery; time in 1/scriptJ units, scriptJ = sqrt(2) p",
+ "provenance": "freeness.py -- freeness onset (CK 2607.13665 Sec. 4): classical->free crossover of (E, F(t)) at T_B = infinity; W1 distances of spec(E+F(t)) to binomial (classical) and arcsine (free) laws; alternating-word battery; time in 1/scriptJ units, scriptJ = sqrt(2) p",
  "w1_binomial_vs_arcsine": 0.47260691242095043,
  "points": [
   {

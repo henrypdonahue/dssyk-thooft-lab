@@ -3,10 +3,10 @@ r"""
 The large-q (lambda -> 0) anchor: verified closed forms and their structure.
 ============================================================================
 
-Rung 17 of road_map.md.  Every formula here was transcribed from the source
-papers with equation-level verification (see the provenance block at the
-bottom) and is checked against this repo's ED bench
-(syk-self-averaging/largeq_bench.json) in test_largeq.py.
+Every formula here was transcribed from the
+source papers with equation-level verification (see the provenance block
+at the bottom).  test_largeq.py checks each one against this repo's ED
+bench (syk-self-averaging/largeq_bench.json).
 
 Conventions bridge (exact, no approximation):
     repo (psi^2 = 1, Var J = p!/N^{p-1})  <->  Maldacena-Stanford 1604.07818
@@ -14,28 +14,29 @@ Conventions bridge (exact, no approximation):
         rescaling psi = sqrt(2) psi_MS forces  J_MS^2 = q 2^q,  hence
         script-J^2 = 2 q^2  ->  script-J = sqrt(2) q  in repo units.
     (Streicher 1911.10171 and Choi-Mezei-Sarosi 1912.00004 use the same
-    script-J; all three papers' v solve the same equation.)
+    script-J.  All three papers' v solve the same equation.)
 
-The structural result this module encodes (the rung-17 finding):
+The structural result this module encodes (the finding):
 
   * The large-q singlet 4-point function is known in closed form at ALL
     temperatures (Streicher 3.3/3.10; CMS 3.16/3.20), with every
     temperature-dependence absorbed into v.
   * Its analytic structure in the Sommerfeld-Watson plane is MEROMORPHIC
     with contributions ONLY from m = 0 (Hamiltonian exchange; the entire TOC)
-    and m = +-v (the scramblon, OTOC only).  The would-be bilinear tower --
-    the quantization sets M^e/M^o below, the all-temperature analog of
-    k(h) = 1 -- CANCELS at leading order, and its couplings are
-    O(1/q^2) (Gross-Rosenhaus 1702.08016 Eq. 2.15).
+    and m = +-v (the scramblon, OTOC only).  The would-be bilinear tower
+    CANCELS at leading order, and its couplings are O(1/q^2)
+    (Gross-Rosenhaus 1702.08016 Eq. 2.15).  That tower is the
+    quantization sets M^e/M^o below, the all-temperature analog of
+    k(h) = 1.
   * Therefore: THE lambda -> 0 ANCHOR OF THE 'T HOOFT MATCH CANNOT COME FROM
     THE LEADING LARGE-q FOUR-POINT FUNCTION.  The meson tower first appears
     in the O(1/q) corrections, organized on the exact-in-betaJ skeleton
-    (the M^e/M^o sets) -- whose residues at finite temperature are
-    unpublished.  Computing them IS rung 17 proper.
+    (the M^e/M^o sets).  The residues of that skeleton at finite
+    temperature are unpublished.  Computing them IS proper.
   * Encouragingly for the correspondence: M^e/M^o alternate (even/odd), the
-    exact CP-alternation slot of the 't Hooft tower; and at T = infinity the
-    sets degenerate to integers (in 2pi/beta units) -- consistent with
-    BOOST.md: physical masses are not boost-frequency peak positions.
+    exact CP-alternation slot of the 't Hooft tower.  At T = infinity the
+    sets degenerate to integers (in 2pi/beta units).  That is consistent
+    with BOOST.md: physical masses are not boost-frequency peak positions.
 """
 
 from __future__ import annotations
@@ -73,9 +74,9 @@ def G_infT_repo(t, p: int):
 
         G(t) = [sech(scriptJ t)]^{2/p},   scriptJ = sqrt(2) p.
 
-    (The beta J -> 0 limit of MS (2.18)-(2.19) continued to real time; the
-    exponentiated large-q resummation G = e^{g/q} at leading order.)
-    Corrections are O(1/p) and O(lambda = p^2/N)."""
+    (The beta J -> 0 limit of MS (2.18)-(2.19) continued to real time.
+    This is the exponentiated large-q resummation G = e^{g/q} at leading
+    order.)  Corrections are O(1/p) and O(lambda = p^2/N)."""
     scriptJ = np.sqrt(2.0) * p
     return (1.0 / np.cosh(scriptJ * np.asarray(t, float))) ** (2.0 / p)
 
@@ -90,8 +91,8 @@ def quantization_sets(v: float, m_max: float = 12.0):
         M^o:  m tan(m pi/2) - v tan(v pi/2) = 0
 
     Returns (M_even, M_odd) with roots m > v up to m_max.  As v -> 1
-    (conformal) the union approaches the integers > 1; as v -> 0 (T = inf)
-    M^e -> odd integers and M^o -> even integers."""
+    (conformal) the union approaches the integers > 1.  As v -> 0
+    (T = inf) M^e -> odd integers and M^o -> even integers."""
     c = v * np.tan(np.pi * v / 2.0)
     fe = lambda m: m / np.tan(np.pi * m / 2.0) + c
     fo = lambda m: m * np.tan(np.pi * m / 2.0) - c
@@ -119,9 +120,9 @@ def quantization_sets(v: float, m_max: float = 12.0):
 # ---------------------------------------------------------------------------
 def gr_tower(q: float, n_max: int = 8):
     """h_n = 2n + 1 + 2 eps_n with eps_n = (1/q)(2n^2+n+1)/(2n^2+n-1), and
-    the O(1/q^2) squared OPE couplings c_n^2 [GR Eq. (2.15)] -- the
+    the O(1/q^2) squared OPE couplings c_n^2 [GR Eq. (2.15)].  This is the
     conformal-limit data whose finite-temperature continuation is the
-    unpublished content of rung 17."""
+    unpublished content of this task."""
     from math import gamma, sqrt, pi
     rows = []
     for n in range(1, n_max + 1):

@@ -1,4 +1,4 @@
-"""Tests for the condensate / GMOR-corner / vacuum-energy module (rung 21).
+"""Tests for the condensate / GMOR-corner / vacuum-energy module.
 
 Anchors: LM arXiv:2409.11324 (6.1)-(6.3) [transcribed], the Zhitnitsky
 chiral value, and this repo's own Jacobi solver in the chiral corner.
@@ -23,7 +23,8 @@ def test_chiral_value_closed_form():
 
 
 def test_I_alpha_independent_route():
-    """I(0) via an independent midpoint/tanh-substitution quadrature
+    """I(0) via an independent trapezoid quadrature on dense linear grids
+    plus an analytic tail
     (shares nothing with the scipy.quad splitting)."""
     # alpha = 0: I(0) = (1/2) Int_0^inf (sinh2t - 2t)/(t^3 cosh^2 t) dt
     t1 = np.linspace(1e-8, 10.0, 400001)
@@ -48,7 +49,7 @@ def test_condensate_chiral_limit_with_log_rate():
 
 
 def test_duality_point_value():
-    """f(0) = (log pi - 1 - gamma_E)/(2 pi sqrt(pi)); the alpha-dependent
+    """f(0) = (log pi - 1 - gamma_E)/(2 pi sqrt(pi)).  The alpha-dependent
     terms of (6.1) vanish at alpha = 0."""
     assert duality_point_value() == pytest.approx(-0.03883444, rel=1e-6)
     assert condensate_dimensionless(0.0) == pytest.approx(
@@ -71,8 +72,8 @@ def test_vacuum_energy_feynman_hellmann_consistency():
 def test_committed_json_and_gmor_corner():
     """Committed campaign numbers: the vacuum-energy shift at the duality
     point is FINITE and small (the entire 2d counterpart of Sec. 5's
-    'corrections'), and the solver's chiral-corner ground state approaches
-    the GMOR leading order with the measured sqrt(a) NLO."""
+    'corrections').  The solver's chiral-corner ground state approaches the
+    GMOR leading order with the measured sqrt(a) NLO."""
     with open(HERE / "condensate.json") as fh:
         d = json.load(fh)
     assert d["eps_duality_point"] == pytest.approx(-0.0407, abs=0.002)

@@ -1,6 +1,6 @@
-"""Tests for the Majorana singlet-channel moments bench (rung 15 ED side).
+"""Tests for the Majorana singlet-channel moments bench (this task ED side).
 
-The two exact identities that anchor the whole rung-15 story:
+The two exact identities that anchor the whole story:
   * A_1 = -2p H identically (so the n = 1 channel is conserved at every N);
   * the binomial word-expansion used by duality/chord_moments.py is a
     per-instance OPERATOR identity (validated here against dense algebra,
@@ -41,8 +41,8 @@ def test_a1_identity():
 def test_word_expansion_is_operator_identity(n, k):
     """Tr[ad_H^k(psi_i ad^n psi_i) (psi_j ad^n psi_j)^dag] equals the
     binomial-expanded sum of Tr[H^a psi_i H^b psi_i H^c psi_j H^d psi_j]
-    words with coefficients (-1)^{n+r+r'+s} C(k,s) C(n,r) C(n,r') --
-    the assembly used verbatim by duality/chord_moments.py."""
+    words with coefficients (-1)^{n+r+r'+s} C(k,s) C(n,r) C(n,r').
+    duality/chord_moments.py uses this assembly verbatim."""
     N, p = 8, 4
     H, psis = _instance(N, p, 42)
     dim = H.shape[0]
@@ -91,12 +91,13 @@ def test_bench_n1_conserved(bench):
 
 
 def test_bench_84_conservation_is_special_not_p_half_N(bench):
-    """(N, p) = (8, 4): the n >= 2 channel moments vanish IDENTICALLY --
-    an exact per-instance conservation [H, A_n] = 0 special to that point.
-    Established by the adversarial review (2026-08-16): this is NOT a
-    general p = N/2 phenomenon -- asserted live here: at (12, 6) the
-    commutator is O(0.3), not zero.  Mechanism at (8, 4) unknown; the row
-    is kept as the exhibition and excluded from trend statements."""
+    """(N, p) = (8, 4): the n >= 2 channel moments vanish IDENTICALLY.
+    This is an exact per-instance conservation [H, A_n] = 0 special to
+    that point.  The adversarial review (2026-08-16) established that this
+    is NOT a general p = N/2 phenomenon.  The test asserts that live here:
+    at (12, 6) the commutator is O(0.3), not zero.  The mechanism at
+    (8, 4) is unknown.  The row is kept as the exhibition and excluded
+    from trend statements."""
     for r in bench["points"]:
         if r["N"] == 8 and r["p"] == 4 and r["n"] >= 2:
             assert r["w2"] == 0.0
@@ -114,10 +115,10 @@ def test_bench_84_conservation_is_special_not_p_half_N(bench):
 
 def test_bench_raw_w2_rises_toward_thooft_corner(bench):
     """Along fixed p (lambda = 2p^2/N falling), the RAW singlet-channel
-    width w2 RISES: the tower channel turns on toward the fixed-p,
-    lambda -> 0 corner where the 't Hooft match must live -- exactly where
-    the strict double-scaled (chord) description says the per-pair
-    amplitude is conserved.  (N = 2p excluded: the special (8,4)
+    width w2 RISES.  The tower channel turns on toward the fixed-p,
+    lambda -> 0 corner where the 't Hooft match must live.  That is
+    exactly where the strict double-scaled (chord) description says the
+    per-pair amplitude is conserved.  (N = 2p excluded: the special (8,4)
     identity row.)"""
     for p in (4, 6):
         for n in (2, 3):
@@ -133,14 +134,14 @@ def test_bench_matched_lambda_honest_negative(bench):
     """The honest fixed-lambda statement, post-review: at the near-matched
     pair (p=4, N=10, lam=3.20) <-> (p=6, N=22, lam=3.27) the RAW w2
     RISES with N (0.30 -> 0.51 for n = 2).  The approach to the chord
-    N = infinity zero is NOT yet visible at dense-ED sizes -- expected,
-    since the chord statement is about the i != j PAIR amplitude while
-    the measured channel is flavor-diagonal-dominated at these N (the
-    pair part of mu_0 is a few percent and opposite in sign; see
-    mn_majorana_bench.py docstring).  A previous (1-2p/N)^2 'artifact
-    correction' that manufactured a falling trend was removed by the
-    adversarial review: its motivating 'p = N/2 zero' does not exist for
-    the p = 6 series and its exponent was underived."""
+    N = infinity zero is NOT yet visible at dense-ED sizes.  That is
+    expected: the chord statement is about the i != j PAIR amplitude,
+    while the measured channel is flavor-diagonal-dominated at these N.
+    The pair part of mu_0 is a few percent and opposite in sign (see
+    mn_majorana_bench.py docstring).  The adversarial review removed a
+    previous (1-2p/N)^2 'artifact correction' that manufactured a falling
+    trend.  Its motivating 'p = N/2 zero' does not exist for the p = 6
+    series, and its exponent was underived."""
     for n in (2, 3):
         r4 = next(r for r in bench["points"]
                   if r["p"] == 4 and r["N"] == 10 and r["n"] == n)

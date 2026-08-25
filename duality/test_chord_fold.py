@@ -1,4 +1,4 @@
-"""Tests for the chord-side Euclidean fold (rung-26 decider #2).
+"""Tests for the chord-side Euclidean fold at N = infinity.
 
 The committed chord_fold.json is the N = infinity answer to the question
 fold_scan.json (decider #1) posed at ED sizes.  Verdict encoded here:
@@ -44,7 +44,7 @@ def test_truncation_clean(data):
 
 def test_unfolded_control_stable_and_real(data):
     """The unfolded crossed OTOC ratio: lambda-stable within a narrow band,
-    scrambling-side sign (rung 25).  (The im == 0 check is a SANITY check
+    scrambling-side sign.  (The im == 0 check is a SANITY check
     only: for real-theta configurations every chord segment and matrix is
     real, so reality is manifest by construction -- the nontrivial reality
     statement is the Lorentzian growth branch, asserted in
@@ -91,17 +91,25 @@ def test_folded_ratio_departs_from_continuation(data):
 
 def test_fold_breaks_reality_like_the_continuation(data):
     """Lorentzian branch: the unfolded growth curve stays exactly real; the
-    folded one develops Im < 0 -- the same symmetry-breaking pattern the
-    continuation predicts (and the ED lab measured), amplified in
-    magnitude."""
+    folded one develops Im < 0 -- the same symmetry-breaking pattern the ED
+    lab measured, amplified in magnitude.
+
+    The continued closed form's Im is asserted only in MAGNITUDE (growing
+    with thL).  The folded angles lie far outside Streicher's principal
+    window (theta_12^- = -3 pi), so its branch -- and hence its overall
+    sign -- is a choice, not a prediction.  See
+    test_antiscrambling.py::test_fold_angles_leave_principal_window."""
     for pt in data["points"]:
         for key, v in pt.items():
             if isinstance(v, dict) and key.startswith("growth_thL"):
                 assert abs(v["im"]) < 1e-8
+        ims = []
         for thL in (0.8, 1.2):
             v = pt[f"fold_thL={thL}"]
-            assert v["im"] < -1e-3
-            assert v["closed_im"] < 0
+            assert v["im"] < -1e-3              # chord side: unambiguous
+            assert v["closed_im"] != 0.0
+            ims.append(abs(v["closed_im"]))
+        assert ims[1] > ims[0]
 
 
 def test_ed_bridge_unfolded_close_folded_far(data, ed_scan):
@@ -145,3 +153,29 @@ def test_soft_edge_mechanism(ed_scan):
     assert abs(d["corr_Emax_unfolded"]) < 0.4
     assert abs(d["corr_Emax_folded"]) > 2 * abs(d["corr_negEmin_folded"])
     assert (d["folded_frac_std"] / d["unfolded_frac_std"]) > 10
+
+
+def test_chord_fold_reproduces_its_committed_row(data):
+    """Execute the producer, do not just read its output.
+
+    Every other test here reads the committed JSON, which leaves
+    chord_fold.py itself unexercised -- a sign or scale corruption in the
+    contour assembly would keep the suite green until someone regenerated
+    the data.  The engine is deterministic, so the cheapest committed row
+    (largest lambda, smallest chord lattice, ~0.1 s) reproduces exactly.
+    """
+    import chord_fold
+
+    row = max(data["points"], key=lambda p: p["lam"])
+    out = chord_fold.run_point(row["lam"], row["p"], row["betaJ"],
+                               row["nmax"])
+    for key in ("toc", "otoc", "fold"):
+        assert out[key]["re"] == pytest.approx(row[key]["re"],
+                                               rel=1e-12, abs=1e-14)
+    for key in ("fold_connected_fraction", "otoc_connected_fraction"):
+        assert out[key]["re"] == pytest.approx(row[key]["re"],
+                                               rel=1e-12, abs=1e-14)
+    # the structure the verdict rests on, recomputed from scratch
+    assert out["toc"]["re"] > 0
+    assert out["otoc"]["re"] < 0
+    assert out["otoc"]["im"] == pytest.approx(0.0, abs=1e-12)

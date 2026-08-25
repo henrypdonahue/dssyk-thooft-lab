@@ -46,9 +46,9 @@ def check_sum_rules(num_basis=400, n_cut=120):
         G2- = sum_m 1/lambda_{2m+1}^2 = 2
 
     lambda_n = (2 lambda_n)/2, so 1/lambda_n^2 = 4/(2 lambda_n)^2.  The sum is
-    dominated by the lowest few levels; we use accurately computed eigenvalues
+    dominated by the lowest few levels.  We use accurately computed eigenvalues
     for n <= n_cut and close the (small) tail analytically with the leading
-    asymptotic 2 lambda_n -> n + 3/4, giving
+    asymptotic 2 lambda_n -> n + 3/4.  That gives
         tail = sum_{n=n0,n0+2,...} 4/(n+3/4)^2 = polygamma(1, (n0+3/4)/2)."""
     ev_sym, _, _ = solve_sector(num_basis, parity=0)
     ev_anti, _, _ = solve_sector(num_basis, parity=1)
@@ -67,7 +67,7 @@ def crosscheck_independent():
     at alpha = 0 and two nonzero masses.  This is the check on the quark-mass
     machinery (invisible at alpha = 0)."""
     print("\nIndependent cross-check (sine-basis solver, sine_solver.py):")
-    print("  (algebraic convergence -> ~1e-3..1e-4 agreement is expected & confirms")
+    print("  (algebraic convergence -> ~1e-3..1e-4 agreement is expected and confirms")
     print("   the potential term; NOT a precision statement about the main solver)")
     worst = 0.0
     for alpha in (0.0, 0.5, 2.0):

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 r"""
 Validate the SYK construction against the textbook signature: random-matrix
-level statistics that cycle through GOE / GUE / GSE with N mod 8 (the Bott
-periodicity of the Majorana SYK ensemble).
+level statistics that cycle through GOE / GUE / GSE with N mod 8.  That cycle
+is the Bott periodicity of the Majorana SYK ensemble.
 
 Diagnostic: the mean adjacent-gap ratio  <r>,  r_n = min(s_n,s_{n-1})/max(...),
 s_n = E_{n+1}-E_n.  It needs no spectral unfolding and has known universal
@@ -10,12 +10,12 @@ values:
 
     Poisson  0.3863     GOE  0.5307     GUE  0.5996     GSE  0.6744
 
-Crucial subtlety (this bit trips people up): H commutes with fermion parity, so
-its spectrum is a superposition of two independent blocks.  Mixed, the level
-repulsion is washed out and <r> fakes the Poisson value ~0.39.  You must resolve
-parity first.  In our Jordan-Wigner convention parity is diagonal --
-P = (-1)^{N/2} Z^{⊗N/2} -- so a sector is just the computational-basis states of
-fixed qubit-parity (even/odd popcount).
+Crucial subtlety: H commutes with fermion parity, so
+its spectrum is a superposition of two independent blocks.  When the two blocks
+are mixed, the level repulsion is washed out and <r> fakes the Poisson value
+~0.39.  You must resolve parity first.  In our Jordan-Wigner convention parity
+is diagonal: P = (-1)^{N/2} Z^{⊗N/2}.  So a sector is just the
+computational-basis states of fixed qubit-parity (even/odd popcount).
 
 Predicted class by N mod 8 (within a parity sector):
 
@@ -43,8 +43,8 @@ def _even_parity_mask(N: int) -> np.ndarray:
 def mean_r(eigs: np.ndarray, trim: float = 0.15) -> float:
     """Mean adjacent-gap ratio over the central (1-2*trim) of a sorted spectrum.
 
-    The s > 1e-12 filter below is load-bearing: in the GSE cases (N mod 8 = 4)
-    every level is Kramers-doubled within a parity sector, and without dropping
+    The s > 1e-12 filter below is load-bearing.  In the GSE cases (N mod 8 = 4)
+    every level is Kramers-doubled within a parity sector.  Without dropping
     the zero gaps the r-statistic would be garbage.  It also makes the GOE/GUE
     cases robust to accidental near-degeneracies."""
     e = np.sort(eigs)
@@ -59,10 +59,10 @@ def mean_r(eigs: np.ndarray, trim: float = 0.15) -> float:
 def r_statistic(N: int, p: int = 4, n_real: int = 8, seed: int = 0) -> float:
     """<r> in the even-parity sector, averaged over n_real disorder realizations.
 
-    Only valid against CLASS_BY_NMOD8 for p = 0 mod 4: the antiunitary
+    Only valid against CLASS_BY_NMOD8 for p = 0 mod 4.  The antiunitary
     classification of Majorana SYK depends on p mod 4 (p = 2 mod 4 realizes a
-    different N mod 8 table), so guard rather than silently validate against
-    the wrong ensemble."""
+    different N mod 8 table).  So this function guards rather than silently
+    validating against the wrong ensemble."""
     if p % 4 != 0:
         raise ValueError(
             f"p={p}: CLASS_BY_NMOD8 is the p = 0 (mod 4) classification; "
@@ -85,8 +85,9 @@ def kramers_splitting(N: int, p: int = 4, seed: int = 0) -> tuple[float, float]:
     In a GSE case (N mod 8 = 4) the antiunitary symmetry squares to -1, so
     within a parity sector every level is EXACTLY 2-fold degenerate.  Returns
     (max intra-pair splitting, min inter-pair gap) over the sorted even-parity
-    spectrum of one realization: exact doubling means the first is machine-zero
-    while the second stays O(1), so the degeneracy is genuine, not accidental."""
+    spectrum of one realization.  Exact doubling means the first is
+    machine-zero while the second stays O(1), so the degeneracy is genuine,
+    not accidental."""
     if N % 8 != 4:
         raise ValueError(f"N={N}: Kramers doubling is the GSE case N = 4 (mod 8)")
     mask = _even_parity_mask(N)

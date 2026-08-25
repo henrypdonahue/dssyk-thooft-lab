@@ -4,7 +4,7 @@ Charge-conserving complex (Dirac) SYK: the U(1)/"QED" sector of the duality.
 ============================================================================
 
 The U(N) side of Miyashita-Sekino-Susskind (arXiv:2607.05678) is the Dirac
-SYK model -- complex fermions c_i, i = 0..Nc-1, with a charge-conserving
+SYK model.  It has complex fermions c_i, i = 0..Nc-1, and a charge-conserving
 Hamiltonian containing p/2 creation and p/2 annihilation operators per term:
 
     H = sum_{|A|=|B|=p/2}  J_{AB}  c^dag_{a1} ... c^dag_{ak} c_{b1} ... c_{bk},
@@ -12,12 +12,12 @@ Hamiltonian containing p/2 creation and p/2 annihilation operators per term:
     (A, B ascending index sets, k = p/2;  J_{BA} = conj(J_{AB}) so H = H^dag;
      diagonal couplings J_{AA} real.)
 
-This is the sector where the paper's electromagnetic story lives: M_0 = Q is
+This is the sector where the paper's electromagnetic story lives.  M_0 = Q is
 the conserved U(1) charge ("photon"), M_1 the conserved "graviton", and the
 tower  M_n = sum_i c^dag_i (d^n/dt^n) c_i  the meson candidates.  The module
 provides the Hamiltonian (fast bitwise builder + independent sparse reference),
-the charge, the M_n tower, and the (unitary) particle-hole/CP machinery --
-everything the operator-identity and CP tests in test_syk.py exercise.
+the charge, the M_n tower, and the (unitary) particle-hole/CP machinery.  That
+is everything the operator-identity and CP tests in test_syk.py exercise.
 
 Operator identities encoded here (and asserted in the tests):
 
@@ -39,24 +39,24 @@ Operator identities encoded here (and asserted in the tests):
 
 CP structure (the paper's CP = (-1)^{n+1}, Sec. 4.3), as actually measured:
 
-  *  The relevant operation is the UNITARY particle-hole map C -- see
+  *  The relevant operation is the UNITARY particle-hole map C.  See
      particle_hole() for why it cannot be antiunitary (M_1 ~ iH).
   *  On a C-invariant instance (draw_couplings ensemble="c_symmetric"),
-     CP(M_0) = -1 and CP(M_1) = +1 hold EXACTLY.
+     CP of the traceless M_0 (i.e. Q - Nc/2; C Q C = Nc - Q, so only the
+     shifted charge is CP-odd) is -1 and CP(M_1) = +1, both EXACTLY.
   *  For n >= 2 the raw M_n operators are CP-MIXTURES (wrong-channel
      Frobenius weight ~15-65%, varying with n, Nc and instance; measure with
-     wrong_channel_weight).  This is
-     structural, not numerical: M_n = d^n/dt2^n O(t1,t2)|_{t1=t2}
-     differentiates only ONE time argument, so total-time-derivative
-     (commutator) pieces carrying the opposite CP contaminate the operator.
-     The sharp version of the paper's assignment must therefore be stated at
-     the level of CP-RESOLVED spectral functions (split with cp_projections,
-     then take two-point functions) -- mn_spectroscopy.py measures exactly
-     that.
+     wrong_channel_weight).  This is structural, not numerical.
+     M_n = d^n/dt2^n O(t1,t2)|_{t1=t2} differentiates only ONE time argument,
+     so total-time-derivative (commutator) pieces carrying the opposite CP
+     contaminate the operator.  The sharp version of the paper's assignment
+     must therefore be stated at the level of CP-RESOLVED spectral functions
+     (split with cp_projections, then take two-point functions).
+     mn_spectroscopy.py measures exactly that.
 
 Conventions: occupation-number basis on Nc qubits, mode i <-> bit (Nc-1-i) of
-the basis index (matching the kron order of syk.dirac_operators, against which
-the fast builder is tested).  d/dt X = i[H, X].
+the basis index.  That matches the kron order of syk.dirac_operators, against
+which the fast builder is tested.  d/dt X = i[H, X].
 """
 
 from __future__ import annotations
@@ -73,9 +73,10 @@ import numpy as np
 def coupling_variance_dirac(Nc: int, p: int) -> float:
     """Var(|J_AB|) chosen so <Tr H^2>/dim is extensive (~Nc), the analog of the
     Majorana convention Var = p!/N^{p-1}.  Each pair (A,B) contributes
-    Var * 2^{-|A u B|} to <m2> and there are ~C(Nc,p/2)^2 ~ (Nc^{p/2}/(p/2)!)^2
-    pairs, so Var = ((p/2)!)^2 2^p / Nc^{p-1} gives <m2> ~ Nc up to 1/Nc
-    corrections.  The operator-identity tests are normalization-independent."""
+    Var * 2^{-|A u B|} to <m2>, and there are ~C(Nc,p/2)^2 ~
+    (Nc^{p/2}/(p/2)!)^2 pairs.  So Var = ((p/2)!)^2 2^p / Nc^{p-1} gives
+    <m2> ~ Nc up to 1/Nc corrections.  The operator-identity tests are
+    normalization-independent."""
     k = p // 2
     return factorial(k) ** 2 * 2 ** p / Nc ** (p - 1)
 
@@ -85,19 +86,19 @@ def draw_couplings(Nc: int, p: int, rng, ensemble: str = "generic") -> dict:
     sets, with J_BA = conj(J_AB) and real diagonal.
 
     ensemble = "generic":
-        all (A, B) pairs; complex off-diagonal entries with E|J|^2 = Var
+        all (A, B) pairs.  Complex off-diagonal entries with E|J|^2 = Var
         (split evenly re/im).  Generic instances break charge conjugation.
 
     ensemble = "c_symmetric":
         DISJOINT pairs (A ^ B = empty) with REAL symmetric couplings.  This is
         the maximal sub-ensemble that is exactly invariant under the unitary
-        particle-hole map C (see particle_hole): C(c^dag_A c_B) = c^dag_B c_A
-        with no leftover contraction terms only when A and B share no mode, and
+        particle-hole map C (see particle_hole).  C(c^dag_A c_B) = c^dag_B c_A
+        with no leftover contraction terms only when A and B share no mode.
         C-invariance + Hermiticity then force J real symmetric (for p/2 even;
         p/2 odd would need imaginary antisymmetric J, not implemented).
         Restricting to disjoint pairs discards an O(p^2/Nc) fraction of
-        couplings -- immaterial at large Nc, and the price of an instance on
-        which CP quantum numbers are sharp."""
+        couplings.  That loss is immaterial at large Nc, and it is the price
+        of an instance on which CP quantum numbers are sharp."""
     if p % 2 != 0:
         raise ValueError("p must be even (p/2 creators + p/2 annihilators)")
     k = p // 2
@@ -151,10 +152,10 @@ def apply_monomial(Nc: int, A, B, states: np.ndarray):
 
     Returns (valid, rows, signs): boolean mask of states not annihilated, the
     image state indices, and the fermionic signs.  Ascending monomials are
-    applied right-to-left (largest annihilator first, largest creator first);
-    with that order every Jordan-Wigner parity count can use the *pre-image*
-    occupation for c_B and the post-annihilation occupation for c^dag_A, since
-    already-cleared/set bits lie above the mode being counted."""
+    applied right-to-left (largest annihilator first, largest creator first).
+    With that order every Jordan-Wigner parity count can use the *pre-image*
+    occupation for c_B and the post-annihilation occupation for c^dag_A.  This
+    works because already-cleared/set bits lie above the mode being counted."""
     Bmask = 0
     for b in B:
         Bmask |= _mode_bit(Nc, b)
@@ -177,10 +178,36 @@ def apply_monomial(Nc: int, A, B, states: np.ndarray):
     return valid, rows, signs
 
 
+# The (rows, cols, signs) of a monomial depend only on (Nc, A, B) -- never on
+# the coupling value -- so a disorder ensemble can build them once and reuse
+# them across every draw.  That is the whole cost of assembly: at Nc = 10,
+# p = 4 a generic instance has 2025 monomials, and rebuilding their bit
+# arithmetic per draw dominates the ensemble loop.  Cached below a dimension
+# cap so the table stays at tens of MB (at Nc = 12, p = 4 it is ~30 MB).
+_MONOMIAL_CACHE: dict = {}
+_MONOMIAL_CACHE_MAX_DIM = 1 << 12
+
+
+def _monomial_structure(Nc: int, A, B, states: np.ndarray):
+    """(rows, cols, signs) of c^dag_A c_B restricted to the states it does not
+    annihilate.  Memoized; falls through to a fresh apply_monomial above the
+    dimension cap."""
+    if (1 << Nc) > _MONOMIAL_CACHE_MAX_DIM:
+        valid, rows, signs = apply_monomial(Nc, A, B, states)
+        return rows[valid], states[valid], signs[valid]
+    key = (Nc, A, B)
+    hit = _MONOMIAL_CACHE.get(key)
+    if hit is None:
+        valid, rows, signs = apply_monomial(Nc, A, B, states)
+        hit = (rows[valid], states[valid], signs[valid])
+        _MONOMIAL_CACHE[key] = hit
+    return hit
+
+
 def dirac_hamiltonian(Nc: int, p: int, rng=None, couplings: dict = None):
     """One disorder realization of the charge-conserving complex SYK H as a
     dense (2^Nc x 2^Nc) Hermitian matrix.  Pass `couplings` (from
-    draw_couplings) to reuse a table; otherwise `rng` draws a fresh one."""
+    draw_couplings) to reuse a table.  Otherwise `rng` draws a fresh one."""
     if couplings is None:
         if rng is None:
             raise ValueError("need rng or couplings")
@@ -188,9 +215,11 @@ def dirac_hamiltonian(Nc: int, p: int, rng=None, couplings: dict = None):
     dim = 1 << Nc
     states = np.arange(dim, dtype=np.int64)
     H = np.zeros((dim, dim), dtype=complex)
+    # one += per monomial, in coupling order: identical accumulation order to
+    # the uncached route, so H is bit-for-bit unchanged
     for (A, B), J in couplings.items():
-        valid, rows, signs = apply_monomial(Nc, A, B, states)
-        H[rows[valid], states[valid]] += J * signs[valid]
+        rows, cols, signs = _monomial_structure(Nc, A, B, states)
+        H[rows, cols] += J * signs
     return H
 
 
@@ -199,7 +228,8 @@ def dirac_hamiltonian(Nc: int, p: int, rng=None, couplings: dict = None):
 # --------------------------------------------------------------------------
 def dirac_hamiltonian_reference(Nc: int, p: int, couplings: dict):
     """Same H assembled from the sparse Jordan-Wigner matrices of
-    syk.dirac_operators -- shares no assembly code with the fast builder."""
+    syk.dirac_operators.  This route shares no assembly code with the fast
+    builder."""
     from syk import dirac_operators
     c, cdag = dirac_operators(Nc)
     dim = 1 << Nc
@@ -231,8 +261,8 @@ def annihilators(Nc: int) -> list:
     """Dense c_i matrices (from the bitwise action; O(dim) each).
 
     Deliberately independent of syk.dirac_operators (sparse Jordan-Wigner
-    kron products) -- the two encodings are asserted equal in the tests, so
-    the duplication is load-bearing cross-validation, not drift risk."""
+    kron products).  The tests assert the two encodings equal, so the
+    duplication is load-bearing cross-validation, not drift risk."""
     dim = 1 << Nc
     states = np.arange(dim, dtype=np.int64)
     out = []
@@ -251,14 +281,14 @@ def time_derivative(H: np.ndarray, X: np.ndarray) -> np.ndarray:
 
 def symmetrized_weight(M_eig: np.ndarray) -> np.ndarray:
     """Symmetrized T = infinity spectral weight matrix W_ab for an operator
-    already rotated to the energy eigenbasis: the Hermitian and anti-Hermitian
+    already rotated to the energy eigenbasis.  The Hermitian and anti-Hermitian
     parts contribute separately (each omega-symmetric),
 
         W = (|M_h|^2 + |M_a|^2) / dim,   M_{h,a} = (M +- M^dag)/2.
 
     For non-+-Hermitian operators (raw M_n, n >= 3) the ordered correlator
     Tr(M(t)M^dag)/dim has odd-in-omega parts with S_{AA^dag}(w) =
-    S_{A^dag A}(-w); this symmetrized W is the convention-stable object
+    S_{A^dag A}(-w).  This symmetrized W is the convention-stable object
     (see moments_pipeline.py docstring).  Single point of truth for
     mn_spectroscopy, moments_pipeline and qed_campaign."""
     Mh = 0.5 * (M_eig + M_eig.conj().T)
@@ -275,15 +305,29 @@ def mn_operator(H: np.ndarray, cs: list, n: int) -> np.ndarray:
 
 def mn_tower(H: np.ndarray, cs: list, n_max: int) -> list:
     """[M_0, M_1, ..., M_{n_max}], with each mode's derivative chain advanced
-    once per level (O(n_max) commutators per mode, not O(n_max^2))."""
+    once per level (O(n_max) commutators per mode, not O(n_max^2)).
+
+    Each annihilator c_i is a signed PARTIAL PERMUTATION -- one nonzero per
+    column -- so c_i^dag X is a signed row scatter of X, not a matrix
+    product:  with c_i[r_m, k_m] = s_m,
+
+        (c_i^dag X)[k_m, :] = conj(s_m) * X[r_m, :].
+
+    The columns k_m are distinct (an annihilator kills or moves each state
+    exactly once), so the scatter is unambiguous.  The dense route summed
+    dim-1 exact zeros per entry, so the result is bit-for-bit the same while
+    the cost drops from a dim^3 GEMM to a dim^2 gather, once per (mode,
+    level).  The commutator chain itself is genuine dense work and is
+    untouched."""
     towers = [np.zeros_like(H) for _ in range(n_max + 1)]
     for C in cs:
-        Cd = C.conj().T
+        rows, cols = np.nonzero(C)
+        sgn = C[rows, cols].conj()[:, None]
         Cn = C
-        towers[0] += Cd @ Cn
+        towers[0][cols] += sgn * Cn[rows]
         for n in range(1, n_max + 1):
             Cn = time_derivative(H, Cn)
-            towers[n] += Cd @ Cn
+            towers[n][cols] += sgn * Cn[rows]
     return towers
 
 
@@ -292,24 +336,24 @@ def particle_hole(Nc: int) -> np.ndarray:
 
         C = (c_0 + c^dag_0)(c_1 + c^dag_1) ... (c_{Nc-1} + c^dag_{Nc-1}),
 
-    with  C c_i C^dag = (-1)^(Nc-1) c^dag_i  (the sign is a GLOBAL
-    (-1)^(Nc-1), the same for every mode -- asserted in the tests; it is +1
-    only for odd Nc).  Bilinears c^dag_i X c_i pick the sign up twice, so
-    every M_n statement below is sign-independent; anyone conjugating an
+    with  C c_i C^dag = (-1)^(Nc-1) c^dag_i.  The sign is a GLOBAL
+    (-1)^(Nc-1), the same for every mode, and the tests assert it.  It is +1
+    only for odd Nc.  Bilinears c^dag_i X c_i pick the sign up twice, so
+    every M_n statement below is sign-independent.  Anyone conjugating an
     ODD-length fermion string at even Nc must keep the (-1)^(Nc-1).
     C (Q - Nc/2) C^dag = -(Q - Nc/2) always.
 
     Why the paper's "CP" must be this UNITARY map and not an antiunitary one:
-    M_1 = -(p/2) i H, and any antiunitary operation that fixes H flips the
-    explicit i, giving CP(M_1) = -1 -- but the paper assigns the n=1 "graviton"
+    M_1 = -(p/2) i H.  Any antiunitary operation that fixes H flips the
+    explicit i, giving CP(M_1) = -1.  But the paper assigns the n=1 "graviton"
     CP = +1.  Unitary C fixes i, so C M_1 C^dag = +M_1 exactly on a
     C-invariant instance.  (In the 1+1d bulk this is charge conjugation
-    composed with spatial parity -- a unitary symmetry, as CP always is; the
+    composed with spatial parity, a unitary symmetry, as CP always is.  The
     hologram is 0+1d, so its image here is just C.)
 
     Each factor c_i + c^dag_i is a signed permutation (a Jordan-Wigner
-    Majorana string), so the product is assembled as a signed permutation in
-    O(Nc * dim) instead of Nc dense matrix products."""
+    Majorana string).  So this routine assembles the product as a signed
+    permutation in O(Nc * dim) instead of Nc dense matrix products."""
     dim = 1 << Nc
     states = np.arange(dim, dtype=np.int64)
     perm = states.copy()
@@ -328,8 +372,25 @@ def particle_hole(Nc: int) -> np.ndarray:
 
 
 def cp_conjugate(U: np.ndarray, X: np.ndarray) -> np.ndarray:
-    """C X C^dag (unitary conjugation)."""
-    return U @ X @ U.conj().T
+    """C X C^dag (unitary conjugation).
+
+    C is a signed PERMUTATION (exactly one nonzero per column), so the
+    conjugation is a symmetric index permutation with a rank-one sign
+    dressing rather than two dim^3 GEMMs: with U[perm[c], c] = sign[c],
+
+        (U X U^dag)[perm[c], perm[d]] = sign[c] X[c, d] conj(sign[d]).
+
+    Bit-for-bit identical to the GEMM route (which summed exact zeros), and
+    O(dim^2)."""
+    rows, cols = np.nonzero(U)
+    if rows.size != U.shape[0]:            # not a permutation: fall back
+        return U @ X @ U.conj().T
+    order = np.argsort(cols)
+    perm = rows[order]
+    sign = U[perm, cols[order]]
+    Y = np.empty_like(X)
+    Y[np.ix_(perm, perm)] = (sign[:, None] * X) * sign.conj()[None, :]
+    return Y
 
 
 def cp_projections(U: np.ndarray, X: np.ndarray):
@@ -341,8 +402,8 @@ def cp_projections(U: np.ndarray, X: np.ndarray):
 
 def wrong_channel_weight(U: np.ndarray, X: np.ndarray, cp: int) -> float:
     """Fraction of the Frobenius weight of X in the OPPOSITE CP channel to
-    `cp` (+1 or -1).  0 means X has the pure quantum number cp; 0.5 means an
-    even mixture.  The traceless part of X should be passed in."""
+    `cp` (+1 or -1).  0 means X has the pure quantum number cp.  0.5 means an
+    even mixture.  Pass in the traceless part of X."""
     Xp, Xm = cp_projections(U, X)
     right = Xp if cp == +1 else Xm
     wrong = Xm if cp == +1 else Xp

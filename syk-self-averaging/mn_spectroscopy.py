@@ -6,7 +6,7 @@ First single-realization spectroscopy of the M_n tower (Dirac SYK, T = inf).
 The paper's "best test of the duality" needs the spectrum of the U(N)-singlet
 tower M_n = sum_i c^dag_i (d^n/dt^n) c_i.  Nobody -- the authors included --
 has published even an exploratory ED look at these correlators.  This script
-is that first look: honest about what it can and cannot see.
+is that first look.
 
 What it computes, for ONE disorder realization (legitimate because the meson
 spectral function is a singlet, and the measured self-averaging principle is
@@ -17,30 +17,30 @@ Dirac ensemble at Nc = 10, p = 4 has 630 independent couplings, so ~0.3%):
                                      delta(omega - (E_a - E_b)),
 
 the infinite-temperature spectral weight of the traceless tower operator
-Mbar_n, plus its CP-RESOLVED versions S_n^+-(omega): on a C-invariant
-instance (dirac.draw_couplings ensemble="c_symmetric") the operator is split
-with cp_projections into definite-CP parts BEFORE taking matrix elements.
-The raw M_n for n >= 2 are CP-mixtures (see dirac.py) -- the CP-resolved
-spectral functions are the objects the paper's CP = (-1)^{n+1} assignment can
-be tested on.
+Mbar_n, plus its CP-RESOLVED versions S_n^+-(omega).  On a C-invariant
+instance (dirac.draw_couplings ensemble="c_symmetric") the script splits the
+operator with cp_projections into definite-CP parts BEFORE taking matrix
+elements.  The raw M_n for n >= 2 are CP-mixtures (see dirac.py).  The
+CP-resolved spectral functions are the objects the paper's CP = (-1)^{n+1}
+assignment can be tested on.
 
 Exact structural checks built in:
-  * n = 0, 1: all spectral weight sits at omega = 0 (conserved charge and
+  * n = 0, 1: all spectral weight is at omega = 0 (conserved charge and
     Hamiltonian -- the non-propagating photon/graviton).  Machine-exact.
   * n >= 2: weight moves to omega != 0 (the dynamical candidates).
 
 What this is NOT: the duality test.  At Nc = 10-12 and p = 4 the coupling is
 lambda = p^2/Nc ~ 1.3-1.6, far from the lambda -> 0 corner where the 't Hooft
-match is expected, and Nc is far from large-N.  Expect broad
-spectral distributions, not sharp meson peaks; the deliverables are the
+match is expected.  Nc is also far from large-N.  Expect broad
+spectral distributions, not sharp meson peaks.  The deliverables are the
 pipeline, the conserved-mode checks, the CP-channel resolution, and a first
-data point for how the weight organizes -- inputs for the moments-vs-sum-rules
-program (road_map.md rung 15), not a spectrum match.
+data point for how the weight organizes.  These are inputs for the
+moments-vs-sum-rules program, not a spectrum match.
 
 Output: mn_spectra.json (histogrammed S_n^+-, summary numbers) and
-mn_spectra.png.  Runtime ~seconds at Nc = 10 (default); pass --big for
-Nc = 12 (~minutes, dim 4096), which writes to the separate stem
-mn_spectra_big.{json,png} so the committed Nc = 10 artifacts survive.
+mn_spectra.png.  Runtime ~seconds at Nc = 10 (default).  Pass --big for
+Nc = 12 (~minutes, dim 4096).  That writes to the separate stem
+mn_spectra_big.{json,png}, so the committed Nc = 10 artifacts survive.
 Bin edges are spectrum-scaled per run, so big/non-big histograms are not
 bin-aligned.
 """
@@ -148,7 +148,7 @@ def plot(results, fname="mn_spectra.png"):
         axes = [axes]
     for ax, r in zip(axes, rows):
         # normalize each panel by its total dynamical weight: the shape is
-        # the physics; absolute weights grow ~ omega^{2n} across panels
+        # the physics.  Absolute weights grow ~ omega^{2n} across panels.
         dyn_total = sum(np.sum(r[tag]["hist"]) for tag in ("right", "wrong"))
         for tag, color, style in [("right", "#2166ac", "-"),
                                   ("wrong", "#b2182b", "--")]:

@@ -46,9 +46,11 @@ axL.loglog([r[0] for r in ds], [r[2] for r in ds], "s-", color="#b2182b",
 
 # ED-measured relVar(m2) with error bars, on top of the exact fixed-p curve
 bm = results["B_moments"]
+n_inst = {r["n_inst"] for r in bm}
+assert len(n_inst) == 1, "B_moments rows disagree on n_inst"
 axL.errorbar([r["N"] for r in bm], [r["relvar_m2"] for r in bm],
              yerr=[r["relvar_m2_err"] for r in bm], fmt="x", color="#333333",
-             capsize=3, label=r"ED, $200$ draws (fixed $p=4$)")
+             capsize=3, label=rf"ED, ${n_inst.pop()}$ draws (fixed $p=4$)")
 
 axL.set_xlabel("$N$")
 axL.set_ylabel(r"relative variance of singlet $m_2$")

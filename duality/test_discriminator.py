@@ -1,8 +1,8 @@
-"""Tests for the KMS-axis discriminator note (rung 24).
+"""Tests for the KMS-axis discriminator note.
 
 The note's repo-side claims, pinned: the fake-temperature identity
 beta_fake * lambda_L = 2 pi across the repo's v machinery (tying the
-sine-dilaton (1.7) to rung 25), and the fold verdicts it quotes from the
+sine-dilaton (1.7) to this task), and the fold verdicts it quotes from the
 committed JSONs.
 """
 
@@ -38,9 +38,17 @@ def test_fake_temperature_identity(betaJ):
 
 
 def test_scrambling_sign_quoted():
-    """Re a(v) = -1 exactly (rung 25), the note's scrambling-side fact."""
+    """a(v) = -1/cos(pi v/2): real, negative at every temperature, -> -1 at
+    the T_B = infinity hologram point (this task, corrected 2026-08-24).  The
+    note's scrambling-side fact is the SIGN, which is what discriminates
+    against a dS observer's c < 0."""
     for v in (0.1, 0.5, 0.9):
-        assert growth_coefficient(v).real == pytest.approx(-1.0, abs=1e-12)
+        a = growth_coefficient(v)
+        assert a.imag == pytest.approx(0.0, abs=1e-15)
+        assert a.real < 0.0
+        assert a.real == pytest.approx(-1.0 / math.cos(math.pi * v / 2.0),
+                                       rel=1e-12)
+    assert growth_coefficient(1e-6).real == pytest.approx(-1.0, abs=1e-9)
 
 
 def test_fold_verdicts_quoted():

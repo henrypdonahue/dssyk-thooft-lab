@@ -2,9 +2,9 @@
 
 FLZ Tables 1 & 2, last column 2*lambda_n^(num), 14 significant digits,
 transcribed from the published paper (digit-for-digit audit against the
-fetched PDF, 2026-07-17 review).  Shared by validate.py, test_thooft.py
-and test_jacobi.py so the literature anchor has exactly one place to
-audit; the SOLVERS being validated share no code with this file.
+fetched PDF, 2026-07-17 review).  validate.py, test_thooft.py and
+test_jacobi.py share this copy, so the literature anchor has exactly one
+place to audit.  The SOLVERS being validated share no code with this file.
 """
 
 from scipy.special import polygamma
@@ -30,8 +30,9 @@ FLZ_PADE_LAMBDA0 = 0.737061746292690          # FLZ Eq. (4.37), Pade estimate
 def sum_inv_sq_with_tail(evs, offset, n_cut):
     """G2 partial sum sum_n 4/(2 lambda_n)^2 over one CP sector (levels at
     n = offset, offset+2, ... up to n_cut), closed with the analytic tail
-    from the leading asymptotic 2 lambda_n -> n + 3/4:
-    tail = polygamma(1, (n0 + 3/4)/2)."""
+    from the leading asymptotic 2 lambda_n -> n + 3/4.  The tail is
+    polygamma(1, (n0 + 3/4)/2), with n0 the first level index past the
+    summed head."""
     total, n = 0.0, offset
     for two_lam in evs:
         if n > n_cut:

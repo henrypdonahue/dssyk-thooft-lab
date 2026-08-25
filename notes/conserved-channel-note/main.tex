@@ -14,7 +14,7 @@
 \newcommand{\op}{\mathrm{op}}
 
 \title{Conserved singlet channels in double-scaled SYK:\\
-the bilinear tower cannot propagate at $N=\infty$}
+the two-flavor bilinear amplitude cannot propagate at $N=\infty$}
 
 % TODO(author): confirm author line and affiliation before circulating.
 \author{Henry Donahue}
@@ -28,8 +28,9 @@ In the proposed duality between double-scaled SYK at infinite temperature and
 the 't~Hooft model [arXiv:2607.05678], the meson tower is to be matched
 against correlators of the singlet bilinears
 $A_n=\sum_i\psi_i(\ad_H)^n\psi_i$. We prove that at strict double scaling
-($N=\infty$, any $\lambda$) these channels cannot propagate: in the chord
-representation, the insertion of $A_n$ into a pair correlator acts as a
+($N=\infty$, any $\lambda$) the \emph{two-flavor} ($i\neq j$) part of these
+channels cannot propagate. In the chord
+representation the insertion of $A_n$ into a pair correlator acts as a
 \emph{polynomial in the chord Hamiltonian}, so every spectral moment
 $\mu_k$, $k\ge1$, of every $A_n$ pair channel vanishes identically --- at
 every coupling and every matter weight. The mechanism is a closed three-term
@@ -41,18 +42,25 @@ up weight $1-q^{2\Delta+j}$ at height $j$. The first conserved charges are
 $\widehat A_1=-(1-q^{\Delta})\,T$ (the chord image of the exact identity
 $A_1=-2pH$) and $\widehat A_2=(1-q^{\Delta})^2T^2+(1-q^{2\Delta})$. By
 contrast a random matter operator inserts $q^{\Delta\hat n}$, which does not
-commute with $T$ and therefore propagates. Consequently the meson tower of
-the proposed duality is a $1/N$ effect, invisible at every order of the
-double-scaled expansion; the quantitative spectrum match must be performed
-at fixed $p$, $\lambda\to0$, where the emergent gauge symmetry is only
-polynomially accurate. Every statement is machine-verified in an
-accompanying repository.
+commute with $T$ and therefore propagates. The scope is essential and we
+state it up front: the full channel $\langle A_nA_n\rangle$ also contains a
+flavor-diagonal ($i=j$) part of the \emph{same} order --- the per-pair
+amplitude is smaller than the diagonal one by exactly the $1/N$ that the
+$N(N-1)$ multiplicity restores --- and that part does not vanish for
+$n\ge2$. Evaluating both flavor patterns exactly at finite $N$ we find the
+full $A_2$ width rising to $\mu_2/\mu_0\simeq1.19$ along
+$\lambda_{\rm chord}=2$, while at $n=1$ the two parts cancel to $3\times
+10^{-16}$, reproducing $A_1=-2pH$. What is established is therefore a
+statement about flavor structure: whatever spectral weight the singlet
+tower carries at $N=\infty$ is entirely flavor-diagonal. Every statement is
+machine-verified in an accompanying repository.
 \end{abstract}
 
 \section{Setting and statement}
 
 Double-scaled SYK ($N$ Majorana fermions, $H=i^{p/2}\sum J\,\psi^p$,
-$\lambda_{\rm chord}=2p^2/N$ fixed, $q=e^{-\lambda_{\rm chord}}$) is solved
+$\lambda_{\rm chord}=2p^2/N$ fixed, $q=e^{-\lambda_{\rm chord}}$; we write
+$\lambda\equiv\lambda_{\rm chord}$ throughout) is solved
 at $N=\infty$ by chord combinatorics \cite{BINT,BM}. Ensemble-averaged
 traces reduce to amplitudes on the chord Hilbert space
 $\{\,|n\rangle\,\}_{n\ge0}$, with the chord Hamiltonian acting (in the
@@ -61,7 +69,8 @@ formal basis, units $\langle H^2\rangle=1$) as
 T\,|n\rangle=|n+1\rangle+[n]_q\,|n-1\rangle,
 \qquad [n]_q=\frac{1-q^n}{1-q}.
 \end{equation}
-A matter operator of dimension $\Delta$ opens a matter chord; while it is
+Traces below are normalized, $\Tr\mathbf{1}=1$. A matter operator of
+dimension $\Delta$ opens a matter chord; while it is
 open the Hamiltonian acts by the one-particle transfer matrix $T_M$ on
 states $|n_0,n_1\rangle$ ($n_0$ H-chords opened before the matter chord,
 $n_1$ after):
@@ -111,19 +120,20 @@ on the chord line as
 \end{equation}
 and the spectral moments of the pair channel are
 \begin{equation}
-\mu_k \;=\; \big\langle\Tr\big[\ad_H^k(X)\,Y\big]\big\rangle_J
+\mu_k \;=\; \big\langle\Tr\big[(\ad_H)^k(X)\,Y\big]\big\rangle_J
 \;=\;\langle0|\,\ad_T^k\big(\widehat A_n\big)\,\widehat B_n\,|0\rangle ,
 \label{eq:moments}
 \end{equation}
-where $X=\psi_i(\ad^n\psi_i)$, $Y=X^\dagger$ on flavor $j$, and
+where $X=\psi_i\,(\ad_H)^n\psi_i$, $Y=X^\dagger$ on flavor $j$, and
 $\widehat B_n$ is the chord image of the $Y$ block (its form is irrelevant
 below). Our result:
 
 \begin{theorem}[conserved channels]
 $C(m)$ is a polynomial in $T$ for every $m$. Hence $\widehat A_n$ is a
 polynomial in $T$, $\ad_T^k(\widehat A_n)=0$, and every moment
-\eqref{eq:moments} vanishes for every $n\ge1$ and every $k\ge1$ --- at
-every $q\in[0,1)$ and every matter weight $\Delta$.
+\eqref{eq:moments} of the $i\neq j$ pair amplitude vanishes for every
+$n\ge1$ and every $k\ge1$ --- at every $q\in[0,1)$ and every matter
+weight $\Delta$.
 \end{theorem}
 
 \section{The recursion}
@@ -215,22 +225,31 @@ polynomials in $T$ and cannot propagate. The distinction is not the size of
 the operator but the correlation of its couplings with those of $H$.
 \end{corollary}
 
-\begin{corollary}[the meson tower is a $1/N$ effect]
+\begin{corollary}[the surviving weight is flavor-diagonal]
 In the proposed DSSYK$_\infty$--'t~Hooft correspondence
 \cite{MSS2607,MSS2506}, the singlet tower $M_n$ maps to the $A_n$ channels.
-At strict double scaling their connected pair correlators are
-time-independent to all orders of the $\lambda$-expansion: any meson tower
-must arise entirely from $1/N$ corrections to the chord solution. The
-quantitative spectrum match the authors propose as ``the best test'' must
-therefore be performed at fixed $p$ (fixed $\bar\alpha=p^2$), $\lambda\to0$
---- the regime where, as shown in the companion note on exact disorder
-statistics, the emergent gauge symmetry is only polynomially accurate
-(symmetry violations $\sim N^{-(p-1)/2}$). This sharpens, exactly in
-$\lambda$, the known large-interaction-order observation that the
-bilinear-tower couplings first appear at second order in the inverse
-body count --- $O(1/p^2)$ in the present conventions (written
-$O(1/q^2)$ in \cite{GR}, whose $q$ is this note's $p$, not the chord
-parameter).
+At strict double scaling their connected \emph{pair} correlators are
+time-independent to all orders of the $\lambda$-expansion. This does not
+make the tower invisible: writing
+\[
+  \langle A_nA_n\rangle=N\,\langle X_iX_i\rangle+N(N-1)\,\langle X_iX_j\rangle,
+  \qquad X_i=\psi_i(\ad_H)^n\psi_i,
+\]
+the two terms are the same order in $N$, so the theorem removes one of two
+comparable contributions. Evaluating both exactly at finite $N$ by Wick
+resummation (no exact diagonalization), the full $A_2$ channel has
+$\mu_2/\mu_0=1.044,\,1.118,\,1.164,\,1.194$ at
+$(p,N)=(4,16),(6,36),(8,64),(10,100)$ along $\lambda_{\rm chord}=2$ ---
+rising towards $\simeq1.2$, not falling to zero --- while the same
+construction at $n=1$ gives $3\times10^{-16}$, which is the exact
+conservation of $A_1=-2pH$. The content of the theorem is thus that the
+genuinely two-flavor part of the tower is conserved, and that any $N=\infty$
+spectral weight is carried by the diagonal part alone. This is consistent
+with, and sharpens exactly in $\lambda$, the known large-interaction-order
+observation that the bilinear-tower couplings first appear at second order
+in the inverse body count --- $O(1/p^2)$ in the present conventions
+(written $O(1/q^2)$ in \cite{GR}, whose $q$ is this note's $p$, not the
+chord parameter).
 \end{corollary}
 
 Two scope remarks. First, the theorem concerns the $i\neq j$ pair
@@ -252,8 +271,12 @@ and $[C(m),T]=0$ for $m\le8$; the closed forms above; and, through an
 independent transfer-matrix evaluation of the trace words (itself validated
 against brute-force chord-diagram enumeration), the vanishing of
 $|\mu_k|$ relative to its pre-cancellation gross magnitude at the level of
-$10^{-17}$ for $n\le5$, $k\le6$, across $\lambda\in[0.1,4]$ and matter
-weights $\Delta_\psi\in[0.1,1]$.
+$10^{-17}$ for $n\le5$, even $k\le6$, across $\lambda\in[0.1,4]$ and
+matter weights $\Delta_\psi\in[0.1,1]$. The finite-$N$ approach to the
+zero has since been computed exactly (Wick/Isserlis over matchings, the
+subset sums evaluated as integer intersection-parity counts): $|\mu_2|$
+of the $n=2$ channel falls like $\sim N^{-4}$ along fixed $p=4$ and like
+$\approx c/(pN)$, $c\approx29$--$30$, along $\lambda=2$.
 
 \paragraph{Acknowledgments.}
 % TODO(author): acknowledgments as appropriate.

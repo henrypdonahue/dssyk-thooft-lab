@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 r"""
-Majorana singlet-channel spectral moments: the ED side of rung 15 proper.
-=========================================================================
+Majorana singlet-channel spectral moments: the ED side of the exact
+N = infinity chord computation.
+=================================================================
 
 duality/chord_moments.py computes the EXACT N = infinity spectral moments of
 the Majorana singlet bilinear channels
@@ -11,9 +12,9 @@ the Majorana singlet bilinear channels
 from the chord expansion (two matter chords of dimension Delta_psi = 1/p).
 This module measures the SAME channels by exact diagonalization at finite N
 along fixed p = 4 (lambda_chord = 2p^2/N falling), disorder-averaged with
-errors, so the chord prediction can be checked as a genuine N -> infinity
-extrapolation with no Dirac-vs-Majorana channel caveat (moments_pipeline.py
-measures the Dirac CP-resolved tower instead; both JSONs are kept).
+errors.  The chord prediction can then be checked as a genuine N -> infinity
+extrapolation with no Dirac-vs-Majorana channel caveat.  moments_pipeline.py
+measures the Dirac CP-resolved tower instead; both JSONs are kept.
 
 Conventions (single point of truth = dirac.symmetrized_weight, mirrored
 here): moments of the SYMMETRIZED T = infinity spectral function,
@@ -26,22 +27,22 @@ insensitive to it because the trace of a commutator vanishes).  Shape
 invariants reported: w2 = mu_2/(mu_0 <H^2>/dim) and kurt = mu_4 mu_0/mu_2^2.
 
 Exact anchor asserted in the tests: A_1 = -2p H identically (psi gamma psi
-summed over flavors = (N-2p) gamma for a p-Majorana string), so the n = 1
+summed over flavors = (N-2p) gamma for a p-Majorana string).  So the n = 1
 channel is conserved: mu_2 = mu_4 = 0 at EVERY N.  The chord side
 reproduces this identity exactly (an algebraic cancellation at any matter
-weight; the stored residual is a float-noise yardstick, not a physics
-floor -- see duality/chord_moments.py).
+weight).  The stored residual is a float-noise yardstick, not a physics
+floor (see duality/chord_moments.py).
 
 Scope caveat (from the adversarial review, 2026-08-16): the chord
-computation is the i != j flavor-PAIR amplitude; the bench measures the
-full physical channel, which at dense-ED sizes is DIAGONAL-dominated
-(flavor decomposition at p = 4, n = 2: the summed pair part of mu_0 is
+computation is the i != j flavor-PAIR amplitude.  The bench measures the
+full physical channel, which at dense-ED sizes is DIAGONAL-dominated.  In
+the flavor decomposition at p = 4, n = 2, the summed pair part of mu_0 is
 -3% of the total at N = 12 and -19% at N = 14, opposite in sign to the
-N = infinity per-pair value).  So these bench trends do NOT directly
-probe the chord cancellation at accessible N; what they establish is the
+N = infinity per-pair value.  So these bench trends do NOT directly
+probe the chord cancellation at accessible N.  What they establish is the
 raw fixed-p turn-on of the channel toward the lambda -> 0 corner.
 
-Output: mn_majorana_bench.json.  Runtime ~2-4 min.
+Output: mn_majorana_bench.json.  Runtime ~1 h.
 """
 
 from __future__ import annotations
@@ -128,19 +129,20 @@ def ensemble(N: int, p: int, n_inst: int, seed0: int = 7000,
 def main():
     t0 = time.time()
     rows = []
-    # fixed p = 4: the 't Hooft-corner trajectory (lambda = 32/N falls)
-    # plus the small-N anchors, and a fixed p = 6 series -- the pairs
-    # (p=4, N=8) <-> (p=6, N=18) sit at MATCHED lambda_chord = 4.0, the
-    # clean test of the chord fixed-lambda N -> infinity prediction
-    # NOTE the (p=4, N=8) row: its n >= 2 moments vanish IDENTICALLY --
-    # an exact per-instance conservation ([H, A_n] = 0) special to
+    # fixed p = 4: the 't Hooft-corner trajectory (lambda = 32/N falls),
+    # plus the small-N anchors, and a fixed p = 6 series.  The pairs
+    # (p=4, N=8) <-> (p=6, N=18) are at MATCHED lambda_chord = 4.0, the
+    # clean test of the chord fixed-lambda N -> infinity prediction.
+    # NOTE the (p=4, N=8) row: its n >= 2 moments vanish IDENTICALLY.
+    # This is an exact per-instance conservation ([H, A_n] = 0) special to
     # (N, p) = (8, 4).  The adversarial review (2026-08-16) established
-    # this is NOT a general p = N/2 phenomenon (at (12,6) and (16,8) the
-    # channels are NOT conserved: ||[H,A_2]||/||A_2|| ~ 0.2-0.35) and is
-    # not explained by exact_wick's E[B_jj] ~ (1-2p/N) (an ensemble-mean
-    # statement about the n = 1 object).  Mechanism unknown; kept as the
-    # exhibition, excluded from trend statements.  (6, 22) provides the
-    # near-matched-lambda point to (4, 10): lambda = 3.27 vs 3.20.
+    # this is NOT a general p = N/2 phenomenon: at (12,6) and (16,8) the
+    # channels are NOT conserved, ||[H,A_2]||/||A_2|| ~ 0.2-0.35.  The
+    # review also established that exact_wick's E[B_jj] ~ (1-2p/N) does
+    # not explain it (that is an ensemble-mean statement about the n = 1
+    # object).  Mechanism unknown; kept as the exhibition, excluded from
+    # trend statements.  (6, 22) provides the near-matched-lambda point to
+    # (4, 10): lambda = 3.27 vs 3.20.
     for p, N, n_inst in [(4, 8, 256), (4, 10, 160), (4, 12, 96),
                          (4, 14, 64), (4, 16, 48), (4, 18, 24), (4, 20, 12),
                          (6, 14, 64), (6, 16, 48), (6, 18, 24), (6, 20, 12),
@@ -148,7 +150,8 @@ def main():
         print(f"p={p} N={N} ({n_inst} instances) ...", flush=True)
         rows.extend(ensemble(N, p, n_inst))
     payload = dict(
-        provenance="mn_majorana_bench.py -- ED side of rung 15 proper: "
+        provenance="mn_majorana_bench.py -- the ED side of the exact "
+                   "N=infinity chord moments: "
                    "Majorana singlet channels A_n = sum_i psi_i ad_H^n "
                    "psi_i, symmetrized traceless moments, fixed p = 4, "
                    "lambda_chord = 32/N; chord comparison in "

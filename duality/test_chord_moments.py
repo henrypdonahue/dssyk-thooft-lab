@@ -1,18 +1,19 @@
-"""Tests for the exact N = infinity singlet-channel moments (rung 15).
+"""Tests for the exact N = infinity singlet-channel moments.
 
 The load-bearing verdict encoded here: at strict N = infinity, fixed
 lambda, the H-derived singlet bilinear channels A_n = sum_i psi_i ad^n
-psi_i carry ZERO spectral weight away from omega = 0 -- mu_2 = mu_4 =
-mu_6 = 0 to machine precision for n = 1..5 at every lambda tested (and
-PROVEN for all n and all moments: chord_charges.py + its tests), while
-the random-operator O_Delta channels propagate (mu_2 = 2(1-q^Delta) != 0).
-The word-expansion assembly behind this is validated as a per-instance
-operator identity in syk-self-averaging/test_mn_majorana.py; the engine
-amplitudes behind it are validated against the brute-force enumerator in
-test_chord.py.  Together with the ED bench falloff, this is the exact
-chord-level confirmation of the rung-17 finding (the tower cancels at
-leading order): the M_n tower is a subleading-in-1/N effect at every
-coupling, not just at large q.
+psi_i carry ZERO spectral weight away from omega = 0.  That is,
+mu_2 = mu_4 = mu_6 = 0 to machine precision for n = 1..5 at every lambda
+tested, and PROVEN for all n and all moments (chord_charges.py + its
+tests).  The random-operator O_Delta channels, by contrast, propagate
+(mu_2 = 2(1-q^Delta) != 0).  The word-expansion assembly behind this is
+validated as a per-instance operator identity in
+syk-self-averaging/test_mn_majorana.py.  The engine amplitudes behind it
+are validated against the brute-force enumerator in test_chord.py.
+Together with the ED bench falloff, this is the exact chord-level
+confirmation of the finding (the tower cancels at leading order).
+The M_n tower is a subleading-in-1/N effect at every coupling, not just
+at large q.
 """
 
 import json
@@ -31,9 +32,10 @@ HERE = Path(__file__).resolve().parent
 @pytest.mark.parametrize("n", [1, 2, 3])
 def test_an_channels_conserved_at_leading_order(lam, n):
     """mu_2 and mu_4 of every A_n channel vanish identically in the chord
-    amplitudes at finite lambda and finite Delta_psi = 1/p -- not a small
-    number: an algebraic cancellation (checked at machine precision
-    relative to the pre-cancellation gross magnitude)."""
+    amplitudes at finite lambda and finite Delta_psi = 1/p.  The result is
+    not a small number: it is an algebraic cancellation.  The test checks
+    it at machine precision relative to the pre-cancellation gross
+    magnitude."""
     q = q_of_lambda(lam)
     ch = channel_moments(q, 0.25, n)
     assert ch["mu0"] > 0
@@ -66,8 +68,8 @@ def test_odelta_closed_forms(q, delta):
 
 
 def test_odelta_mu6_structural_pins():
-    """mu_6(qt = 1) = 0 identically, and mu_6(qt -> 0) equals the
-    vacuum-factorized value 2 m_6 + 30 m_4 m_2 with the Touchard-Riordan
+    """mu_6(qt = 1) = 0 identically.  mu_6(qt -> 0) equals the
+    vacuum-factorized value 2 m_6 + 30 m_4 m_2, with the Touchard-Riordan
     chord moments m_2 = 1, m_4 = 2 + q, m_6 = 5 + 6q + 3q^2 + q^3."""
     for q in (0.1, 0.5, 0.9):
         assert odelta_moments(q, 1e-12)["mu6"] == pytest.approx(0.0, abs=1e-8)
@@ -89,9 +91,9 @@ def test_odelta_kurtosis_semiclassical_limit():
 
 
 def test_committed_moments_json():
-    """The committed campaign JSON: A_1 residual at machine precision on
-    every row (the identity holds in the chord algebra, not only at
-    lambda -> 0), and the O_Delta w2 closed form on every row."""
+    """The committed campaign JSON: the A_1 residual is at machine
+    precision on every row.  The identity holds in the chord algebra, not
+    only at lambda -> 0.  The O_Delta w2 closed form holds on every row."""
     with open(HERE / "chord_moments.json") as fh:
         data = json.load(fh)
     assert len(data["points"]) >= 8
@@ -116,15 +118,15 @@ def test_committed_moments_json():
 
 def test_ed_bench_scope():
     """Cross-module scope statement, post-review: the chord computation is
-    the i != j flavor-PAIR amplitude; the ED bench measures the full
-    physical channel, which at dense-ED sizes is flavor-diagonal-dominated
-    (the pair part of mu_0 is a few percent and opposite in sign at
-    N = 12-14, p = 4 -- measured during the adversarial review).  So the
-    bench does NOT yet probe the chord cancellation: at the near-matched-
-    lambda pair the RAW w2 rises with N.  What the bench establishes is
-    the raw fixed-p turn-on toward the 't Hooft corner (asserted in
-    syk-self-averaging/test_mn_majorana.py); here the matched pair's
-    existence and the honest negative are pinned."""
+    the i != j flavor-PAIR amplitude.  The ED bench measures the full
+    physical channel, which at dense-ED sizes is
+    flavor-diagonal-dominated.  The pair part of mu_0 is a few percent and
+    opposite in sign at N = 12-14, p = 4 (measured during the adversarial
+    review).  So the bench does NOT yet probe the chord cancellation: at
+    the near-matched-lambda pair the RAW w2 rises with N.  What the bench
+    establishes is the raw fixed-p turn-on toward the 't Hooft corner
+    (asserted in syk-self-averaging/test_mn_majorana.py).  Here the
+    matched pair's existence and the honest negative are pinned."""
     path = HERE.parent / "syk-self-averaging" / "mn_majorana_bench.json"
     with open(path) as fh:
         bench = json.load(fh)

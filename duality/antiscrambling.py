@@ -3,7 +3,7 @@ r"""
 Anti-scrambling vs DSSYK_infinity: the OTOC sign test and the Euclidean fold.
 =============================================================================
 
-Road_map rungs 25-26 (2026-07-23).  Two papers of July 2026 sharpen what a
+Two papers of July 2026 sharpen what a
 de Sitter static-patch hologram must do at OTOC level:
 
   * Cui-Kolchmeyer 2607.13665 ("A de Sitter Anti-Scrambling Algebra"): the
@@ -107,17 +107,36 @@ def toc_ratio(th1, th2, th3, th4, v: float):
 
 def otoc_ratio(th1, th2, th3, th4, v: float):
     """script-F/F_d for the CROSSED configuration theta1 > theta3 > theta2
-    [Streicher (3.10)], as an analytic function of the four thetas --
+    [Streicher (3.5)], as an analytic function of the four thetas --
     complex arguments implement Lorentzian continuation
     (tau_j -> tau_j + i t_j  <=>  theta_j -> theta_j + 2 pi i t_j / beta):
 
         C(v) g(ph12m) g(ph34m)
         - 2 sin(ph12p/2) / (cos(pi v/2) sin(ph12m/2) sin(ph34m/2))
         - tan(pi v/2) (pi - ph12p) / (tan(ph12m/2) tan(ph34m/2)).
+
+    GAUGE (the 2026-08-24 review's high-severity correction).  Streicher
+    writes that display after fixing the time-translation freedom:
+    Appendix A, "we use time-translation invariance to set theta_34^+ = 0"
+    (with theta_3 = -theta_4 = theta_34^-/2).  So the phi_12^+ appearing in
+    (3.5) is the squeeze of theta_12^+ - theta_34^+, not of theta_12^+.
+    The two agree in Streicher's gauge and nowhere else.  Using the
+    gauge-fixed display at general angles breaks time-translation
+    invariance, which script-F/F_d must have -- the chord engine's
+    correlator depends only on time DIFFERENCES (chord_fold._segments), as
+    does ED (fold_bench).  Evidence for this form, all in
+    test_antiscrambling.py: it is translation invariant to machine
+    precision (the old form drifts by a factor ~2 over a 0.5 shift); it
+    satisfies OTOC - TOC = -2 exactly at the coincidence theta_2 = theta_3
+    (the old form gives arbitrary values); and the exact N = infinity chord
+    engine converges onto it as lambda -> 0, where the double-scaled theory
+    IS the large-q limit (chord/closed 0.964 -> 0.991 over lambda = 2 ->
+    0.2, tracking the TOC control 0.683 -> 0.980; against the old form the
+    same ratios run to 1.68, away from 1).
     """
     ph12m = squeeze(np.asarray(th1) - th2, v)
     ph34m = squeeze(np.asarray(th3) - th4, v)
-    ph12p = squeeze(np.asarray(th1) + th2, v)
+    ph12p = squeeze(np.asarray(th1) + th2 - np.asarray(th3) - th4, v)
     return (prefactor_C(v) * g_otoc(ph12m) * g_otoc(ph34m)
             - 2.0 * np.sin(ph12p / 2.0)
             / (np.cos(np.pi * v / 2.0) * np.sin(ph12m / 2.0)
@@ -158,30 +177,44 @@ def growth_coefficient(v: float) -> complex:
     symmetric configuration theta = (3pi/2, pi/2, pi, 0), Lorentzian
     theta-time thL added to the (theta1, theta2) flavor pair:
 
-        script-F/F_d  ~  a(v) e^{v thL} + C(v) e^{-i pi v} e^{-v thL},
-        a(v) = - e^{-i pi v/2} / cos(pi v/2),        Re a(v) = -1  EXACTLY
+        script-F/F_d  ~  a(v) e^{v thL} + (decaying),
+        a(v) = - 1 / cos(pi v / 2)          (REAL and negative)
 
-    (derivation: at this configuration phi12m = phi34m = pi, so the third
-    term of otoc_ratio vanishes identically (~5e-33) and the first is the
-    constant C(v); sin(phi12p/2) -> (1/2) e^{v thL} e^{-i pi v/2} makes the
-    second term the growing/decaying pair, dev.real = C(v) - 2 cosh(v thL),
-    i.e. the "background" is the constant C(v) plus a negligible decaying
-    e^{-v thL} -- there is NO linear-in-thL term).  The
-    real part is -1 at EVERY temperature, T_B = infinity included: the
-    SCRAMBLING sign (CK's c > 0, AdS/time-delay), with magnitude not even
-    suppressed at v -> 0.  A dS observer needs the opposite sign (CK's
+    Derivation: at this configuration phi12m = phi34m = pi, so the third
+    term of otoc_ratio vanishes identically and the first is the constant
+    C(v).  The gauge-invariant phi12p = squeeze(th12+ - th34+) equals
+    pi + 2 i v thL here, so sin(phi12p/2) = cosh(v thL) and the second term
+    is exactly -2 cosh(v thL)/cos(pi v/2): a growing/decaying pair with a
+    REAL coefficient, and no linear-in-thL term.
+
+    a(v) < 0 at EVERY temperature: the SCRAMBLING sign (CK's c > 0, the
+    AdS/time-delay sign).  |a| = 1/cos(pi v/2) GROWS with beta (1.030 at
+    betaJ = 0.5, 1.353 at betaJ = 2, 3.194 at betaJ = 8) and tends to
+    a -> -1 at the T_B = infinity hologram point (v -> 0), where the growth
+    is not suppressed at all.  A dS observer needs the opposite sign (CK's
     c < 0, time-advance): under the flat (boundary time = observer time)
-    dictionary DSSYK_infinity cannot anti-scramble.  Cross-checked
-    numerically from otoc_ratio and against ED in test_antiscrambling.py."""
-    return complex(-np.exp(-1j * np.pi * v / 2.0) / np.cos(np.pi * v / 2.0))
+    dictionary DSSYK_infinity cannot anti-scramble.
+
+    NOTE (2026-08-24): the former value a = -e^{-i pi v/2}/cos(pi v/2),
+    quoted as "Re a = -1 exactly at every temperature", was an artifact of
+    the phi12p gauge error documented in otoc_ratio.  The sign verdict --
+    the load-bearing one -- survives and strengthens; the "exactly -1"
+    number holds only in the v -> 0 limit.  The antipodal rotation law
+    a(Delta) = a(0) e^{-i v Delta} (signflip_probe.py) is UNCHANGED, since
+    Delta enters phi12p identically in both forms; with a(0) now real it
+    reads Re a(Delta) = a(0) cos(v Delta), which flips sign at
+    Delta = pi/v exactly.  Cross-checked numerically from otoc_ratio and
+    against ED in test_antiscrambling.py."""
+    return complex(-1.0 / np.cos(np.pi * v / 2.0))
 
 
 def growth_coefficient_numeric(betaJ: float) -> float:
-    """Re a(v) extracted numerically from otoc_ratio.  At the symmetric
-    config (structure derived in growth_coefficient above)
-    dev.real = C(v) - e^{v thL} - e^{-v thL}: fit that basis over a late
-    window and return the e^{v thL} coefficient (= Re a, machine
-    precision); validates growth_coefficient."""
+    """a(v) extracted numerically from otoc_ratio.  At the symmetric config
+    (structure derived in growth_coefficient above)
+    dev.real = C(v) - (e^{v thL} + e^{-v thL})/cos(pi v/2): fit the basis
+    [1, e^{v thL}, e^{-v thL}] over a late window and return the
+    e^{v thL} coefficient (= a(v), machine precision); validates
+    growth_coefficient independently of its closed form."""
     v = v_of_betaJ(betaJ) if betaJ > 0 else 1e-4
     thLs = np.array([4.0, 5.0, 6.0, 7.0]) / v
     devs = np.array([complex(otoc_ratio(1.5 * np.pi + 1j * t,

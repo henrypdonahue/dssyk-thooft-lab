@@ -1,11 +1,11 @@
 # Reproduction entry points for the DSSYK <-> 't Hooft stress-test repo.
 #
-#   make test            fast test suites of all three modules   (~1 min)
-#   make test-all        full suites including slow ED sweeps    (~minutes)
-#   make reproduce       fast deterministic checks + figures     (~3 min)
+#   make test            fast test suites of all three modules   (~40 s)
+#   make test-all        full suites including slow ED sweeps    (~2 min)
+#   make reproduce       fast deterministic checks + figures     (~50 s)
 #   make reproduce-slow  ED sweeps behind the saved JSON         (~hours)
 #
-# Scripts are run from inside their module directory (module READMEs assume
+# Run the scripts from inside their module directory (module READMEs assume
 # this).  Dependencies: pip install -e ".[dev]"  (pinned; python 3.9).
 
 PY ?= python3
@@ -27,12 +27,14 @@ test-all:
 reproduce:
 	cd thooft-target && $(PY) validate.py
 	cd thooft-target && $(PY) condensate.py
+	cd thooft-target && $(PY) eigenfunctions.py
+	cd thooft-target && $(PY) plot_spectrum.py
 	cd syk-self-averaging && $(PY) exact_wick.py
-	cd syk-self-averaging && $(PY) exact_pair_moments.py
 	cd syk-self-averaging && $(PY) dirac.py
 	cd syk-self-averaging && $(PY) mn_spectroscopy.py
 	cd syk-self-averaging && $(PY) plot_self_averaging.py
 	cd syk-self-averaging && $(PY) plot_freeness.py
+	cd syk-self-averaging && $(PY) plot_pair_moments.py
 	cd duality && $(PY) dictionary.py
 	cd duality && $(PY) boost_mass.py
 	cd duality && $(PY) largeq_anchor.py
@@ -40,6 +42,7 @@ reproduce:
 	cd duality && $(PY) chord_moments.py --run
 	cd duality && $(PY) chord_charges.py
 	cd duality && $(PY) plot_chord.py
+	cd duality && $(PY) plot_signflip.py
 
 # The disorder-ensemble sweeps and high-precision reference generation that
 # produced the committed JSON/CSV artifacts.  Hours, not minutes.
@@ -56,10 +59,14 @@ reproduce-slow:
 	cd syk-self-averaging && $(PY) freeness.py
 	cd syk-self-averaging && $(PY) mn_majorana_bench.py
 	cd syk-self-averaging && $(PY) fold_edge_probe.py
+	cd syk-self-averaging && $(PY) moments_fast.py
+	cd syk-self-averaging && $(PY) exact_wick_dirac.py
+	cd syk-self-averaging && $(PY) exact_pair_moments.py
 	cd duality && $(PY) chord.py --spectra
 	cd duality && $(PY) chord_fold.py
 	cd duality && $(PY) signflip_probe.py
 	cd duality && $(PY) signflip_probe.py --deep
+	cd duality && $(PY) antipodal_modes.py
 	cd thooft-target && $(PY) generate_reference.py
 	cd thooft-target && $(PY) jacobi_solver.py
 	cd thooft-target && $(PY) thooft_spectrum.py --csv

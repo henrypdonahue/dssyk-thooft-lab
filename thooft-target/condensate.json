@@ -1,5 +1,5 @@
 {
- "provenance": "condensate.py -- rung 21 bulk half: LM 2409.11324 (6.1)-(6.3) transcribed; GMOR corner vs jacobi_solver; vacuum energy by Feynman-Hellmann in m_bare",
+ "provenance": "condensate.py -- condensate, GMOR corner and vacuum energy: LM 2409.11324 (6.1)-(6.3) transcribed; GMOR corner vs jacobi_solver; vacuum energy by Feynman-Hellmann in m_bare",
  "chiral_value": -0.16286750396763996,
  "duality_point_f": -0.038834438210016586,
  "eps_duality_point": -0.04072406671895725,
@@ -194,47 +194,47 @@
    "a": 0.25,
    "alpha": -0.75,
    "beta": 0.2688861786371433,
-   "two_lambda0": 0.27533161617551855,
+   "two_lambda0": 0.2753316161755189,
    "gmor_lo": 0.18377629847393068,
-   "ratio": 1.4981889311182057,
-   "nlo_coeff": 0.9963778622364114
+   "ratio": 1.4981889311182075,
+   "nlo_coeff": 0.996377862236415
   },
   {
    "a": 0.16,
    "alpha": -0.84,
    "beta": 0.21703990237796947,
-   "two_lambda0": 0.20550607710111907,
+   "two_lambda0": 0.20550607710113022,
    "gmor_lo": 0.14702103877914457,
-   "ratio": 1.397800469971042,
-   "nlo_coeff": 0.994501174927605
+   "ratio": 1.3978004699711177,
+   "nlo_coeff": 0.9945011749277943
   },
   {
    "a": 0.09,
    "alpha": -0.91,
    "beta": 0.16391876881359363,
-   "two_lambda0": 0.14310137226524808,
+   "two_lambda0": 0.14310137226522468,
    "gmor_lo": 0.11026577908435842,
-   "ratio": 1.2977858901787553,
-   "nlo_coeff": 0.9926196339291845
+   "ratio": 1.2977858901785433,
+   "nlo_coeff": 0.9926196339284776
   },
   {
    "a": 0.04,
    "alpha": -0.96,
    "beta": 0.10982585461886452,
-   "two_lambda0": 0.08807665824402718,
+   "two_lambda0": 0.08807665824405071,
    "gmor_lo": 0.07351051938957229,
-   "ratio": 1.198150400451682,
-   "nlo_coeff": 0.9907520022584104
+   "ratio": 1.1981504004520023,
+   "nlo_coeff": 0.9907520022600114
   },
   {
    "a": 0.02,
    "alpha": -0.98,
    "beta": 0.0778139416554469,
-   "two_lambda0": 0.05925487210986753,
+   "two_lambda0": 0.059254872109913474,
    "gmor_lo": 0.051979786748911745,
-   "ratio": 1.1399598924116037,
-   "nlo_coeff": 0.9896658901838457
+   "ratio": 1.1399598924124874,
+   "nlo_coeff": 0.9896658901900947
   }
  ],
- "runtime_s": 2.7
+ "runtime_s": 0.4
 }

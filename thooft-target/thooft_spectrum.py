@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 r"""
 't Hooft meson spectrum at the renormalized-massless point
-===========================================================
+==========================================================
 
-Solves 't Hooft's (1974) integral equation for the meson mass spectrum of
-large-N QCD in 1+1 dimensions, at the special quark-mass point that the
-DSSYK_infty <-> 't Hooft duality needs (Miyashita-Sekino-Susskind, 2607.05678).
+This module solves 't Hooft's (1974) integral equation for the meson mass
+spectrum of large-N QCD in 1+1 dimensions.  It solves it at the special
+quark-mass point that the DSSYK_infty <-> 't Hooft duality needs
+(Miyashita-Sekino-Susskind, 2607.05678).
 
 The equation (Fateev-Lukyanov-Zamolodchikov, arXiv:0905.2280, Eq. 1.1) is
 
@@ -13,18 +14,18 @@ The equation (Fateev-Lukyanov-Zamolodchikov, arXiv:0905.2280, Eq. 1.1) is
         = ( alpha1/x + alpha2/(1-x) ) phi(x)
           - FP-Int_0^1  phi(y) / (y - x)^2  dy ,        x in [0,1]
 
-with the Hadamard finite-part (double-pole) integral, boundary conditions
-phi(0) = phi(1) = 0, quark-mass parameters
+with the Hadamard finite-part (double-pole) integral and boundary conditions
+phi(0) = phi(1) = 0.  The quark-mass parameters are
 
     alpha_i = pi m_i^2 / g^2 - 1 ,
 
-and physical meson masses  M_n^2 = 2 pi g^2 lambda_n.
+and the physical meson masses are  M_n^2 = 2 pi g^2 lambda_n.
 
 The point we want:  m_q^2 (renormalized) = 0.
-    In Susskind et al. the renormalized mass obeys  m_q^2 = m_bare^2 - g^2/pi,
+    In MSS the renormalized mass obeys  m_q^2 = m_bare^2 - g^2/pi,
     so alpha = pi m_q^2 / g^2 = 0.  This is FLZ's exactly-studied case
     alpha1 = alpha2 = 0  (bare mass m = g/sqrt(pi)).  It is NOT the chiral
-    limit (that is alpha = -1); it is a regular theory with a mass gap.
+    limit (that is alpha = -1).  It is a regular theory with a mass gap.
 
 Units.  We report the dimensionless eigenvalue
     2 lambda_n = M_n^2 / (pi g^2),
@@ -32,10 +33,10 @@ i.e. M_n^2 in units of pi g^2.  (Equivalently M_n^2 = 2 pi g^2 lambda_n.)
 
 ------------------------------------------------------------------------------
 Method (the standard Chebyshev / Multhopp-type spectral basis)
-------------------------------------------------------------------------------
-At alpha = 0 the solution behaves as phi(x) ~ sqrt(x(1-x)) at both ends
-(endpoint exponent s = 1/2, from  pi s cot(pi s) = -alpha).  Map x = (1+xi)/2,
-xi in [-1,1], and expand
+--------------------------------------------------------------
+At alpha = 0 the solution behaves as phi(x) ~ sqrt(x(1-x)) at both ends.  The
+endpoint exponent is beta = 1/2, from  pi beta cot(pi beta) = -alpha.
+Map x = (1+xi)/2, xi in [-1,1], and expand
 
     phi(x) = sqrt(1 - xi^2) * sum_m a_m U_m(xi),
 
@@ -55,7 +56,7 @@ a generalized symmetric-definite eigenproblem
            f(k) = 2/(1-k^2) if k even, else 0.
 
 S is the (symmetric, positive-definite) Gram matrix of the basis functions in
-L^2[0,1]; D is diagonal.  Both are block-diagonal under xi -> -xi, i.e. under
+L^2[0,1].  D is diagonal.  Both are block-diagonal under xi -> -xi, i.e. under
 x -> 1-x.  Even-degree m  -> phi symmetric;  odd-degree m -> phi antisymmetric.
 Those two blocks are the two CP sectors.  This is a variational method, so the
 eigenvalues converge monotonically from above as the basis size grows.
@@ -75,9 +76,10 @@ PI = np.pi
 def _f(k: np.ndarray | int):
     """f(k) = Int_0^pi sin(theta) cos(k theta) d theta.
 
-    = 2/(1-k^2) for even integer k, 0 for odd integer k (including k = +-1,
-    where the even-branch expression would divide by zero; the guard below keeps
-    np.where from evaluating it there, so mixed-parity index sets are safe).
+    = 2/(1-k^2) for even integer k, 0 for odd integer k.  This includes
+    k = +-1, where the even-branch expression would divide by zero.  The guard
+    below keeps np.where from evaluating it there, so mixed-parity index sets
+    are safe.
     """
     k = np.asarray(k)
     kf = k.astype(float)
@@ -102,9 +104,10 @@ def _I_matrix(degrees: np.ndarray) -> np.ndarray:
                = 0                                                     (n+m odd)
 
     with H the cumulative odd-harmonic numbers.  This is the matrix that carries
-    the quark-mass (potential) term  alpha (1/x + 1/(1-x)) into the basis:
-    projecting that potential onto b_n = sqrt(1-xi^2) U_n gives exactly 4*I_{nm}
-    (because (1-xi^2)(1/x + 1/(1-x)) = 4).  Derivation in the README.
+    the quark-mass (potential) term  alpha (1/x + 1/(1-x)) into the basis.
+    Projecting that potential onto b_n = sqrt(1-xi^2) U_n gives exactly 4*I_{nm}
+    (because (1-xi^2)(1/x + 1/(1-x)) = 4).  test_thooft.py verifies it against
+    quadrature.
     """
     d = np.asarray(degrees)
     di = d[:, None]
@@ -123,7 +126,7 @@ def build_sector(num_basis: int, parity: int, alpha: float = 0.0):
     parity = 0 -> even-degree basis  (phi symmetric under x -> 1-x)
     parity = 1 -> odd-degree basis   (phi antisymmetric under x -> 1-x)
 
-    alpha = pi m_q^2 / g^2  is the (equal-mass) FLZ quark-mass parameter; the
+    alpha = pi m_q^2 / g^2  is the (equal-mass) FLZ quark-mass parameter.  The
     DSSYK duality point is alpha = 0.  The potential contributes P = 4 alpha I,
     so the RHS operator becomes  D_hyp + P  with  D_hyp = pi^2 (m+1).
 
@@ -143,8 +146,8 @@ def build_sector(num_basis: int, parity: int, alpha: float = 0.0):
 def solve_sector(num_basis: int, parity: int, alpha: float = 0.0,
                  eigvals_only: bool = False):
     """Return (two_lambda, eigenvectors, degrees) for one CP sector, ascending.
-    With eigvals_only=True the eigenvector slot is None (~2x faster; used by
-    the eigenvalue-only callers spectrum/validate/plot)."""
+    With eigvals_only=True the eigenvector slot is None (~2x faster).  The
+    eigenvalue-only callers spectrum/validate/plot use that path."""
     degrees, D, S = build_sector(num_basis, parity, alpha)
     # Generalized symmetric-definite eigenproblem  D a = Lambda S a.
     if eigvals_only:
@@ -158,11 +161,12 @@ def solve_sector(num_basis: int, parity: int, alpha: float = 0.0,
 
 
 def interleave_levels(ev_sym, ev_anti, num_levels: int, alpha: float) -> list:
-    """Merge the two CP-sector spectra into FLZ-ordered levels, ASSERTING the
-    strict (sym, anti, sym, anti, ...) interleaving instead of silently
-    mislabeling n and CP (levels could reorder e.g. approaching the chiral
-    limit alpha -> -1).  Interleaving is proven at alpha = 0 (FLZ) and holds
-    at every alpha tested.  Shared by thooft_spectrum and jacobi_solver."""
+    """Merge the two CP-sector spectra into FLZ-ordered levels.  This function
+    ASSERTS the strict (sym, anti, sym, anti, ...) interleaving instead of
+    silently mislabeling n and CP.  Levels could reorder e.g. approaching the
+    chiral limit alpha -> -1.  Interleaving is proven at alpha = 0 (FLZ) and
+    holds at every alpha tested.  thooft_spectrum and jacobi_solver share this
+    helper."""
     n_pairs = (num_levels + 1) // 2
     if n_pairs > min(len(ev_sym), len(ev_anti)):
         raise ValueError(
@@ -197,7 +201,7 @@ def spectrum(num_basis: int = 200, num_levels: int = 40, alpha: float = 0.0):
       n         : level index (0,1,2,... in FLZ ordering)
       two_lambda: 2 lambda_n = M_n^2 / (pi g^2)
       parity    : 'even' (symmetric) or 'odd' (antisymmetric) under x->1-x
-      CP        : (-1)^(n+1)   [Susskind et al. convention]
+      CP        : (-1)^(n+1)   [MSS convention]
     """
     ev_sym, _, _ = solve_sector(num_basis, parity=0, alpha=alpha,
                                 eigvals_only=True)   # symmetric -> FLZ even n
@@ -209,8 +213,9 @@ def spectrum(num_basis: int = 200, num_levels: int = 40, alpha: float = 0.0):
 if __name__ == "__main__":
     import sys
     if "--csv" in sys.argv:
-        # provenance route for the committed spectrum_double_precision.csv
-        # (14-digit table, reproduced by this at its rounding floor ~1e-11)
+        # regenerates the committed spectrum_double_precision.csv, 14
+        # decimals.  It matches reference_spectrum.json to ~1e-11, so trust
+        # ~11 digits (see README).
         from pathlib import Path
         out = Path(__file__).resolve().parent / "spectrum_double_precision.csv"
         with open(out, "w") as fh:

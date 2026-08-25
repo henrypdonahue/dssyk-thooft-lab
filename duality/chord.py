@@ -5,24 +5,25 @@ The exact N = infinity chord engine.
 
 Double-scaled SYK at N = infinity (lambda = 2p^2/N fixed) is exactly
 solvable by chord combinatorics (Berkooz-Isachenkov-Narovlansky-Torrents
-1811.02584; conventions from the review Berkooz-Mamroud 2407.09396, both
-equation-checked).  This module implements the solution as finite sparse
-linear algebra.  No special functions.
+1811.02584).  Conventions come from the review Berkooz-Mamroud
+2407.09396.  Both papers are equation-checked.  This module implements
+the solution as finite sparse linear algebra.  No special functions.
 
   * Transfer matrix [review (2.15)-(2.16)]: T|n> = |n+1> + [n]_q |n-1>.
     Moments <Tr H^k>/<Tr H^2>^{k/2} = <0|T^k|0>; spectrum
     E(theta) = 2 cos(theta)/sqrt(1-q)  [review (2.21)].
   * Matter of dimension Delta [review (2.26)-(2.30)]: an H-chord crossing
     the M-chord weighs q^Delta.  The T = infinity 2-pt function is exactly
-    <0| e^{+itT} q^{Delta n} e^{-itT} |0>  [review (2.29)]; the
+    <0| e^{+itT} q^{Delta n} e^{-itT} |0>  [review (2.29)].  The
     theta-integral (2.30) is coded separately as a cross-check.
   * One and two matter chords on the contour (stack construction: closing
     an object crosses everything opened after it that is still open).
     This reproduces the one-particle transfer matrices [review
     (5.18)-(5.20)] and evaluates ANY operator ordering on ANY complex
-    contour -- crossed and Euclidean-folded included.  Matter-matter
-    crossings weigh q^{Delta_1 Delta_2} times a fermionic sign (-1) for
-    single-Majorana matter: the same minus that fold_bench.py derives.
+    contour.  Crossed and Euclidean-folded contours are included.
+    Matter-matter crossings weigh q^{Delta_1 Delta_2} times a fermionic
+    sign (-1) for single-Majorana matter.  This is the same minus that
+    fold_bench.py derives.
 
 Units: the chord Hamiltonian has <H^2> = 1.  Exact bridge to repo units
 (psi^2 = 1, Var J = p!/N^{p-1}):  sigma_H^2 = C(N,p) p!/N^{p-1}, and
@@ -54,8 +55,8 @@ HERE = Path(__file__).resolve().parent
 
 def _round6(xs):
     """Arrays stored in campaign JSONs are rounded to 6 significant digits
-    (the verdict scalars are kept at full precision) -- keeps the committed
-    artifacts lean."""
+    (the verdict scalars are kept at full precision).  The rounding keeps
+    the committed artifacts lean."""
     return [float(f"{x:.6g}") for x in xs]
 
 
@@ -75,8 +76,9 @@ def qints(nmax: int, q: float) -> np.ndarray:
 
 
 def qpoch(a: complex, q: float, n: int | None = None) -> complex:
-    """(a; q)_n = prod_{k=0}^{n-1} (1 - a q^k); n = None means infinity
-    (terminates when |a q^k| < 1e-18; requires |q| < 1)."""
+    """(a; q)_n = prod_{k=0}^{n-1} (1 - a q^k).  n = None means infinity.
+    The product then terminates when |a q^k| < 1e-18, and requires
+    |q| < 1."""
     out = 1.0 + 0.0j
     k, term = 0, complex(a)
     while True:
@@ -117,8 +119,8 @@ def sigma_H(N: int, p: int) -> float:
 
 
 def lambda_chord_of(N: int, p: int) -> float:
-    """lambda_chord = 2 p^2 / N (the chord-literature convention; see
-    dictionary.lambda_chord -- the factor-2 landmine is tested there)."""
+    """lambda_chord = 2 p^2 / N (the chord-literature convention).  See
+    dictionary.lambda_chord, where the factor-2 landmine is tested."""
     return 2.0 * p * p / N
 
 
@@ -170,14 +172,15 @@ class Sector0:
 # sectors with matter chords (sqrt-scaled basis; T non-symmetric but bounded)
 # ---------------------------------------------------------------------------
 class SectorM:
-    """One matter chord of dimension `delta` (or the top chord of two --
-    the bottom-empty two-matter sector has the identical T with delta of the
-    SECOND-opened chord; the first-opened chord is inert until it closes).
+    """One matter chord of dimension `delta`, or the top chord of two.
+    The bottom-empty two-matter sector has the identical T with delta of
+    the SECOND-opened chord.  The first-opened chord is inert until it
+    closes.
 
     States |n0, n1>: n0 H-chords below the matter chord (opened earlier),
-    n1 above.  Scaled-basis action of one H node (derivation in module
-    docstring; reduces to review (5.18)-(5.20) one-boundary case, and is
-    validated exactly against the brute-force enumerator):
+    n1 above.  The module docstring derives the scaled-basis action of one
+    H node.  That action reduces to the review (5.18)-(5.20) one-boundary
+    case, and the brute-force enumerator validates it exactly:
 
         open (top):            (n0, n1) -> (n0, n1+1)  coeff sqrt([n1+1])
         close from above:      (n0, n1) -> (n0, n1-1)  coeff sqrt([n1])
@@ -221,19 +224,20 @@ class SectorM:
 # ---------------------------------------------------------------------------
 class Contour:
     """Evaluate <Tr[ ... ]>_J / <Tr 1> for an arbitrary ordering of matter
-    operators (each label appearing exactly twice) and complex evolution
-    segments, walking the trace contour with the chord stack.
+    operators and complex evolution segments.  Each label appears exactly
+    twice.  The walker walks the trace contour with the chord stack.
 
-    Usage: ops = [(label, u_after), ...] in TRACE order; the walker processes
-    them RIGHT to LEFT (rightmost acts first on |0>), i.e. the cut sits just
-    before the leftmost symbol.  `deltas[label]` gives the chord dimension;
-    labels in `fermionic` are single-Majorana-type (odd), contributing the
-    transposition sign (-1) per matter-matter crossing.
+    Usage: ops = [(label, u_after), ...] in TRACE order.  The walker
+    processes them RIGHT to LEFT (rightmost acts first on |0>), i.e. the
+    cut sits just before the leftmost symbol.  `deltas[label]` gives the
+    chord dimension.  Labels in `fermionic` are single-Majorana-type
+    (odd), and contribute the transposition sign (-1) per matter-matter
+    crossing.
 
     Supported stack discipline (all 2-pt and 4-pt orderings, any fold):
-    at most two matter chords open at once, and the second opens only while
-    the region below the first is empty (guaranteed when the cut is at the
-    first operator of a 4-pt word).
+    at most two matter chords open at once.  The second opens only while
+    the region below the first is empty.  A cut at the first operator of a
+    4-pt word guarantees this.
     """
 
     def __init__(self, q: float, nmax: int, deltas: dict,
@@ -258,7 +262,7 @@ class Contour:
         return v
 
     def _close_single(self, v1: np.ndarray, delta: float) -> np.ndarray:
-        """|n0, n1> -> q^{Delta n1} |n0+n1> (formal basis); in the scaled
+        """|n0, n1> -> q^{Delta n1} |n0+n1> (formal basis).  In the scaled
         basis (v_s = sqrt([n0]![n1]!) v_f) the coefficient picks up
         sqrt([n0+n1]!/([n0]![n1]!)) = sqrt(qbinom(n0+n1, n1))."""
         m = self.nmax + 1
@@ -327,8 +331,8 @@ class Contour:
 
     # -- the walk --
     def _apply_label(self, state, label, open_stack, sector):
-        """Open or close the matter chord `label` (mutates open_stack);
-        returns (state, sector).  After a crossed close the remaining open
+        """Open or close the matter chord `label` (mutates open_stack).
+        Returns (state, sector).  After a crossed close the remaining open
         chord is the old top, so open_stack keeps governing the deltas."""
         if label not in open_stack:
             if sector == 0:
@@ -359,11 +363,12 @@ class Contour:
         return self.deltas[open_stack[-1]]
 
     def correlator(self, ops: list) -> complex:
-        """ops = [(label, u_after), ...] in trace order; returns the
-        ensemble-averaged trace amplitude (Z-normalization is the caller's
-        business -- divide by <0|e^{-beta T}|0> for thermal correlators).
-        The walker processes ops right to left (rightmost acts first on
-        |0>); u_after is the segment to the operator's LEFT in the word."""
+        """ops = [(label, u_after), ...] in trace order.  Returns the
+        ensemble-averaged trace amplitude.  Z-normalization is the
+        caller's business: divide by <0|e^{-beta T}|0> for thermal
+        correlators.  The walker processes ops right to left (rightmost
+        acts first on |0>).  u_after is the segment to the operator's LEFT
+        in the word."""
         state = self.s0.vac()
         open_stack, sector = [], 0
         for label, u_after in reversed(ops):
@@ -381,14 +386,15 @@ class Contour:
         return complex(state[0])
 
     def apply_word_powers(self, word: list) -> complex:
-        """<Tr[ word ]>: word is a list over {'H', labels}; exact integer
-        powers of T (no exponentials) -- for moment validation.
+        """<Tr[ word ]>: word is a list over {'H', labels}.  This uses
+        exact integer powers of T (no exponentials), for moment
+        validation.
 
-        The trace is cyclic, and the walker's stack discipline requires the
-        below-region of the first-opened matter chord to stay empty until it
-        closes; rotating the word so it ENDS with a matter symbol guarantees
-        this (the walk processes right-to-left, so that symbol opens on the
-        true vacuum)."""
+        The trace is cyclic.  The walker's stack discipline requires the
+        below-region of the first-opened matter chord to stay empty until
+        it closes.  Rotating the word so it ENDS with a matter symbol
+        guarantees this.  The walk processes right-to-left, so that symbol
+        opens on the true vacuum."""
         word = list(word)
         if any(w != 'H' for w in word):
             while word[-1] == 'H':
@@ -417,16 +423,17 @@ def bruteforce_word(q: float, word: list, deltas: dict,
                     fermionic: set | None = None) -> float:
     """<Tr[ word ]> by explicit summation over chord diagrams on the circle.
 
-    word: list over {'H', matter labels}; every matter label appears exactly
-    twice (those two nodes are contracted with each other -- one M-chord),
-    and the H nodes are summed over all perfect matchings.  Weights:
-    q per H-H crossing, q^{Delta_i} per H-M_i crossing,
-    (sign_ij) q^{Delta_i Delta_j} per M_i-M_j crossing, where sign_ij = -1
-    iff both labels are fermionic.  Crossing test: chords (a,b), (c,d) cross
-    iff exactly one of c,d lies strictly between a and b along the circle.
+    word: list over {'H', matter labels}.  Every matter label appears
+    exactly twice, and those two nodes are contracted with each other as
+    one M-chord.  The H nodes are summed over all perfect matchings.
+    Weights: q per H-H crossing, q^{Delta_i} per H-M_i crossing,
+    (sign_ij) q^{Delta_i Delta_j} per M_i-M_j crossing.  Here sign_ij = -1
+    iff both labels are fermionic.  Crossing test: chords (a,b), (c,d)
+    cross iff exactly one of c,d lies strictly between a and b along the
+    circle.
 
     This shares NOTHING with the transfer-matrix engine except the
-    microscopic Wick weights -- it is the ground truth the engine is
+    microscopic Wick weights.  It is the ground truth the engine is
     validated against (test_chord.py)."""
     fermionic = fermionic if fermionic is not None else set()
     h_pos = [i for i, w in enumerate(word) if w == 'H']
@@ -487,7 +494,7 @@ def bruteforce_word(q: float, word: list, deltas: dict,
 # ---------------------------------------------------------------------------
 def rho_theta(theta: np.ndarray, q: float) -> np.ndarray:
     """Density of states rho(theta) = (q; q)_inf |(e^{2 i theta}; q)_inf|^2
-    / (2 pi) on [0, pi]  [review (2.21)]; vectorized via
+    / (2 pi) on [0, pi]  [review (2.21)].  The code vectorizes it via
     |(z; q)_inf|^2 = prod_k (1 - 2 q^k cos(2 theta) + q^{2k})."""
     theta = np.atleast_1d(np.asarray(theta, float))
     cq = abs(qpoch(q, q))
@@ -526,8 +533,8 @@ def g2_closed_form(beta1: complex, beta2: complex, q: float, delta: float,
                    n_theta: int = 200) -> complex:
     """The theta-integral (2.30): unnormalized
     G = int dth1 dth2 rho rho e^{-beta1 E1 - beta2 E2} |<th1|M|th2>|^2.
-    Gauss-Legendre quadrature on [0, pi]; independent of the transfer-matrix
-    route."""
+    The quadrature is Gauss-Legendre on [0, pi].  This route is
+    independent of the transfer-matrix route."""
     x, wq = np.polynomial.legendre.leggauss(n_theta)
     th = 0.5 * np.pi * (x + 1.0)
     w = 0.5 * np.pi * wq
@@ -546,8 +553,8 @@ def g2_engine(ts: np.ndarray, q: float, delta: float, nmax: int,
               beta: float = 0.0) -> np.ndarray:
     """G_Delta(t) at inverse temperature beta (chord units):
     <0| e^{-(beta/2) T} e^{+itT} q^{Delta n} e^{-itT} e^{-(beta/2) T} |0>
-    / <0|e^{-beta T}|0>   (the symmetric thermal ordering; at beta = 0 this
-    is exactly review (2.29) continued to real time)."""
+    / <0|e^{-beta T}|0>.  This is the symmetric thermal ordering.  At
+    beta = 0 it is exactly review (2.29) continued to real time."""
     s = Sector0(nmax, q)
     qn = s.qn(delta)
     c = s.V.T @ s.vac().real
@@ -563,10 +570,10 @@ def g2_engine(ts: np.ndarray, q: float, delta: float, nmax: int,
 
 
 def spectral_lines(q: float, delta: float, nmax: int, beta: float = 0.0):
-    """Lehmann lines of S_Delta(omega): returns (omega_jk, w_jk) with
-    om_jk = E_j - E_k and G(t) = sum w e^{+i om t} (the resummation used in
-    the tests; for the symmetric weights here S(om) = S(-om), so the
-    committed spectra are convention-free).  The truncated-T eigenbasis is
+    """Lehmann lines of S_Delta(omega).  Returns (omega_jk, w_jk) with
+    om_jk = E_j - E_k and G(t) = sum w e^{+i om t}, the resummation used
+    in the tests.  For the symmetric weights here S(om) = S(-om), so the
+    committed spectra are convention-free.  The truncated-T eigenbasis is
     the exact Gaussian quadrature of the theta-integrals."""
     s = Sector0(nmax, q)
     c = s.V.T @ s.vac().real
@@ -607,7 +614,7 @@ def length_channel_lines(q: float, nmax: int):
 
 
 # ---------------------------------------------------------------------------
-# smooth spectral function + structure diagnostics (rung-18 deliverable)
+# smooth spectral function + structure diagnostics
 # ---------------------------------------------------------------------------
 def _vertex2_pairs(th1: np.ndarray, th2: np.ndarray, q: float,
                    delta: float) -> np.ndarray:
@@ -633,11 +640,12 @@ def s_omega_smooth(omegas: np.ndarray, q: float, delta: float | None,
         th2* = arccos((E(th1) - omega)/band),   band = 2/sqrt(1-q),
 
     the reduced form of the double theta-integral with the energy delta
-    function eaten analytically.  K is the (2.30) vertex for the O_Delta
-    channel (delta = Delta), or its Delta-derivative at 0 for the fermion-
-    bilinear/length channel (delta = None): dG/dDelta|_0 spectral density
-    (finite for omega != 0; the omega = 0 conserved piece is the linear
-    length growth, reported separately as <n(t)>).
+    function integrated out analytically.  K is the (2.30) vertex for the
+    O_Delta channel (delta = Delta).  For the fermion-bilinear/length
+    channel (delta = None) K is instead the Delta-derivative of that
+    vertex at 0, the dG/dDelta|_0 spectral density.  That density is
+    finite for omega != 0.  The omega = 0 conserved piece is the linear
+    length growth, reported separately as <n(t)>.
 
     Normalization checks (tested): int S domega = 1 and
     int omega^2 S = 2(1-q^Delta) for the O_Delta channel."""
@@ -693,9 +701,10 @@ def structure_report_smooth(x: np.ndarray, S: np.ndarray):
 # ---------------------------------------------------------------------------
 def sech_spectral(omegas: np.ndarray, Jc: float, delta: float) -> np.ndarray:
     """Numeric Fourier transform of the semiclassical (large-p) form
-    sech(Jc t)^{2 Delta}: the smooth continuum every channel approaches as
-    lambda -> 0 IF no structure emerges.  S_sc(om) = (1/2pi) int dt
-    e^{-i om t} sech^{2D}; even, positive, exponentially convergent."""
+    sech(Jc t)^{2 Delta}.  That transform is the smooth continuum every
+    channel approaches as lambda -> 0 IF no structure emerges.
+    S_sc(om) = (1/2pi) int dt e^{-i om t} sech^{2D}; even, positive,
+    exponentially convergent."""
     T = 40.0 / Jc / max(2 * delta, 0.2)
     t = np.linspace(0.0, T, 40000)
     f = (1.0 / np.cosh(Jc * t)) ** (2 * delta)
@@ -707,18 +716,21 @@ def sech_spectral(omegas: np.ndarray, Jc: float, delta: float) -> np.ndarray:
 
 def run_spectra(lams=(2.0, 1.0, 0.5, 0.25, 0.1, 0.05),
                 deltas=(1.0, 0.5, 0.25), out_path=None) -> dict:
-    """Rung-18 first deliverable: the lambda -> 0 scan of the EXACT smooth
-    N = infinity, T_B = infinity spectral functions (reduced theta-integral
-    -- a continuous function, no binning artifacts), O_Delta channels and
-    the Delta -> 0 fermion-bilinear/length channel.
+    """The lambda -> 0 scan of the EXACT smooth
+    N = infinity, T_B = infinity spectral functions.  The scan uses the
+    reduced theta-integral, a continuous function with no binning
+    artifacts.  It covers the O_Delta channels and the Delta -> 0
+    fermion-bilinear/length channel.
 
-    Two omega windows per point: a FINE window [0, 8 Jc] at the
-    semiclassical scale (where a 't Hooft tower would sit under the flat
-    dictionary: omega_chord = (omega/scriptJ) * Jc) and a COARSE window
-    [0, 1.2 band] for the global shape.  Diagnostics: quadrature-doubling
-    drift, moment closures (int S = 1, mu2 = 2(1-q^Delta), length-channel
-    int omega^2 S_L = 2 lambda), structure counts on the fine window, and
-    the deviation from the semiclassical sech^{2Delta} transform."""
+    Two omega windows per point.  The FINE window [0, min(8 Jc, 2 band)]
+    sits at the semiclassical scale, where a 't Hooft tower would sit
+    under the flat dictionary: omega_chord = (omega/scriptJ) * Jc.  The
+    2*band cap binds at lambda = 2.0 and 1.0.  The COARSE window runs up
+    to 2.05 band, just past the full spectral support.  Diagnostics:
+    quadrature-doubling drift, moment closures (int S = 1,
+    mu2 = 2(1-q^Delta), length-channel int omega^2 S_L = 2 lambda),
+    structure counts on the fine window, and the deviation from the
+    semiclassical sech^{2Delta} transform."""
     t0 = time.time()
     points = []
     for lam in lams:
@@ -727,9 +739,9 @@ def run_spectra(lams=(2.0, 1.0, 0.5, 0.25, 0.1, 0.05),
         Jc = math.sqrt(lam) * math.exp(lam / 8.0)
         n_th = int(min(4000, max(800, 60.0 / lam)))
         om_fine = np.linspace(0.0, min(8.0 * Jc, 2 * band), 320)
-        # coarse grid covers the full support 2*band, with geometric small-
-        # omega resolution (the length channel diverges ~1/om^2 there and
-        # the moment integrands need it resolved)
+        # coarse grid covers the full support 2*band, with geometric
+        # small-omega resolution.  The length channel diverges ~1/om^2
+        # there, and the moment integrands need it resolved.
         om_coarse = np.unique(np.concatenate([
             np.geomspace(1e-4 * Jc, Jc, 120),
             np.linspace(Jc, 2.05 * band, 320)]))
@@ -785,7 +797,7 @@ def run_spectra(lams=(2.0, 1.0, 0.5, 0.25, 0.1, 0.05),
               f"sech_dev(D=0.5)={ch['delta=0.5']['sech_dev']:.3f} "
               f"drift={ch['delta=0.5']['quadrature_drift']:.1e}", flush=True)
     payload = dict(
-        provenance="chord.py run_spectra -- rung-18 first deliverable: "
+        provenance="chord.py run_spectra -- "
                    "exact smooth N=infinity T_B=infinity spectral functions "
                    "(reduced theta-integral of review 2407.09396 (2.30); "
                    "length channel = dG/dDelta|_0), fine window at the "
@@ -806,9 +818,10 @@ def run_spectra(lams=(2.0, 1.0, 0.5, 0.25, 0.1, 0.05),
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--spectra", action="store_true",
-                    help="run the rung-18 lambda->0 spectral scan")
+                    help="run the lambda->0 spectral scan")
     ap.add_argument("--demo", action="store_true",
-                    help="quick sanity demo (moments + 2pt cross-checks)")
+                    help="quick sanity demo (moments + 2pt cross-checks); "
+                         "this is the default when --spectra is absent")
     args = ap.parse_args()
     if args.spectra:
         run_spectra()

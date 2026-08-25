@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 r"""
 The Dirac/QED campaign: U(N) self-averaging, charge-sector energetics, and
-charged-vs-singlet spectral weight (road_map rung 19).
-===========================================================================
+charged-vs-singlet spectral weight.
+===================================
 
 Why this module exists.  Every executed self-averaging numeric in this repo is
-Majorana/O(N), while the headline claims of Miyashita-Sekino-Susskind
+Majorana/O(N).  The headline claims of Miyashita-Sekino-Susskind
 (arXiv:2607.05678) are Dirac/U(N): "SM dual of DSSYK_infinity is 't Hooft
 model, QCD(2) + QED", with the SYK fermions as electrically charged quarks.
 The paper's U(1) story is anchored in one citation, at the M_0 (n = 0
@@ -20,20 +20,20 @@ copy in papers/):
 
 [Susskind:2020fiu] = L. Susskind, "Electric Forces in the Charged SYK Model",
 JHAP 5, no.4 (2025), arXiv:2012.12326 -- cited exactly once, for exactly this
-claim.  The sharp 0+1d observables that claim points at are (i) the ENERGETICS
+claim.  That claim points at two sharp 0+1d observables: (i) the ENERGETICS
 of the U(1) charge sectors (what does it cost to charge the system?) and (ii)
 the frequency scales of charged vs neutral (singlet) operators.  This module
-measures both, and first nails the U(N) ensembles' self-averaging statistics
-in closed form so every measured number sits on an exact anchor.
+measures both.  It first derives the U(N) ensembles' self-averaging statistics
+in closed form, so every measured number sits on an exact anchor.
 
 Model and ensembles (dirac.py conventions throughout):
 
     H = sum_{|A|=|B|=k} J_AB c^dag_A c_B,   k = p/2,   J_BA = conj(J_AB),
     sigma^2 = Var|J_AB| = coupling_variance_dirac(Nc, p) = (k!)^2 2^p/Nc^(p-1)
 
-with the stored coupling table containing BOTH ordered keys (A,B) and (B,A):
+with the stored coupling table containing BOTH ordered keys (A,B) and (B,A).
 "generic" = all pairs, complex off-diagonal (E z^2 = 0, E|z|^2 = sigma^2),
-real diagonal J_AA; "c_symmetric" = disjoint pairs only, real symmetric --
+real diagonal J_AA.  "c_symmetric" = disjoint pairs only, real symmetric --
 the CP-sharp sub-ensemble.
 
 --------------------------------------------------------------------------
@@ -62,11 +62,12 @@ the naive picture): the instance-level identity
 
     m2 = sum_stored |J_AB|^2 T_AB           (T_AB := 2^{-|AuB|})
 
-holds EXACTLY for the c_symmetric ensemble -- disjointness (A n B = C n D =
+holds EXACTLY for the c_symmetric ensemble: disjointness (A n B = C n D =
 empty) kills every admissible pattern except C = B, D = A, so T is the pure
-pairing delta -- but FAILS for the generic ensemble, where overlapping keys
-admit cross-pairings ((C,D) != (B,A) with T != 0).  For generic instances
-only the full quadratic form reproduces Tr(H^2)/dim (machine-checked).
+pairing delta.  The identity FAILS for the generic ensemble, where
+overlapping keys admit cross-pairings ((C,D) != (B,A) with T != 0).  For
+generic instances only the full quadratic form reproduces Tr(H^2)/dim
+(machine-checked).
 
 Disorder statistics by Wick/Isserlis on the jointly-Gaussian J (this
 automatically carries the real-vs-complex fourth moments E|z|^4 = 2 sigma^4,
@@ -105,22 +106,22 @@ Large-Nc rates (leading order; both verified against the exact forms):
     c_symmetric:  relVar(m2) -> 4 ((p/2)!)^2 / Nc^p
                   = [2/C(p,p/2)] * (2 p!/Nc^p).
 
-So both U(N) ensembles self-average at the Majorana power Nc^{-p}; the
+So both U(N) ensembles self-average at the Majorana power Nc^{-p}.  The
 CP-sharp ensemble is asymptotically C(p,p/2)/2 times SMALLER in variance
-(3x at p = 4) -- its trace is a clean sum of squares, while the generic
+(3x at p = 4): its trace is a clean sum of squares, while the generic
 ensemble's admissible cross-pairings enhance Var by C(p,p/2) at leading
 order.  (At small Nc the finite-size corrections invert the ranking:
 exact relVar at Nc = 8, p = 4 is 7.803e-3 generic vs 9.524e-3 c_symmetric.)
 
-Verified two independent ways: (a) closed forms vs literal enumeration --
-numeric monomial traces from the sparse syk.dirac_operators route plus
-full-Isserlis Wick, sharing no assembly code with the formulas; (b) vs ED
-disorder ensembles at Nc = 8 and 10 (test_qed_campaign.py; Nc = 10 marked
-slow).
+We verified this two independent ways.  (a) Closed forms vs literal
+enumeration: numeric monomial traces from the sparse syk.dirac_operators
+route plus full-Isserlis Wick, sharing no assembly code with the formulas.
+(b) Vs ED disorder ensembles at Nc = 8 and 10 (test_qed_campaign.py;
+Nc = 10 marked slow).
 
 --------------------------------------------------------------------------
 2. Charge-resolved spectra and the charging curve E0(Q)
---------------------------------------------------------------------------
+-------------------------------------------------------
 [H, Q] = 0, so H block-diagonalizes over popcount sectors of dim C(Nc,q).
 Reassembling the sector spectra reproduces the dense spectrum machine-
 exactly (tested), and off-sector blocks vanish identically.
@@ -128,9 +129,9 @@ exactly (tested), and off-sector blocks vanish identically.
 Exact sector facts (all tested):
   * H_q = 0 identically for q < k (every term annihilates k particles), so
     E0(q) = 0 exactly there;
-  * the top sector q = Nc is 1-dimensional with H = sum_A J_AA * (sign): it
-    vanishes for c_symmetric (no diagonal couplings) but NOT for generic --
-    the generic ensemble is NOT particle-hole symmetric even in
+  * the top sector q = Nc is 1-dimensional with H = sum_A J_AA * (sign).
+    It vanishes for c_symmetric (no diagonal couplings) but NOT for
+    generic.  The generic ensemble is NOT particle-hole symmetric even in
     distribution (the J_AA break it), while c_symmetric instances obey
     E0(q) = E0(Nc - q) exactly, sector by sector.
 
@@ -142,50 +143,50 @@ interior sectors k <= q <= Nc-k (where H_q is nontrivial):
     confining :  E0 = a + mu x + s |x|        ("linear in the charge")
 
 STATISTICS.  The sector means E0(q) are
-measured on the SAME disorder instances for every q, and each instance's
+measured on the SAME disorder instances for every q.  Each instance's
 overall coupling scale moves all its sectors together, so the components
-of the mean vector are strongly positively correlated: measured
+of the mean vector are strongly positively correlated.  Measured
 interior-window correlations run from ~ +0.25 to +0.98 (generic) and up
 to exactly +1 (c_symmetric mirror pairs, see below).  A chi^2 built from per-sector SEMs
 as if the points were independent is therefore NOT a calibrated
 likelihood statistic.  The fits here are GLS with the FULL estimated
 covariance of the interior mean vector (eigenvalue-thresholded
 pseudo-inverse; Hartlap factor (n - d - 2)/(n - 1) correcting the
-inverse-of-estimated-covariance bias), so chi2_gls is approximately
-calibrated -- up to the O(d/n_inst) noise of the estimated covariance
+inverse-of-estimated-covariance bias).  So chi2_gls is approximately
+calibrated, up to the O(d/n_inst) noise of the estimated covariance
 itself (d <= 7 fit points from n_inst >= 60 instances).  The diagonal
-chi^2 is still emitted as chi2_diag, labeled a reference number only;
+chi^2 is still emitted as chi2_diag, labeled a reference number only.
 GLS makes the capacitive-vs-confining preference STRONGER, not weaker.
 
 For c_symmetric the mirror E0(q) = E0(Nc - q) is instance-EXACT (tested),
-so mirrored sectors carry ZERO independent information: the covariance of
+so mirrored sectors carry ZERO independent information.  The covariance of
 the full interior window is exactly singular (mirror pairs have
 correlation +1), and an independence fit would double-count every
-off-center deviation.  The fit folds to q <= Nc/2 -- 3 unique interior
-points at Nc = 8, not 5 -- and drops the linear term (mu = 0 exactly by
+off-center deviation.  The fit folds to q <= Nc/2: 3 unique interior
+points at Nc = 8, not 5.  It also drops the linear term (mu = 0 exactly by
 the same symmetry), leaving K = 2 parameters per model.  Generic curves
 keep all interior points and K = 3 (the J_AA particle-hole breaking makes
 mu physical).
 
 Within each window both models have the same K, so AIC = chi2_gls + 2K
-gives Delta-AIC = Delta chi2_gls; Delta-AIC < 2 means the window cannot
+gives Delta-AIC = Delta chi2_gls.  Delta-AIC < 2 means the window cannot
 distinguish them, exactly as in self_averaging.py.  The comparison is
-RELATIVE, not an absolute goodness-of-fit claim: the capacitive model
+RELATIVE, not an absolute goodness-of-fit claim.  The capacitive model
 wins in every window (GLS Delta-AIC ~ 2.1-2.5e3 generic, ~ 1.5-2.4e3 in
 the short folded c_symmetric windows, vs diagonal reference Delta-chi2
-of only ~ 90-690 -- GLS strengthens the preference because the shared
-noise mode cannot absorb a kink-vs-parabola shape difference), but its
-own chi2_gls/dof is >> 1 for
-the generic curves (the data resolve corrections beyond a pure parabola
--- quartic terms and edge effects); chi2_gls/dof is reported next to
+of only ~ 90-690).  GLS strengthens the preference because the shared
+noise mode cannot absorb a kink-vs-parabola shape difference.  But the
+capacitive model's own chi2_gls/dof is >> 1 for
+the generic curves: the data resolve corrections beyond a pure parabola
+(quartic terms and edge effects).  chi2_gls/dof is reported next to
 every fit so nobody mistakes "much better than linear" for "exactly
 quadratic".
 
 INTERPRETATION (what a huge Delta-AIC buys and what it does not).
 Decisively rejecting the kinked a + mu x + s|x| alternative is mostly a
-test of the SMOOTHNESS/analyticity of E0(Q) at half filling: any chaotic
+test of the SMOOTHNESS/analyticity of E0(Q) at half filling.  Any chaotic
 charge-conserving Hamiltonian whose ground-energy density is a smooth
-function of the filling would reject the |x| kink just as hard, so the
+function of the filling would reject the |x| kink just as hard.  So the
 model comparison by itself is WEAK evidence FOR a specific
 Coulomb/capacitive bulk reading.  The positive physical content is the
 measured curvature (the capacitance C and its Nc trend), not the win
@@ -194,7 +195,7 @@ the duality.
 
 --------------------------------------------------------------------------
 3. Charged vs singlet spectral weight
---------------------------------------------------------------------------
+-------------------------------------
 T = infinity SYMMETRIZED spectral functions (moments_pipeline conventions:
 split O into Hermitian + anti-Hermitian parts, add the two omega-symmetric
 weights; odd moments vanish identically):
@@ -211,8 +212,8 @@ weights; odd moments vanish identically):
     dynamical singlet: M_0 = Q and M_1 = -(p/2)iH are conserved), assembled
     in the H eigenbasis as cdot~ = i omega o c~ and checked against
     dirac.mn_tower in the tests.  M_2 is Hermitian so symmetrization is
-    trivial; we use the raw (not CP-resolved) M2bar so both ensembles are
-    treated identically -- on c_symmetric instances its weight is the sum of
+    trivial.  We use the raw (not CP-resolved) M2bar so both ensembles are
+    treated identically.  On c_symmetric instances its weight is the sum of
     the two CP channels of moments_pipeline.py.
 
 Reported scale: w2 = mu2/(mu0 * Tr(H^2)/dim), the mean-square frequency in
@@ -723,7 +724,6 @@ def make_figure(results: dict, out_png: Path) -> None:
                    label=(r"$2\,p!/N_c^p$" if ens == "generic"
                           else r"$4\,((p/2)!)^2/N_c^p$"))
     for row in results["m2_ensembles"]:
-        color = _COLORS[row["ensemble"]]
         axL.errorbar([row["Nc"]], [row["relvar"]], yerr=[row["relvar_err"]],
                      fmt="x", color="#333333", capsize=3, zorder=5)
     axL.errorbar([], [], fmt="x", color="#333333", capsize=3,

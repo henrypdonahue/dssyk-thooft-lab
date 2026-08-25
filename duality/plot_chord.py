@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
-"""Figures for the chord-engine campaigns (rungs 15/18/26; CHORD.md).
+"""Figures for the chord-engine campaigns (these tasks/26; CHORD.md).
 
 Reads chord_spectra.json, chord_fold.json and
 ../syk-self-averaging/mn_majorana_bench.json only -- nothing recomputed,
 nothing hardcoded.
 
-(a) the rung-18 verdict: exact N = infinity spectral functions S_Delta
+(a) the verdict: exact N = infinity spectral functions S_Delta
     (fine window at the semiclassical scale) vs the sech^{2 Delta}
     transform, lambda falling -- structureless continua converging
     linearly in lambda;
 (b) the length channel and the exact-in-lambda de Sitter length growth
     <n(t)> vs -(2/lambda) log sech(Jc t);
-(c) the rung-26 decider: folded vs unfolded connected fractions vs
+(c) the decider: folded vs unfolded connected fractions vs
     lambda -- the fold breaks the 1/N (~lambda) hierarchy at N = infinity;
-(d) the rung-15 bench: raw w2 rising toward the 't Hooft corner along
-    fixed p, artifact-corrected w2 falling with N at fixed lambda
+(d) the bench: raw w2 rising toward the 't Hooft corner along
+    fixed p, plus the matched-lambda pair -- the honest negative
     (chord prediction: 0).
 """
 import json
@@ -90,7 +90,7 @@ ax.set_xlabel(r"$\lambda$")
 ax.set_title("(c) the fold breaks the $1/N$ hierarchy at $N=\\infty$")
 ax.legend(fontsize=8)
 
-# (d) rung-15 bench: raw widths only (no artifact-corrected curves;
+# (d) bench: raw widths only (no artifact-corrected curves;
 # see mn_majorana_bench.py for why)
 ax = axes[1, 1]
 for p, marker in [(4, "o"), (6, "s")]:

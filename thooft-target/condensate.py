@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 r"""
-Chiral condensate, GMOR corner, and the vacuum energy (rung 21, bulk half).
-===========================================================================
+Chiral condensate, GMOR corner, and the vacuum energy (this task, bulk half).
+=============================================================================
 
-Section 5 of the target paper ("Holographic Tuning") transplants a 4d
-fine-tuning drama into a bulk dual -- large-N QCD2 -- that is
-SUPER-RENORMALIZABLE: its only mass renormalization is the finite shift
-m_q^2 = m_bare^2 - g^2/pi, and its vacuum energy receives one FINITE
-interaction correction, computable exactly.  This module computes that
-correction and validates the exact inputs against this repo's own solver in
-a regime it had never touched (the chiral corner alpha -> -1).
+Section 5 of the target paper (Miyashita-Sekino-Susskind arXiv:2607.05678,
+"Holographic Tuning") transplants a 4d fine-tuning problem into a bulk dual,
+large-N QCD2, that is SUPER-RENORMALIZABLE.  Its only mass renormalization is
+the finite shift m_q^2 = m_bare^2 - g^2/pi.  Its vacuum energy receives one
+FINITE interaction correction, computable exactly.  This module computes that
+correction.  It also validates the exact inputs against this repo's own solver
+in a regime it had never touched (the chiral corner alpha -> -1).
 
 Exact inputs (Litvinov-Meshcheriakov arXiv:2409.11324 Sec. 6.1, fetched and
 transcribed 2026-08-16; their alpha == this repo's alpha = pi m_q^2/g^2,
@@ -28,33 +28,33 @@ a = 1 + alpha = pi m_bare^2/g^2):
 
 What is computed and asserted here:
 
-  1. f(alpha) = <psibar psi>/(Nc g), dimensionless, on (-1, 0]; the I(alpha)
+  1. f(alpha) = <psibar psi>/(Nc g), dimensionless, on (-1, 0].  The I(alpha)
      integral has an integrable near-singularity at alpha -> -1
-     (denominator ~ t(t^2/3 + a) at small t) which reproduces EXACTLY the
+     (denominator ~ t(t^2/3 + a) at small t).  It reproduces EXACTLY the
      pi/sqrt(3a) Zhitnitsky divergence -- asserted, plus the duality-point
      value f(0) = (log pi - 1 - gamma_E)/(2 pi sqrt(pi)) = -0.038834...
   2. The GMOR corner vs the matched-exponent Jacobi solver: 2 lambda_0 at
      alpha = -1 + a approaches (2/pi) sqrt(a/3) with a measured NLO
      (2lambda_0/LO - 1) ~= sqrt(a).  Measured basis convergence at K = 96:
-     10+ digits for a >= 0.04, ~8 digits at the a = 0.02 endpoint (the
-     subleading endpoint structure grows as beta ~ sqrt(3a)/pi shrinks) --
-     far inside every tolerance used.  First solver data in the chiral
-     corner.
+     10+ digits for a >= 0.04, ~8 digits at the a = 0.02 endpoint.  The
+     subleading endpoint structure grows as beta ~ sqrt(3a)/pi shrinks.
+     Those figures are far inside every tolerance used.  First solver data
+     in the chiral corner.
   3. The vacuum-energy curve by Feynman-Hellmann in the bare mass at fixed
      g (dE_vac/dm_bare = <psibar psi>):
         eps(alpha) = [E_vac(alpha) - E_vac(-1)]/(Nc g^2)
                    = Int_{-1}^{alpha} f(a') (dm/dalpha')/g dalpha',
         dm/dalpha = g / (2 sqrt(pi (1+alpha))).
      In the m variable the integrand (the condensate f itself) is FINITE
-     through the chiral point; in the alpha variable it has an integrable
+     through the chiral point.  In the alpha variable it has an integrable
      (1+alpha)^{-1/2} endpoint singularity, with integrand*sqrt(1+alpha)
      -> f_chiral/(2 sqrt(pi)) = -1/(4 pi sqrt(3)).  eps(0) -- the
      interaction vacuum-energy shift at the duality point, in units
      Nc g^2 -- is a single finite number.  That is the entire 2d counterpart
      of Sec. 5's "vacuum energy corrections": one finite, parameter-free
-     constant; nothing requires tuning.  Under the dictionary
+     constant.  Nothing requires tuning.  Under the dictionary
      (alpha_bar = gbar^2 N = p^2, g^2 = lambda J^2 -> 0 with tau = p^2
-     m_q^2 fixed), the shift per flavor-mode vanishes as lambda: the
+     m_q^2 fixed), the shift per flavor-mode vanishes as lambda.  The
      Holographic-Tuning mechanism has no divergence to cancel in this bulk.
 
 Output: condensate.json (curve + corner scan + the numbers above).
@@ -80,14 +80,19 @@ GAMMA_E = 0.5772156649015329
 # ---------------------------------------------------------------------------
 def I_alpha(alpha: float) -> float:
     """I(alpha) = (1/4) Int dt/t^2 (sinh2t - 2t)/[cosh t (alpha sinh t
-    + t cosh t)]; even integrand, near-singular ~ 4/(t^2 + 3a) at small t
-    when a = 1 + alpha -> 0 (handled by an explicit small-t split).
+    + t cosh t)].  The integrand is even, and near-singular ~ 4/(t^2 + 3a) at
+    small t when a = 1 + alpha -> 0 (an explicit small-t split handles that).
 
-    Validated domain: a = 1 + alpha >= 1e-6 (measured accuracy 7e-14 at
-    alpha = 0 degrading to ~2e-9 by a = 1e-3; below a ~ 1e-6 the split
-    quadrature silently loses digits -- refuse rather than degrade)."""
+    Validated domain: a = 1 + alpha >= 1e-6.  Measured accuracy is 7e-14 at
+    alpha = 0, degrading to ~2e-9 by a = 1e-3.  Below a ~ 1e-6 the split
+    quadrature silently loses digits.  This function refuses rather than
+    degrades."""
     a = 1.0 + alpha
-    if 0 < a < 1e-6:
+    if a <= 0:
+        raise ValueError(
+            f"I_alpha: a = 1 + alpha = {a:.2e} <= 0 -- the integral needs "
+            "alpha > -1")
+    if a < 1e-6:
         raise ValueError(
             f"I_alpha: a = 1 + alpha = {a:.2e} is below the validated "
             "quadrature floor 1e-6; use the Zhitnitsky asymptotic "
@@ -107,7 +112,7 @@ def I_alpha(alpha: float) -> float:
                 / (math.cosh(t) * (alpha * math.sinh(t)
                                    + t * math.cosh(t))))
 
-    # split at the near-singular scale sqrt(3a) and again at O(1); the tail
+    # split at the near-singular scale sqrt(3a) and again at O(1).  The tail
     # decays only ALGEBRAICALLY (integrand -> 2/(t^2 (t + alpha))), so the
     # last piece runs to infinity
     t_split = max(math.sqrt(3.0 * a), 1e-3)
@@ -149,12 +154,19 @@ def vacuum_energy_curve(alphas: np.ndarray) -> np.ndarray:
     """eps(alpha) = Int_{-1}^{alpha} f(a') / (2 sqrt(pi (1+a'))) da',
     the dimensionless vacuum-energy shift [E_vac(alpha) - E_vac(-1)]/(Nc g^2).
     The alpha-integrand has an integrable (1+alpha)^{-1/2} endpoint
-    singularity; the substitution u = sqrt(1+alpha) removes it exactly
-    (d alpha = 2u du), leaving the smooth integrand f(u^2-1)/sqrt(pi),
+    singularity.  The substitution u = sqrt(1+alpha) removes it exactly
+    (d alpha = 2u du).  That leaves the smooth integrand f(u^2-1)/sqrt(pi),
     which tends to -1/(2 pi sqrt(3)) at the chiral end."""
     # evaluate f once on a dense u-grid and integrate its cubic-spline
     # antiderivative -- no nested adaptive quadrature, smooth integrand,
     # ~1e-8 accuracy.  The u = 0 endpoint value is the exact chiral limit.
+    a = np.atleast_1d(np.asarray(alphas, dtype=float))
+    if np.any(a < -1.0) or np.any(a > 0.0):
+        raise ValueError(
+            "vacuum_energy_curve is defined on alpha in [-1, 0]: the spline "
+            "is built on u = sqrt(1+alpha) in [0, 1], so alpha > 0 would "
+            "silently extrapolate and alpha < -1 would return NaN. "
+            f"Got range [{a.min():.6g}, {a.max():.6g}].")
     u_grid = np.linspace(0.0, 1.0, 801)
     f_grid = np.empty_like(u_grid)
     f_grid[0] = CHIRAL_VALUE / math.sqrt(math.pi)
@@ -195,7 +207,8 @@ def main():
     eps_curve = vacuum_energy_curve(alphas)
     corner = gmor_corner()
     payload = dict(
-        provenance="condensate.py -- rung 21 bulk half: LM 2409.11324 "
+        provenance="condensate.py -- condensate, GMOR corner and vacuum "
+                   "energy: LM 2409.11324 "
                    "(6.1)-(6.3) transcribed; GMOR corner vs jacobi_solver; "
                    "vacuum energy by Feynman-Hellmann in m_bare",
         chiral_value=CHIRAL_VALUE,

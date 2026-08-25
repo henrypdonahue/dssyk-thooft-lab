@@ -4,19 +4,17 @@ Pinned: the three-term close_j recursion as a matrix identity; the dressed
 propagator C(m) = P_m(T) (Motzkin polynomial) and [C(m), T] = 0 for
 m <= 8; the C(1), C(2) and Xhat_2 closed forms; [Xhat_n, T] = 0 for
 n <= 5; and, through the INDEPENDENT chord_moments word assembly, the
-theorem's punchline: every |mu_k|/gross <= 1e-12 for n <= 5, k = 1..6,
+theorem's punchline: every |mu_k|/gross <= 1e-12 for n <= 5, even k <= 6,
 both operator orderings.  All identities are exact; residuals are float
 noise, measured on the truncation-free interior block relative to scale.
 """
-
-from math import comb
 
 import numpy as np
 import pytest
 
 from chord import qint
 from chord_charges import (close_j_map, dressed_propagator, motzkin_coeffs,
-                           open_map, poly_of_matrix, transfer_formal,
+                           poly_of_matrix, transfer_formal,
                            transfer_one_matter_formal, xhat_matrix)
 
 CASES = [(0.5, 0.25), (0.85, 0.25), (0.2, 0.7), (0.5, 1.0)]

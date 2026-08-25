@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Asserting tests for the Dirac/QED campaign (qed_campaign.py, rung 19).
+"""Asserting tests for the Dirac/QED campaign (qed_campaign.py).
 
-Every closed form is checked against an independent enumeration route
+The tests check every closed form against an independent enumeration route
 (sparse-operator traces + literal Isserlis Wick) and against ED disorder
-ensembles; the spectral pipeline is checked against eigenbasis-free
+ensembles.  They check the spectral pipeline against eigenbasis-free
 commutator identities.  Run with:  pytest -q  (the Nc = 10 ED ensemble is
 marked slow).
 """
@@ -46,7 +46,8 @@ def test_t_ab_occupation_counting():
 def test_instance_m2_quadratic_form_generic():
     """For a generic instance, Tr(H^2)/dim equals the full quadratic form
     sum J_a J_b T_ab machine-exactly, while the naive sum |J|^2 T_AB does
-    NOT (admissible cross-pairings): the structural fact of the docstring."""
+    NOT (admissible cross-pairings).  This is the structural fact of the
+    docstring."""
     Nc, p = 5, 4
     J = draw_couplings(Nc, p, np.random.default_rng(1), "generic")
     H = dirac_hamiltonian(Nc, p, couplings=J)
@@ -61,8 +62,8 @@ def test_instance_m2_quadratic_form_generic():
 
 
 def test_instance_m2_sum_of_squares_c_symmetric():
-    """For the disjoint/real ensemble the naive sum IS exact: T is the pure
-    pairing delta, so m2 = sum |J|^2 2^{-p} instance by instance."""
+    """For the disjoint/real ensemble the naive sum IS exact.  T is the
+    pure pairing delta, so m2 = sum |J|^2 2^{-p} instance by instance."""
     Nc, p = 6, 4
     J = draw_couplings(Nc, p, np.random.default_rng(2), "c_symmetric")
     H = dirac_hamiltonian(Nc, p, couplings=J)
@@ -153,9 +154,10 @@ def test_sector_reassembly_machine_exact():
 
 
 def test_edge_sectors_and_particle_hole():
-    """Exact sector facts: H_q = 0 for q < p/2 (so E0 = 0 there); the
-    c_symmetric top sector vanishes and E0(q) = E0(Nc - q) instance-exactly;
-    the generic top sector is the 1-dim sum of diagonal couplings."""
+    """Exact sector facts: H_q = 0 for q < p/2, so E0 = 0 there.  The
+    c_symmetric top sector vanishes, and E0(q) = E0(Nc - q)
+    instance-exactly.  The generic top sector is the 1-dim sum of
+    diagonal couplings."""
     Nc, p = 6, 4
     sectors = sector_indices(Nc)
     Jc = draw_couplings(Nc, p, np.random.default_rng(4), "c_symmetric")
@@ -174,8 +176,8 @@ def test_edge_sectors_and_particle_hole():
 
 
 def test_charging_curve_shapes_and_edges():
-    """Measured curve carries SEMs; the q < p/2 sectors are exactly zero for
-    every instance (zero mean AND zero SEM)."""
+    """The measured curve carries SEMs.  The q < p/2 sectors are exactly
+    zero for every instance (zero mean AND zero SEM)."""
     curve = charging_curve(6, 4, "generic", n_inst=8, seed=11)
     assert len(curve["e0_mean"]) == 7 and len(curve["e0_sem"]) == 7
     for q in range(2):
@@ -184,10 +186,11 @@ def test_charging_curve_shapes_and_edges():
 
 
 def test_charging_fit_recovers_planted_models():
-    """The fit machinery recovers a planted quadratic (capacitive) curve --
-    coefficient and AIC preference -- and symmetrically for a planted |x|.
-    (No ensemble/covariance keys: exercises the diagonal fallback, where
-    GLS reduces exactly to the old WLS.)"""
+    """The fit machinery recovers a planted quadratic (capacitive) curve.
+    It recovers both the coefficient and the AIC preference.  It does the
+    same for a planted |x|.  (No ensemble/covariance keys: the test
+    exercises the diagonal fallback, where GLS reduces exactly to the old
+    WLS.)"""
     Nc, p = 10, 4
     q = np.arange(Nc + 1, dtype=float)
     x = q - Nc / 2.0
@@ -210,12 +213,12 @@ def test_charging_fit_recovers_planted_models():
 
 
 def test_charging_curve_covariance_structure():
-    """charging_curve returns the full covariance of the mean vector:
-    diagonal == SEM^2, PSD, and (the correlated-sector point) the interior
-    cross-q correlations are strongly positive because all sectors of one
-    instance share its coupling scale; for c_symmetric the mirrored sectors
-    are instance-exact duplicates, so their correlation is +1 and the
-    interior covariance is singular."""
+    """charging_curve returns the full covariance of the mean vector: the
+    diagonal == SEM^2, and the matrix is PSD.  The interior cross-q
+    correlations (the correlated-sector point) are strongly positive,
+    because all sectors of one instance share its coupling scale.  For
+    c_symmetric the mirrored sectors are instance-exact duplicates, so
+    their correlation is +1 and the interior covariance is singular."""
     curve = charging_curve(6, 4, "c_symmetric", n_inst=12, seed=21)
     C = np.array(curve["e0_cov_mean"])
     s = np.array(curve["e0_sem"])
@@ -233,9 +236,9 @@ def test_charging_curve_covariance_structure():
 
 
 def test_fit_charging_folds_c_symmetric():
-    """c_symmetric fits fold the instance-exact mirror: only q <= Nc/2
-    enters (3 unique interior points at Nc = 8, not 5), the linear term is
-    dropped (K = 2; mu = 0 exactly by the symmetry), and the recorded
+    """c_symmetric fits fold the instance-exact mirror.  Only q <= Nc/2
+    enters (3 unique interior points at Nc = 8, not 5).  The fit drops the
+    linear term (K = 2; mu = 0 exactly by the symmetry).  The recorded
     mirror deviation of the means is at roundoff level.  Generic is NOT
     folded (the J_AA break particle-hole symmetry)."""
     curve = charging_curve(8, 4, "c_symmetric", n_inst=12, seed=22)
@@ -256,17 +259,18 @@ def test_fit_charging_folds_c_symmetric():
 
 
 def test_fit_charging_gls_calibration_and_recovery():
-    """On synthetic ensembles with strongly correlated cross-q noise
-    (mimicking the measured +0.25..+0.98 correlations of the real curves),
-    the GLS fit (a) recovers planted capacitive coefficients, (b) prefers
-    the true model, and (c) is CALIBRATED: chi2_gls averaged over many
-    synthetic ensembles is ~ dof.  The diagonal-independence chi2 of the
-    same data is grossly MIS-calibrated -- here strongly deflated (mean
-    and variance far below dof and 2*dof), because the shared noise mode
-    inflates every SEM while contributing only ~1 independent noise
-    d.o.f. -- which is why it was retired as a statistic (it also
-    understates Delta-chi2 on the real curves; GLS strengthens the model
-    preference there)."""
+    """On synthetic ensembles with strongly correlated cross-q noise, the
+    GLS fit (a) recovers planted capacitive coefficients, (b) prefers the
+    true model, and (c) is CALIBRATED.  The synthetic noise mimics the
+    measured +0.25..+0.98 correlations of the real curves.  CALIBRATED
+    means that chi2_gls averaged over many synthetic ensembles is ~ dof.
+    The diagonal-independence chi2 of the same data is grossly
+    MIS-calibrated.  Here it is strongly deflated: the mean and variance
+    sit far below dof and 2*dof.  This deflation happens because the
+    shared noise mode inflates every SEM while contributing only ~1
+    independent noise d.o.f.  That is why the diagonal chi2 was retired as
+    a statistic.  It also understates Delta-chi2 on the real curves.  On
+    those curves GLS strengthens the model preference."""
     rng = np.random.default_rng(31)
     Nc, p, n_inst = 10, 4, 200
     q = np.arange(Nc + 1, dtype=float)
@@ -298,8 +302,8 @@ def test_fit_charging_gls_calibration_and_recovery():
     assert abs(float(np.mean(coefs)) - 0.11) < 0.01
     # the diagonal statistic is mis-calibrated in the deflated direction:
     # the shared mode inflates every SEM but contributes only ~1
-    # independent noise d.o.f., so chi2_diag sits far below dof (measured
-    # mean ~ 0.3, var ~ 0.2 vs the nominal 4 and 8); the GLS statistic
+    # independent noise d.o.f.  So chi2_diag sits far below dof (measured
+    # mean ~ 0.3, var ~ 0.2 vs the nominal 4 and 8).  The GLS statistic
     # keeps a chi2_dof-like spread
     assert float(np.mean(chi2_diag)) < 0.5 * dof
     assert float(np.var(chi2_diag, ddof=1)) < 0.5 * 2 * dof
@@ -330,9 +334,9 @@ def test_mu2_charged_commutator_identity():
 
 
 def test_mu2_singlet_commutator_identity():
-    """Eigenbasis singlet mu2 equals ||[H, M2bar]||_F^2/dim with M2bar built
-    independently in the position basis via dirac.mn_tower -- validating the
-    whole eigenbasis M2 assembly (cdot~ = i omega o c~)."""
+    """Eigenbasis singlet mu2 equals ||[H, M2bar]||_F^2/dim, with M2bar
+    built independently in the position basis via dirac.mn_tower.  This
+    validates the whole eigenbasis M2 assembly (cdot~ = i omega o c~)."""
     Nc, p, seed = 6, 4, 9
     dim = 1 << Nc
     for ens in ("generic", "c_symmetric"):
@@ -353,9 +357,9 @@ def test_mu2_singlet_commutator_identity():
 
 def test_w2_charged_instance_exact_c_symmetric():
     """For the disjoint/real ensemble, mu2_charged = (p/Nc) m2 holds PER
-    INSTANCE (so w2_charged = 2p/Nc exactly): the disjoint-key pattern
-    argument kills the cross terms of the commutator quadratic form.  The
-    generic ensemble must violate it (cross terms are real)."""
+    INSTANCE, so w2_charged = 2p/Nc exactly.  The disjoint-key pattern
+    argument removes the cross terms of the commutator quadratic form.
+    The generic ensemble must violate it (cross terms are real)."""
     Nc, p = 6, 4
     for seed in (0, 1):
         H = dirac_hamiltonian(Nc, p, couplings=draw_couplings(
@@ -381,8 +385,9 @@ def test_mean_mu2_charged_closed_vs_enumeration():
 
 def test_spectral_ensemble_structure():
     """Ensemble spectral run: odd moments vanish (symmetrized weights),
-    kurtosis obeys Cauchy-Schwarz, mu0 is exact, and the measured E[mu2]
-    of the charged channel matches the closed form within error bars."""
+    and kurtosis obeys Cauchy-Schwarz.  mu0 is exact, and the measured
+    E[mu2] of the charged channel matches the closed form within error
+    bars."""
     r = measure_spectral(6, 4, "generic", n_inst=16, seed0=100)
     assert r["odd_moment_check"] < 1e-8
     assert abs(r["mu0_charged"] - 0.5) < 1e-10
@@ -426,9 +431,10 @@ def test_qed_campaign_json_structure():
 
 
 def test_w2_anchor_ensemble_dependence():
-    """The printed w2 anchor 2 E[mu2]/E[m2]: equals the instance-exact 2p/Nc
-    for c_symmetric (mu2 identity), and sits strictly BELOW it for generic
-    (cross-term deficit) -- the anchor is ensemble-dependent, not 2p/Nc."""
+    """The printed w2 anchor 2 E[mu2]/E[m2] equals the instance-exact
+    2p/Nc for c_symmetric (mu2 identity).  It sits strictly BELOW that
+    value for generic (cross-term deficit).  The anchor is
+    ensemble-dependent, not 2p/Nc."""
     from qed_campaign import mean_mu2_charged_exact, mean_m2_exact
     for Nc in (6, 8, 10):
         for p in (4, 6):

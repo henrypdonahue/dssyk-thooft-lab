@@ -18,7 +18,7 @@ with applications to the DSSYK$_\infty$\,--\,'t~Hooft correspondence}
 
 % TODO(author): confirm author line and affiliation before circulating.
 \author{Henry Donahue}
-\date{July 2026 --- draft, not for distribution}
+\date{August 2026 --- draft, not for distribution}
 
 \begin{document}
 \maketitle
@@ -28,8 +28,8 @@ Miyashita, Sekino and Susskind have argued that individual disorder realizations
 of the double-scaled SYK model at infinite temperature enjoy an emergent
 $O(N)$ (or $U(N)$) symmetry, because singlet observables self-average with
 variance $\sim p!/N^p$ and symmetry-violating (adjoint) observables are bounded
-by $e^{-a\sqrt N}$ for every $a$ [arXiv:2607.05678, Eqs.~(3.27)--(3.28)]. The
-supporting counting was given through two example diagrams, and, as far as we
+by $e^{-a\sqrt N}$ for every $a$ [arXiv:2607.05678, Eqs.~(3.27)--(3.28)].
+The paper supports this counting with two example diagrams; as far as we
 are aware, no systematic derivation has appeared. We supply one for the
 quantities that control the claim. For the adjoint bilinear
 $B_{jk}=\Tr(\psi_j H\psi_k H)/\dim$ we prove the closed forms
@@ -40,18 +40,18 @@ relative variance exactly $2/\binom{N}{p}$. These confirm the published
 leading-order counting and sharpen it: along the double-scaling line
 $p=\sqrt{\lambda N}$ the typical symmetry violation obeys
 $\ln\rms(B_{jk})=-\tfrac14\sqrt{\lambda N}\,\ln N\,(1+o(1))$, beating
-$e^{-a\sqrt N}$ for every $a$, while at fixed $p$ --- the regime where the
+$e^{-a\sqrt N}$ for every $a$. At fixed $p$ --- the regime where the
 proposed 't~Hooft comparison must be performed --- the suppression is only the
 power law $N^{-(p-1)/2}$. The vanishing of $\mathbb E[B_{jj}]$ at $p=N/2$
 explains an artifact visible in exact-diagonalization studies. We verify the
-formulas three independent ways. As a byproduct of setting up the $U(N)$
+formulas in three independent ways. As a byproduct of setting up the $U(N)$
 (Dirac) sector we record several corrections to the operator dictionary of the
-singlet tower $M_n=\psi_i^\dagger(d^n\!/dt^n)\psi_i$: $M_1=-(p/2)\,iH$ (not
-$H$), $M_2=-\sum_i\dot\psi_i^\dagger\dot\psi_i$ (opposite sign to the published
-identity), $M_n^\dagger=(-1)^nM_n$ only for $n\le2$, the relevant CP operation
-is necessarily the \emph{unitary} particle--hole map, and for $n\ge2$ the raw
-$M_n$ carry both CP channels, so the assignment $\mathrm{CP}=(-1)^{n+1}$ is a
-statement about CP-resolved correlators.
+singlet tower $M_n=c_i^\dagger(d^n\!/dt^n)c_i$: $M_1=-(p/2)\,iH$ (not
+$H$), $M_2=-\sum_i\dot c_i^\dagger\dot c_i$ (opposite sign to the published
+identity), $M_n^\dagger=(-1)^nM_n$ only for $n\le2$, and the relevant CP
+operation is necessarily the \emph{unitary} particle--hole map. For $n\ge2$
+the raw $M_n$ carry both CP channels, so the assignment
+$\mathrm{CP}=(-1)^{n+1}$ is a statement about CP-resolved correlators.
 \end{abstract}
 
 \section{Introduction}
@@ -68,10 +68,10 @@ invariant: singlet observables self-average,
 \tag{3.27 of \cite{MSS2607}}
 \end{equation}
 and symmetry-violating observables are smaller than $e^{-a\sqrt N}$ for every
-$a$ (their Eq.~3.28). In \cite{MSS2607} this is supported by comparing two
+$a$ (their Eq.~3.28). The paper supports this with two example
 diagrams; the diagrammatic rules are developed in \cite{SS2501}, but that paper
 concerns the ensemble-averaged $1/N$ expansion --- the variance application, and
-in particular its prefactors, appear not to have been published anywhere.
+in particular its prefactors, appears not to have been published anywhere.
 
 This note closes that gap for the observables that control the claim, using
 nothing beyond Wick's theorem and Majorana trace combinatorics, and draws two
@@ -116,8 +116,10 @@ This is the paper's $p!/N^p$ with its exact prefactor: a factor $2$ (the Wick
 multiplicity) and a factor $\prod(1-k/N)^{-1}\approx e^{+p^2/2N}$ which is
 $O(1/N)$ at fixed $p$ but order one on the double-scaling line
 $\lambda=p^2/N$ fixed. Exact diagonalization confirms
-Eq.~\eqref{eq:singlet} at $N\le18$, and confirms that the higher moments
-$m_4,m_6$ self-average at the same combinatorial $1/\binom{N}{p}$ rate.
+Eq.~\eqref{eq:singlet} at $N\le18$; an exact Wick computation gives the
+fourth moment in closed form,
+$\mathrm{relVar}(m_4)=4\,\mathrm{relVar}(m_2)\,(1+o(1))$, and ED confirms
+that $m_4,m_6$ self-average at the same combinatorial rate.
 (We stress the logical status: Eq.~\eqref{eq:singlet} is an elementary identity
 that holds independently of any diagrammatic argument; the nontrivial content
 of the self-averaging claim lies in the adjoint sector, to which we now turn.)
@@ -217,10 +219,11 @@ $\binom{N-1}{p-1}$ subsets contain $j$ (each contributing $-1$) and the
 remainder contribute $+1$.
 \end{proof}
 
-\paragraph{Verification.} Three independent checks are implemented:
-(i)~\emph{literal enumeration}: for $(N,p)\in\{(6,2),(6,4),(8,4),(8,6),(10,4)\}$
-every $T_{cd}$ is evaluated as a Pauli-string trace and the double sum
-performed explicitly; the ratio to Eq.~\eqref{eq:var} is $1$ to machine
+\paragraph{Verification.} We implement three independent checks:
+(i)~\emph{literal enumeration}: every $T_{cd}$ is evaluated as a
+Pauli-string trace and the double sum performed explicitly --- the
+variance at $(N,p)\in\{(8,4),(8,6)\}$, the mean diagonal at
+$(8,4),(8,6),(10,4)$; the ratio to Eq.~\eqref{eq:var} is $1$ to machine
 precision, pinning every sign in the lemmas.
 (ii)~\emph{exact diagonalization}: disorder ensembles (120--200 realizations,
 $N\le18$, $p=4,6$; construction validated against the $N\bmod8$
@@ -254,10 +257,10 @@ Along $p=\sqrt{\lambda N}$, Stirling expansion of Eq.~\eqref{eq:var} gives
 \end{equation}
 smaller than $e^{-a\sqrt N}$ for \emph{every} $a$: the symmetry-violation
 bound of \cite{MSS2607} holds \emph{for this observable}, verified by exact
-computation in the regime the bound is about (we have evaluated Eq.~\eqref{eq:var} to $N=1600$, $p=40$),
-rather than extrapolated from the $N\le18$ window accessible to exact
-diagonalization --- where, we note, fits genuinely cannot discriminate the
-competing functional forms.
+computation in the regime the bound is about (we have evaluated Eq.~\eqref{eq:var} to $N=1600$, $p=40$).
+It is not an extrapolation from the $N\le18$ window accessible to exact
+diagonalization, where fits genuinely cannot discriminate the competing
+functional forms.
 
 \paragraph{Fixed $p$: the match regime is only polynomially symmetric.}
 The proposed quantitative DSSYK--'t~Hooft comparison --- against the
@@ -310,7 +313,8 @@ anti-Hermitian-part) spectral functions are the convention-stable objects.
 flips the explicit $i$ in $M_1\propto iH$ and would make the ``graviton''
 CP-odd. In the Jordan--Wigner realization
 $C=\prod_i(c_i+c_i^\dagger)$ one finds
-$Cc_iC^\dagger=(-1)^{N_c-1}c_i^\dagger$ --- a global, mode-independent sign,
+$Cc_iC^\dagger=(-1)^{N_c-1}c_i^\dagger$ ($N_c$ the number of complex
+modes) --- a global, mode-independent sign,
 invisible to bilinears but essential for odd fermion strings.
 \item On $C$-invariant realizations, $\mathrm{CP}(M_0)=-1$ and
 $\mathrm{CP}(M_1)=+1$ are exact, but for $n\ge2$ the raw $M_n$ carry

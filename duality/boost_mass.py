@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 r"""
-Boost-to-mass dictionary calibration (road_map rung 13).
-========================================================
+Boost-to-mass dictionary calibration.
+=====================================
 
 The DSSYK Hamiltonian generates BOOSTS (paper Sec. 2: H = i d/dt, Rindler time
 in the flat-space limit), and every spectrum-match proposal silently assumes
@@ -48,7 +48,7 @@ Calibration facts this establishes (tested in test_boost.py):
     Tr(M(t)M)/dim is exactly omega-SYMMETRIC (measured in mn_spectroscopy).
     The two can only match through a nontrivial state/frequency map (the
     "tomperature" story of Rahman-Susskind 2401.08555) -- this unresolved map
-    is precisely what rung 13 flags as the gating dictionary question, now
+    is precisely what this task flags as the gating dictionary question, now
     stated sharply.
 """
 

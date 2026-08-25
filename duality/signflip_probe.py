@@ -4,27 +4,27 @@ Can a contour shift flip the scrambling sign?  An exploratory probe.
 ====================================================================
 
 The dS-dictionary problem, measured in this repo: under the flat time map
-DSSYK scrambles (Re a = -1 at every temperature), a dS observer needs the
-opposite sign, and the Euclidean fold does not deliver it.  This module
-tests the next candidate: displace the probe pair by HALF THE FAKE PERIOD
-around the thermal circle (Delta = pi/v in Euclidean angle; the fake
-period is 2 pi/v).  Geometrically this is an antipodal shift on the fake
-disk.  It is also what the Narovlansky-Verlinde dressing does: their
-operators sit at +-i beta_dS/4, i.e. half a period apart, and they call
-the two insertions antipodal.
+DSSYK scrambles (Re a = -1 at every temperature).  A dS observer needs
+the opposite sign, and the Euclidean fold does not deliver it.  This
+module tests the next candidate: displace the probe pair by HALF THE FAKE
+PERIOD around the thermal circle (Delta = pi/v in Euclidean angle).  The
+fake period is 2 pi/v.  Geometrically this is an antipodal shift on the
+fake disk.  It is also what the Narovlansky-Verlinde dressing does: their
+operators sit at +-i beta_dS/4, i.e. half a period apart.  They call the
+two insertions antipodal.
 
 Three levels, one JSON:
 
 1. Closed form (large-q, `antiscrambling.otoc_ratio`).  Shift the
    (theta1, theta2) pair by Delta and extract the growth coefficient
    a(Delta) by a complex fit in the late-time window.  Prediction from
-   the pole structure: a(Delta) = a(0) exp(-i v Delta), so at
+   the pole structure: a(Delta) = a(0) exp(-i v Delta).  So at
    Delta = pi/v the coefficient flips exactly: Re a goes from -1 to +1.
    The probe verifies the rotation law and the flip.
 
 2. Two-point physicality.  The shifted W-V separation is
    theta = pi/2 + Delta.  The continued large-q 2-pt stays real and
-   positive up to its pole at theta = pi + pi/v, so the antipodal point
+   positive up to its pole at theta = pi + pi/v.  So the antipodal point
    sits INSIDE the physical window, at margin pi/2 from the pole.
    The probe records the values and the margin.
 
@@ -36,11 +36,11 @@ Three levels, one JSON:
 
 Honesty: a sign flip under a contour shift is NECESSARY for this
 candidate map, not sufficient.  It does not by itself build the dS
-dictionary: the full correlator suite must stay consistent, and the
+dictionary.  The full correlator suite must stay consistent, and the
 algebra story (why the observer's operators live there) is NV's
 construction to complete.  This probe measures whether the mechanism
-survives exactness in lambda -- the question the closed form cannot
-answer.
+survives exactness in lambda.  That is the question the closed form
+cannot answer.
 
 Output: signflip_probe.json; asserted in test_signflip.py; narrated in
 DISCRIMINATOR.md.
@@ -69,9 +69,10 @@ HERE = Path(__file__).resolve().parent
 def growth_coefficient_shifted(v: float, delta: float,
                                config=CONFIG_CROSSED) -> complex:
     """Coefficient of exp(v thL) in the closed-form crossed ratio, with the
-    (theta1, theta2) pair shifted by `delta` in Euclidean angle.  Complex
-    least-squares fit on the basis {1, e^{v thL}, e^{-v thL}} over a late
-    window (the same technique antiscrambling.py validates at delta = 0)."""
+    (theta1, theta2) pair shifted by `delta` in Euclidean angle.  The fit
+    is a complex least-squares fit on the basis
+    {1, e^{v thL}, e^{-v thL}} over a late window.  antiscrambling.py
+    validates the same technique at delta = 0."""
     t1, t2, t3, t4 = config
     thLs = np.array([4.0, 5.0, 6.0, 7.0]) / v
     vals = np.array([complex(otoc_ratio(t1 + delta + 1j * t, t2 + delta + 1j * t,
@@ -162,19 +163,20 @@ def detailed_balance(lam: float, betaJ: float, p: int = 4,
 
     * The per-line LAW.  In the Lehmann representation, shifting one
       probe operator by Euclidean time dtau multiplies each line (j, k)
-      by exp(-dtau (Ej - Ek)); with the symmetric vertex M this forces
+      by exp(-dtau (Ej - Ek)).  With the symmetric vertex M this forces
       detailed balance at beta_eff = beta + 2 dtau for any dtau.  That
-      is arithmetic, not a measurement -- `max_line_deviation` only
+      is arithmetic, not a measurement.  `max_line_deviation` only
       confirms the construction (float-level).
     * The independent CHECK (`engine_check_dev`).  The same shifted
-      correlator is evaluated on the contour engine -- the stack walker
-      with matter-sector `expm_multiply`, a code path that contains no
-      Lehmann weights -- and compared against the per-line-shifted sum,
-      at two Lorentzian times and both shift signs.  This is what makes
-      the Lehmann representation (and so the law) a verified property
-      of the chord theory rather than of this function.
+      correlator is evaluated on the contour engine, the stack walker
+      with matter-sector `expm_multiply`.  That code path contains no
+      Lehmann weights.  The result is compared against the
+      per-line-shifted sum, at two Lorentzian times and both shift
+      signs.  This is what makes the Lehmann representation (and so the
+      law) a verified property of the chord theory rather than of this
+      function.
 
-    Physics: the sign-flipping shift is dtau = beta_fake/2, so at the
+    Physics: the sign-flipping shift is dtau = beta_fake/2.  So at the
     T = infinity hologram point (beta -> 0) the antipodal frame obeys
     detailed balance at the tomperature, beta_eff = beta_fake.  (This is
     what NV's +-i beta/4 splitting produces, with their beta_dS
@@ -227,14 +229,15 @@ def detailed_balance(lam: float, betaJ: float, p: int = 4,
 def calibrated_scan(lam: float, betaJ: float, p: int = 4,
                     nmax: int = 80) -> dict:
     """Measure the exact growth exponent kappa from the unshifted curve
-    (three-point log-difference), then try the flip with Delta = pi/kappa
-    as well as the large-q Delta = pi/v.  Two findings.  (1) At strong
-    coupling both shifts fail: the flip is genuinely semiclassical, not a
-    rate-calibration artifact.  (2) Where the flip works (lam <= 1.7), it
-    works with pi/v and NOT with pi/kappa, even though kappa > v: the
-    phase period of the growing mode is set by the large-q v while its
-    magnitude grows faster -- phase and magnitude rates decouple at
-    finite lambda.  kappa itself is a new measured number."""
+    (three-point log-difference).  Then try the flip with
+    Delta = pi/kappa as well as the large-q Delta = pi/v.  Two findings.
+    (1) At strong coupling both shifts fail: the flip is genuinely
+    semiclassical, not a rate-calibration artifact.  (2) Where the flip
+    works (lam <= 1.7), it works with pi/v and NOT with pi/kappa, even
+    though kappa > v.  The phase period of the growing mode is set by the
+    large-q v while its magnitude grows faster.  Phase and magnitude
+    rates decouple at finite lambda.  kappa itself is a new measured
+    number."""
     v = v_of_betaJ(betaJ)
     Nflav = 2.0 * p * p / lam
     cc = ChordCorrelators(lam, p, beta_chord_from_betaJ(betaJ, lam), nmax)
@@ -256,7 +259,18 @@ def calibrated_scan(lam: float, betaJ: float, p: int = 4,
 # ---------------------------------------------------------------------------
 # level 6: TOC control and configuration robustness
 # ---------------------------------------------------------------------------
-CONFIG_CROSSED_B = (1.6 * math.pi, 0.6 * math.pi, 1.1 * math.pi,
+# A GENUINELY inequivalent crossed configuration.  The previous choice
+# (1.6pi, 0.6pi, 1.1pi, 0.1pi) was CONFIG_CROSSED rigidly translated by
+# 0.1 pi, so it shares every translation invariant and -- now that
+# otoc_ratio is correctly translation invariant (antiscrambling.py, the
+# 2026-08-24 gauge fix) -- carried provably zero information.  This one
+# differs in all three invariants:
+#   CONFIG_CROSSED: th12- = 1.00 pi, th34- = 1.00 pi, th12+ - th34+ = 1.00 pi
+#   CONFIG_CROSSED_B: 1.20 pi, 1.10 pi, 0.90 pi
+# and it keeps the crossed ordering th1 > th3 > th2 > th4 inside the
+# principal window.  Being asymmetric, its a(0) has a genuine imaginary
+# part -- which is exactly why it is a real test of the rotation law.
+CONFIG_CROSSED_B = (1.7 * math.pi, 0.5 * math.pi, 1.2 * math.pi,
                     0.1 * math.pi)
 
 
@@ -283,10 +297,12 @@ def toc_control(lam: float, betaJ: float, p: int = 4,
 
 
 def config_b_scan(betaJ: float) -> dict:
-    """Second crossed configuration: the closed-form rotation law
+    """Second, GENUINELY inequivalent crossed configuration (see
+    CONFIG_CROSSED_B): the closed-form rotation law
     a(Delta) = a(0) exp(-i v Delta) is configuration-independent, so
-    Re a flips sign at Delta = pi/v wherever it starts; and the exact
-    chord flip repeats at lambda = 1."""
+    Re a flips sign at Delta = pi/v wherever it starts -- here from a
+    complex a(0), which the symmetric primary configuration cannot
+    exhibit.  The exact chord flip also repeats at lambda = 1."""
     v = v_of_betaJ(betaJ)
     t1, t2, t3, t4 = CONFIG_CROSSED_B
     a0 = growth_coefficient_shifted(v, 0.0, CONFIG_CROSSED_B)
@@ -306,7 +322,7 @@ def config_b_scan(betaJ: float) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# the DEEP campaign (--deep): the hologram point, the beta.J = pi shape
+# the DEEP campaign (--deep): the hologram point, the betaJ = pi shape
 # prediction, the MSS-evasion locator, and the observer rate
 # ---------------------------------------------------------------------------
 def _ratio_z(cc, zs_path, Nflav):
@@ -354,8 +370,8 @@ def hologram_point(lam: float, p: int = 4, nmax: int = 100,
     cc2 = ChordCorrelators(lam, p, 0.0, nmax + 20)
     zs = [-1j * (tau_s + eps) + 1.0, -1j * eps,
           -1j * (tau_s - eps) + 1.0, +1j * eps]
-    drift = abs(_ratio_z(cc, zs, Nflav) - _ratio_z(cc2, zs, Nflav)) / max(
-        abs(_ratio_z(cc2, zs, Nflav)), 1e-12)
+    r2 = _ratio_z(cc2, zs, Nflav)
+    drift = abs(_ratio_z(cc, zs, Nflav) - r2) / max(abs(r2), 1e-12)
     return dict(lam=lam, beta_f=beta_f, tau_s=tau_s, eps=eps,
                 ts=list(ts), unshifted=un, antipodal=an,
                 t_window=t_window, Jc=Jc,
@@ -473,7 +489,7 @@ def main_deep():
     payload = dict(
         provenance="signflip_probe.py --deep -- does the antipodal map "
                    "pan out: the hologram point (transient window), the "
-                   "beta.J = pi shape prediction, the MSS-evasion "
+                   "betaJ = pi shape prediction, the MSS-evasion "
                    "locator, and the observer rate",
         hologram=[hologram_point(lam) for lam in (1.0, 0.6, 0.4, 0.3)],
         shape=[thermal_shape(lam) for lam in (2.0, 1.0, 0.5, 0.25)],

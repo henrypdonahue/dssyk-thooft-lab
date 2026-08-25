@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Figure for the freeness-onset measurement (freeness.py, rung 27).
+"""Figure for the freeness-onset measurement (freeness.py).
 
 Reads freeness.json only -- nothing recomputed, nothing hardcoded.
 

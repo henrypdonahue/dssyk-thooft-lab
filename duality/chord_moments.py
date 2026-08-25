@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 r"""
-Exact N = infinity singlet-channel spectral moments (rung 15 proper).
-=====================================================================
+Exact N = infinity singlet-channel spectral moments.
+====================================================
 
 The DSSYK side of the moments-vs-sum-rules contact: EXACT N = infinity,
 T_B = infinity spectral moments of the Majorana singlet bilinear channels
@@ -16,8 +16,8 @@ combinations of mixed chord moments
     T2(a,b)     = < Tr[ H^a psi_i H^b psi_i ] >          (i != j, per pair)
 
 evaluated by the validated transfer-matrix engine (chord.py) with EXACT
-integer powers -- truncation plays no role (a word with K H-nodes never
-occupies more than K/2 + 2 chords).
+integer powers.  Truncation plays no role: a word with K H-nodes never
+occupies more than K/2 + 2 chords.
 
 Assembly (module test = the operator identity A_1 = -2p H):
 
@@ -25,26 +25,27 @@ Assembly (module test = the operator identity A_1 = -2p H):
     X = psi ad^n psi ,   Y = X^dag = (-1)^n (ad^n psi) psi ,
     mu_k^sym = (1/2)[ Tr(ad^k(X) Y) + Tr(ad^k(Y) X) ]   (k even),
 
-expanded into T4 words with binomial coefficients; mu_0 subtracts the
+expanded into T4 words with binomial coefficients.  mu_0 subtracts the
 identity component <X><Y> (T2 words).  Shape invariants (normalization- and
 flavor-count-free): w2 = mu_2/mu_0 (chord units have <H^2> = 1) and
 kurt = mu_4 mu_0 / mu_2^2.
 
 Error budget: the chord cancellations are EXACT algebraic identities of
-the chord amplitudes at any finite matter weight Delta_psi -- there is no
-finite-p matter-weight floor (asserted across a Delta_psi scan in
-test_chord_moments.py), and they are now PROVEN: the chord representation
-of every A_n insertion is a polynomial in the transfer matrix T, so every
-moment mu_k (k >= 1) vanishes at every n (chord_charges.py -- the
-dressed-propagator recursion; discovered numerically here first).  The
-reported a1_residual is therefore the FLOAT-CANCELLATION yardstick
-|mu_2|/gross (the residual of the alternating sum relative to its
-pre-cancellation magnitude, ~1e-16), not a physical finite-p effect; it
-calibrates how much of the measured 'zero' could be rounding noise.
+the chord amplitudes at any finite matter weight Delta_psi.  There is no
+finite-p matter-weight floor; test_chord_moments.py asserts this across a
+Delta_psi scan.  The cancellations are now PROVEN: the chord
+representation of every A_n insertion is a polynomial in the transfer
+matrix T, so every moment mu_k (k >= 1) vanishes at every n.  The proof
+is the dressed-propagator recursion of chord_charges.py, discovered
+numerically here first.  The reported a1_residual is therefore the
+FLOAT-CANCELLATION yardstick |mu_2|/gross, not a physical finite-p
+effect.  That yardstick is the residual of the alternating sum relative
+to its pre-cancellation magnitude, ~1e-16.  It calibrates how much of the
+measured 'zero' could be rounding noise.
 
 The lambda -> 0 asymptote of the O_Delta channel kurtosis is the
-semiclassical value 3 + 1/Delta (Fourier transform of sech^{2Delta}); the
-exact closed forms
+semiclassical value 3 + 1/Delta (Fourier transform of sech^{2Delta}).
+The exact closed forms
 
     mu_2(Delta) = 2 (1 - qt),
     mu_4(Delta) = 2(2+q) + 6 - 8(2+q) qt + 6(1+q) qt^2 ,   qt = q^Delta
@@ -70,8 +71,8 @@ HERE = Path(__file__).resolve().parent
 
 
 class MomentTable:
-    """Memoized mixed chord moments at fixed (q, delta_psi); per-instance
-    caches (a class-level lru_cache would pin instances alive)."""
+    """Memoized mixed chord moments at fixed (q, delta_psi).  The caches
+    are per-instance: a class-level lru_cache would pin instances alive."""
 
     def __init__(self, q: float, delta_psi: float, nmax: int = 14):
         self.q, self.d = q, delta_psi
@@ -99,8 +100,9 @@ def _mu_ordered(tab: MomentTable, n: int, k: int):
     """Tr(ad^k(X) Y)/pair with X = psi ad^n psi, Y = X^dag: word
     H^{k-s} A H^{n-r} A H^{r+s+n-r'} B H^{r'} B with coefficient
     (-1)^{n+r+r'+s} C(k,s) C(n,r) C(n,r').  Returns (value, gross) where
-    gross = sum of |term| -- the cancellation yardstick (the amplitudes grow
-    with [n]_q powers as q -> 1, so 'zero' must be judged against it)."""
+    gross = sum of |term|, the cancellation yardstick.  The amplitudes
+    grow with [n]_q powers as q -> 1, so 'zero' must be judged against
+    it."""
     tot, gross = 0.0, 0.0
     for s in range(k + 1):
         for r in range(n + 1):
@@ -116,9 +118,11 @@ def _mu_ordered(tab: MomentTable, n: int, k: int):
 def _mu_ordered_swapped(tab: MomentTable, n: int, k: int):
     """Tr(ad^k(Y) X): word H^{k-s} A H^{r} A H^{n-r+s+r'} B H^{n-r'} B from
     Y = (-1)^n sum_r (-1)^r C(n,r) H^{n-r} psi H^r psi and
-    X = sum_{r'} (-1)^{r'} C(n,r') psi H^{n-r'} psi H^{r'}: assembling
+    X = sum_{r'} (-1)^{r'} C(n,r') psi H^{n-r'} psi H^{r'}.  The word comes
+    from assembling
     Tr[H^{k-s} (H^{n-r} psi H^r psi) H^s (psi H^{n-r'} psi H^{r'})] and
-    rotating the leading H-block around the trace.  Returns (value, gross)."""
+    rotating the leading H-block around the trace.  Returns (value,
+    gross)."""
     tot, gross = 0.0, 0.0
     for s in range(k + 1):
         for r in range(n + 1):
@@ -134,8 +138,8 @@ def _mu_ordered_swapped(tab: MomentTable, n: int, k: int):
 
 
 def _trace_part(tab: MomentTable, n: int) -> float:
-    """<X> per flavor: sum_r (-1)^r C(n,r) T2(n-r, r) -- the identity
-    component subtracted from mu_0."""
+    """<X> per flavor: sum_r (-1)^r C(n,r) T2(n-r, r).  This is the
+    identity component subtracted from mu_0."""
     return sum((-1) ** r * comb(n, r) * tab.t2(n - r, r)
                for r in range(n + 1))
 
@@ -179,10 +183,10 @@ def odelta_moments(q: float, delta: float) -> dict:
                + 30 (1+q)(3 + 2q + q^2) qt^2
                - 20 (1+q)(1 + q + q^2) qt^3
 
-    Structural pins: mu_k(qt = 1) = 0 identically (the identity operator),
-    and mu_k(qt -> 0) = sum_s (-1)^s C(k,s) m_{k-s} m_s with m_k the
-    Touchard-Riordan chord moments (the fully blocking matter chord
-    factorizes the correlator through the vacuum)."""
+    Structural pins: mu_k(qt = 1) = 0 identically (the identity operator).
+    Also mu_k(qt -> 0) = sum_s (-1)^s C(k,s) m_{k-s} m_s, with m_k the
+    Touchard-Riordan chord moments.  The fully blocking matter chord
+    factorizes the correlator through the vacuum."""
     qt = q ** delta
     mu2 = 2.0 * (1.0 - qt)
     mu4 = 2.0 * (2.0 + q) + 6.0 - 8.0 * (2.0 + q) * qt + 6.0 * (1.0 + q) * qt * qt
@@ -199,10 +203,10 @@ def run(p: int = 4,
         lams=(4.0, 3.2, 2.6667, 2.2857, 2.0, 1.7778, 1.6, 1.0, 0.5, 0.25,
               0.1),
         out_path=None) -> dict:
-    """The rung-15 campaign: exact N = infinity channel moments along the
-    lambda grid (the first seven values are lambda_chord = 32/N for the ED
-    bench N = 16..20 plus 8..14 anchors; the tail probes the lambda -> 0
-    asymptote).  Runtime: seconds."""
+    """The campaign: exact N = infinity channel moments along the
+    lambda grid.  The first seven values are lambda_chord = 32/N for the
+    ED bench N = 16..20 plus 8..14 anchors.  The tail probes the
+    lambda -> 0 asymptote.  Runtime: seconds."""
     t0 = time.time()
     dpsi = 1.0 / p
     points = []
@@ -234,7 +238,7 @@ def run(p: int = 4,
                 cancellation6=ch['cancellation6'],
                 conserved=ch['conserved']))
     payload = dict(
-        provenance="chord_moments.py -- rung 15 proper: exact N=infinity "
+        provenance="chord_moments.py -- exact N=infinity "
                    "T_B=infinity singlet-channel spectral moments from the "
                    "chord expansion (Delta_psi = 1/p matter chords, exact "
                    "integer-power transfer-matrix words); the zeros are "

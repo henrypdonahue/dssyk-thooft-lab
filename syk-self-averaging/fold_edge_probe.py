@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 r"""
-The fold's soft-edge mechanism, measured (rung-26 epilogue).
-============================================================
+The fold's soft-edge mechanism, measured (epilogue).
+====================================================
 
 Decider #2 (duality/chord_fold.py) found that at matched lambda the ED
-folded connected fraction sits ~1.5-1.6x above the exact N = infinity
-value while unfolded observables agree to ~10% -- the fold amplifies
+folded connected fraction is ~1.5-1.6x above the exact N = infinity
+value, while unfolded observables agree to ~10%.  The fold amplifies
 finite-N corrections.  Working hypothesis stated there: the folded
 e^{+tau H} weights are dominated by the SPECTRAL MAXIMUM, whose finite-N
 fluctuations the sharp-edged chord theory lacks.
@@ -25,8 +25,8 @@ duality/test_chord_fold.py::test_soft_edge_mechanism):
 
 Consequence, stated honestly: folded correlators at ED sizes measure
 edge fluctuations (a Tracy-Widom-scale finite-N effect), not the bulk
-double-scaled dynamics -- which is WHY their 1/N convergence to the chord
-answer is slow and non-uniform, completing the decider-#2 story.
+double-scaled dynamics.  That is WHY their 1/N convergence to the chord
+answer is slow and non-uniform.  It completes the decider-#2 story.
 """
 
 from __future__ import annotations
@@ -81,7 +81,7 @@ def main():
     out = run()
     out["provenance"] = ("fold_edge_probe.py -- the soft-edge mechanism "
                          "behind the folded 4-pt's finite-N behavior "
-                         "(rung-26 epilogue; duality/ANTISCRAMBLING.md)")
+                         " (duality/ANTISCRAMBLING.md)")
     out["runtime_s"] = round(time.time() - t0, 1)
     path = Path(__file__).resolve().parent / "fold_edge_probe.json"
     with open(path, "w") as fh:

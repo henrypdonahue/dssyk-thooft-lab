@@ -32,7 +32,7 @@ Two instruments, one verdict:
    growing) wherever the flip operates -- but the rate surface is
    degenerate (the free fit wanders, and lambda = 0.6 collapses
    outright, kept as the recorded failure).  Rate extraction from these
-   curves is unreliable, and now we know why.
+   curves is unreliable; the band's continuous content is why.
 
 Net: the anti-scrambling epoch ends because an unflipped growing
 component overtakes, but that component is NOT the semiclassical second
@@ -71,12 +71,17 @@ def two_mode_fit(thLs: np.ndarray, r: np.ndarray,
                  constrained: bool = True):
     """Variable projection: for each kappa, solve linearly for
     (c0, A1, A2) in r = c0 + A1 e^{k thL} + A2 e^{k2 thL}; return the
-    best kappa and amplitudes.  constrained: k2 = 2k; free: scan k2 too."""
+    best kappa and amplitudes.  constrained: k2 = 2k; free: scan k2 too.
+
+    kappa_at_grid_max flags fits pinned at the scan boundary (censored,
+    not optima -- several committed free fits and the lambda = 0.8
+    constrained fit saturate the 1.2 ceiling; kappa_over_v/t_star
+    derived from a flagged fit inherit the censoring)."""
     best = None
-    k2_grid = [None] if constrained else np.linspace(0.3, 2.4, 71)
+    k2_grid = np.linspace(0.3, 2.4, 71)
     for k in kappa_grid:
         for k2 in ([2.0 * k] if constrained else k2_grid):
-            if k2 is not None and k2 <= k + 0.05:
+            if k2 <= k + 0.05:
                 continue
             A = np.vstack([np.ones_like(thLs), np.exp(k * thLs),
                            np.exp(k2 * thLs)]).T
@@ -86,6 +91,10 @@ def two_mode_fit(thLs: np.ndarray, r: np.ndarray,
                 best = dict(kappa=float(k), kappa2=float(k2),
                             c0=float(coef[0]), A1=float(coef[1]),
                             A2=float(coef[2]), resid=resid)
+    best["kappa_at_grid_max"] = bool(
+        best["kappa"] >= float(kappa_grid[-1]) - 1e-12
+        or (not constrained
+            and best["kappa2"] >= float(k2_grid[-1]) - 1e-12))
     return best
 
 

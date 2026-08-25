@@ -10,10 +10,11 @@ The symmetry-violation observable of self_averaging.py is
     J_c iid N(0, sigma^2),  sigma^2 = p!/N^{p-1}.
 
 B_jk is QUADRATIC in the Gaussian couplings, so its full disorder statistics
-reduce, by Wick's theorem, to Majorana trace combinatorics -- computable in
-closed form at ANY (N, p), including the double-scaling regime p ~ sqrt(N),
-N ~ 10^3 that instance-level ED (dim 2^{N/2}) can never reach.  This module
-carries the module's Eq. (3.28) test into that regime.
+reduce, by Wick's theorem, to Majorana trace combinatorics.  Those
+combinatorics are computable in closed form at ANY (N, p), including the
+double-scaling regime p ~ sqrt(N), N ~ 10^3 that instance-level ED
+(dim 2^{N/2}) can never reach.  This module carries self_averaging.py's
+Eq. (3.28) test into that regime.
 
 Derivation (asserted step-by-step against string enumeration in the tests)
 --------------------------------------------------------------------------
@@ -45,8 +46,8 @@ psi_j Gamma_c psi_j Gamma_c = -+1) gives
 
     E[B_jj] = sigma^2 [ C(N,p) - 2 C(N-1,p-1) ] = sigma^2 C(N,p) (1 - 2p/N):
 
-the ensemble-mean diagonal VANISHES at p = N/2 -- deriving, rather than just
-flagging, the "ratio artifact" self_averaging.py warns about.
+the ensemble-mean diagonal VANISHES at p = N/2.  This derives, rather than
+just flags, the "ratio artifact" self_averaging.py warns about.
 
 What this settles
 -----------------
@@ -55,19 +56,19 @@ Along the double-scaling line p = sqrt(lambda N):
     ln rms(B_jk) = -(1/4) sqrt(N) ln N (1 + o(1))        (at lambda = 1),
 
 super-exponential in sqrt(N): smaller than e^{-a sqrt N} for EVERY a, exactly
-as the paper's Eq. (3.28) bound demands -- now verified by exact computation
-in the regime the bound is about, not extrapolated from N <= 18 fits.  At
-fixed p (the regime where the 't Hooft comparison lives) the same formula is
-the power law rms ~ 2 p!/sqrt((p-1)!) N^{-(p-1)/2}: symmetry emergence is
-polynomially slow exactly where the spectrum match is to be made
+as the paper's Eq. (3.28) bound demands.  This is now verified by exact
+computation in the regime the bound is about, not extrapolated from N <= 18
+fits.  At fixed p (the regime where the 't Hooft comparison lives) the same
+formula is the power law rms ~ 2 p!/sqrt((p-1)!) N^{-(p-1)/2}.  Symmetry
+emergence is polynomially slow exactly where the spectrum match is to be made
 (the fixed-p caveat in the top-level README).
 
 Extension: exact disorder statistics of the singlet fourth moment m4
 --------------------------------------------------------------------
 m4 = Tr(H^4)/dim is QUARTIC in the couplings, so E[m4] is a 3-pairing Wick
-sum and Var(m4) an 8th-order one (105 pair partitions) -- still pure Majorana
-trace combinatorics, exact at any (N, p).  Two facts drive everything (both
-asserted against string enumeration in test_exact_wick_m4.py):
+sum and Var(m4) an 8th-order one (105 pair partitions).  Both are still pure
+Majorana trace combinatorics, exact at any (N, p).  Two facts drive everything
+(both asserted against string enumeration in test_exact_wick_m4.py):
 
   * exchange sign:  Gamma_c Gamma_d = (-1)^{|c n d|} Gamma_d Gamma_c  for
     p even, so  Tr(Gamma_c Gamma_d Gamma_c Gamma_d)/dim = (-1)^{|c n d|};
@@ -85,12 +86,12 @@ threefold pairing, i.e. E[J^4] = 3 sigma^4, automatically) gives
 
 K/C is the chord q-parameter:  K/C -> exp(-lambda_chord) = exp(-2 p^2/N)
 (measured: |K/C - q| = O(N^-2) at fixed p; -> e^{-2 lambda} with O(1/p)
-error along p = sqrt(lambda N)), so E[m4]/E[m2]^2 -> 2 + q is the chord
+error along p = sqrt(lambda N)).  So E[m4]/E[m2]^2 -> 2 + q is the chord
 count for the 4th moment (2 non-crossing diagrams + 1 crossing, weight q).
 
-Var(m4): of the 105 pairings of the 8 couplings, 9 reproduce E[m4]^2; the
+Var(m4): of the 105 pairings of the 8 couplings, 9 reproduce E[m4]^2.  The
 72 with a single cross-pair force both crossing subsets equal (support
-argument) and sum to 8 sigma^8 C (2C+K)^2; the 24 four-cross pairings
+argument) and sum to 8 sigma^8 C (2C+K)^2.  The 24 four-cross pairings
 reduce, by the dihedral symmetry of the trace, to 8 sigma^8 (Z + 2W), where
 (|x1 XOR x2| = 2m fixes |x1 n x2| = p - m, whence the sign in W)
 
@@ -110,9 +111,9 @@ correction dies super-exponentially (< 1e-6 by N = 100), so
     ln relVar(m4) = -(1/2) sqrt(N) ln N (1 + o(1)),
 
 the SAME Eq. (3.27) super-exponential law and leading coefficient as
-relVar(m2) = 2/C(N,p), with relVar(m4)/relVar(m2) -> 4: the 4th moment
+relVar(m2) = 2/C(N,p), with relVar(m4)/relVar(m2) -> 4.  The 4th moment
 extends the m2 self-averaging anchor at a fixed factor.  Verified: brute
-enumeration (shared code: none) at (6,2), (8,2), (6,4), (8,4) to < 1e-9;
+enumeration (shared code: none) at (6,2), (8,2), (6,4), (8,4) to < 1e-9.
 ED disorder ensembles at N = 12, 14 (250/200 instances) within 1 sigma.
 """
 
@@ -150,8 +151,8 @@ def ln_rms_offdiag(N: int, p: int) -> float:
 
 
 def mean_diag_exact(N: int, p: int) -> float:
-    """E[B_jj] = sigma^2 C(N,p) (1 - 2p/N); vanishes at p = N/2 (the derived
-    origin of the ratio artifact)."""
+    """E[B_jj] = sigma^2 C(N,p) (1 - 2p/N).  It vanishes at p = N/2 (the
+    derived origin of the ratio artifact)."""
     sigma2 = coupling_variance(N, p)
     return sigma2 * comb(N, p) * (1.0 - 2.0 * p / N)
 
@@ -169,8 +170,9 @@ def ln_mean_diag(N: int, p: int) -> float:
 # closed forms: the singlet fourth moment m4 = Tr(H^4)/dim
 # ---------------------------------------------------------------------------
 def crossing_sum(N: int, p: int) -> int:
-    """K(N,p) = sum_j (-1)^j C(p,j) C(N-p,p-j), exact integer: the signed count
-    of p-subset pairs by intersection size, with the exchange sign (-1)^|c n d|."""
+    """K(N,p) = sum_j (-1)^j C(p,j) C(N-p,p-j), exact integer.  It is the
+    signed count of p-subset pairs by intersection size, with the exchange
+    sign (-1)^|c n d|."""
     return sum((-1) ** j * comb(p, j) * comb(N - p, p - j) for j in range(p + 1))
 
 
@@ -196,7 +198,7 @@ def quad_null_count(N: int, p: int) -> int:
 
 
 def quad_null_alternating(N: int, p: int) -> int:
-    """W(N,p) = sum over the same 4-tuples of (-1)^{|x1 n x2|}; since
+    """W(N,p) = sum over the same 4-tuples of (-1)^{|x1 n x2|}.  Since
     |x1 XOR x2| = 2m fixes |x1 n x2| = p-m, this is the Z sum with (-1)^{p-m}."""
     return sum((-1) ** (p - m) * comb(N, 2 * m)
                * (comb(2 * m, m) * comb(N - 2 * m, p - m)) ** 2
@@ -204,8 +206,9 @@ def quad_null_alternating(N: int, p: int) -> int:
 
 
 def var_m4_exact(N: int, p: int) -> float:
-    """Var(m4) = 8 sigma^8 [C (2C+K)^2 + Z + 2W], exact at polynomial cost:
-    72 single-cross Wick pairings give the first term, 24 four-cross ones Z+2W."""
+    """Var(m4) = 8 sigma^8 [C (2C+K)^2 + Z + 2W], exact at polynomial cost.
+    The 72 single-cross Wick pairings give the first term, and the 24
+    four-cross ones give Z+2W."""
     sigma2 = coupling_variance(N, p)
     C = comb(N, p)
     K = crossing_sum(N, p)
@@ -226,7 +229,7 @@ def _relvar_m4_ratio(N: int, p: int):
 
 def relvar_m4_exact(N: int, p: int) -> float:
     """relVar(m4) = 8/C + 8(Z+2W)/(C^2 (2C+K)^2), exact.  Leading term is
-    exactly 8/C(N,p) = 4 relVar(m2) at every (N, p); big-int division keeps
+    exactly 8/C(N,p) = 4 relVar(m2) at every (N, p).  Big-int division keeps
     this correct far beyond float range of the intermediates."""
     num, den = _relvar_m4_ratio(N, p)
     return num / den
@@ -240,7 +243,7 @@ def ln_relvar_m4(N: int, p: int) -> float:
 
 def relvar_m4_double_scaling_scan(lam: float, ns) -> list:
     """Exact ln relVar(m4) along p = nearest even sqrt(lambda N), with the
-    m2 comparison 2/C(N,p) -- the Eq. (3.27) law at the 4th moment."""
+    m2 comparison 2/C(N,p).  This is the Eq. (3.27) law at the 4th moment."""
     from self_averaging import even_p_near
     rows = []
     for N in ns:
@@ -256,9 +259,9 @@ def relvar_m4_double_scaling_scan(lam: float, ns) -> list:
 # brute-force string enumeration (verifies every step of the derivation)
 # ---------------------------------------------------------------------------
 def _trace_of_product(N: int, index_lists) -> complex:
-    """Normalized trace of a product of Majorana monomials, via Pauli strings:
-    nonzero only if the total string is the identity, in which case it is the
-    accumulated phase."""
+    """Normalized trace of a product of Majorana monomials, via Pauli strings.
+    The trace is nonzero only if the total string is the identity, and then it
+    is the accumulated phase."""
     s = (0, 0, 0)
     for idx in index_lists:
         for a in idx:
@@ -270,7 +273,8 @@ def _trace_of_product(N: int, index_lists) -> complex:
 def var_offdiag_enumerated(N: int, p: int, j: int = 0, k: int = 1) -> float:
     """Var(B_jk) summed literally over ALL pairs (c, d) of p-subsets:
     sigma^4 [sum T_cd^2 + sum T_cd T_dc], each T computed as a Majorana trace.
-    Exponentially expensive -- for tests at small (N, p) only."""
+    This routine is exponentially expensive, so use it only for tests at small
+    (N, p)."""
     sigma2 = coupling_variance(N, p)
     prefac = (p // 2) % 4     # i^{p/2} per Gamma
     subsets = list(combinations(range(N), p))
@@ -304,13 +308,15 @@ def mean_diag_enumerated(N: int, p: int, j: int = 0) -> float:
 # literal Pauli-string traces + the Gaussian moment formula E[J^k]=(k-1)!!s^k)
 # ---------------------------------------------------------------------------
 def _m4_monomials(N: int, p: int, filter_xor: bool = False) -> dict:
-    """m4 = Tr(H^4)/dim as a COLLECTED polynomial in the couplings: key = the
-    sorted 4-tuple of subset indices (with multiplicity), value = the integer
-    sum of literal normalized traces (each +-1, computed by string products).
+    """m4 = Tr(H^4)/dim as a COLLECTED polynomial in the couplings.  The key
+    is the sorted 4-tuple of subset indices (with multiplicity).  The value is
+    the integer sum of literal normalized traces (each +-1, computed by string
+    products).
 
     filter_xor=True skips tuples whose total Majorana support (XOR of the four
-    subset bitmasks) is nonzero -- those traces vanish identically (asserted on
-    random samples in the tests); needed to make (8,4) affordable."""
+    subset bitmasks) is nonzero.  Those traces vanish identically (asserted on
+    random samples in the tests).  The filter is needed to make (8,4)
+    affordable."""
     subsets = list(combinations(range(N), p))
     strings = [monomial_string(N, c) for c in subsets]
     n = len(subsets)
@@ -351,8 +357,8 @@ def _mean_var_m4_enumerated(N: int, p: int, filter_xor: bool = False):
     """(E[m4], Var(m4)) by generic polynomial algebra: square the collected
     polynomial and apply the moment formula variable by variable.  Only pairs
     of monomials with the SAME odd-exponent variable set survive (odd Gaussian
-    moments vanish), so the pair loop groups by that signature.  Exponential
-    cost in (N, p) -- for verification at small sizes only."""
+    moments vanish), so the pair loop groups by that signature.  The cost is
+    exponential in (N, p), so use this for verification at small sizes only."""
     sigma2 = coupling_variance(N, p)
     monos = []
     for key, c in _m4_monomials(N, p, filter_xor).items():
@@ -399,9 +405,9 @@ def double_scaling_scan(lam: float, ns) -> list:
 # the fixed-p scan: symmetry emergence where the 't Hooft comparison lives
 # ---------------------------------------------------------------------------
 def fixed_p_scan(p: int, ns) -> list:
-    """Exact symmetry violation at FIXED p as lambda = p^2/N -> 0 (rung 16):
-    the regime of the spectrum match, NOT the double-scaling regime.  Per N:
-    lambda, ln rms(B_jk), the local slope d ln rms / d ln N (asymptote
+    """Exact symmetry violation at FIXED p as lambda = p^2/N -> 0.
+    This is the regime of the spectrum match, NOT the double-scaling regime.
+    Per N: lambda, ln rms(B_jk), the local slope d ln rms / d ln N (asymptote
     -(p-1)/2), and the normalized per-element violation
     ln[rms(B_jk)/E[B_jj]] (asymptote slope -(p+1)/2)."""
     rows = []
@@ -458,7 +464,7 @@ if __name__ == "__main__":
     print("  sharp form  ln rms = -(1/4) sqrt N ln N (1 + o(1))  at lambda = 1.")
 
     from math import exp, factorial
-    print("\nFixed p, lambda = p^2/N -> 0 (rung 16) -- the regime where the")
+    print("\nFixed p, lambda = p^2/N -> 0 -- the regime where the")
     print("'t Hooft comparison lives.  Emergence is only POLYNOMIAL here:")
     print("rms ~ 2 p!/sqrt((p-1)!) N^{-(p-1)/2}, and the per-element violation")
     print("rms(B_jk)/E[B_jj] ~ 2 p!/sqrt((p-1)!) N^{-(p+1)/2}:")

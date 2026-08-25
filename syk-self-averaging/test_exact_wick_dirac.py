@@ -3,8 +3,9 @@
 
 Every closed form is checked against a literal enumeration route that shares
 no assembly code with it (T-matrix traces via dirac.apply_monomial chains vs
-pure binomial formulas; Isserlis pair sums vs the moments_pipeline ED means),
-plus instance-level identities against the dense ED-side algebra.
+pure binomial formulas; Isserlis pair sums vs the moments_pipeline ED means).
+The tests also check instance-level identities against the dense ED-side
+algebra.
 
 Run with:  pytest -q -m 'not slow'   (ED ensembles / Nc=8 / p=8 are slow)
 """
@@ -18,12 +19,12 @@ import pytest
 
 from dirac import (annihilators, coupling_variance_dirac, dirac_hamiltonian,
                    draw_couplings, mn_tower, particle_hole)
-from exact_wick_dirac import (chain_trace, instance_b, ln_rms_offdiag_csym,
+from exact_wick_dirac import (instance_b, ln_rms_offdiag_csym,
                               m2_from_pairs, m2_mean_exact, mean_diag_csym,
                               mu0_exact_csym, mu2_exact_csym,
                               offdiag_census, ordered_keys,
                               rms_offdiag_csym, rms_offdiag_large_nc,
-                              stats_enumerated, t_matrix, unordered_pairs,
+                              stats_enumerated, t_matrix,
                               var_offdiag_csym)
 
 HERE = Path(__file__).resolve().parent
@@ -43,8 +44,9 @@ def test_offdiag_closed_form_vs_enumeration(Nc, p):
 
 def test_offdiag_census_p4():
     """The derived admissible-pair census: 2 L nonzero T entries (L Type I +
-    L Type II), every value -2^-(p+1), and T symmetric (the measured
-    T_{alpha beta} = T_{beta alpha} fact the Wick pairing sum relies on)."""
+    L Type II), every value -2^-(p+1), and T symmetric.  T symmetry is the
+    measured T_{alpha beta} = T_{beta alpha} fact the Wick pairing sum relies
+    on."""
     Nc, p = 6, 4
     k = p // 2
     L = comb(Nc - 2, k - 1) * comb(Nc - k - 1, k)
@@ -77,8 +79,8 @@ def test_mean_diag_vs_m2_relation():
 
 def test_mean_vanishing_artifact_at_nc_equals_p():
     """At Nc = p every coupling touches every mode: E[B_ii] = 0 exactly AND
-    B_ij vanishes identically (Var = 0) -- the U(N) analog of the Majorana
-    p = N/2 ratio artifact, derived rather than flagged."""
+    B_ij vanishes identically (Var = 0).  This is the U(N) analog of the
+    Majorana p = N/2 ratio artifact, derived rather than flagged."""
     Nc, p = 4, 4
     assert mean_diag_csym(Nc, p) == 0.0
     assert var_offdiag_csym(Nc, p) == 0.0
@@ -104,7 +106,7 @@ def test_instance_quadratic_form_identity():
 
 
 def test_large_nc_rate_and_stable_log():
-    """Fixed-p law: Var -> k (k!)^2 / Nc^(p-1); and the lgamma form of
+    """Fixed-p law: Var -> k (k!)^2 / Nc^(p-1).  The lgamma form of
     ln rms agrees with the direct closed form."""
     p, k = 4, 2
     for Nc in [10, 20, 40]:
@@ -207,8 +209,8 @@ def _moments_rows(Nc):
 
 
 def test_mu0_exact_vs_moments_json_nc6():
-    """Exact Isserlis E[mu0] vs the stored ED disorder means (40 instances):
-    the ED-free cross-check of the moments pipeline at Nc = 6."""
+    """Exact Isserlis E[mu0] vs the stored ED disorder means (40 instances).
+    This is the ED-free cross-check of the moments pipeline at Nc = 6."""
     exact = mu0_exact_csym(6, 4)
     ed = _moments_rows(6)
     for ch, tag in (("odd", "right"), ("even", "wrong")):
@@ -229,8 +231,8 @@ def test_mu0_exact_vs_moments_json_nc8():
 @pytest.mark.slow
 def test_mu0_mu2_exact_vs_fresh_ed_ensemble_nc6():
     """Exact E[mu0] AND E[mu2] (sextic Isserlis) vs a fresh 300-instance ED
-    ensemble at Nc = 6 -- the direct calibrated check of the mu2 pairing
-    algebra (moments.json stores no plain mu2 mean)."""
+    ensemble at Nc = 6.  This is the direct calibrated check of the mu2
+    pairing algebra (moments.json stores no plain mu2 mean)."""
     from exact_wick_dirac import instance_mu_ed
     Nc, p, n_inst = 6, 4, 300
     vals = {("odd", 0): [], ("odd", 2): [], ("even", 0): [], ("even", 2): []}
@@ -241,6 +243,36 @@ def test_mu0_mu2_exact_vs_fresh_ed_ensemble_nc6():
             vals[(ch, 2)].append(inst[ch][1])
     mu0_ex = mu0_exact_csym(Nc, p)
     mu2_ex = mu2_exact_csym(Nc, p, progress=False)
+    for ch in ("odd", "even"):
+        for k_mom, ex in ((0, mu0_ex[ch]), (2, mu2_ex[ch])):
+            arr = np.array(vals[(ch, k_mom)])
+            sem = arr.std(ddof=1) / np.sqrt(n_inst)
+            z = (arr.mean() - ex) / sem
+            assert abs(z) < 3.5, f"mu{k_mom}[{ch}]: z = {z:.2f}"
+
+
+def test_mu2_pairing_algebra_fast_nc5():
+    """The sextic-Isserlis mu_2 closed form, checked inside the FAST suite.
+
+    The Nc = 6 calibration above is the thorough one, but it is
+    slow-marked, so in CI (and under `make test`) an arbitrary error in
+    the 15-pairing Isserlis sum went unchecked while the module docstring
+    and README advertised the mu_2 anchor as validated.  Nc = 5 is the
+    smallest size where mu_2 is nonzero (Nc = 4 degenerates to 0), costs
+    ~1.4 s exact + ~3.5 s for a 200-instance ED ensemble, and lands well
+    inside errors: measured |z| <= 0.6 on all four (channel, moment)
+    combinations."""
+    from exact_wick_dirac import instance_mu_ed
+    Nc, p, n_inst = 5, 4, 200
+    vals = {("odd", 0): [], ("odd", 2): [], ("even", 0): [], ("even", 2): []}
+    for j in range(n_inst):
+        inst = instance_mu_ed(Nc, p, 9000 + j)
+        for ch in ("odd", "even"):
+            vals[(ch, 0)].append(inst[ch][0])
+            vals[(ch, 2)].append(inst[ch][1])
+    mu0_ex = mu0_exact_csym(Nc, p)
+    mu2_ex = mu2_exact_csym(Nc, p, progress=False)
+    assert mu2_ex["odd"] > 0 and mu2_ex["even"] > 0      # not the Nc=4 zero
     for ch in ("odd", "even"):
         for k_mom, ex in ((0, mu0_ex[ch]), (2, mu2_ex[ch])):
             arr = np.array(vals[(ch, k_mom)])

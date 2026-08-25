@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for the large-q anchor (rung 17): conventions bridge, closed forms
+"""Tests for the large-q anchor: conventions bridge, closed forms
 vs the ED bench, and the structure of the would-be tower."""
 
 import json
@@ -74,7 +74,7 @@ def test_quantization_sets_alternate_and_degenerate():
 
 def test_gr_tower_structure():
     """h_n -> 2n+1 + O(1/q) and c_n^2 ~ 1/q^2: the tower decouples at
-    leading large q -- the structural finding of rung 17."""
+    leading large q -- the structural finding of this task."""
     for q in (8.0, 16.0):
         rows = gr_tower(q, 4)
         for r in rows:

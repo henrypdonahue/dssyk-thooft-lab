@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 r"""
 Sparse SYK Hamiltonians (Majorana and complex), built by Jordan-Wigner.
-======================================================================
+=======================================================================
 
-This is the reusable core for the self-averaging tests in this module, following
-the conventions of Miyashita-Sekino-Susskind (arXiv:2607.05678), Section 3.
+This is the reusable core for the self-averaging tests in this module.  It
+follows the conventions of Miyashita-Sekino-Susskind (arXiv:2607.05678),
+Section 3.
 
 Majorana model (their Eq. 3.2):
 
@@ -17,9 +18,9 @@ variance (their Eq. 3.8, with the overall scale J = 1)
 
 Conventions
 -----------
-We use Hermitian Majoranas normalized to  psi_a^2 = I,  {psi_a, psi_b} = 2 delta_ab,
-so the normalized (infinite-temperature) trace of the identity is 1 and
-Tr(psi_a^2)/dim = 1.  N must be even; the Hilbert space has dimension 2^{N/2},
+We use Hermitian Majoranas normalized to  psi_a^2 = I,  {psi_a, psi_b} = 2 delta_ab.
+So the normalized (infinite-temperature) trace of the identity is 1 and
+Tr(psi_a^2)/dim = 1.  N must be even.  The Hilbert space has dimension 2^{N/2},
 built on N/2 qubits by the standard Jordan-Wigner strings
 
     psi_{2q}   = Z ... Z (q of them)  X  I ... I
@@ -28,9 +29,9 @@ built on N/2 qubits by the standard Jordan-Wigner strings
 The factor i^{p/2} makes H Hermitian for even p (checked in the tests).
 
 Complex/Dirac model (their Section 3, "Dirac case"): fermions c_i = (psi_{2i} +
-i psi_{2i+1})/2 carry a conserved U(1) charge Q = sum_i c_i^dagger c_i, the seed
-of the paper's electromagnetic sector.  Provided here mainly so the singlet
-charge operator M0 = Q (their Eq. 4.24) is available.
+i psi_{2i+1})/2 carry a conserved U(1) charge Q = sum_i c_i^dagger c_i.  This
+charge is the seed of the paper's electromagnetic sector.  The model is provided
+here mainly so the singlet charge operator M0 = Q (their Eq. 4.24) is available.
 """
 
 from __future__ import annotations
@@ -108,8 +109,8 @@ def majorana_hamiltonian(N: int, p: int, rng, psis=None):
 
 def fermion_parity(N: int):
     """Total fermion parity  P = i^{N/2} psi_0 psi_1 ... psi_{N-1}  (Hermitian,
-    P^2 = I).  H commutes with P, so the spectrum splits into two sectors;
-    resolving them is essential for the level-statistics test (see validate_syk)."""
+    P^2 = I).  H commutes with P, so the spectrum splits into two sectors.
+    Resolving them is essential for the level-statistics test (see validate_syk)."""
     psis = majorana_operators(N)
     P = psis[0]
     for a in range(1, N):

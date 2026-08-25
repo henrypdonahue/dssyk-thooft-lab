@@ -3,13 +3,13 @@ r"""
 Arbitrary-precision massless 't Hooft spectrum (mpmath).
 
 Same Rayleigh-Ritz / Chebyshev-U method as thooft_spectrum.py, but carried out
-in arbitrary-precision arithmetic so the eigenvalues can be pushed well past the
-double-precision floor (~1e-13).  The matrix elements D and S are *rational*
-(times pi^2 in D), so the only precision limit is the working precision and the
-basis-truncation error, both controllable.
+in arbitrary-precision arithmetic.  The eigenvalues can therefore be pushed
+well past the double-precision floor (~1e-13).  The matrix elements D and S are
+*rational* (times pi^2 in D).  The only precision limit is therefore the
+working precision and the basis-truncation error, both controllable.
 
 Generalized eigenproblem  D a = Lambda S a  (S symmetric positive definite).
-At alpha = 0 (the duality point) D is diagonal & positive, so this reduces by a
+At alpha = 0 (the duality point) D is diagonal & positive.  This reduces by a
 single O(K^2) scaling to the standard symmetric
     A = D^{-1/2} S D^{-1/2},   A = A^T,   eig(A) = {1/Lambda_n},
 with no Cholesky and no matrix inversion.  Then  2 lambda_n = Lambda_n / pi^2.
@@ -46,8 +46,8 @@ def _I_mp(di, dj, H):
 def build_sector_mp(num_basis, parity, alpha=0):
     """Build (degrees, D, S) for one CP sector.
 
-    alpha = pi m_q^2 / g^2 (equal-mass FLZ parameter); alpha = 0 is the duality
-    point.  The quark-mass potential enters D as  P = 4 alpha I.
+    alpha = pi m_q^2 / g^2 (equal-mass FLZ parameter).  alpha = 0 is the
+    duality point.  The quark-mass potential enters D as  P = 4 alpha I.
     """
     degrees = [parity + 2 * i for i in range(num_basis)]
     K = num_basis
@@ -125,5 +125,5 @@ if __name__ == "__main__":
 
     print(f"\nGround state (K={K}):")
     print(f"  2*lambda_0 = {nstr(sym[0], 20)}")
-    print("  FLZ Pade   = 0.737061746292690  (16 digits published)")
+    print("  FLZ Pade   = 0.737061746292690  (FLZ Eq. 4.37)")
     print("  reference  = 0.737061746292690  (reference_spectrum.json, ~15 digits)")

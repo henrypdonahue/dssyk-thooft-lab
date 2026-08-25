@@ -1,32 +1,33 @@
 #!/usr/bin/env python3
 r"""
-Charge-sector-blocked fast reimplementation of the rung-15 moment pipeline.
-===========================================================================
+Charge-sector-blocked fast reimplementation of the moment pipeline.
+===================================================================
 
 moments_pipeline.instance_moments diagonalizes the FULL 2^Nc-dimensional
 Hamiltonian and drags dense 2^Nc x 2^Nc matrices through the derivative
-tower -- measured ~37 min/instance at Nc = 12 on this machine.  But every
-object in that pipeline is graded by the conserved U(1) charge, so the whole
-computation decomposes over popcount sectors (largest block at Nc = 12 is
-C(12,6) = 924; eigh(924) is trivial vs eigh(4096)).  This module is a
-sector-blocked reimplementation with IDENTICAL semantics: same seed -> same
-draw_couplings call -> same disorder instance -> same mu_k numbers (asserted
-against the dense path in test_moments_fast.py at Nc = 6, 8, 10).
+tower.  That path was measured at ~37 min/instance at Nc = 12 on this
+machine.  But every object in that pipeline is graded by the conserved U(1)
+charge, so the whole computation decomposes over popcount sectors.  The
+largest block at Nc = 12 is C(12,6) = 924, and eigh(924) is trivial vs
+eigh(4096).  This module is a sector-blocked reimplementation with IDENTICAL
+semantics: same seed -> same draw_couplings call -> same disorder instance ->
+same mu_k numbers (asserted against the dense path in test_moments_fast.py at
+Nc = 6, 8, 10).
 
 Derivation of the block structure (each step asserted in the tests):
 
  1. [H, Q] = 0 (dirac.py), so in the occupation basis H = direct-sum of
     blocks H_q over the popcount-q sectors S_q, dim(S_q) = C(Nc, q).
- 2. c_i lowers Q by one: its only nonzero block maps S_q -> S_{q-1} (one
+ 2. c_i lowers Q by one.  Its only nonzero block maps S_q -> S_{q-1} (one
     signed entry per column that has mode i occupied; columns without mode i
     are annihilated).  The derivative chain c^(n) = i[H, c^(n-1)] preserves
-    that corner: [H, X] with block-diagonal H and X in the (q-1, q) corner is
-    H_{q-1} X_q - X_q H_q, still in the (q-1, q) corner.
+    that corner.  With block-diagonal H and X in the (q-1, q) corner, [H, X]
+    is H_{q-1} X_q - X_q H_q, still in the (q-1, q) corner.
  3. M_n = sum_i c_i^dag c_i^(n) is therefore block-diagonal:
     (M_n)_q = sum_i (C_{i,q})^dag (C^(n)_{i,q}) with C_{i,q} the S_q -> S_{q-1}
     block.  Since C_{i,q} is a partial signed permutation (injective on the
     occupied-i columns), the chain step n = 1 and every accumulation
-    C^dag_{i,q} X are pure indexing operations -- only chain steps n >= 2 need
+    C^dag_{i,q} X are pure indexing operations.  Only chain steps n >= 2 need
     real matrix products.
  4. The unitary particle-hole map C (dirac.particle_hole) is a signed
     COMPLEMENT permutation: C|s> = sign(s) |~s|, so it maps S_q -> S_{Nc-q}.
@@ -35,11 +36,11 @@ Derivation of the block structure (each step asserted in the tests):
         (C X C^dag)_q = B_{q'} X_{q'} B_{q'}^dag ,   q' = Nc - q,
     with B_{q'} the (signed permutation) S_{q'} -> S_q block of C.  The CP
     projections X_pm = (X +- C X C^dag)/2 thus couple mirror sector PAIRS
-    (q, Nc - q) -- there are no off-diagonal blocks anywhere, the mixing is
+    (q, Nc - q).  There are no off-diagonal blocks anywhere: the mixing is
     entirely between the diagonal blocks of the pair.  Implemented as signed
-    index gymnastics (no matmul); asserted against dense cp_conjugate.
- 5. Traceless subtraction is a scalar shift of each diagonal block; the
-    Hermitian/anti-Hermitian split acts blockwise; V = direct-sum V_q, so
+    index manipulation (no matmul); asserted against dense cp_conjugate.
+ 5. Traceless subtraction is a scalar shift of each diagonal block.  The
+    Hermitian/anti-Hermitian split acts blockwise.  V = direct-sum V_q, so
     Wt = V^dag op V is block-diagonal and
         mu_k = sum_q sum_{ab in S_q} W_q[a,b] (E_qa - E_qb)^k .
     The h/a split commutes with the eigenbasis rotation, so we compute
@@ -48,22 +49,23 @@ Derivation of the block structure (each step asserted in the tests):
 
 Exact-degeneracy caveat (why "identical" still means ~1e-12, not bitwise):
 on a C-invariant instance the mirror sectors are exactly isospectral
-(E_q = E_{Nc-q} pairwise), and the dense eigh is free to rotate eigenvectors
-inside those cross-sector degenerate pairs.  The moments are invariant under
-any rotation within a degenerate eigenspace -- the weight P_E op P_{E'} has a
-basis-independent Frobenius norm and omega depends only on the eigenvalues --
-so blocked and dense mu_k agree to roundoff (gated at 1e-9 relative in the
-tests, observed ~1e-12).  Individual matrix elements of Wt are NOT
-comparable between the two paths; only the mu_k are.
+(E_q = E_{Nc-q} pairwise).  The dense eigh is then free to rotate
+eigenvectors inside those cross-sector degenerate pairs.  The moments are
+invariant under any rotation within a degenerate eigenspace: the weight
+P_E op P_{E'} has a basis-independent Frobenius norm, and omega depends only
+on the eigenvalues.  So blocked and dense mu_k agree to roundoff (gated at
+1e-9 relative in the tests, observed ~1e-12).  Individual matrix elements of
+Wt are NOT comparable between the two paths; only the mu_k are.
 
 What is exact vs measured here: the block decomposition (points 1-5) is an
-exact operator statement, asserted numerically; all physics output (mu_k,
+exact operator statement, asserted numerically.  All physics output (mu_k,
 w2, kurt and their disorder error bars) is measured ED data identical in
 meaning to moments_pipeline.py.
 
 Cost: the dense path is O(n_couplings * 4^Nc) assembly + O(8^Nc) linear
-algebra; the blocked path replaces 8^Nc = (sum_q C(Nc,q))^3-ish work by
-sum_q C(Nc,q)^3-ish work (ratio ~200x at Nc = 12) and needs only
+algebra.  The blocked path replaces 8^Nc = (sum_q C(Nc,q))^3-ish work by
+sum_q C(Nc,q)^3-ish work (~34x in these units at Nc = 12; measured
+end-to-end speedup ~140x).  It also needs only
 sum_q C(Nc,q)^2 = C(2Nc, Nc) storage per operator (43 MB at Nc = 12,
 642 MB at Nc = 14) instead of 4^Nc.
 """
@@ -78,7 +80,8 @@ from pathlib import Path
 
 import numpy as np
 
-from dirac import draw_couplings, apply_monomial, _mode_bit, _below_mask
+from dirac import (draw_couplings, apply_monomial, _monomial_structure,
+                   _mode_bit, _below_mask)
 
 # --------------------------------------------------------------------------
 # sector bookkeeping
@@ -107,12 +110,13 @@ def blocked_hamiltonian(Nc: int, p: int, couplings: dict, idx, pos, sec):
     blocks = [np.zeros((len(idx[q]), len(idx[q])), dtype=complex)
               for q in range(Nc + 1)]
     rows_l, cols_l, vals_l = [], [], []
+    # only vals_l depends on the disorder draw; the index/sign arrays are
+    # memoized per (Nc, A, B) in dirac._monomial_structure
     for (A, B), J in couplings.items():
-        valid, rows, signs = apply_monomial(Nc, A, B, states)
-        r, c = rows[valid], states[valid]
+        r, c, signs = _monomial_structure(Nc, A, B, states)
         rows_l.append(r)
         cols_l.append(c)
-        vals_l.append(J * signs[valid])
+        vals_l.append(J * signs)
     r = np.concatenate(rows_l) if rows_l else np.empty(0, dtype=np.int64)
     c = np.concatenate(cols_l) if cols_l else np.empty(0, dtype=np.int64)
     v = np.concatenate(vals_l) if vals_l else np.empty(0, dtype=complex)
@@ -126,7 +130,7 @@ def blocked_hamiltonian(Nc: int, p: int, couplings: dict, idx, pos, sec):
 
 def blocked_annihilators(Nc: int, idx, pos):
     """cmaps[i][q] = (cl, rl, sg): the S_q -> S_{q-1} block of c_i as a partial
-    signed permutation -- column cl[j] (local, sector q) maps to row rl[j]
+    signed permutation.  Column cl[j] (local, sector q) maps to row rl[j]
     (local, sector q-1) with sign sg[j].  Built from the same apply_monomial
     as the dense annihilators."""
     cmaps = []
@@ -141,7 +145,7 @@ def blocked_annihilators(Nc: int, idx, pos):
 
 def blocked_particle_hole(Nc: int, idx, pos):
     """ph[q] = (r, sg): the S_q -> S_{Nc-q} block of the unitary C as a signed
-    permutation -- local column c of sector q maps to local row r[c] of sector
+    permutation.  Local column c of sector q maps to local row r[c] of sector
     Nc-q with sign sg[c].  Same right-to-left factor loop as
     dirac.particle_hole (C|s> = sign(s)|~s>, asserted in the tests)."""
     dim = 1 << Nc
@@ -177,11 +181,13 @@ def cp_conjugate_blocked(Nc: int, ph, X_blocks):
 def blocked_mn_tower(Nc: int, H_blocks, cmaps, n_max: int, keep=None):
     """{n: [blocks q = 0..Nc]} of M_n = sum_i c_i^dag c_i^(n) for n in `keep`
     (default: all 0..n_max).  Chain step n = 1 and every accumulation
-    C^dag X are indexing operations (C_{i,q} is a partial signed permutation);
-    only chain steps n >= 2 pay for matmuls."""
+    C^dag X are indexing operations (C_{i,q} is a partial signed
+    permutation).  Only chain steps n >= 2 pay for matmuls."""
     if keep is None:
         keep = set(range(n_max + 1))
     keep = set(keep)
+    if keep and max(keep) > n_max:
+        raise ValueError(f"keep requests n = {max(keep)} > n_max = {n_max}")
     dims = [b.shape[0] for b in H_blocks]
     towers = {n: [np.zeros((d, d), dtype=complex) for d in dims] for n in keep}
     for q in range(1, Nc + 1):
@@ -216,6 +222,14 @@ def instance_moments_blocked(Nc: int, p: int, seed: int, n_list=(2, 3),
     escale}} numbers (to roundoff; see the degeneracy caveat above)."""
     if n_max is None:
         n_max = max(n_list)
+    # Fail fast, like the dense path.  Without this a caller passing
+    # n_max < max(n_list) silently gets all-zero moments for the missing n
+    # (blocked_mn_tower's chain simply never reaches them), and only finds
+    # out via a ZeroDivisionError further downstream.
+    if max(n_list) > n_max:
+        raise ValueError(
+            f"n_max = {n_max} is below max(n_list) = {max(n_list)}: the "
+            "commutator chain would never reach those channels")
     rng = np.random.default_rng(seed)
     couplings = draw_couplings(Nc, p, rng, "c_symmetric")
     dim = 1 << Nc
@@ -362,10 +376,10 @@ def crosscheck_against_dense(inst_by_seed, dense_rows):
 def trend_table(new_rows, n_list=(2, 3)):
     """Fixed-p trend of the shape invariants vs 1/Nc: committed moments.json
     rows (Nc = 6, 8, 10) + the new rows.  Adds the per-Nc CP-channel w2
-    splitting (wrong - right) with quadrature errors -- a CAVEAT applies: the
+    splitting (wrong - right) with quadrature errors.  A CAVEAT applies: the
     two channels share disorder instances, so quadrature ignores their
-    correlation; for the new rows the paired per-instance SEM is also given
-    and is the number to trust there."""
+    correlation.  For the new rows the paired per-instance SEM is also given,
+    and it is the number to trust there."""
     committed = Path(__file__).resolve().parent / "moments.json"
     with open(committed) as fh:
         old_rows = json.load(fh)
@@ -393,8 +407,9 @@ def trend_table(new_rows, n_list=(2, 3)):
 
 
 def paired_split_sem(inst_list, n):
-    """Mean +- SEM (ddof=1) of the PER-INSTANCE w2 difference (wrong - right)
-    -- the correlation-honest error bar for the channel splitting."""
+    """Mean +- SEM (ddof=1) of the PER-INSTANCE w2 difference
+    (wrong - right).  It is the correlation-honest error bar for the channel
+    splitting."""
     diffs = []
     for inst in inst_list:
         w2 = {tag: inst[(n, tag)]["mu2"] /
@@ -410,8 +425,8 @@ def paired_split_sem(inst_list, n):
 def trend_plot(payload, out_path):
     """moments_trend.png: w2 and kurt per CP channel vs 1/Nc at fixed p = 4
     (left edge = the lambda -> 0 matching corner).  Reads the payload written
-    by main(); an Nc = 14 single-realization point, if present, is drawn as an
-    open marker (no error bar -- one instance)."""
+    by main().  An Nc = 14 single-realization point, if present, is drawn as
+    an open marker (no error bar -- one instance)."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -527,9 +542,27 @@ def main():
                           seeds=sorted(r["seed"] for r in dense_rows),
                           max_rel=max_rel)
     else:
-        print("\ndense cross-check: partial file absent/empty -- skipped "
-              "(gated instead by the Nc = 6/8/10 dense-agreement tests)")
+        # Preserve any existing record rather than blanking it.  The
+        # --dense-partial input is produced by a separate concurrent dense
+        # job and is not committed, so a plain `python3 moments_fast.py`
+        # (which is what `make reproduce-slow` runs) would otherwise
+        # overwrite the committed 5e-15 figure with nulls -- and nothing
+        # in the tree could regenerate it.
         crosscheck = dict(n_seeds=0, seeds=[], max_rel=None)
+        if Path(out_path).exists():
+            try:
+                with open(out_path) as fh:
+                    prev = json.load(fh).get("dense_crosscheck")
+                if prev and prev.get("n_seeds"):
+                    crosscheck = prev
+                    print("\ndense cross-check: partial file absent -- "
+                          f"keeping the recorded result ({prev['n_seeds']} "
+                          f"seed(s), max rel {prev['max_rel']:.2e})")
+            except (OSError, ValueError):
+                pass
+        if not crosscheck["n_seeds"]:
+            print("\ndense cross-check: partial file absent/empty -- skipped "
+                  "(gated instead by the Nc = 6/8/10 dense-agreement tests)")
 
     # -- fixed-p trend toward the lambda -> 0 corner -----------------------
     trend = trend_table(rows, n_list)

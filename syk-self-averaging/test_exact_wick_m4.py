@@ -22,9 +22,9 @@ import numpy as np
 import pytest
 
 from syk import coupling_variance
-from exact_wick import (crossing_sum, crossing_q, mean_m4_exact,
+from exact_wick import (crossing_q, mean_m4_exact,
                         quad_null_count, quad_null_alternating,
-                        var_m4_exact, relvar_m4_exact, ln_relvar_m4,
+                        var_m4_exact, relvar_m4_exact,
                         relvar_m4_double_scaling_scan,
                         _mean_var_m4_enumerated, _trace_of_product)
 
@@ -44,7 +44,7 @@ def test_exchange_sign_witness(N, p):
 
 def test_support_fact_witness():
     """A Gamma product has nonzero trace iff the symmetric difference of the
-    subsets is empty -- and then the trace is exactly +-1."""
+    subsets is empty.  Then the trace is exactly +-1."""
     N, p = 6, 4
     rng = np.random.default_rng(0)
     subsets = list(combinations(range(N), p))
@@ -85,8 +85,8 @@ def test_quad_null_count_and_alternating(N, p):
 # closed forms vs the enumerated coupling polynomial
 # --------------------------------------------------------------------------
 def test_m4_micro_anchor_n2():
-    """N=2, p=2: H = J Gamma with Gamma^2 = 1, so m4 = J^4 exactly:
-    E[m4] = 3 sigma^4 (the degenerate c=d=e=f diagonal), Var = 96 sigma^8
+    """N=2, p=2: H = J Gamma with Gamma^2 = 1, so m4 = J^4 exactly.  Then
+    E[m4] = 3 sigma^4 (the degenerate c=d=e=f diagonal) and Var = 96 sigma^8
     (E[J^8] = 105 sigma^8).  Hand values, no code shared with anything."""
     s2 = coupling_variance(2, 2)
     assert abs(mean_m4_exact(2, 2) - 3 * s2 ** 2) < 1e-12
@@ -105,9 +105,9 @@ def test_m4_closed_forms_match_enumeration(N, p):
 
 
 def test_xor_filter_is_faithful():
-    """The (8,4) speedup skips tuples with nonzero total support; those traces
-    vanish identically (sampled witness) and the filtered enumeration agrees
-    with the unfiltered one exactly."""
+    """The (8,4) speedup skips tuples with nonzero total support.  Those
+    traces vanish identically (sampled witness), and the filtered enumeration
+    agrees with the unfiltered one exactly."""
     N, p = 6, 4
     subsets = list(combinations(range(N), p))
     masks = [sum(1 << a for a in c) for c in subsets]
@@ -154,8 +154,8 @@ def test_relvar_m4_matches_ED_ensemble(N, n_inst):
 # the crossing sum is the chord q-parameter (factor-2 landmine check)
 # --------------------------------------------------------------------------
 def test_crossing_q_chord_limit_fixed_p():
-    """At fixed p, K/C -> exp(-2 p^2/N) with O(N^-2) error -- and is far from
-    exp(-p^2/N), nailing lambda_chord = 2p^2/N (not p^2/N)."""
+    """At fixed p, K/C -> exp(-2 p^2/N) with O(N^-2) error.  It is far from
+    exp(-p^2/N), which fixes lambda_chord = 2p^2/N (not p^2/N)."""
     p = 4
     errs = []
     for N in (100, 1000, 10000):
@@ -184,8 +184,8 @@ def test_crossing_q_chord_limit_double_scaling():
 # asymptotics: fixed-p rate and the double-scaling Eq. (3.27) law for m4
 # --------------------------------------------------------------------------
 def test_relvar_m4_leading_term_fixed_p():
-    """relVar(m4) = 8/C(N,p) (1 + o(1)) at fixed p -- 4x relVar(m2), a pure
-    N^-p power law at large N; the correction dies like ~1/C."""
+    """relVar(m4) = 8/C(N,p) (1 + o(1)) at fixed p.  That is 4x relVar(m2), a
+    pure N^-p power law at large N.  The correction dies like ~1/C."""
     from self_averaging import relvar_m2_exact
     ratios = [relvar_m4_exact(N, 4) * comb(N, 4) / 8.0 for N in (12, 20, 40, 60)]
     assert all(r > 1.0 for r in ratios)          # Z + 2W correction is positive

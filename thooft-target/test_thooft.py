@@ -4,10 +4,13 @@
 Run with:  pytest -q        (or  python3 -m pytest -q)
 
 Every check that validate.py *prints*, this file *asserts* with an explicit
-tolerance, so the package fails loudly if a change breaks the physics.  The whole
-suite is double precision and runs in a few seconds (the sine cross-check
-quadrature dominates the cost).
+tolerance.  The package therefore fails loudly if a change breaks the physics.
+The whole suite is double precision and runs in a few seconds (the sine
+cross-check quadrature dominates the cost).
 """
+
+import json
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -78,7 +81,7 @@ def test_asymptotics():
 
 
 def test_cp_assignment():
-    """Symmetric (even-degree) levels are FLZ even n with CP = -1; the
+    """Symmetric (even-degree) levels are FLZ even n with CP = -1.  The
     interleaving alternates."""
     levels = spectrum(num_basis=100, num_levels=10)
     for L in levels:
@@ -112,7 +115,7 @@ def test_I_matrix_vs_quadrature(degrees):
 
 def test_potential_matrix_vs_quadrature():
     """The full potential matrix element  <b_n,(1/x+1/(1-x)) b_m>  (b = sqrt(1-xi^2)U)
-    must equal 4 I_{nm}, checked by an independent 1/x-form quadrature."""
+    must equal 4 I_{nm}.  An independent 1/x-form quadrature checks it."""
     degrees = np.array([0, 2, 4])
     P = 4.0 * _I_matrix(degrees)  # what the solver adds (per unit alpha)
     for i, n in enumerate(degrees):
@@ -153,7 +156,8 @@ def _G_sum(evs_two_lambda, offset, s, n_cut=120):
 
 def test_flz_higher_sum_rules():
     """FLZ Eq. (1.8) beyond s = 2: G3+- and G4+- against the exact zeta-value
-    closed forms -- four more independent whole-spectrum certificates."""
+    closed forms.  These are four more independent whole-spectrum
+    certificates."""
     ev_sym, _, _ = solve_sector(400, parity=0)
     ev_anti, _, _ = solve_sector(400, parity=1)
     targets = {
@@ -174,9 +178,9 @@ def test_flz_higher_sum_rules():
 
 
 def test_lm_alpha_nonzero_eigenvalues():
-    """The previously-open external gap: at alpha != 0 the spectrum must match
-    the published Litvinov-Meshcheriakov tables (arXiv:2409.11324, 6
-    significant digits in lambda -> ~1e-5 on 2*lambda for the low levels)."""
+    """External anchor at alpha != 0: the spectrum must match
+    the published Litvinov-Meshcheriakov tables (arXiv:2409.11324).  Their 6
+    significant digits in lambda give ~1e-5 on 2*lambda for the low levels."""
     for a_str, tabs in ANCHORS["lm_two_lambda_tables"].items():
         if a_str == "comment":
             continue
@@ -190,11 +194,11 @@ def test_lm_alpha_nonzero_eigenvalues():
 
 def test_lm_exact_alpha_sum_rules():
     """Sharper alpha != 0 anchor: the DIFFERENCE G2(alpha) - G2(0) converges
-    absolutely (no alpha-dependent tail needed), so the exact 20-digit
-    Litvinov-Meshcheriakov sum-rule values test the whole alpha != 0 spectrum
-    against exact analytic results.  Accuracy here is limited by the basis'
-    hardwired alpha = 0 endpoint exponent (algebraic convergence off the
-    duality point) -- the tolerance below IS that measured limitation."""
+    absolutely (no alpha-dependent tail needed).  The exact 20-digit
+    Litvinov-Meshcheriakov sum-rule values therefore test the whole alpha != 0
+    spectrum against exact analytic results.  The basis' hardwired alpha = 0
+    endpoint exponent limits the accuracy here (algebraic convergence off the
+    duality point).  The tolerance below IS that measured limitation."""
     ev0_s, _, _ = solve_sector(300, parity=0)
     ev0_a, _, _ = solve_sector(300, parity=1)
     G2p0, G2m0 = 7 * zeta(3), 2.0
@@ -224,8 +228,8 @@ def test_parseval_completeness():
 
 def test_rayleigh_weakform_recovers_eigenvalues():
     """Each eigenvector, pushed through the INDEPENDENT Gagliardo weak form on
-    Gauss-Legendre nodes, must reproduce its eigenvalue (validates the
-    wavefunctions against the operator, not just against FLZ numbers)."""
+    Gauss-Legendre nodes, must reproduce its eigenvalue.  That validates the
+    wavefunctions against the operator, not just against FLZ numbers."""
     from eigenfunctions import rayleigh_weakform
     ev0, vecs0, deg0 = solve_sector(200, parity=0)
     ev1, vecs1, deg1 = solve_sector(200, parity=1)
@@ -289,14 +293,10 @@ def test_sine_converges_to_chebyshev():
     assert errs[-1] < 1e-3
 
 
-if __name__ == "__main__":
-    raise SystemExit(pytest.main([__file__, "-q"]))
-
-
 def test_highprec_alpha_nonzero_path():
     """The mpmath Cholesky path (alpha != 0) agrees with the double-precision
-    Chebyshev solver -- the only coverage of that branch (it has no other
-    caller)."""
+    Chebyshev solver.  This is the only coverage of that branch (it has no
+    other caller)."""
     from mpmath import mp
     from thooft_highprec import solve_sector_mp
     mp.dps = 30
@@ -304,3 +304,60 @@ def test_highprec_alpha_nonzero_path():
     mp_ev = [float(v) for v in solve_sector_mp(K, parity=0, alpha=alpha)]
     ev, _, _ = solve_sector(K, parity=0, alpha=alpha)
     assert max(abs(mp_ev[n] - ev[n]) for n in range(5)) < 1e-12
+
+
+if __name__ == "__main__":
+    raise SystemExit(pytest.main([__file__, "-q"]))
+
+
+# --------------------------------------------------------------------------
+# the committed artifacts, against the live solver
+# --------------------------------------------------------------------------
+def _reference_rows():
+    path = Path(__file__).resolve().parent / "reference_spectrum.json"
+    with open(path) as fh:
+        return json.load(fh)
+
+
+def test_reference_spectrum_matches_live_solver():
+    """reference_spectrum.json is the module's flagship output and is consumed
+    cross-module by duality/dictionary.py, but nothing asserted its values
+    against a live solve: its producer (generate_reference.py, mpmath) is a
+    reproduce-slow target CI never runs, and the only other check covered
+    row 0 and row 1 only.  Every level is now pinned."""
+    rows = _reference_rows()
+    assert len(rows) >= 24
+    live = {d["n"]: d for d in spectrum(num_basis=300, num_levels=len(rows))}
+    for r in rows:
+        d = live[r["n"]]
+        assert d["two_lambda"] == pytest.approx(float(r["value"]), rel=1e-10), \
+            r["n"]
+        # bookkeeping the dictionary layer relies on
+        assert r["CP"] == (-1) ** (r["n"] + 1) == d["CP"]
+        assert r["parity"] == ("sym" if r["n"] % 2 == 0 else "anti")
+        assert d["parity"] == ("even" if r["n"] % 2 == 0 else "odd")
+    vals = [float(r["value"]) for r in rows]
+    assert all(b > a for a, b in zip(vals, vals[1:]))     # strictly ordered
+
+
+def test_double_precision_csv_matches_reference():
+    """spectrum_double_precision.csv is the 40-row published table; it must
+    agree with the certified reference over their common range at the ~1e-11
+    the README advertises, and stay interleaved beyond it."""
+    import csv
+    path = Path(__file__).resolve().parent / "spectrum_double_precision.csv"
+    with open(path) as fh:
+        rows = list(csv.DictReader(fh))
+    assert len(rows) >= 40
+    ref = {r["n"]: float(r["value"]) for r in _reference_rows()}
+    key = "two_lambda_n = M^2/(pi g^2)"
+    for row in rows:
+        n = int(row["n"])
+        assert row["CP"] == ("-1" if n % 2 == 0 else "+1")
+        assert row["parity_under_x->1-x"] == ("even" if n % 2 == 0 else "odd")
+        if n in ref:
+            assert float(row[key]) == pytest.approx(ref[n], abs=2e-11), n
+    vals = [float(r[key]) for r in rows]
+    assert all(b > a for a, b in zip(vals, vals[1:]))
+    # the asymptote 2 lambda_n -> n + 3/4
+    assert vals[-1] - (len(vals) - 1) == pytest.approx(0.75, abs=0.01)

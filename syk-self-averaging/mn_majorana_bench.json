@@ -1,5 +1,5 @@
 {
- "provenance": "mn_majorana_bench.py -- ED side of rung 15 proper: Majorana singlet channels A_n = sum_i psi_i ad_H^n psi_i, symmetrized traceless moments, fixed p = 4, lambda_chord = 32/N; chord comparison in duality/chord_moments.py",
+ "provenance": "mn_majorana_bench.py -- the ED side of the exact N=infinity chord moments: Majorana singlet channels A_n = sum_i psi_i ad_H^n psi_i, symmetrized traceless moments, fixed p = 4, lambda_chord = 32/N; chord comparison in duality/chord_moments.py",
  "runtime_s": 3512.2,
  "points": [
   {

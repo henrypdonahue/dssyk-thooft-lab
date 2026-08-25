@@ -133,7 +133,8 @@ def test_dirac_charge_conserved():
 
 
 def test_mn_operator_identities():
-    """The corrected tower identities (README correction #3 and its family):
+    """The corrected tower identities (duality/README.md correction #3
+    and its family):
     M_0 = Q;  M_1 = -(p/2) i H  (paper's M_1 = H fails at O(1));
     M_2 = -sum cdot^dag cdot  (paper's + sign is wrong)."""
     Nc, p = 5, 4
@@ -156,7 +157,7 @@ def test_mn_operator_identities():
 
 
 def test_mn_hermiticity_parity():
-    """M_n^dag = (-1)^n M_n holds exactly for n = 0, 1, 2 -- and genuinely
+    """M_n^dag = (-1)^n M_n holds exactly for n = 0, 1, 2.  It genuinely
     FAILS for n = 3 (the tower is not simply +-Hermitian beyond n = 2)."""
     Nc, p = 5, 4
     H = dirac_hamiltonian(Nc, p, rng=np.random.default_rng(11))
@@ -170,9 +171,9 @@ def test_mn_hermiticity_parity():
 
 
 def test_particle_hole_sign_law():
-    """C c_i C^dag = (-1)^(Nc-1) c_i^dag -- the global sign is Nc-dependent
+    """C c_i C^dag = (-1)^(Nc-1) c_i^dag.  The global sign is Nc-dependent
     (+1 only for odd Nc).  Bilinears are insensitive (sign enters twice), but
-    any odd-length fermion string is not; the docstring's stated law must be
+    any odd-length fermion string is not.  The docstring's stated law must be
     the tested one."""
     for Nc in (4, 5):
         cs = annihilators(Nc)
@@ -186,7 +187,7 @@ def test_particle_hole_sign_law():
 def test_cp_photon_graviton_exact():
     """On a C-invariant instance (disjoint/real ensemble), the unitary
     particle-hole map C gives exactly CP(Q - Nc/2) = -1 (photon) and
-    CP(M_1) = +1 (graviton) -- the paper's n = 0, 1 assignments."""
+    CP(M_1) = +1 (graviton).  These are the paper's n = 0, 1 assignments."""
     Nc, p = 6, 4
     rng = np.random.default_rng(4)
     Hc = dirac_hamiltonian(Nc, p,
@@ -205,7 +206,7 @@ def test_cp_photon_graviton_exact():
 def test_cp_higher_n_is_a_mixture():
     """The measured finding this module documents: for n >= 2 the raw M_n is a
     CP-mixture even on a C-invariant instance (total-time-derivative
-    contamination), so the paper's CP = (-1)^{n+1} for the dynamical tower is
+    contamination).  So the paper's CP = (-1)^{n+1} for the dynamical tower is
     a statement about CP-resolved correlators, not about the raw operators."""
     Nc, p = 6, 4
     rng = np.random.default_rng(4)
@@ -226,16 +227,16 @@ def test_cp_higher_n_is_a_mixture():
 @pytest.mark.parametrize("N,p", [(8, 4), (8, 6)])
 def test_wick_closed_form_matches_enumeration(N, p):
     """Var(B_jk) = 4 sigma^4 C(N-2,p-1) must equal the literal sum over all
-    subset pairs of Majorana-trace contractions (verifies every sign in the
-    derivation, including T_cd T_dc = +1)."""
+    subset pairs of Majorana-trace contractions.  That check verifies every
+    sign in the derivation, including T_cd T_dc = +1."""
     from exact_wick import var_offdiag_exact, var_offdiag_enumerated
     ve, vn = var_offdiag_exact(N, p), var_offdiag_enumerated(N, p)
     assert abs(vn / ve - 1.0) < 1e-12
 
 
 def test_wick_mean_diag_and_ratio_artifact():
-    """E[B_jj] = sigma^2 C(N,p)(1 - 2p/N): matches enumeration, and vanishes
-    exactly at p = N/2 -- the derived origin of the ratio artifact."""
+    """E[B_jj] = sigma^2 C(N,p)(1 - 2p/N) matches enumeration, and vanishes
+    exactly at p = N/2.  That is the derived origin of the ratio artifact."""
     from exact_wick import mean_diag_exact, mean_diag_enumerated
     for (N, p) in [(8, 4), (8, 6), (10, 4)]:
         me, mn = mean_diag_exact(N, p), mean_diag_enumerated(N, p)
@@ -258,8 +259,8 @@ def test_wick_matches_ED_ensemble():
 
 
 def test_wick_double_scaling_superexponential():
-    """Along p = sqrt(N), ln rms / sqrt(N) must decrease without bound:
-    the Eq. 3.28 form e^{-a sqrt N} is beaten for every a (checked well past
+    """Along p = sqrt(N), ln rms / sqrt(N) must decrease without bound.  The
+    Eq. 3.28 form e^{-a sqrt N} is beaten for every a (checked well past
     any ED-reachable N)."""
     from exact_wick import double_scaling_scan
     rows = double_scaling_scan(1.0, [16, 64, 100, 400, 1600])
@@ -269,11 +270,11 @@ def test_wick_double_scaling_superexponential():
 
 
 def test_wick_fixed_p_powerlaw():
-    """Rung 16: at FIXED p (lambda -> 0, the regime of the 't Hooft spectrum
+    """at FIXED p (lambda -> 0, the regime of the 't Hooft spectrum
     comparison) the exact rms follows the POWER LAW N^{-(p-1)/2} with
-    prefactor 2 p!/sqrt((p-1)!), and the per-element violation
-    rms/E[B_jj] falls as N^{-(p+1)/2} -- polynomially slow emergence,
-    vs super-exponential along double scaling."""
+    prefactor 2 p!/sqrt((p-1)!).  The per-element violation rms/E[B_jj] falls
+    as N^{-(p+1)/2}.  That is polynomially slow emergence, vs
+    super-exponential along double scaling."""
     from math import exp, factorial, log, sqrt
     from exact_wick import fixed_p_scan
     for p in (4, 6):
@@ -296,8 +297,8 @@ def test_wick_fixed_p_powerlaw():
 
 def test_majorana_m1_identity():
     """The Majorana counterpart of M1 = -(p/2)iH: with psi^2 = 1,
-    sum_a psi_a [H, psi_a] = -2p H exactly -- so (i/N) sum psi psidot is
-    conserved (proportional to H) and useless as a dynamical probe; the
+    sum_a psi_a [H, psi_a] = -2p H exactly.  So (i/N) sum psi psidot is
+    conserved (proportional to H) and useless as a dynamical probe.  The
     first dynamical Majorana singlet is sum psidot psidot."""
     N, p = 10, 4
     H = majorana_hamiltonian_fast(N, p, np.random.default_rng(2))
@@ -318,7 +319,7 @@ def test_largeq_bench_structure():
 
 
 def test_moments_pipeline_structure():
-    """Structural checks of the rung-15 moment pipeline: positive weights,
+    """Structural checks of the moment pipeline: positive weights,
     odd moments vanishing (omega-symmetric T=inf correlators), and the exact
     Cauchy-Schwarz bound mu4*mu0 >= mu2^2 (kurt >= 1)."""
     from moments_pipeline import ensemble_moments
@@ -332,9 +333,9 @@ def test_moments_pipeline_structure():
 
 
 def test_mn_spectroscopy_structure():
-    """Structural exactness checks of the spectroscopy pipeline at small Nc:
-    conserved n = 0, 1 put ALL weight at omega = 0; n = 2 moves weight to
-    omega != 0; CP fractions are sane."""
+    """Structural exactness checks of the spectroscopy pipeline at small Nc.
+    Conserved n = 0, 1 put ALL weight at omega = 0.  n = 2 moves weight to
+    omega != 0.  CP fractions are sane."""
     import mn_spectroscopy
     res = mn_spectroscopy.run(Nc=8, p=4, n_max=2, seed=5)
     by_n = {r["n"]: r for r in res["spectra"]}
@@ -360,18 +361,38 @@ def test_self_averaging_decreases_with_N():
     assert rv[0] > rv[1] > rv[2]
 
 
+def test_goe_arm_of_the_rmt_pattern():
+    """The GOE arm (N mod 8 = 0), asserted in the FAST suite.
+
+    The README's RMT claim covers three classes, but GUE and GSE were
+    pinned only by a slow-marked test and GOE by none at all -- so a
+    regression in the parity-sector mask, the JW ordering, or
+    CLASS_BY_NMOD8[0] that broke only the real case would have gone
+    unnoticed everywhere.  N = 8 costs ~0.04 s per realization set and
+    lands on GOE for every seed tried (12/12 over seeds 200-211)."""
+    for seed in (200, 204, 209):
+        r = validate_syk.r_statistic(8, n_real=32, seed=seed)
+        assert validate_syk._nearest_class(r) == "GOE", (seed, r)
+        # and it is not a near-tie with the next class
+        assert abs(r - validate_syk.RMT["GOE"]) < \
+            abs(r - validate_syk.RMT["GUE"])
+
+
 @pytest.mark.slow
-def test_bott_periodicity_two_classes():
-    """A cheap slice of the RMT validation: GUE (N=10) and GSE (N=12)."""
+def test_bott_periodicity_all_three_classes():
+    """The full N mod 8 slice at production size: GUE (N=10), GSE (N=12),
+    GOE (N=16)."""
     r10 = validate_syk.r_statistic(10, n_real=40, seed=110)
     r12 = validate_syk.r_statistic(12, n_real=40, seed=112)
+    r16 = validate_syk.r_statistic(16, n_real=12, seed=116)
     assert validate_syk._nearest_class(r10) == "GUE"
     assert validate_syk._nearest_class(r12) == "GSE"
+    assert validate_syk._nearest_class(r16) == "GOE"
 
 
 def test_gse_kramers_doubling():
     """GSE cases (N mod 8 = 4) carry EXACT 2-fold Kramers degeneracy within
-    each parity sector -- asserted directly, not just via <r>."""
+    each parity sector.  This test asserts that directly, not just via <r>."""
     for N in (12, 20):
         intra, inter = validate_syk.kramers_splitting(N, seed=100 + N)
         assert intra < 1e-9        # exactly doubled (machine precision)

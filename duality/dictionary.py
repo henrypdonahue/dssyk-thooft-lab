@@ -4,10 +4,10 @@ The DSSYK_infinity <-> 't Hooft comparison dictionary.
 ======================================================
 
 Every convention needed to compare a DSSYK number against the 't Hooft
-yardstick, encoded ONCE, with tests -- built (deliberately) before the DSSYK
-side of the comparison exists, so that when a number finally appears there is
-exactly one place where an index offset, factor of 2, or normalization can be
-wrong, and it is unit-tested.
+yardstick is encoded ONCE and unit-tested here.  It was built before the
+DSSYK side of the comparison exists.  So when a number finally appears,
+an index offset, factor of 2, or normalization has exactly one place to
+be wrong.
 
 The four load-bearing corrections (top-level README), as code:
 
@@ -18,25 +18,26 @@ The four load-bearing corrections (top-level README), as code:
                         double-scaling line.
   3. Normalization:     M_0 = Q exactly;  M_1 = -(p/2) i H  (not the paper's
                         M_1 = H) -- m1_coefficient below.
-  4. Conventions:       the PAPER's lambda is p^2/N; the CHORD literature
+  4. Conventions:       the PAPER's lambda is p^2/N.  The CHORD literature
                         (Berkooz et al., the machinery any DSSYK solve will
                         use) defines lambda_chord = 2p^2/N and q =
                         exp(-lambda_chord).  The clash is INTERNAL to the
-                        Susskind corpus too: the companion arXiv:2501.09423
-                        Eq. (3.6) defines lambda = 2p^2/N (chord convention)
-                        while 2607.05678 Sec. 4.1 uses p^2/N.  A silent
-                        factor of 2 here would wreck any quantitative match
-                        -- hence the explicit converters.
+                        Susskind corpus too.  The companion
+                        arXiv:2501.09423 Eq. (3.6) defines
+                        lambda = 2p^2/N (chord convention), while
+                        2607.05678 Sec. 4.1 uses p^2/N.  A silent factor
+                        of 2 here would wreck any quantitative match,
+                        hence the explicit converters.
 
 Mass units.  thooft-target reports the dimensionless eigenvalue
 2*lambda_n = M_n^2/(pi g^2) at the duality point alpha = pi m_q^2/g^2 = 0.
-Physical masses need a value of g^2 (or of the string tension
-tau = alpha_bar * m_q^2 = p^2 m_q^2, with alpha_bar = gbar^2 N the
-dimensionless coupling -- not the dimensionful g^2 N), which the duality
-fixes only through the dictionary;
-RATIOS of masses-squared are parameter-free, so the comparison tables below
-are built from ratios and from the interleave splittings -- the sharpest
-falsifiable fingerprints available today.
+Physical masses need a value of g^2, or of the string tension
+tau = alpha_bar * m_q^2 = p^2 m_q^2.  Here alpha_bar = gbar^2 N is the
+dimensionless coupling, not the dimensionful g^2 N.  The duality fixes
+that value only through the dictionary.
+RATIOS of masses-squared are parameter-free, so the comparison tables
+below are built from ratios and from the interleave splittings.  Those
+are the sharpest falsifiable fingerprints available today.
 """
 
 from __future__ import annotations
@@ -75,8 +76,8 @@ def paper_from_chord(lam_chord: float) -> float:
 
 
 def q_parameter(lam_chord: float) -> float:
-    """q = exp(-lambda_chord); q -> 1 is the paper's lambda -> 0 corner where
-    an exact 't Hooft match is expected."""
+    """q = exp(-lambda_chord).  q -> 1 is the paper's lambda -> 0 corner
+    where an exact 't Hooft match is expected."""
     return math.exp(-lam_chord)
 
 
@@ -92,11 +93,11 @@ def gbar_squared(N: float, p: float) -> float:
 
 def string_tension(m_q_squared: float, p: float) -> float:
     """tau = alpha_bar * m_q^2 = p^2 m_q^2 (paper Sec. 4.2), in units where
-    the DIMENSIONLESS 't Hooft coupling alpha_bar = gbar^2 N = p^2 (do NOT
-    conflate with the dimensionful g^2 N -- see alpha_bar/gbar_squared).
-    Fixed, finite tau with p^2 = lambda N forces m_q^2 -> 0 in the
-    double-scaled limit: the duality point is the RENORMALIZED-massless
-    't Hooft model."""
+    the DIMENSIONLESS 't Hooft coupling alpha_bar = gbar^2 N = p^2.  Do
+    NOT conflate that with the dimensionful g^2 N; see
+    alpha_bar/gbar_squared.  Fixed, finite tau with p^2 = lambda N forces
+    m_q^2 -> 0 in the double-scaled limit.  The duality point is the
+    RENORMALIZED-massless 't Hooft model."""
     return alpha_bar(p) * m_q_squared
 
 
@@ -104,7 +105,7 @@ def string_tension(m_q_squared: float, p: float) -> float:
 # index and quantum-number maps (correction #1)
 # ---------------------------------------------------------------------------
 def n_paper_from_flz(n_flz: int) -> int:
-    """The paper's tower index: its dynamical mesons start at n_paper = 2;
+    """The paper's tower index: its dynamical mesons start at n_paper = 2.
     FLZ's ground state (n_FLZ = 0) is the paper's n = 2 'eta'."""
     if n_flz < 0:
         raise ValueError("FLZ index must be >= 0")
@@ -120,17 +121,18 @@ def n_flz_from_paper(n_paper: int) -> int:
 
 
 def cp_paper(n_paper: int) -> int:
-    """CP = (-1)^(n+1) in the paper's indexing (Sec. 4.3).  For n = 0, 1 this
-    is the photon (-1) / graviton (+1); those assignments are EXACT operator
-    statements on the SYK side (see syk-self-averaging/dirac.py).  For the
-    dynamical tower n >= 2 the raw M_n operators are CP mixtures; the
-    assignment refers to the CP-resolved correlator channel."""
+    """CP = (-1)^(n+1) in the paper's indexing (Sec. 4.3).  For n = 0, 1
+    this is the photon (-1) / graviton (+1).  Those assignments are EXACT
+    operator statements on the SYK side (see syk-self-averaging/dirac.py).
+    For the dynamical tower n >= 2 the raw M_n operators are CP mixtures.
+    The assignment then refers to the CP-resolved correlator channel."""
     return (-1) ** (n_paper + 1)
 
 
 def flz_parity(n_flz: int) -> str:
-    """FLZ wavefunction parity under x -> 1-x: even n symmetric ("sym"), odd n
-    antisymmetric ("anti") -- the labels used in reference_spectrum.json.
+    """FLZ wavefunction parity under x -> 1-x: even n symmetric ("sym"),
+    odd n antisymmetric ("anti").  These are the labels used in
+    reference_spectrum.json.
     Consistency (asserted in tests): symmetric FLZ levels are the paper's
     CP = -1 states, antisymmetric are CP = +1, and the two interleave with
     alternating CP."""
@@ -183,14 +185,14 @@ def mass_squared_ratios(rows=None) -> list:
 
 def interleave_splittings(rows=None) -> list:
     """Parameter-free fingerprint #2: adjacent-level differences
-    two_lambda_{n+1} - two_lambda_n (FLZ indexing).  The 't Hooft tower is a
-    single interleaved trajectory with alternating CP and near-unit spacing
-    (2lam ~ n + 3/4): gaps 1.0167, 0.9944, 1.0029, ... -> 1.  A DSSYK tower
-    showing pairwise-degenerate CP doublets instead of this alternation would
-    falsify the identification.  (This also settles what the paper's 'two
-    degenerate Regge trajectories... on top of one another' must mean: the
-    even- and odd-CP trajectories have the same slope and interleave --
-    adjacent levels are NOT degenerate.)"""
+    two_lambda_{n+1} - two_lambda_n (FLZ indexing).  The 't Hooft tower is
+    a single interleaved trajectory with alternating CP and near-unit
+    spacing (2lam ~ n + 3/4).  The gaps are 1.0167, 0.9944, 1.0029,
+    ... -> 1.  A DSSYK tower showing pairwise-degenerate CP doublets
+    instead of this alternation would falsify the identification.  (This
+    also settles what the paper's 'two degenerate Regge trajectories... on
+    top of one another' must mean.  The even- and odd-CP trajectories have
+    the same slope and interleave; adjacent levels are NOT degenerate.)"""
     if rows is None:
         rows = load_reference()
     return [dict(between=(rows[i]["n_flz"], rows[i + 1]["n_flz"]),

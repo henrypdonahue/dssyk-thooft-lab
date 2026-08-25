@@ -32,8 +32,8 @@ close_0 and using close_{j>0} o open = 0, close_0 o open = 1:
 
     C(m) = P_m(T) ,
 
-a POLYNOMIAL in T: the Motzkin-path polynomial of length m with, at
-height j, flat weight q^(D+j) T, down weight [j]_q, up weight
+a POLYNOMIAL in T: the Motzkin-path polynomial of length m.  At height j
+it carries flat weight q^(D+j) T, down weight [j]_q, and up weight
 1 - q^(2D+j).  First cases (verified exactly):
 
     C(1) = q^D T ,          C(2) = q^(2D) T^2 + (1 - q^(2D)) .
@@ -43,31 +43,31 @@ insertion is
 
     Xhat_n = sum_r (-1)^r C(n, r) C(n-r) T^r      [= d^n/dt^n C(t) e^{-tT}|_0]
 
--- a polynomial in T by the lemma.  Hence ad_T^k(Xhat_n) = 0 and EVERY
+-- a polynomial in T by the lemma.  Hence ad_T^k(Xhat_n) = 0.  EVERY
 spectral moment mu_k (k >= 1, even and odd, both operator orderings) of
-every A_n pair channel vanishes identically at N = infinity, at every
-lambda and every matter weight.  Explicit conserved charges:
+every A_n pair channel therefore vanishes identically at N = infinity,
+at every lambda and every matter weight.  Explicit conserved charges:
 
     Xhat_1 = -(1 - q^D) T ,
     Xhat_2 = (1 - q^D)^2 T^2 + (1 - q^(2D)) .
 
 The contrast that makes this physical: a random operator O_Delta inserts
-q^(Delta n-hat), which does NOT commute with T -- so it propagates
-(mu_2 = 2(1 - q^Delta)) while the H-derived bilinears cannot.  The meson
+q^(Delta n-hat), which does NOT commute with T.  It propagates
+(mu_2 = 2(1 - q^Delta)), while the H-derived bilinears cannot.  The meson
 tower of arXiv:2607.05678 must therefore live entirely in 1/N
-corrections; CHORD.md carries the consequence.
+corrections.  CHORD.md carries the consequence.
 
-Scope: the i != j pair amplitude, strict N = infinity -- exactly the
-object chord_moments.py computes.  Finite-N and the flavor-diagonal
+Scope: the i != j pair amplitude, strict N = infinity.  This is exactly
+the object chord_moments.py computes.  Finite-N and the flavor-diagonal
 channel are untouched (see mn_majorana_bench.py).
 
 Verification (test_chord_charges.py): the recursion as a matrix identity,
 C(m) = P_m(T) and [C(m), T] = 0 for m <= 8, the closed forms, [Xhat_n, T]
 = 0 for n <= 5, and the word-level zeros |mu_k|/gross <= 1e-12 for
-n <= 5, k <= 6 through the independent chord_moments assembly.
+n <= 5, even k <= 6 through the independent chord_moments assembly.
 Truncation note: on a finite chord lattice the identities hold exactly on
-the interior block (truncation intrudes at most m rows from the top);
-residuals are measured there, relative to the block scale.
+the interior block (truncation intrudes at most m rows from the top).
+Residuals are measured there, relative to the block scale.
 """
 
 from __future__ import annotations
@@ -116,7 +116,7 @@ def open_map(nmax: int) -> np.ndarray:
 
 
 def close_j_map(nmax: int, q: float, dpsi: float, j: int) -> np.ndarray:
-    """close_j |n0,n1> = [n1]^(j)_falling q^(D(n1-j)) |n0+n1-j>; j = 0 is
+    """close_j |n0,n1> = [n1]^(j)_falling q^(D(n1-j)) |n0+n1-j>.  j = 0 is
     the ordinary close."""
     m = nmax + 1
     C = np.zeros((m, m * m))

@@ -2,20 +2,21 @@
 """Asserting tests for the matched-exponent Jacobi solver (jacobi_solver.py).
 
 Every tolerance below is tied to a measurement recorded in
-jacobi_convergence.json (regenerate with `python3 jacobi_solver.py`), with a
-safety margin of roughly 10-100x over the measured residual -- not to hope.
+jacobi_convergence.json (regenerate with `python3 jacobi_solver.py`).  Each has
+a safety margin of roughly 10-100x over the measured residual.
 The three correctness gates of the workstream:
 
   (a) alpha = 0: FLZ Tables 1-2 to ~1e-8 at moderate K   -> measured 5.3e-9
       at K = 60 (test_alpha0_flz_tables);
-  (b) alpha != 0: LM anchors at least as well as the old solver, plus a
+  (b) alpha != 0: LM anchors at least as well as the Chebyshev solver, plus a
       demonstrated convergence-rate improvement                -> measured
       factor ~1.5e5 (alpha=0.5) and ~1.8e7 (alpha=-0.5) at K = 32
       (test_convergence_beats_old_solver);
   (c) higher-s LM sum rules s = 2..7 at all five LM alpha values including
       alpha = 1 (no published eigenvalue table there -- a pure prediction
       against their exact closed forms)   -> measured s2 <= 3e-8,
-      s3 <= 2e-10, s4..7 <= ~2e-12 relative (test_lm_sum_rules_s2_to_s7).
+      s3 <= 2e-10 absolute, s4..7 <= 4e-12 relative
+      (test_lm_sum_rules_s2_to_s7).
 """
 
 import json
@@ -81,10 +82,10 @@ def test_endpoint_exponent_solves_transcendental():
 def test_endpoint_condition_source_identity():
     """The transcendental condition comes from the half-line finite part
     FP-Int_0^inf t^b/(t-1)^2 dt = -pi b cot(pi b)  ('t Hooft 1974; FLZ
-    Sec. 1).  Verify that identity by an INDEPENDENT regularization:
-    subtract 1 + b(t-1) on [0,2] (making the integrand regular at t = 1;
-    the subtracted pieces have exact finite parts -2 and PV 0) and integrate
-    the remainder with scipy.quad."""
+    Sec. 1).  Verify that identity by an INDEPENDENT regularization.
+    Subtract 1 + b(t-1) on [0,2], making the integrand regular at t = 1.
+    The subtracted pieces have exact finite parts -2 and PV 0.  Then
+    integrate the remainder with scipy.quad."""
     for beta in (0.371009648203552, 0.5, 0.645773676543405):
         i1, _ = quad(lambda t: (t ** beta - 1 - beta * (t - 1)) / (t - 1) ** 2,
                      0.0, 2.0, points=[1.0], limit=200)
@@ -104,7 +105,7 @@ def test_jacobi_recurrence_vs_scipy():
     match scipy.special.eval_jacobi -- independent implementation."""
     rng = np.random.default_rng(7)
     xi = rng.uniform(-1, 1, 9)
-    for a in (0.742019296407, 1.0, 1.169214093401):   # 2*beta at LM alphas
+    for a in (0.742019296407, 1.0, 1.169214093401):   # 2*beta at alpha = -0.5, 0, +0.5
         P = _jacobi_all(15, a, xi)
         dP = _jacobi_all_deriv(15, a, xi)
         for k in range(16):
@@ -117,8 +118,8 @@ def test_jacobi_recurrence_vs_scipy():
 
 def test_norm_closed_form_gram_is_identity():
     """The Gamma-function normalization must make the Gauss-Jacobi Gram
-    matrix exactly the identity (this is the 'mass-matrix conditioning'
-    claim: weight [x(1-x)]^(2beta) pairs with the P^(2beta,2beta) family)."""
+    matrix exactly the identity.  This is the 'mass-matrix conditioning'
+    claim: weight [x(1-x)]^(2beta) pairs with the P^(2beta,2beta) family."""
     beta = endpoint_exponent(0.5)
     for parity in (0, 1):
         deg = parity + 2 * np.arange(20)
@@ -130,10 +131,11 @@ def test_norm_closed_form_gram_is_identity():
 
 
 def test_potential_matrix_vs_independent_quadrature():
-    """The solver's Gauss-Jacobi potential block <b_n, V b_m> (V = 1/x +
-    1/(1-x) = 1/(x(1-x)), exact for polynomial integrands) against direct
-    adaptive scipy.quad of [x(1-x)]^(2beta-1) p_n p_m -- an independent
-    route through the endpoint-singular integrand."""
+    """This test checks the solver's Gauss-Jacobi potential block
+    <b_n, V b_m> (V = 1/x + 1/(1-x) = 1/(x(1-x)), exact for polynomial
+    integrands).  It checks it against direct adaptive scipy.quad of
+    [x(1-x)]^(2beta-1) p_n p_m, an independent route through the
+    endpoint-singular integrand."""
     alpha = 0.5
     beta = endpoint_exponent(alpha)
     degrees = 2 * np.arange(4)                    # even sector, K = 4
@@ -162,10 +164,11 @@ def test_potential_matrix_vs_independent_quadrature():
 def test_gagliardo_exact_anchor_beta_half():
     """The quadrature engine against an EXACT closed form: at beta = 1/2,
     B[B_n, B_m] = (pi^2/2)(m+1) delta_nm - 2 I_nm for the Chebyshev-weighted
-    functions B_n = sqrt(1-xi^2) U_n (from the exact eigenrelation of the
-    finite-part operator + the Gagliardo identity + the odd-harmonic closed
-    form _I_matrix of thooft_spectrum -- none of which share code with the
-    tanh-sinh assembly).  Measured worst entry error 4.7e-13 at n_ts=501."""
+    functions B_n = sqrt(1-xi^2) U_n.  That closed form follows from the exact
+    eigenrelation of the finite-part operator + the Gagliardo identity + the
+    odd-harmonic closed form _I_matrix of thooft_spectrum.  None of those
+    share code with the tanh-sinh assembly.  Measured worst entry error
+    4.7e-13 at n_ts=501."""
     from thooft_spectrum import _I_matrix
 
     x, omx, w = _tanh_sinh_01(501)
@@ -191,7 +194,7 @@ def test_gagliardo_exact_anchor_beta_half():
 
 
 def test_assembled_matrix_is_hermitian():
-    """The weak form guarantees a symmetric matrix; the builder asserts the
+    """The weak form guarantees a symmetric matrix.  The builder asserts the
     discrete asymmetry is at rounding level and then symmetrizes exactly."""
     for alpha in (0.0, 0.5, -0.5):
         _, A = build_sector_jacobi(30, 0, alpha)
@@ -203,8 +206,8 @@ def test_assembled_matrix_is_hermitian():
 # ---------------------------------------------------------------------------
 def test_alpha0_flz_tables():
     """Reproduce the FLZ 14-digit tables to < 1e-8 at moderate K = 60
-    (measured worst deviation 5.3e-9; the old solver needs its exact
-    closed-form matrix elements plus K = 300 for its 1e-10)."""
+    (measured worst deviation 5.3e-9).  The Chebyshev solver needs its exact
+    closed-form matrix elements plus K = 300 for its 1e-10."""
     ev_s, _, _ = solve_sector_jacobi(60, 0, 0.0)
     ev_a, _, _ = solve_sector_jacobi(60, 1, 0.0)
     worst = 0.0
@@ -216,9 +219,9 @@ def test_alpha0_flz_tables():
 
 def test_alpha0_equals_chebyshev_trial_space():
     """At alpha = 0 (beta = 1/2 exactly) the Jacobi trial space IS the
-    Chebyshev solver's trial space, so the two spectra must agree to the
-    quadrature floor (measured 6.5e-13 at K = 40 over the lowest 20
-    levels) -- any difference is pure Gagliardo-quadrature error."""
+    Chebyshev solver's trial space.  The two spectra must therefore agree to
+    the quadrature floor (measured 6.5e-13 at K = 40 over the lowest 20
+    levels).  Any difference is pure Gagliardo-quadrature error."""
     from thooft_spectrum import solve_sector
     for parity in (0, 1):
         evj, _, _ = solve_sector_jacobi(40, parity, 0.0)
@@ -232,9 +235,9 @@ def test_alpha0_equals_chebyshev_trial_space():
 def test_lm_tables_alpha_nonzero(lm_sectors):
     """Litvinov-Meshcheriakov eigenvalue tables: over the lowest 10 levels
     the deviation must be < 3e-5 (the tolerance the existing solver's test
-    passes at, i.e. 'at least as well'), and over ALL 30 tabulated levels
-    < 2e-4 (the LM tables' own 6-significant-digit rounding floor -- the
-    solver is far more accurate than the anchor here)."""
+    passes at, i.e. 'at least as well').  Over ALL 30 tabulated levels it
+    must be < 2e-4 (the LM tables' own 6-significant-digit rounding floor).
+    The solver is far more accurate than the anchor here."""
     for a_str in LM_ALPHAS:
         ev_s, ev_a = lm_sectors[a_str]
         tab = ANCHORS["lm_two_lambda_tables"][a_str]
@@ -254,11 +257,11 @@ def test_lm_tables_alpha_nonzero(lm_sectors):
 def test_convergence_beats_old_solver():
     """THE rate gate: at K = 32 the Jacobi ground-state error must beat the
     old solver's by > 1e3 (measured: 1.5e5 at alpha = 0.5, 1.8e7 at
-    alpha = -0.5) and sit below 1e-10 absolute (measured ~4e-12 with
-    reference self-consistency ~4e-12, itself certified externally by the
+    alpha = -0.5).  It must also sit below 1e-10 absolute (measured ~4e-12
+    with reference self-consistency ~4e-12, itself certified externally by the
     LM tables and 20-digit sum rules).  Also: the Jacobi error must fall
-    monotonically over K = 8 -> 16 -> 32 (spectral-like), while the old
-    solver's decreases only algebraically (~K^(-4 beta), measured rates
+    monotonically over K = 8 -> 16 -> 32 (spectral-like).  The Chebyshev
+    solver's error decreases only algebraically (~K^(-4 beta), measured rates
     2.34 and 1.48 vs 4 beta = 2.34, 1.48 -- see jacobi_convergence.json)."""
     from thooft_spectrum import solve_sector
     for alpha in (0.5, -0.5):
@@ -276,7 +279,7 @@ def test_convergence_beats_old_solver():
 
 
 def test_convergence_json_matches_live_solver():
-    """The committed jacobi_convergence.json must describe THIS code: replay
+    """The committed jacobi_convergence.json must describe THIS code.  Replay
     the K = 16 row at alpha = 0.5 against the stored reference values."""
     from thooft_spectrum import solve_sector
     with open(os.path.join(HERE, "jacobi_convergence.json")) as fh:
@@ -306,8 +309,8 @@ def test_spectrum_interleaving_and_cp():
 # ---------------------------------------------------------------------------
 def test_sum_rule_machinery_alpha0():
     """The drift-corrected tail machinery, validated where the answer is
-    exactly known (FLZ Eq. 1.8 and the s = 3 closed forms): measured
-    residuals ~6e-11 at K = 150, n_cut = 120."""
+    exactly known (FLZ Eq. 1.8 and the s = 3 closed forms).  Measured
+    residuals are ~6e-11 at K = 150, n_cut = 120."""
     ev_s, _, _ = solve_sector_jacobi(150, 0, 0.0)
     ev_a, _, _ = solve_sector_jacobi(150, 1, 0.0)
     targets = {
@@ -322,13 +325,13 @@ def test_sum_rule_machinery_alpha0():
 
 def test_lm_sum_rules_s2_to_s7(lm_sectors):
     """All LM exact alpha-dependent sum rules G^(s)+- for s = 2..7 at all
-    five alpha values -- including alpha = 1, where LM publish no eigenvalue
-    table, so this is a pure prediction against their closed forms.
+    five alpha values, including alpha = 1.  LM publish no eigenvalue table
+    at alpha = 1, so this is a pure prediction against their closed forms.
     Tolerances are the MEASURED residuals (jacobi_convergence.json,
-    lm_sum_rule_residuals: s2 <= 3e-8, s3 <= 2e-10, s4..7 <= ~2e-12
-    relative) with ~10-50x margin.  The old solver's documented limitation
-    was 1e-5..2e-4 at s = 2 only; this beats it by > 3 orders of magnitude
-    and extends to s = 7."""
+    lm_sum_rule_residuals: s2 <= 3e-8, s3 <= 2e-10 absolute, s4..7 <=
+    4e-12 relative) with ~10-50x margin.  The Chebyshev solver's documented
+    limitation was 1e-5..2e-4 at s = 2 only.  This beats it by > 3 orders of
+    magnitude and extends to s = 7."""
     tol_abs = {2: 2e-7, 3: 2e-9}
     tol_rel = 1e-10  # s = 4..7 (large G^(s)+ values: relative is the honest metric)
     for a_str in SUM_RULE_ALPHAS:

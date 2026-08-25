@@ -3,19 +3,19 @@ r"""
 Numerical test of the self-averaging claims of
 Miyashita-Sekino-Susskind (arXiv:2607.05678), Section 3.5.
 
-Two claims are tested:
+This module tests two claims:
 
   (3.27)  Var<W> ~ p!/N^p   for singlet (O(N)-invariant) observables W;
   (3.28)  symmetry violations <= exp(-a sqrt(N))  for non-singlet (adjoint) ones.
 
 A subtlety that governs the whole exercise
--------------------------------------------
+------------------------------------------
 At *fixed* p, p!/N^p is a power law N^{-p}: self-averaging, but only
 polynomially fast.  The paper's striking *super-exponential* suppression
 (e^{-aN}, e^{-a sqrt N}) lives in the DOUBLE-SCALING limit p = sqrt(lambda N),
 where p grows with N.  Exact diagonalization caps out near N ~ 18-20 (Hilbert
-dim 2^{N/2}), which cannot reach large p and large N together -- the same wall
-the headline spectrum-match computation hits.
+dim 2^{N/2}), which cannot reach large p and large N together.  That is the
+same wall the headline spectrum-match computation hits.
 
 So we split the test into what each tool can actually establish:
 
@@ -23,25 +23,25 @@ So we split the test into what each tool can actually establish:
      second moment m2 = Tr(H^2)/dim = sum_c J_c^2 has relative variance exactly
      2 / C(N,p).  This needs no diagonalization, so we can follow it along the
      double-scaling line p = sqrt(lambda N) to large N and show it becomes
-     super-exponential -- i.e. Eq. (3.27) with its promised e^{-aN} tail.
+     super-exponential.  That is Eq. (3.27) with its promised e^{-aN} tail.
 
   B. Higher singlet moments m4, m6 at accessible (N, p) by ED: do they
      self-average at the same ~1/C(N,p) rate as m2, or slower?
 
-  C. Symmetry violation at accessible (N, p) by ED: the off-diagonal of the
+  C. Symmetry violation at accessible (N, p) by ED.  The off-diagonal of the
      H-dressed adjoint bilinear  B_{jk} = Tr(psi_j H psi_k H)/dim  has zero
-     ensemble mean for j != k; its typical size measures how much one disorder
+     ensemble mean for j != k.  Its typical size measures how much one disorder
      instance breaks O(N).  We measure its decay with N and with p.
 
      (The e^{-a sqrt N} FORM cannot be discriminated from a steep power law in
-     the ED window -- the fits below say so explicitly, with Delta-AIC -- but
+     the ED window.  The fits below say so explicitly, with Delta-AIC.  But
      the disorder VARIANCE of B_jk is exactly computable by Wick contraction at
-     any (N, p): see exact_wick.py, which carries this test into the
+     any (N, p).  See exact_wick.py, which carries this test into the
      double-scaling regime that ED cannot reach.)
 
 Statistics: every ensemble estimate below carries an error bar.  For a relative
 variance estimated from n draws the sampling error is ~ relVar*sqrt(2/(n-1))
-(Gaussian approximation for the variance of a sample variance); rms values
+(Gaussian approximation for the variance of a sample variance).  The rms values
 carry the standard error of the mean over draws.
 """
 
@@ -76,7 +76,7 @@ def even_p_near(x: float) -> int:
 
 def double_scaling_line(lam: float, ns) -> list:
     """Along p = sqrt(lambda N): report the singlet relative variance 2/C(N,p).
-    Pure combinatorics -- reaches N far beyond ED."""
+    This is pure combinatorics, and it reaches N far beyond ED."""
     rows = []
     for N in ns:
         p = even_p_near((lam * N) ** 0.5)
@@ -129,7 +129,7 @@ def measure_symmetry_violation(N: int, p: int, n_inst: int, seed: int = 0):
       ratio        : mean of RMS_off / RMS_diag.  Convenient dimensionless
                      measure, BUT its denominator (the diagonal B_jj scale)
                      passes through a small value near p ~ N/2, so the *ratio*
-                     has a spurious bump there; always read rms_off when in
+                     has a spurious bump there.  Always read rms_off when in
                      doubt.
       rms_diag, std_ratio : diagnostics."""
     psis = majorana_operators(N)
@@ -175,10 +175,10 @@ def fit_models(ns, ys):
 
     Returns dict name -> dict(r2, slope, aic).  All models have the same
     number of parameters (2), so AIC = n*ln(SS_res/n) + 4 and Delta-AIC
-    ordering coincides with R^2 ordering -- the honest content of AIC here is
+    ordering coincides with R^2 ordering.  The honest content of AIC here is
     the MAGNITUDE of the differences (see fit_verdict).  Fits are unweighted
-    OLS in log-space: these are diagnostics only (the exact rate comes from
-    exact_wick.py), the per-point log-errors are comparable across the narrow
+    OLS in log-space.  These are diagnostics only (the exact rate comes from
+    exact_wick.py).  The per-point log-errors are comparable across the narrow
     window, and weighting cannot rescue 2-parameter selection over < 1 decade
     anyway."""
     ns = np.asarray(ns, float)
@@ -205,10 +205,10 @@ def fit_verdict(fits, ns=None) -> str:
     """Best model plus an explicit indistinguishability statement.
 
     All candidates are 2-parameter, so AIC ranking coincides with R^2 ranking
-    and only the MAGNITUDE of the gaps carries information.  Two honesty
-    guards, both deliberately conservative here: (a) any lead under DAIC_BAND
-    is reported as 'cannot discriminate' (2 is too aggressive for these few
-    points); (b) when the fit spans < 1 decade in N the ranking is
+    and only the MAGNITUDE of the gaps carries information.  There are two
+    honesty guards, both deliberately conservative here.  (a) Any lead under
+    DAIC_BAND is reported as 'cannot discriminate' (2 is too aggressive for
+    these few points).  (b) When the fit spans < 1 decade in N the ranking is
     uninformative regardless of the nominal lead -- 2-parameter selection over
     a narrow window cannot identify an asymptotic form -- and we say so."""
     ranked = sorted(fits.items(), key=lambda kv: kv[1]["aic"])

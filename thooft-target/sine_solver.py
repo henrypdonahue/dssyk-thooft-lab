@@ -3,11 +3,11 @@ r"""
 Independent cross-check solver for 't Hooft's equation (sine basis)
 ===================================================================
 
-This is a *deliberately independent* second solver, used only to validate the
-main Chebyshev-U spectral solver (thooft_spectrum.py) -- in particular the
-quark-mass (potential) machinery, which is invisible at the duality point
-alpha = 0.  It shares no code, no basis, and no closed-form matrix elements with
-the main solver.
+This is a *deliberately independent* second solver.  We use it only to
+validate the main Chebyshev-U spectral solver (thooft_spectrum.py).  In
+particular it validates the quark-mass (potential) machinery, which is
+invisible at the duality point alpha = 0.  It shares no code, no basis, and no
+closed-form matrix elements with the main solver.
 
 Method
 ------
@@ -17,12 +17,13 @@ Expand the wavefunction in the sine basis
 
 which satisfies the boundary conditions phi(0) = phi(1) = 0 by construction.
 Unlike the Chebyshev-U basis it does NOT build in the sqrt(x(1-x)) endpoint
-behaviour, so it converges only algebraically -- fine for a 3-4 digit
-cross-check, useless for high precision.  That mismatch is the point: agreement
-between the two methods cannot be an artefact of a shared discretization.
+behavior, so it converges only algebraically.  That is fine for a 3-4 digit
+cross-check.  It is useless for high precision.  That mismatch is the point.
+Agreement between the two methods cannot be an artifact of a shared
+discretization.
 
-The finite-part (hypersingular) operator is handled through its exact weak
-form.  For any u, v vanishing at the endpoints,
+This solver handles the finite-part (hypersingular) operator through its exact
+weak form.  For any u, v vanishing at the endpoints,
 
     <u, FP v> = -B[u, v] - <u, V v>,      V(x) = 1/x + 1/(1-x),
     B[u, v]   = (1/2) Int Int [u(x)-u(y)][v(x)-v(y)] / (x-y)^2 dx dy
@@ -88,7 +89,7 @@ def build_matrices(num_basis: int = 60, n_quad: int = 400, alpha: float = 0.0):
     diag = (dPsi * (wq ** 2)) @ dPsi.T
     # W_gag_{nm} = -1/2 Int Int [Δsin_n][Δsin_m]/(x-y)^2  (the Gagliardo form).
     # It equals <sin_n, FP sin_m> + <sin_n, (1/x+1/(1-x)) sin_m>, i.e. it already
-    # bundles in the endpoint self-energy potential -- see solve().
+    # bundles in the endpoint self-energy potential.  See solve().
     W = -(off + 0.5 * diag)
     return G, Pi, W
 
@@ -97,15 +98,16 @@ def solve(num_basis: int = 60, n_quad: int = 400, alpha: float = 0.0,
           num_levels: int = 8, return_vectors: bool = False):
     """Lowest `num_levels` values of 2 lambda_n = M_n^2/(pi g^2), ascending.
 
-    This mixes both CP sectors (no parity splitting); return the full ordered
-    list and let the caller compare against the interleaved main spectrum.
-    With return_vectors=True also return the sine-basis coefficient columns
-    (G-orthonormal, i.e. the reconstructed phi are unit-normalized in
-    L^2[0,1]) for eigenfunction-level cross-checks.
+    This mixes both CP sectors (no parity splitting).  It returns the full
+    ordered list and lets the caller compare against the interleaved main
+    spectrum.  With return_vectors=True it also returns the sine-basis
+    coefficient columns for eigenfunction-level cross-checks.  Those columns
+    are G-orthonormal, i.e. the reconstructed phi are unit-normalized in
+    L^2[0,1].
     """
     G, Pi, W = build_matrices(num_basis, n_quad, alpha)
     # <u,FP v> = W_gag - Pi, so  alpha*Pi - <.,FP.> = (alpha+1)*Pi - W_gag.
-    # The coefficient (alpha+1) = pi m^2/g^2 is the *bare* mass: the endpoint
+    # The coefficient (alpha+1) = pi m^2/g^2 is the *bare* mass.  The endpoint
     # self-energy from the finite part shifts alpha -> alpha+1, as it must.
     A = (alpha + 1.0) * Pi - W
     if not return_vectors:

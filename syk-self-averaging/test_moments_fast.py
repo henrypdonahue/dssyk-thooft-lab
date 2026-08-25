@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Correctness gates for the charge-sector-blocked moment pipeline
-(moments_fast.py): every structural claim in its derivation is asserted
-against the dense path (moments_pipeline / dirac), sharing no blocked code.
+(moments_fast.py).  The tests assert every structural claim in its
+derivation against the dense path (moments_pipeline / dirac).  They share
+no blocked code.
 
 Run from this directory:  pytest -q test_moments_fast.py -m 'not slow'
 (the Nc = 10 end-to-end gate is slow: dense reference takes ~2 min).
@@ -51,8 +52,8 @@ def test_blocked_hamiltonian_is_dense_slice():
 
 def test_derivative_chain_preserves_corner_and_tower_blocks():
     """c^(n) = i[H, c^(n-1)] stays in the (q-1, q) corner (asserted on the
-    dense chain), and the blocked M_n tower equals the dense tower's
-    diagonal blocks."""
+    dense chain).  The blocked M_n tower equals the dense tower's diagonal
+    blocks."""
     couplings, idx, pos, sec = _setup()
     H = dirac_hamiltonian(NC, P, couplings=couplings)
     cs = annihilators(NC)
@@ -80,9 +81,9 @@ def test_derivative_chain_preserves_corner_and_tower_blocks():
 
 
 def test_blocked_particle_hole_matches_dense():
-    """C is a signed complement permutation (sector q -> Nc - q mirror), and
-    the blocked CP conjugation of a block-diagonal operator equals the dense
-    U X U^dag on every block."""
+    """C is a signed complement permutation (sector q -> Nc - q mirror).
+    The blocked CP conjugation of a block-diagonal operator equals the
+    dense U X U^dag on every block."""
     couplings, idx, pos, sec = _setup()
     U = particle_hole(NC)
     ph = blocked_particle_hole(NC, idx, pos)
@@ -134,7 +135,8 @@ def _assert_instances_match(Nc, p, seed, tol=1e-9):
 
 def test_instance_moments_identical_nc6():
     """End-to-end gate: identical mu_k and escale vs the dense pipeline at
-    Nc = 6 (both channels, n = 2, 3), to better than 1e-9 relative."""
+    Nc = 6 (both channels, n = 2, 3).  The agreement is better than 1e-9
+    relative."""
     _assert_instances_match(6, 4, 100)
 
 
@@ -169,7 +171,7 @@ def test_ensemble_rows_match_pipeline_format():
 
 def test_rows_from_instances_sem_ddof1():
     """SEM is std(ddof=1)/sqrt(n) of the per-instance invariants (house
-    convention), checked against a direct recomputation."""
+    convention).  The test checks it against a direct recomputation."""
     insts = [instance_moments_blocked(6, 4, s) for s in (3, 4, 5)]
     rows = rows_from_instances(6, 4, insts)
     r = next(r for r in rows if r["n"] == 2 and r["channel"] == "right")

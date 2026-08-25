@@ -3,13 +3,14 @@ r"""
 ED laboratory for the anti-scrambling sign test and the Harlow-Zhao fold.
 =========================================================================
 
-Ground truth for duality/antiscrambling.py (road_map rungs 25-26).  Finite-N
+Ground truth for duality/antiscrambling.py.  Finite-N
 Majorana SYK has a spectrum bounded above AND below, so every Euclidean-FOLDED
-correlator (Harlow-Zhao 2607.14215 Sec. 6) is finite and exactly computable --
-their proposed mechanism for de Sitter anti-scrambling, posed by them as an
-open test "in a concrete model such as the SYK model".  This module runs that
-test at ED scale, plus the scrambling-sign measurement of the standard
-(unfolded) OTOC that Cui-Kolchmeyer 2607.13665 make the dS discriminator.
+correlator (Harlow-Zhao 2607.14215 Sec. 6) is finite and exactly computable.
+That is the mechanism they propose for de Sitter anti-scrambling and pose as
+an open test "in a concrete model such as the SYK model".  This module runs
+that test at ED scale.  It also runs the scrambling-sign measurement of the
+standard (unfolded) OTOC that Cui-Kolchmeyer 2607.13665 make the dS
+discriminator.
 
 Correlator conventions (locked to Streicher 1911.10171 via
 duality/antiscrambling.py; asserted in duality/test_antiscrambling.py):
@@ -23,47 +24,49 @@ duality/antiscrambling.py; asserted in duality/test_antiscrambling.py):
     path-ordered correlator: operator sequence by descending
     standard-configuration theta, WITH the fermionic transposition sign:
         F = -(1/N^2) sum_ij Tr[rho psi_i(z1) psi_j(z3) psi_i(z2) psi_j(z4)].
-    The leading minus is DERIVED, not fitted: reaching descending-theta order
-    is a single transposition (psi_i(z2) past psi_j(z3)), which for anticommuting
-    fields costs one (-1).  It is cross-validated against the independently
-    transcribed Streicher (3.10) closed form.  The wrong sign is not a mere
-    normalization: F ~= F_d here (the connected part is a small difference), so
-    flipping F's sign moves the connected RATIO N*(F - F_d)/F_d by ~2N
-    (the x25 sign-discrimination margin quoted in ANTISCRAMBLING.md).
+    The leading minus is DERIVED, not fitted.  Reaching descending-theta
+    order is a single transposition (psi_i(z2) past psi_j(z3)), which for
+    anticommuting fields costs one (-1).  It is cross-validated against the
+    independently transcribed Streicher (3.10) closed form.  The wrong sign
+    is not a mere normalization.  Here F ~= F_d (the connected part is a
+    small difference), so flipping F's sign moves the connected RATIO
+    N*(F - F_d)/F_d by ~2N (the x25 sign-discrimination margin quoted in
+    ANTISCRAMBLING.md).
   * At finite dimension the ordered-trace expression is an ENTIRE function
-    of the four thetas, so the FOLD -- Harlow-Zhao's continuation (6.9),
-    theta^QM = (-t1, 2pi n - t2, 2pi - t3, 2pi(n+1) - t4) -- is evaluated by
-    freezing the operator sequence at its standard-configuration order and
-    moving the arguments.  e^{+tau H} segments appear; finite precisely
-    because the spectrum is bounded (HZ's requirement).
+    of the four thetas.  The FOLD is Harlow-Zhao's continuation (6.9),
+    theta^QM = (-t1, 2pi n - t2, 2pi - t3, 2pi(n+1) - t4).  So the fold is
+    evaluated by freezing the operator sequence at its standard-configuration
+    order and moving the arguments.  e^{+tau H} segments appear.  They are
+    finite precisely because the spectrum is bounded (HZ's requirement).
 
 Measurements (disorder-averaged, bootstrap errors over instances):
 
   g2        -- thermal 2-pt vs the large-q closed form: conventions lock +
                the O(1/p, lambda) error floor that calibrates everything
-               else (the floor is LARGE at ED sizes -- deviation ratios
-               ~0.5 -- so 4-pt comparisons are sign/trend-level, and every
-               fold verdict is read against the same-size unfolded floor).
+               else.  The floor is LARGE at ED sizes, deviation ratios
+               ~0.5.  So 4-pt comparisons are sign/trend-level, and every
+               fold verdict is read against the same-size unfolded floor.
   g2_fold   -- the 2-pt fold (HZ fig 7c): ED literal continuation to
                theta < 0 vs the continued closed form, which has a POLE at
-               theta = -pi(1/v - 1): whether the finite-N object follows
+               theta = -pi(1/v - 1).  Whether the finite-N object follows
                the continued semiclassical form toward its pole is the
                2-pt version of the "continuation commutes" question.
   toc/otoc  -- Euclidean 4-pt at uncrossed/crossed configurations vs
                Streicher (3.3)/(3.10).
   growth_*  -- Lorentzian OTOC at the symmetric crossed configuration:
-               script-F/F_d vs Lorentzian theta-time thL; closed form has
-               Re a = -1 growth (scrambling, CK's c > 0) at EVERY
+               script-F/F_d vs Lorentzian theta-time thL.  The closed form
+               has Re a = -1 growth (scrambling, CK's c > 0) at EVERY
                temperature.  The ED trend is the model-level verdict.
   fold_*    -- the SAME configuration through the HZ fold map (6.9, n=1),
                Euclidean and Lorentzian: ED vs continued closed form.
                Tracking at the calibrated floor supports HZ's
-               continuation-commutes assumption in SYK; refusal to follow
+               continuation-commutes assumption in SYK.  Refusal to follow
                the continued form (e.g. toward its poles) is a Stokes-type
                obstruction.  Either way, first data on their question.
 
-Output: fold_bench.json.  Runtime ~15-20 min default (the crossed evaluator
-is O(N^2) batched dense matmuls); `--quick` runs a reduced campaign (~2 min).
+Output: fold_bench.json.  Runtime ~10 min default (the crossed evaluator
+is O(N^2) batched dense matmuls; the committed artifact's own runtime_s
+sum to 580 s).  `--quick` runs a reduced campaign (~2 min).
 """
 
 from __future__ import annotations
@@ -119,7 +122,8 @@ def bilocal2(E, psis, beta: float, z1: complex, z2: complex) -> complex:
 
 def bilocal4_uncrossed(E, psis, beta: float, zs) -> complex:
     """F = (1/N^2) sum_ij Tr[rho psi_i(z1) psi_i(z2) psi_j(z3) psi_j(z4)],
-    literal (path) order -- factorizes into two flavor-summed pair kernels."""
+    literal (path) order.  It factorizes into two flavor-summed pair
+    kernels."""
     z1, z2, z3, z4 = zs
     N = len(psis)
     rho = np.exp(-beta * E)
@@ -268,7 +272,7 @@ def main(quick: bool = False):
         print(f"  done in {results[-1]['runtime_s']} s", flush=True)
     payload = dict(
         provenance="fold_bench.py -- ED ground truth for "
-                   "duality/antiscrambling.py (rungs 25-26); conventions in "
+                   "duality/antiscrambling.py; conventions in "
                    "the module docstring; N-sequence at betaJ=2 probes the "
                    "continuation-commutes question vs system size",
         points=results)
@@ -278,16 +282,16 @@ def main(quick: bool = False):
 
 
 def main_scan():
-    """Rung-26 decider #1: the fixed-lambda scan (ANTISCRAMBLING.md, 'What
+    """the fixed-lambda scan (ANTISCRAMBLING.md, 'What
     would decide it').  A p = 4 N-sequence at betaJ = 2 sweeps lambda = 16/N
-    from 2.0 down to 0.8, and the p = 6, N = 18 anchor MATCHES lambda = 2.0
-    with the (p = 4, N = 8) point -- equal lambda at very different N.  If
+    from 2.0 down to 0.8.  The p = 6, N = 18 anchor MATCHES lambda = 2.0
+    with the (p = 4, N = 8) point, equal lambda at very different N.  If
     the folded-4pt drift (ED/continued-closed-form ratio) collapses onto
-    lambda the drift is a lambda-correction; if at matched lambda the larger
-    N drifts further, a genuine N-obstruction to 'continuation commutes' is
-    developing.  Honest cap: N <= 20 (the crossed 4-pt is O(N^2 dim^3);
-    N = 24 is out of dense-ED reach) -- the N = infinity answer stays with
-    the chord-side fold (decider #2).  Writes fold_scan.json."""
+    lambda, the drift is a lambda-correction.  If at matched lambda the
+    larger N drifts further, a genuine N-obstruction to 'continuation
+    commutes' is developing.  Honest cap: N <= 20 (the crossed 4-pt is
+    O(N^2 dim^3); N = 24 is out of dense-ED reach).  The N = infinity answer
+    stays with the chord-side fold (decider #2).  Writes fold_scan.json."""
     points = [
         dict(N=8, p=4, betaJ=2.0, n_inst=192, seed=500),
         dict(N=10, p=4, betaJ=2.0, n_inst=128, seed=501),
@@ -304,7 +308,7 @@ def main_scan():
         results.append(run_point(**kw))
         print(f"  done in {results[-1]['runtime_s']} s", flush=True)
     payload = dict(
-        provenance="fold_bench.py --scan -- rung-26 decider #1: fixed-lambda "
+        provenance="fold_bench.py --scan -- fixed-lambda "
                    "scan, p = 4, N = 8..20 at betaJ = 2 (lambda = 16/N in "
                    "[0.8, 2.0]) + the matched-lambda anchor (p = 6, N = 18) "
                    "<-> (p = 4, N = 8), both lambda = 2.0.  N <= 20 cap is "

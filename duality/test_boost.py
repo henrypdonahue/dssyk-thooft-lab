@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for the boost-to-mass dictionary calibration (rung 13)."""
+"""Tests for the boost-to-mass dictionary calibration."""
 
 import numpy as np
 import pytest

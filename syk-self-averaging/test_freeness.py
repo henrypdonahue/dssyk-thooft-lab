@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Asserting tests for the freeness-onset measurement (freeness.py, rung 27).
+"""Asserting tests for the freeness-onset measurement (freeness.py).
 
 Fast fresh-computation tests pin the exact t = 0 (classical/commuting)
-identities and the closed-form W1(binomial, arcsine) constant; a quick
-ensemble at N = 12 asserts the measured classical -> free crossover itself;
+identities and the closed-form W1(binomial, arcsine) constant.  A quick
+ensemble at N = 12 asserts the measured classical -> free crossover itself.
 JSON-verdict tests assert the production N-trend (skip if freeness.json has
 not been generated).
 """
@@ -27,7 +27,7 @@ def test_w1_constant_closed_form():
 
 def test_t0_identities_and_invariants():
     """At t = 0 the pair (E, F) is exactly classically independent:
-    m2 = tau[(EF)^2] = 1, w4 = tau[abab] = -1, odd words vanish, and
+    m2 = tau[(EF)^2] = 1, w4 = tau[abab] = -1, and odd words vanish.
     spec(E+F) is exactly the binomial law (W1_bin = grid floor, W1_arc =
     the closed-form constant).  Heisenberg evolution preserves tau(F) = 0
     and F(t)^2 = 1 (machine precision)."""
@@ -48,10 +48,11 @@ def test_t0_identities_and_invariants():
 
 
 def test_classical_to_free_crossover_quick():
-    """The rung-27 measurement itself, at quick scale (N = 12, 6 instances):
-    W1_arc decays from the binomial value toward a small floor while W1_bin
-    rises toward W1(binomial, arcsine); the crossover exists at t ~ 1/J;
-    every alternating word (free prediction 0) lands near 0 at late time."""
+    """This test runs the measurement itself, at quick scale
+    (N = 12, 6 instances).  W1_arc decays from the binomial value toward a
+    small floor, while W1_bin rises toward W1(binomial, arcsine).  The
+    crossover exists at t ~ 1/J.  Every alternating word (free prediction
+    0) lands near 0 at late time."""
     r = run_point(N=12, p=4, n_inst=6, seed=901,
                   tJ_grid=(0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 5.0, 8.0, 12.0))
     assert r["t_x_J"] is not None and 0.5 < r["t_x_J"] < 3.0
@@ -79,20 +80,20 @@ def test_json_t0_identities():
 
 
 def test_json_freeness_verdict():
-    """RUNG 27, the production verdict (N = 12..24, dim 64..4096):
+    """The production verdict (N = 12..24, dim 64..4096):
 
     (a) DEPTH: the late-time W1-to-arcsine plateau falls STRICTLY with
-        every step in N, with power ~dim^-0.9 -- consistent with the
-        ~1/dim floor of a RIGID spectrum converging to the arcsine law,
-        and far below the dim^-1/2 of unstructured sampling.  The free
-        product is exact in the large-N limit by this trend.
+        every step in N, with power ~dim^-0.9.  That power is consistent
+        with the ~1/dim floor of a RIGID spectrum converging to the
+        arcsine law, and far below the dim^-1/2 of unstructured sampling.
+        The free product is exact in the large-N limit by this trend.
     (b) The spectrum actually lands on the arcsine law: W1_bin plateaus at
-        W1(binomial, arcsine) itself, i.e. the distance to the classical
-        prediction saturates because spec(E+F) IS arcsine.
-    (c) ONSET: the crossover sits at the DISSIPATION time t ~ 1.2/J,
-        nearly N-independent (any ln N drift is below resolution here --
-        the distribution-level crossover is not a scrambling-time
-        phenomenon at ED sizes; see README caveats).
+        W1(binomial, arcsine) itself.  That is, the distance to the
+        classical prediction saturates because spec(E+F) IS arcsine.
+    (c) ONSET: the crossover sits at the DISSIPATION time t ~ 1.2/J, and
+        is nearly N-independent.  Any ln N drift is below resolution
+        here.  The distribution-level crossover is not a scrambling-time
+        phenomenon at ED sizes (see README caveats).
     (d) Every alternating word lands on its free-prediction 0 within the
         (statistics-limited) floor."""
     data = _load_json()

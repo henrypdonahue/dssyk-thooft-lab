@@ -3,10 +3,10 @@ r"""
 Eigenfunction-level validation of the 't Hooft solver.
 ======================================================
 
-The eigenVALUES of thooft_spectrum.py are certified against FLZ; until now the
-eigenVECTORS were computed but never checked.  The eventual DSSYK comparison
-needs matrix elements (decay constants, form factors), so the wavefunctions
-must be validated too.  Three independent checks, all encoded in
+The eigenvalues of thooft_spectrum.py are certified against FLZ.  The
+eigenvectors have no such anchor.  This module validates them.  The eventual
+DSSYK comparison needs matrix elements (decay constants, form factors), so the
+wavefunctions must be validated too.  Three independent checks, all encoded in
 test_thooft.py:
 
 1.  Parseval / completeness of the "decay constants".  With phi_n unit-
@@ -18,16 +18,16 @@ test_thooft.py:
 
     In the Chebyshev basis the overlaps are closed-form:
     Int_0^1 sqrt(1-xi^2) U_m dx = (pi/4) delta_{m0} and
-    Int_0^1 xi sqrt(1-xi^2) U_m dx = (pi/8) delta_{m1}, so the first overlap
-    is (pi/4) a_0^(n) -- the 't Hooft-model decay-constant column of the
-    eigenvector matrix.  These are genuine tests of the eigenvectors as a
+    Int_0^1 xi sqrt(1-xi^2) U_m dx = (pi/8) delta_{m1}.  The first overlap
+    is therefore (pi/4) a_0^(n), the 't Hooft-model decay-constant column of
+    the eigenvector matrix.  These are genuine tests of the eigenvectors as a
     complete orthonormal set.
 
 2.  Independent Rayleigh-quotient recomputation.  Each reconstructed phi_n(x)
     is pushed through the *weak-form* (Gagliardo) quadratic form of the
-    finite-part operator on Gauss-Legendre nodes -- the sine_solver's
-    discretization-free representation, sharing no basis or closed-form matrix
-    elements with the Chebyshev solver:
+    finite-part operator on Gauss-Legendre nodes.  That form is the
+    sine_solver's discretization-free representation.  It shares no basis or
+    closed-form matrix elements with the Chebyshev solver:
 
         2 lambda[phi] = [ (alpha+1) Int V phi^2 + Gag[phi, phi] ] / (pi^2 Int phi^2)
 
@@ -38,7 +38,7 @@ test_thooft.py:
 
 3.  Cross-solver wavefunction overlap: |<phi_n^cheb, phi_n^sine>| -> 1.  The
     sine-basis eigenvectors come from a different basis and different
-    singularity handling; overlap deviating from 1 only at the sine solver's
+    singularity handling.  Overlap deviating from 1 only at the sine solver's
     documented algebraic accuracy validates the shape, not just the value.
 """
 
@@ -69,8 +69,8 @@ def reconstruct(vec: np.ndarray, degrees: np.ndarray, x: np.ndarray) -> np.ndarr
     """phi_n(x) on x in (0,1), UNIT-normalized in L^2[0,1].
 
     eigh(D, S) returns S-orthonormal coefficient vectors, i.e.
-    Int_{-1}^{1} phi^2 dxi = 1, and with x = (1+xi)/2 that means
-    Int_0^1 phi^2 dx = 1/2 -- hence the sqrt(2)."""
+    Int_{-1}^{1} phi^2 dxi = 1.  With x = (1+xi)/2 that means
+    Int_0^1 phi^2 dx = 1/2, hence the sqrt(2)."""
     xi = 2.0 * np.asarray(x) - 1.0
     U = _U_all(int(np.max(degrees)), xi)
     phi = np.sqrt(1.0 - xi ** 2) * (vec @ U[np.asarray(degrees)])
@@ -82,8 +82,9 @@ def reconstruct_derivative(vec: np.ndarray, degrees: np.ndarray,
     """d phi_n / dx at interior points (chain rule d xi/dx = 2), same
     normalization as reconstruct.
 
-    Precondition: x must be interior (Gauss-Legendre nodes) -- this divides by
-    sqrt(1-xi^2) and by (1-xi^2), so it blows up at the endpoints x=0,1."""
+    Precondition: x must be interior (Gauss-Legendre nodes).  This function
+    divides by sqrt(1-xi^2) and by (1-xi^2), so it blows up at the endpoints
+    x=0,1."""
     xi = 2.0 * np.asarray(x) - 1.0
     dmax = int(np.max(degrees))
     U = _U_all(dmax + 1, xi)
@@ -101,11 +102,11 @@ def reconstruct_derivative(vec: np.ndarray, degrees: np.ndarray,
 
 
 def canonicalize_signs(vecs: np.ndarray, degrees) -> np.ndarray:
-    """Fix the physically-meaningless per-eigenvector sign left arbitrary by
-    LAPACK: flip each column so that phi_n(x) > 0 as x -> 0+.
+    """Fix the physically meaningless per-eigenvector sign left arbitrary by
+    LAPACK.  Flip each column so that phi_n(x) > 0 as x -> 0+.
 
     Near x = 0 (xi = -1), phi ~ sqrt(1-xi^2) * sum_m a_m U_m(-1) with
-    U_m(-1) = (-1)^m (m+1), so the sign at the endpoint is the sign of
+    U_m(-1) = (-1)^m (m+1).  So the sign at the endpoint is the sign of
     sum_m a_m (-1)^m (m+1).  Without this, quantities linear in the
     wavefunction (decay constants, form factors) carry an arbitrary
     build-dependent sign."""
@@ -119,10 +120,9 @@ def canonicalize_signs(vecs: np.ndarray, degrees) -> np.ndarray:
 # 1. decay constants and Parseval sums
 # ---------------------------------------------------------------------------
 def decay_constants(num_basis: int = 200, num_levels: int = 60):
-    """f_n = Int_0^1 phi_n dx for the symmetric sector (antisymmetric levels
-    have f = 0 by parity), unit-normalized phi, in the phi_n(0+) > 0 sign
-    convention (see canonicalize_signs -- without a stated convention the
-    signs would be arbitrary LAPACK output).  Closed form:
+    """f_n = Int_0^1 phi_n dx for the symmetric sector, unit-normalized phi,
+    in the phi_n(0+) > 0 sign convention (see canonicalize_signs).
+    Antisymmetric levels have f = 0 by parity.  Closed form:
     f = sqrt(2) (pi/4) a_0^(n)."""
     ev, vecs, degrees = solve_sector(num_basis, parity=0)
     vecs = canonicalize_signs(vecs, degrees)
@@ -158,7 +158,8 @@ def parseval_x(num_basis: int = 200) -> float:
 def rayleigh_weakform(vec, degrees, alpha: float = 0.0,
                       n_quad: int = 600) -> float:
     """Recompute 2*lambda from a Chebyshev eigenvector through the Gagliardo
-    weak form on Gauss-Legendre nodes -- no Chebyshev closed forms involved."""
+    weak form on Gauss-Legendre nodes.  No Chebyshev closed forms are
+    involved."""
     xq, wq = np.polynomial.legendre.leggauss(n_quad)
     xq = 0.5 * (xq + 1.0)
     wq = 0.5 * wq

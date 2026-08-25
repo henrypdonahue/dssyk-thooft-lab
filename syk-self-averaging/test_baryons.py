@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Asserting tests for the baryon-sector machinery (baryons.py, rung 23).
+"""Asserting tests for the baryon-sector machinery (baryons.py).
 
-Every closed form is checked against an independent route: sector blocks vs
-the dense builder AND vs the sparse Jordan-Wigner reference; the correlator
-collapse vs full ED that knows nothing about it; the sector-m2 closed form vs
-a structurally different enumeration and vs ensemble ED means; the DeltaE
-statistics vs the Gaussian-sum prediction.
+The tests check every closed form against an independent route.  They check
+the sector blocks against the dense builder AND against the sparse
+Jordan-Wigner reference.  They check the correlator collapse against full ED
+that knows nothing about it.  They check the sector-m2 closed form against a
+structurally different enumeration and against ensemble ED means.  They check
+the DeltaE statistics against the Gaussian-sum prediction.
 
 Run with:  pytest -q -m 'not slow'   (two heavier statistical anchors are slow)
 """
@@ -33,7 +34,7 @@ from baryons import (baryon_correlator_ed, baryon_dagger, baryon_sign,
 def test_sector_reassembly_is_dense_h(ensemble):
     """Scattering the independently assembled sector blocks back into the
     full space must reproduce dirac_hamiltonian EXACTLY (same per-element
-    accumulation order), and H must vanish identically between sectors."""
+    accumulation order).  H must vanish identically between sectors."""
     Nc, p = 6, 4
     rng = np.random.default_rng(11)
     coup = draw_couplings(Nc, p, rng, ensemble)
@@ -78,8 +79,8 @@ def test_sector_blocks_match_sparse_jw_reference():
 @pytest.mark.parametrize("ensemble", ["generic", "c_symmetric"])
 def test_edge_blocks_vanish_identically(ensemble):
     """q < p/2 blocks are identically zero (every term needs p/2 occupied
-    modes); for c_symmetric (disjoint A, B) the mirror blocks q > Nc - p/2
-    vanish too, so E0(Nc) = E0(Nc-1) = 0 exactly."""
+    modes).  For c_symmetric (disjoint A, B) the mirror blocks
+    q > Nc - p/2 vanish too, so E0(Nc) = E0(Nc-1) = 0 exactly."""
     Nc, p = 6, 4
     k = p // 2
     rng = np.random.default_rng(14)
@@ -99,8 +100,8 @@ def test_edge_blocks_vanish_identically(ensemble):
 # --------------------------------------------------------------------------
 def test_baryon_operator_structure():
     """B^dag = c^dag_0 ... c^dag_{Nc-1} has exactly one nonzero entry,
-    <full|B^dag|empty> = +1 (each creation parity counts only lower-index
-    modes, all empty when it acts)."""
+    <full|B^dag|empty> = +1.  Each creation parity counts only lower-index
+    modes, and all of those modes are empty when it acts."""
     for Nc in (4, 5, 6):
         Bd = baryon_dagger(Nc)
         nz = np.nonzero(Bd)
@@ -125,10 +126,11 @@ def test_full_state_number_operator_sign():
 @pytest.mark.parametrize("ensemble", ["generic", "c_symmetric"])
 def test_baryon_correlator_collapse(ensemble):
     """Tr(B(t)B^dag)/dim = exp(-i DeltaE t)/dim with DeltaE =
-    (-1)^{k(k-1)/2} sum_A J_AA -- asserted against full ED that uses nothing
-    about the collapse.  |G| = 1/dim identically: no decay, and the one
-    frequency is O(Nc^{-1/2}) (generic) or exactly zero (c_symmetric); the
-    T = infinity baryon 2-pt function is blind to the extensive mass."""
+    (-1)^{k(k-1)/2} sum_A J_AA.  The test asserts this against full ED
+    that uses nothing about the collapse.  |G| = 1/dim identically, so
+    there is no decay.  The one frequency is O(Nc^{-1/2}) (generic) or
+    exactly zero (c_symmetric).  The T = infinity baryon 2-pt function is
+    blind to the extensive mass."""
     Nc, p = 6, 4
     dim = 1 << Nc
     rng = np.random.default_rng(15)
@@ -149,8 +151,9 @@ def test_baryon_correlator_collapse(ensemble):
 
 def test_deltaE_gaussian_statistics():
     """DeltaE is a sum of C(Nc,k) i.i.d. N(0, sigma^2) diagonal couplings:
-    mean 0, Var = C(Nc,k) sigma^2.  Checked against ED diagonals over 300
-    draws (variance-of-variance sampling error ~ sqrt(2/(n-1)))."""
+    mean 0, Var = C(Nc,k) sigma^2.  The test checks this against ED
+    diagonals over 300 draws (variance-of-variance sampling error
+    ~ sqrt(2/(n-1)))."""
     Nc, p, n = 5, 4, 300
     k = p // 2
     var_exact = comb(Nc, k) * coupling_variance_dirac(Nc, p)
@@ -188,7 +191,7 @@ def test_sector_m2_two_routes_agree(Nc, p, ensemble):
 def test_sector_m2_matches_ed_ensemble_mean(ensemble):
     """Disorder mean of the ED Tr_q H^2/dim_q vs the closed form, within
     5 SEM per sector (cross terms vanish only in the mean, hence
-    statistical); identically-zero sectors must be exactly zero."""
+    statistical).  Identically-zero sectors must be exactly zero."""
     Nc, p, n = 6, 4, 120
     m2 = []
     for j in range(n):
@@ -209,9 +212,9 @@ def test_sector_m2_matches_ed_ensemble_mean(ensemble):
 # 4. charging curve: symmetries and observables
 # --------------------------------------------------------------------------
 def test_charging_curve_particle_hole_palindrome():
-    """c_symmetric instances are exactly C-invariant, and C maps sector q to
-    Nc - q, so E0(q) = E0(Nc - q) per instance; also Delta2(Nc-1) = E0(2)
-    exactly (edge blocks vanish)."""
+    """c_symmetric instances are exactly C-invariant, and C maps sector q
+    to Nc - q, so E0(q) = E0(Nc - q) per instance.  Also
+    Delta2(Nc-1) = E0(2) exactly (edge blocks vanish)."""
     Nc, p = 6, 4
     for seed in (21, 22, 23):
         d = instance_observables(Nc, p, seed, "c_symmetric")
@@ -232,9 +235,10 @@ def test_low_charge_quarks_are_free():
 
 
 def test_mb_positive_and_extensive_trend():
-    """M_B > 0 by construction (E0(Nc) >= global min); its mean grows
-    strongly with Nc (the extensivity the fits quantify).  Loose statistical
-    check: mean M_B at Nc = 8 exceeds that at Nc = 4 by > 8 sigma."""
+    """M_B > 0 by construction (E0(Nc) >= global min).  Its mean grows
+    strongly with Nc (the extensivity the fits quantify).  Loose
+    statistical check: mean M_B at Nc = 8 exceeds that at Nc = 4 by
+    > 8 sigma."""
     r4 = ensemble_run(4, 4, 100, "generic", seed0=900)
     r8 = ensemble_run(8, 4, 100, "generic", seed0=901)
     assert r4["MB_mean"] > 0 and r8["MB_mean"] > 0
@@ -246,17 +250,18 @@ def test_mb_positive_and_extensive_trend():
 # 5. fit machinery bookkeeping
 # --------------------------------------------------------------------------
 def test_fit_models_on_synthetic_data():
-    """On exact y = 3 Nc all three models fit perfectly; AIC then ranks by
-    parameter count (a*Nc wins, Delta-AIC = 2 to each 2-parameter model),
-    and the power-law recovers gamma = 1."""
+    """On exact y = 3 Nc all three models fit perfectly.  AIC then ranks by
+    parameter count (a*Nc wins, Delta-AIC = 2 to each 2-parameter model).
+    The power-law recovers gamma = 1."""
     import warnings
     from scipy.optimize import OptimizeWarning
     ns = np.array([4, 5, 6, 7, 8, 9, 10], float)
     ys = 3.0 * ns
     errs = 0.01 * np.ones_like(ns)
     with warnings.catch_warnings():
-        # exact synthetic data -> zero residual -> degenerate covariance;
-        # benign here, the test only uses the best-fit values and AICs
+        # exact synthetic data -> zero residual -> degenerate covariance.
+        # That is benign here: the test only uses the best-fit values
+        # and AICs
         warnings.simplefilter("ignore", OptimizeWarning)
         f = fit_mass_models(ns, ys, errs)
     assert abs(f["a*Nc"]["params"][0] - 3.0) < 1e-8
@@ -270,11 +275,11 @@ def test_fit_models_on_synthetic_data():
 
 
 def test_power_fit_honesty_bookkeeping():
-    """The rejected flag and sqrt(chi2/dof)-inflated errors that every
-    consumer must quote: a perfect power law is not rejected and keeps its
-    raw errors (scale floored at 1); saturating data with tiny error bars
-    reject the power-law form (chi2 >> 5 dof) and inflate the exponent error
-    by exactly sqrt(chi2/dof)."""
+    """Every consumer must quote the rejected flag and the
+    sqrt(chi2/dof)-inflated errors.  A perfect power law is not rejected
+    and keeps its raw errors (scale floored at 1).  Saturating data with
+    tiny error bars reject the power-law form (chi2 >> 5 dof).  Such data
+    also inflate the exponent error by exactly sqrt(chi2/dof)."""
     import warnings
     from scipy.optimize import OptimizeWarning
     ns = np.array([4, 5, 6, 7, 8, 9, 10], float)
@@ -291,9 +296,9 @@ def test_power_fit_honesty_bookkeeping():
 
 
 def test_csym_edge_estimate_formula_and_peak():
-    """csym_edge_estimate = -2 sqrt(C(Nc-2,2) sigma^2) (p = 4), and its
-    pre-asymptotic peak sits at Nc = 5 + sqrt(7) ~ 7.65 (the root of
-    d/dNc [(Nc-2)(Nc-3)/Nc^3] = 0), which is what makes the in-window
+    """csym_edge_estimate = -2 sqrt(C(Nc-2,2) sigma^2) (p = 4).  Its
+    pre-asymptotic peak sits at Nc = 5 + sqrt(7) ~ 7.65, the root of
+    d/dNc [(Nc-2)(Nc-3)/Nc^3] = 0.  That peak makes the in-window
     |Delta2| saturation expected rather than anomalous."""
     for Nc in (6, 8, 10, 12):
         exact = -2.0 * np.sqrt(comb(Nc - 2, 2)
@@ -307,12 +312,13 @@ def test_csym_edge_estimate_formula_and_peak():
 
 
 def test_csym_edge_estimate_brackets_measured_e0():
-    """The heuristic sparse-GOE edge is an ASYMPTOTIC bound-like estimate:
-    the measured mean E0(2) (= Delta2 exactly) approaches it from below.  At
-    Nc = 8 the measured/estimate ratio is ~0.91 (rising 0.87 -> 0.94 over
-    Nc = 6..10); assert it lands in (0.85, 0.97) with 100 draws -- i.e. the
-    VALUE is consistent at the +-10% level while the in-window exponents are
-    not asymptotic (that mismatch is reported honestly in the docstring)."""
+    """The heuristic sparse-GOE edge is an ASYMPTOTIC bound-like estimate.
+    The measured mean E0(2) (= Delta2 exactly) approaches it from below.
+    At Nc = 8 the measured/estimate ratio is ~0.91 (rising 0.87 -> 0.94
+    over Nc = 6..10).  The test asserts that it lands in (0.85, 0.97) with
+    100 draws.  So the VALUE is consistent at the +-10% level, while the
+    in-window exponents are not asymptotic.  That mismatch is reported
+    honestly in the docstring."""
     Nc, p, n = 8, 4, 100
     k = p // 2
     est = csym_edge_estimate(Nc, p)

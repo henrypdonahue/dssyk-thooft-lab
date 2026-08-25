@@ -1,33 +1,34 @@
 #!/usr/bin/env python3
 r"""
-The chord-side Euclidean fold at N = infinity (rung-26 decider #2).
-==================================================================
+The chord-side Euclidean fold at N = infinity.
+==============================================
 
 Decider #1 (`syk-self-averaging/fold_bench.py --scan`, fold_scan.json)
-established at ED sizes that the Harlow-Zhao-folded crossed 4-pt drifts away
-from the continued large-q closed form with growing N at fixed lambda, and
-that the folded connected fraction reaches O(1).  The final word was
-explicitly deferred to the exact double-scaled theory: the fold is a contour
-statement, chord correlators are analytic in the chord times, and the chord
-engine (chord.py, validated) evaluates ANY complex contour.  This module
-runs that computation -- the last open fold question.
+established at ED sizes that the Harlow-Zhao-folded crossed 4-pt drifts
+away from the continued large-q closed form with growing N at fixed
+lambda.  It also established that the folded connected fraction reaches
+O(1).  The final word was explicitly deferred to the exact double-scaled
+theory.  The fold is a contour statement, and chord correlators are
+analytic in the chord times.  The chord engine (chord.py, validated)
+evaluates ANY complex contour.  This module runs that computation -- the
+last open fold question.
 
-Everything mirrors fold_bench.py exactly (same theta configurations, same
-HZ (6.9) fold map n = 1, same frozen path-order convention, same connected
-ratio script-F/F_d = N (F - F_d)/F_d with N = 2p^2/lambda_chord), with the
-chord replacements:
+Everything mirrors fold_bench.py exactly: the same theta configurations,
+the same HZ (6.9) fold map n = 1, the same frozen path-order convention,
+and the same connected ratio script-F/F_d = N (F - F_d)/F_d with
+N = 2p^2/lambda_chord.  The chord replacements are:
 
   * Tr[e^{-beta H} psi(z_1) psi(z_3) psi(z_2) psi(z_4)] -> the exact
     two-matter-chord contour amplitude (Delta_psi = 1/p, fermionic
     matter-matter crossing sign = fold_bench's derived transposition minus);
   * the units bridge: beta_chord = beta_phys sigma_H.  Primary rows use the
-    N = infinity form betaJ e^{-lambda/8}/sqrt(lambda); ED-comparison
+    N = infinity form betaJ e^{-lambda/8}/sqrt(lambda).  ED-comparison
     columns use the exact finite-N sigma_H(N, p) of the matched scan point.
 
 Objects per lambda: toc / otoc / fold (Euclidean), growth_thL / fold_thL
 (Lorentzian theta-time on the (theta_1, theta_2) pair), the folded and
 unfolded connected fractions, the continued Streicher closed forms
-(duality/antiscrambling.py, rung-25 verified transcription), and the ED
+(duality/antiscrambling.py), and the ED
 columns from fold_scan.json at matched lambda.  Truncation is doubled and
 the drift stored.
 
@@ -100,10 +101,10 @@ class ChordCorrelators:
     def f4_physical(self, thetas, kind: str) -> complex:
         """fold_bench's F at a theta configuration.  kind 'c' freezes the
         crossed path order (z1, z3, z2, z4) and carries fold_bench's
-        derived transposition minus: the chord amplitude is the plain
-        ordered trace <Tr[psi psi psi psi]> (whose matter-matter crossing
-        sign makes it ~ -F_d), while fold_bench defines
-        F = -(1/N^2) sum Tr[...] ~ +F_d -- so F = -amplitude.  kind 'u' is
+        derived transposition minus.  The chord amplitude is the plain
+        ordered trace <Tr[psi psi psi psi]>, whose matter-matter crossing
+        sign makes it ~ -F_d.  fold_bench instead defines
+        F = -(1/N^2) sum Tr[...] ~ +F_d, so F = -amplitude.  kind 'u' is
         the uncrossed order (z1, z2, z3, z4), no extra sign."""
         zs = thetas_to_z(thetas, self.beta_c)
         if kind == 'c':
@@ -174,11 +175,12 @@ def main(quick: bool = False):
     betaJ = 2.0
     # lambda_chord = 32/N for the fold_scan p = 4 series, extended toward
     # the semiclassical corner
-    # Honest cap, stated not silent: below lambda ~ 0.5 the folded contour's
-    # e^{+tau E} dynamic range (e^{beta_c * band * excursion} ~ e^{20+})
-    # exceeds float cancellation headroom -- the truncated evaluation stops
-    # converging in nmax (measured: lam = 0.3 gives 6.6e3 -> 3.8e4 between
-    # nmax 220 and 260).  The lambda-trend over [0.5, 4] is unambiguous.
+    # Honest cap, stated not silent: below lambda ~ 0.5 the folded
+    # contour's e^{+tau E} dynamic range (e^{beta_c * band * excursion}
+    # ~ e^{20+}) exceeds float cancellation headroom.  The truncated
+    # evaluation then stops converging in nmax.  Measured: lam = 0.3
+    # gives 6.6e3 -> 3.8e4 between nmax 220 and 260.  The lambda-trend
+    # over [0.5, 4] is unambiguous.
     scan_lams = [4.0, 32.0 / 10, 32.0 / 12, 32.0 / 14, 2.0, 32.0 / 18,
                  1.6]
     extra_lams = [1.2, 0.8, 0.5]
@@ -200,9 +202,9 @@ def main(quick: bool = False):
               f"(closed {row['fold']['closed_re']:+.3f})  "
               f"fold_frac={row['fold_connected_fraction']['re']:+.3f}  "
               f"drift={row['truncation_drift_fold']:.1e}", flush=True)
-    # matched-lambda ED-bridge row: the (p=6, N=18) <-> (p=4, N=8) anchor at
-    # lambda = 4 with the EXACT finite-N sigma_H bridges, for the direct
-    # fold_scan comparison columns
+    # matched-lambda ED-bridge row: the (p=6, N=18) <-> (p=4, N=8) anchor
+    # at lambda = 4, with the EXACT finite-N sigma_H bridges.  These give
+    # the direct fold_scan comparison columns.
     ed_rows = []
     for (p, N) in [(4, 8), (6, 18)]:
         lam = 2.0 * p * p / N
@@ -214,7 +216,7 @@ def main(quick: bool = False):
         print(f"ED-bridge p={p} N={N}: otoc={row['otoc']['re']:+.3f} "
               f"fold={row['fold']['re']:+.3f}", flush=True)
     payload = dict(
-        provenance="chord_fold.py -- rung-26 decider #2: the HZ fold "
+        provenance="chord_fold.py -- the HZ fold "
                    "evaluated exactly at N = infinity in the chord theory "
                    "(fold_bench.py conventions mirrored; Streicher closed "
                    "forms from antiscrambling.py; ED columns from "

@@ -21,8 +21,7 @@ jobs:
       - name: Install pinned dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install "numpy==2.0.2" "scipy==1.13.1" "mpmath==1.3.0" \
-                      "matplotlib==3.9.4" "pytest==6.2.5"
+          pip install -e ".[dev]"
       - name: Run test suite
         working-directory: ${{ matrix.module }}
         run: python -m pytest -q -m 'not slow'
@@ -37,7 +36,7 @@ jobs:
       - name: Install pinned dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install "numpy==2.0.2" "scipy==1.13.1" "mpmath==1.3.0"
+          pip install -e .
       - name: FLZ tables / sum rules / cross-check gate
         working-directory: thooft-target
         run: python validate.py

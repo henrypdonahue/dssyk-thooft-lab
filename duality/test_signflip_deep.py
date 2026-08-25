@@ -13,6 +13,8 @@ from pathlib import Path
 
 import pytest
 
+from largeq_anchor import v_of_betaJ
+
 HERE = Path(__file__).resolve().parent
 
 
@@ -61,9 +63,17 @@ def test_mss_evasion_located(data):
 
 
 def test_rate_ordering_flags_contamination(data):
-    """The fitted growth of the shifted curve exceeds 2 pi/beta_fake >
-    2 pi/beta_eff at every lambda: the flipped mode's rate cannot be
-    cleanly extracted (a faster scrambling-reasserting structure
-    contaminates the fit) -- recorded, not hidden."""
+    """The fitted growth of the shifted curve exceeds BOTH reference rates
+    at every lambda: the flipped mode's rate cannot be cleanly extracted (a
+    faster scrambling-reasserting structure contaminates the fit) --
+    recorded, not hidden.
+
+    Only kappa_obs_time > rate_fake has measured content.  The ordering
+    rate_fake > rate_eff is definitional (beta_eff = (1+v) beta_fake, so
+    the ratio is exactly 1 + v for any input the producer can generate);
+    it is asserted below as the bookkeeping identity it is, not as a
+    measurement."""
     for r in data["rate"]:
-        assert r["kappa_obs_time"] > r["rate_fake"] > r["rate_eff"]
+        assert r["kappa_obs_time"] > r["rate_fake"]          # measured
+        assert r["rate_fake"] / r["rate_eff"] == pytest.approx(
+            1.0 + v_of_betaJ(r["betaJ"]), rel=1e-9)          # bookkeeping

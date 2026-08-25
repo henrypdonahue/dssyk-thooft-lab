@@ -18,7 +18,7 @@ The symmetry-violation observable is the adjoint bilinear
     B_ij = Tr(c_i H c^dag_j H)/dim   (i != j),  and the diagonal B_ii.
 
 B_ij is QUADRATIC in the Gaussian x_u, so its disorder statistics reduce by
-Wick to trace combinatorics, exactly as in exact_wick.py -- but the
+Wick to trace combinatorics, exactly as in exact_wick.py.  But the
 disjointness constraint A n B = empty changes the census.  With
 
     T_{alpha beta} = Tr(c_i O_alpha c^dag_j O_beta)/dim,   O_(A,B) = c^dag_A c_B
@@ -28,7 +28,7 @@ creation and annihilation counts balance.  Per mode the admissible patterns
 are: mode i in A only or in C only; mode j in B only or in D only; any other
 mode untouched, in A n D, or in B n C (beta = (C,D)).  Solving these
 constraints kills the (i in A, j in B) and (i in C, j in D) cases (they force
-|D| = k-1) and leaves exactly two families:
+|D| = k-1).  It leaves exactly two families:
 
     Type I : alpha = (A,B) with i in A, j not in A u B,
              beta  = (B, (A\{i}) u {j});
@@ -36,18 +36,18 @@ constraints kills the (i in A, j in B) and (i in C, j in D) cases (they force
              beta  = ((B\{j}) u {i}, A).
 
 Each admissible product touches 2k+1 = p+1 modes, every one with FORCED
-occupation on the surviving basis states, so |T| = 2^-(p+1); the sign is
-uniformly -1 and T_{alpha beta} = T_{beta alpha} (both asserted by literal
-enumeration at p = 4 and p = 8 in the tests -- only T^2 and the symmetry
-enter the variance).  No admissible beta equals alpha or (B,A), so
+occupation on the surviving basis states, so |T| = 2^-(p+1).  The sign is
+uniformly -1 and T_{alpha beta} = T_{beta alpha}.  The tests assert both by
+literal enumeration at p = 4 and p = 8, and only T^2 and the symmetry enter
+the variance.  No admissible beta equals alpha or (B,A), so
 
     E[B_ij] = 0   exactly (i != j).
 
 In the unordered-pair variables x_u the quadratic form B_ij = x^T M x has M a
-perfect matching between the L = C(Nc-2, k-1) C(Nc-k-1, k) pairs containing i
-(and avoiding j) and the L pairs containing j (avoiding i), every nonzero
-entry -2^-(p+1) in both orders.  Var(x^T M x) = 2 sigma^4 tr(M^2) gives,
-EXACTLY,
+perfect matching.  It matches the L = C(Nc-2, k-1) C(Nc-k-1, k) pairs
+containing i (and avoiding j) to the L pairs containing j (avoiding i).  Every
+nonzero entry is -2^-(p+1), in both orders.  Var(x^T M x) = 2 sigma^4 tr(M^2)
+gives, EXACTLY,
 
     Var(B_ij) = 4 sigma^4 C(Nc-2, k-1) C(Nc-k-1, k) / 4^(p+1)
               = (k!)^4 C(Nc-2, k-1) C(Nc-k-1, k) / Nc^(2p-2).
@@ -57,7 +57,7 @@ Fixed p, large Nc:  Var -> k (k!)^2 / Nc^(p-1), i.e.
     rms(B_ij) = sqrt(k) k! Nc^-(p-1)/2  (1 + O(1/Nc)),
 
 the SAME power law N^-(p-1)/2 as the Majorana adjoint bilinear
-rms(B_jk) ~ (2 p!/sqrt((p-1)!)) N^-(p-1)/2 (exact_wick.py): U(N) symmetry
+rms(B_jk) ~ (2 p!/sqrt((p-1)!)) N^-(p-1)/2 (exact_wick.py).  U(N) symmetry
 emergence is polynomially slow at fixed p on the Dirac side too, just with a
 smaller coefficient (p = 4: 2 sqrt(2) ~ 2.83 vs 48/sqrt(6) ~ 19.6 -- per
 complex mode vs per Majorana mode).
@@ -71,10 +71,10 @@ i not in A u B (where it is +2^-(p+1)), so
 with E[m2] = E[Tr H^2/dim] = sigma^2 C(Nc,k) C(Nc-k,k) 4^-k the c_symmetric
 mean of qed_campaign.py (recomputed here numerically from the h_u, not
 imported).  MEAN-VANISHING ARTIFACT: E[B_ii] = 0 exactly at Nc = p (every
-coupling then touches every mode; indeed B_ij vanishes identically there,
-Var = 0 too).  In Majorana units N_maj = 2 Nc this is the same (1 - 2p/N)
-factor as the Majorana p = N/2 artifact of exact_wick.py, with an extra 1/2
-from the c-vs-psi normalization (c c^dag + c^dag c = 1 vs psi^2 = 1).
+coupling then touches every mode).  Indeed B_ij vanishes identically there,
+Var = 0 too.  In Majorana units N_maj = 2 Nc this is the same (1 - 2p/N)
+factor as the Majorana p = N/2 artifact of exact_wick.py.  It carries an extra
+1/2 from the c-vs-psi normalization (c c^dag + c^dag c = 1 vs psi^2 = 1).
 
 Part 2: exact disorder-averaged mu0 (and mu2 at Nc = 6) of traceless M_2
 ------------------------------------------------------------------------
@@ -105,11 +105,11 @@ give the exact ensemble mean
 
 a sum over n_pairs^2 coupling pairs with every trace evaluated numerically
 (n_pairs = C(Nc,k) C(Nc-k,k)/2 = 45, 210, 630 at Nc = 6, 8, 10 for p = 4).
-This is rung 15's exact-finite-N half for the n = 2 singlet: the moments
-pipeline's ED means reproduced with NO diagonalization and NO sampling.
+This is this task's exact-finite-N half for the n = 2 singlet.  It reproduces
+the moments pipeline's ED means with NO diagonalization and NO sampling.
 (The symbolic N = infinity chord computation stays out of scope.)
 
-mu2(ch) = ||[H, M2bar^ch]||_F^2/dim is SEXTIC in x: with
+mu2(ch) = ||[H, M2bar^ch]||_F^2/dim is SEXTIC in x.  With
 C_{a,uv} = [h_a, Gs^ch_uv] (Gs = the u<->v symmetrized Gbar^ch), Isserlis'
 15 pairings collapse by the u<->v symmetry to
 
@@ -121,25 +121,25 @@ C_{a,uv} = [h_a, Gs^ch_uv] (Gs = the u<->v symmetrized Gbar^ch), Isserlis'
     T_QQ = sum_v Tr(Q_v^T Q_v).
 
 S_AB is an irreducible triple sum: ~n_pairs^3 operator-product traces.  At
-Nc = 6 (n = 45, dim 64) that is ~10^5 small dense products -- minutes.  At
-Nc = 8 (n = 210, dim 256) it is ~9.3e6 products of 256x256 operators --
-order days on this machine -- so mu2 is delivered EXACTLY at Nc = 6 only,
-with the Nc = 8 cost documented instead of half-done.
+Nc = 6 (n = 45, dim 64) that is ~10^5 small dense products -- ~20 s.  At
+Nc = 8 (n = 210, dim 256) it is ~9.3e6 products of 256x256 operators, order
+days on this machine.  So mu2 is delivered EXACTLY at Nc = 6 only, with the
+Nc = 8 cost documented instead of half-done.
 
 Honesty box
 -----------
 * The uniform sign -2^-(p+1) and the symmetry T_{alpha beta} = T_{beta alpha}
-  are measured facts (enumeration), not derived here; the magnitude and the
+  are measured facts (enumeration), not derived here.  The magnitude and the
   admissible-pair census are derived.  Var and E depend only on the measured
-  facts squared/symmetrized, and every closed form is asserted against a
-  literal enumeration sharing no assembly code.
-* E[mu0], E[mu2] are exact ensemble means; the moments.json comparison
+  facts squared/symmetrized.  Every closed form is asserted against a literal
+  enumeration sharing no assembly code.
+* E[mu0], E[mu2] are exact ensemble means.  The moments.json comparison
   numbers are ED disorder means with SEM (ddof=1), so agreement is a
   statistical statement (z-scores stored in exact_wick_dirac.json).
 * moments.json stores w2 = mu2/(mu0 <H^2>/dim) as a mean of per-instance
-  RATIOS; the exact ratio-of-means E[mu2]/(E[mu0] E[m2]) differs at
+  RATIOS.  The exact ratio-of-means E[mu2]/(E[mu0] E[m2]) differs at
   O(relVar) ~ 1e-2.  The JSON stores the exact ratio-of-means labeled as
-  such; the calibrated mu2 check is the direct slow-test ED ensemble mean.
+  such.  The calibrated mu2 check is the direct slow-test ED ensemble mean.
 """
 
 from __future__ import annotations
@@ -152,7 +152,7 @@ import numpy as np
 import scipy.sparse as sp
 
 from dirac import (annihilators, apply_monomial, coupling_variance_dirac,
-                   dirac_hamiltonian, draw_couplings, mn_tower, particle_hole)
+                   dirac_hamiltonian, particle_hole)
 
 
 # ---------------------------------------------------------------------------
@@ -184,7 +184,7 @@ def ln_rms_offdiag_csym(Nc: int, p: int) -> float:
 
 def mean_diag_csym(Nc: int, p: int) -> float:
     """E[B_ii] = sigma^2 C(Nc-1,k) C(Nc-k-1,k) 2^-(p+1)
-    = E[m2] (Nc-p)/(2 Nc); vanishes exactly at Nc = p (the U(N) analog of
+    = E[m2] (Nc-p)/(2 Nc).  It vanishes exactly at Nc = p (the U(N) analog of
     the Majorana p = N/2 mean-vanishing artifact)."""
     k = p // 2
     sigma2 = coupling_variance_dirac(Nc, p)
@@ -192,7 +192,7 @@ def mean_diag_csym(Nc: int, p: int) -> float:
 
 
 def rms_offdiag_large_nc(Nc: int, p: int) -> float:
-    """Leading fixed-p law sqrt(k) k! Nc^-(p-1)/2 -- the Dirac-side
+    """Leading fixed-p law sqrt(k) k! Nc^-(p-1)/2.  This is the Dirac-side
     statement to put next to the Majorana 2 p!/sqrt((p-1)!) N^-(p-1)/2."""
     k = p // 2
     return sqrt(k) * factorial(k) * Nc ** (-(p - 1) / 2.0)
@@ -202,8 +202,8 @@ def rms_offdiag_large_nc(Nc: int, p: int) -> float:
 # Part 1: literal enumeration (no assembly code shared with the closed forms)
 # ---------------------------------------------------------------------------
 def ordered_keys(Nc: int, k: int) -> list:
-    """All ordered disjoint (A, B) with |A| = |B| = k -- the stored key set of
-    the c_symmetric coupling table."""
+    """All ordered disjoint (A, B) with |A| = |B| = k.  This is the stored key
+    set of the c_symmetric coupling table."""
     subsets = list(combinations(range(Nc), k))
     return [(A, B) for A in subsets for B in subsets
             if A != B and not set(A) & set(B)]
@@ -227,18 +227,64 @@ def chain_trace(Nc: int, ops) -> float:
     return float(sign[good].sum()) / dim
 
 
+def _compose_monomials(Nc: int, ops):
+    """(valid, rows, signs) of the operator product ops[0] ops[1] ... acting
+    on every basis state -- the composition loop of chain_trace, exposed so
+    the trace TABLE can be built without re-composing per matrix element."""
+    dim = 1 << Nc
+    cur = np.arange(dim, dtype=np.int64)
+    sign = np.ones(dim)
+    valid = np.ones(dim, dtype=bool)
+    for (A, B) in reversed(ops):
+        v, rows, s = apply_monomial(Nc, A, B, cur)
+        valid &= v
+        sign = sign * s
+        cur = np.where(v, rows, cur)
+    return valid, cur, sign
+
+
 def t_matrix(Nc: int, k: int, i: int, j: int, keys=None) -> np.ndarray:
     """T_{alpha beta} = Tr(c_i O_alpha c^dag_j O_beta)/dim over ordered keys
-    (j = i gives the diagonal observable's matrix)."""
+    (j = i gives the diagonal observable's matrix).
+
+    Every factor here is a signed PARTIAL PERMUTATION -- one nonzero per
+    column -- so the whole n x n table is a single sparse product rather
+    than n^2 separate traces.  Writing L_a = c_i O_alpha c^dag_j with
+    L_a|t> = tau_a(t)|f_a(t)> and O_b|s> = sigma_b(s)|g_b(s)>,
+
+        Tr(L_a O_b) = sum_s [s == f_a(g_b(s))] tau_a(g_b(s)) sigma_b(s),
+
+    which is the inner product of the sparse index vectors
+    L[a, f_a(t)*dim + t] = tau_a(t) and O[b, s*dim + g_b(s)] = sigma_b(s).
+    Same +-1 products and sums as the elementwise route, so T is unchanged
+    to the last bit; the cost drops from O(n^2 dim) Python work to
+    O(n dim) plus one matmul (measured 28.5 s -> 0.05 s at Nc = 9, k = 4).
+    """
     if keys is None:
         keys = ordered_keys(Nc, k)
     n = len(keys)
-    T = np.zeros((n, n))
-    for a, (A, B) in enumerate(keys):
-        for b, (C, D) in enumerate(keys):
-            T[a, b] = chain_trace(
-                Nc, [((), (i,)), (A, B), ((j,), ()), (C, D)])
-    return T
+    dim = 1 << Nc
+    states = np.arange(dim, dtype=np.int64)
+
+    def _rows_of(ops_per_key):
+        data, cols, indptr = [], [], [0]
+        for ops, flip in ops_per_key:
+            valid, cur, sign = _compose_monomials(Nc, ops)
+            v = np.flatnonzero(valid)
+            # flip=False: index = image*dim + source   (the L convention)
+            # flip=True:  index = source*dim + image   (the O convention)
+            idx = (states[v] * dim + cur[v]) if flip else (cur[v] * dim + states[v])
+            data.append(sign[v])
+            cols.append(idx)
+            indptr.append(indptr[-1] + v.size)
+        return sp.csr_matrix(
+            (np.concatenate(data) if data else np.empty(0),
+             np.concatenate(cols) if cols else np.empty(0, dtype=np.int64),
+             np.array(indptr)), shape=(n, dim * dim))
+
+    L = _rows_of([([((), (i,)), (A, B), ((j,), ())], False) for (A, B) in keys])
+    O = _rows_of([([(C, D)], True) for (C, D) in keys])
+    return np.asarray((L @ O.T).todense()) / dim
 
 
 def _coupling_covariance(Nc: int, k: int, keys) -> np.ndarray:
@@ -256,7 +302,7 @@ def _coupling_covariance(Nc: int, k: int, keys) -> np.ndarray:
 def stats_enumerated(Nc: int, p: int, i: int, j: int):
     """(E[B_ij], Var(B_ij)) by the full quadratic form over ordered stored
     keys: B = J^T T J, E = tr(C T), Var = 2 tr((C Ts)^2), Ts = (T + T^T)/2.
-    Exponentially expensive; small (Nc, p) only."""
+    This is exponentially expensive.  Use it at small (Nc, p) only."""
     k = p // 2
     keys = ordered_keys(Nc, k)
     T = t_matrix(Nc, k, i, j, keys)
@@ -268,8 +314,8 @@ def stats_enumerated(Nc: int, p: int, i: int, j: int):
 
 
 def offdiag_census(Nc: int, p: int, i: int, j: int):
-    """(n_nonzero, values, symmetric) of the enumerated T matrix -- checks the
-    derived admissible-pair count 2 L, the uniform value -2^-(p+1), and
+    """(n_nonzero, values, symmetric) of the enumerated T matrix.  This checks
+    the derived admissible-pair count 2 L, the uniform value -2^-(p+1), and
     T_{alpha beta} = T_{beta alpha}."""
     k = p // 2
     T = t_matrix(Nc, k, i, j)
@@ -294,7 +340,7 @@ def instance_b(Nc: int, p: int, couplings: dict, i: int, j: int) -> float:
 # ---------------------------------------------------------------------------
 def unordered_pairs(Nc: int, k: int) -> list:
     """Unordered disjoint pairs (A, B) in the iteration order of
-    dirac.draw_couplings (A before B in lex subset order), so that
+    dirac.draw_couplings (A before B in lex subset order).  In that order
     couplings[(A, B)] is exactly the basis variable x_u of pair u."""
     subsets = list(combinations(range(Nc), k))
     pairs = []
@@ -350,6 +396,17 @@ def pair_commutators(Nc: int, k: int, pairs=None):
             for h in (pair_operator(Nc, A, B) for (A, B) in pairs)]
 
 
+def _stacked_pairs(D):
+    """(S, ST) with S[u] = vstack(D[u]) in CSR and ST[u] = S[u].T.
+
+    Then  -sum_i D_ui^T D_vi = -(ST[u] @ S[v])  exactly, so the O(n^2) double
+    loop pays ONE sparse product per (u, v) instead of Nc tiny products plus
+    Nc-1 sparse additions.  The additions were the bottleneck: scipy rebuilds
+    an index structure on every one of them."""
+    S = [sp.vstack(Du).tocsr() for Du in D]
+    return S, [x.T.tocsr() for x in S]
+
+
 def g_matrix(D_u, D_v) -> sp.csr_matrix:
     """G_uv = -sum_i D_ui^T D_vi (real; G_uv^T = G_vu)."""
     G = None
@@ -379,14 +436,15 @@ def m2_from_pairs(Nc: int, p: int, couplings: dict) -> np.ndarray:
 # ---------------------------------------------------------------------------
 def mu0_exact_csym(Nc: int, p: int, progress: bool = False) -> dict:
     """Exact disorder mean of mu0 = Tr((M2bar^ch)^2)/dim for the CP-odd
-    ("right" for n = 2) and CP-even ("wrong") channels and their sum, by the
-    three Isserlis pairings over all coupling pairs.  Cost ~ n_pairs^2 sparse
-    operator products."""
+    ("right" for n = 2) and CP-even ("wrong") channels and their sum.  The
+    routine uses the three Isserlis pairings over all coupling pairs.
+    Cost ~ n_pairs^2 sparse operator products."""
     k = p // 2
     dim = 1 << Nc
     pairs = unordered_pairs(Nc, k)
     n = len(pairs)
     D = pair_commutators(Nc, k, pairs)
+    S, ST = _stacked_pairs(D)
     perm, sign = _ph_perm_sign(Nc)
     sigma2 = coupling_variance_dirac(Nc, p)
     eye = sp.identity(dim, format="csr")
@@ -398,7 +456,7 @@ def mu0_exact_csym(Nc: int, p: int, progress: bool = False) -> dict:
         if progress and u % 20 == 0:
             print(f"    mu0 pair row {u}/{n}", flush=True)
         for v in range(u, n):
-            G = g_matrix(D[u], D[v])
+            G = (-(ST[u] @ S[v])).tocsr()
             tr_uv = G.diagonal().sum() / dim
             Gb = (G - tr_uv * eye).tocsr()
             Gb2 = _ph_conj_sparse(Gb, perm, sign)
@@ -421,8 +479,8 @@ def mu0_exact_csym(Nc: int, p: int, progress: bool = False) -> dict:
 
 def m2_mean_exact(Nc: int, p: int) -> float:
     """E[Tr H^2/dim] = sigma^2 sum_u Tr(h_u^2)/dim, numerically from the pair
-    operators (matches the qed_campaign.py closed form
-    sigma^2 C(Nc,k) C(Nc-k,k) 4^-k; recomputed, not imported)."""
+    operators.  This matches the qed_campaign.py closed form
+    sigma^2 C(Nc,k) C(Nc-k,k) 4^-k, recomputed, not imported."""
     k = p // 2
     sigma2 = coupling_variance_dirac(Nc, p)
     dim = 1 << Nc
@@ -438,15 +496,16 @@ def m2_mean_exact(Nc: int, p: int) -> float:
 # ---------------------------------------------------------------------------
 def _gs_channel_dense(Nc: int, k: int, pairs, D, perm, sign):
     """Dense symmetrized channel coefficients Gs^ch_uv = (Gbar_uv +
-    Gbar_vu)/2 projected on the two CP channels; returned as two dicts
+    Gbar_vu)/2 projected on the two CP channels.  Returned as two dicts
     {(u, v): array} with u <= v (odd first, even second)."""
     dim = 1 << Nc
     n = len(pairs)
+    S, ST = _stacked_pairs(D)
     eye = sp.identity(dim, format="csr")
     gs = [{}, {}]
     for u in range(n):
         for v in range(u, n):
-            G = g_matrix(D[u], D[v])
+            G = (-(ST[u] @ S[v])).tocsr()
             tr_uv = G.diagonal().sum() / dim
             Gb = (G - tr_uv * eye).tocsr()
             Gs = 0.5 * (Gb + Gb.T)               # u<->v symmetrized
@@ -459,7 +518,7 @@ def _gs_channel_dense(Nc: int, k: int, pairs, D, perm, sign):
 def mu2_exact_csym(Nc: int, p: int, progress: bool = True) -> dict:
     """Exact disorder mean of mu2(ch) = ||[H, M2bar^ch]||_F^2/dim by the 15
     Isserlis pairings (collapsed by u<->v symmetry; see module docstring).
-    Feasible at Nc = 6, p = 4 (~10^5 dense 64x64 products, ~1 min); the
+    Feasible at Nc = 6, p = 4 (~10^5 dense 64x64 products, ~20 s).  The
     Nc = 8 cost (~9.3e6 products of 256x256) is documented as out of reach,
     not attempted."""
     k = p // 2
@@ -532,9 +591,9 @@ def mu2_exact_csym(Nc: int, p: int, progress: bool = True) -> dict:
 # ---------------------------------------------------------------------------
 def instance_mu_ed(Nc: int, p: int, seed: int):
     """Per-instance (mu0, mu2) of the CP-resolved traceless M_2 channels via
-    the moments_pipeline eigenbasis conventions (delegated to
-    moments_pipeline.instance_moments -- the established ED route this
-    module's Wick sums are checked against)."""
+    the moments_pipeline eigenbasis conventions.  This delegates to
+    moments_pipeline.instance_moments, the established ED route this
+    module's Wick sums are checked against."""
     from moments_pipeline import instance_moments
     inst = instance_moments(Nc, p, seed, n_list=(2,))
     return {"odd": (inst[(2, "right")]["mu0"], inst[(2, "right")]["mu2"]),

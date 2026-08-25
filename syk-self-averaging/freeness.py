@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 r"""
-Rung 27: freeness onset -- the early/late free-product transition, measured.
-============================================================================
+freeness onset -- the early/late free-product transition, measured.
+===================================================================
 
 Cui-Kolchmeyer 2607.13665 (Sec. 4) argue that past the scrambling time the
-algebras of early and late observer operators combine as a FREE PRODUCT: all
-mixed moments are governed by free independence with respect to the trace
-state.  At T_B = infinity the SYK state IS the normalized trace tau = Tr/dim,
-so the claim becomes a concrete, instance-level statement about mixed moments
-of a(0) and b(t) -- directly measurable by ED.  Nobody has exhibited (or
-refuted) this transition in a microscopic dS-candidate model; this module is
-the first data (road_map rung 27).
+algebras of early and late observer operators combine as a FREE PRODUCT.
+All mixed moments are governed by free independence with respect to the
+trace state.  At T_B = infinity (the Boltzmann temperature) the SYK state
+IS the normalized trace tau = Tr/dim.
+So the claim becomes a concrete, instance-level statement about mixed moments
+of a(0) and b(t), directly measurable by ED.  Nobody has exhibited (or
+refuted) this transition in a microscopic dS-candidate model.  This module is
+the first data.
 
-The design dodges the graded-freeness subtlety of odd (fermionic) variables:
+The design avoids the graded-freeness subtlety of odd (fermionic) variables:
 the HEADLINE pair is bosonic,
 
     E = i psi_0 psi_1,      F(t) = i psi_2(t) psi_3(t),
@@ -24,9 +25,9 @@ both Hermitian, traceless, and squaring to 1 (spectrum +-1, half-half).
     then EXACTLY the binomial law {-2: 1/4, 0: 1/2, +2: 1/4}.
   * Free independence: for two symmetries with spectrum +-1 the pair
     distribution is completely determined by the traces of alternating
-    words, and E, F free  <=>  spec(E + F) is the ARCSINE law on (-2, 2),
-    density 1/(pi sqrt(4 - x^2))  (the free convolution
-    Bernoulli [+] Bernoulli; the classical convolution is the binomial).
+    words.  Also, E, F free  <=>  spec(E + F) is the ARCSINE law on (-2, 2),
+    density 1/(pi sqrt(4 - x^2)).  That law is the free convolution
+    Bernoulli [+] Bernoulli.  The classical convolution is the binomial.
 
 So the Wasserstein-1 distances of spec(E + F(t)) to the binomial and to the
 arcsine law are a complete, parameter-free order parameter for the
@@ -51,15 +52,15 @@ instance; singlet self-averaging is the measured 1/C(N,p)).
 What a verdict looks like
 -------------------------
   * Onset: W1_bin rises from 0 while W1_arc falls from its t = 0 value
-    W1(binomial, arcsine) = 1 - 4(sqrt(2)-1)/pi ~= 0.4727 (closed form,
-    asserted against quadrature in the tests); the crossover time t_x
-    (W1_arc = W1_bin) against 1/lambda_L ~ 1/(2 scriptJ) [rung 25:
+    W1(binomial, arcsine) = 1 - 4(sqrt(2)-1)/pi ~= 0.4726 (closed form,
+    asserted against quadrature in the tests).  Compare the crossover time
+    t_x (W1_arc = W1_bin) against 1/lambda_L ~ 1/(2 scriptJ) [this task:
     lambda_L -> 2 scriptJ at T_B = infinity].
   * Depth: the late-time plateau of W1_arc and of |m_k|.  Exact freeness at
     finite dim is impossible (random-matrix fluctuations of the spectrum
-    give W1 ~ dim^{-1/2}-ish floors), so the honest statement is the
-    N-trend of the plateau: falling with dim supports "free product in the
-    large-N limit"; an N-independent floor refutes it.
+    give W1 ~ dim^{-1/2}-ish floors).  The honest statement is therefore the
+    N-trend of the plateau.  A plateau falling with dim supports "free
+    product in the large-N limit".  An N-independent floor refutes it.
 
 Time is reported in units of 1/scriptJ, scriptJ = sqrt(2) p (the repo's
 ED-locked conventions bridge, duality/LARGEQ.md).
@@ -98,15 +99,17 @@ def binomial_cdf(x: np.ndarray) -> np.ndarray:
                              np.where(x < 2.0, 0.75, 1.0)))
 
 
-_W1_GRID = np.linspace(-2.0005, 2.0005, 8001)   # midpoint-free of the atoms
+_W1_GRID = np.linspace(-2.0005, 2.0005, 8001)   # avoids the +-2 atoms (the
+# 0 atom lies on the grid at index 4000; both CDFs are right-continuous
+# there, so the quadrature is unaffected)
 _W1_DX = _W1_GRID[1] - _W1_GRID[0]
 
 
 def w1_distance(eigs: np.ndarray, cdf) -> float:
     """Wasserstein-1 distance of a spectrum to a reference law on [-2, 2]:
-    integral of |empirical CDF - cdf| on a fine grid.  Exact up to O(grid
-    spacing) and, unlike the KS sup, well-conditioned when both measures
-    carry atoms at the same points."""
+    integral of |empirical CDF - cdf| on a fine grid.  It is exact up to
+    O(grid spacing).  Unlike the KS sup, it is well-conditioned when both
+    measures carry atoms at the same points."""
     ecdf = np.searchsorted(np.sort(eigs), _W1_GRID, side="right") / len(eigs)
     return float(np.sum(np.abs(ecdf - cdf(_W1_GRID))) * _W1_DX)
 
@@ -240,7 +243,7 @@ def main(quick: bool = False) -> dict:
               f"|m2| = {r['plateau_m2']:.4f}, |w4| = {r['plateau_w4']:.4f}, "
               f"t_x J = {r['t_x_J']}", flush=True)
     payload = dict(
-        provenance="freeness.py -- rung 27 (CK 2607.13665 Sec. 4): "
+        provenance="freeness.py -- freeness onset (CK 2607.13665 Sec. 4): "
                    "classical->free crossover of (E, F(t)) at T_B = infinity; "
                    "W1 distances of spec(E+F(t)) to binomial (classical) and "
                    "arcsine (free) laws; alternating-word battery; "

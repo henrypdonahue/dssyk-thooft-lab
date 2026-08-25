@@ -43,14 +43,56 @@ def test_lambda06_fit_degeneracy_recorded(data):
 
 
 def test_harmonic_tower_refuted(data):
-    """The sharp signature kappa_2 = 2 kappa_1 fails: measured ratios sit
-    near 1, and the harmonic weights are comparable -- the shift-response
-    is not a v-harmonic tower at finite lambda."""
-    checked = 0
+    """The even-harmonic mechanism predicts TWO things: a rate
+    kappa_2 = 2 kappa_1, and a second harmonic that is subdominant.  The
+    weights refute it outright.
+
+    The refutation leads with the weight comparison because that is the
+    robust half: |c_2| / |c_1| ~ 1 at both ends of every window, so there
+    is no harmonic hierarchy at all.  A tower would need |c_2| << |c_1|.
+    """
     for h in data["harmonics"]:
-        if h["kappa_1"] > 0.05:          # rate measurable on this window
-            ratio = h["kappa_2"] / h["kappa_1"]
-            assert ratio < 1.6, (h["lam"], ratio)
-            checked += 1
-        assert 0.3 < h["c2_over_c1_last"] < 3.0
-    assert checked >= 1
+        for key in ("c2_over_c1_first", "c2_over_c1_last"):
+            assert 0.5 < h[key] < 2.0, (h["lam"], key, h[key])
+
+
+def test_harmonic_rate_ratio_is_contaminated_not_evidence(data):
+    """The companion rate comparison kappa_2/kappa_1 is NOT a growth-rate
+    measurement, and this test records why rather than quoting it as one.
+
+    The kappa_1 > 0.05 gate does not guarantee a measurable growth window:
+    on every row that passes it, |c_1| is non-monotone across the window
+    (lambda = 1.0: 16.7, 59.9, 80.6, 65.3; lambda = 0.6: 965, 1570, 501,
+    1230), so the fitted kappa are window averages over a rising-then-
+    falling curve.  The ratios do come out near 1 rather than 2, which is
+    consistent with the refutation, but the weight comparison above is
+    what carries it."""
+    gated = [h for h in data["harmonics"] if h["kappa_1"] > 0.05]
+    assert gated, "no row passes the rate gate"
+    for h in gated:
+        c1 = h["abs_c1"]
+        rising = all(b > a for a, b in zip(c1, c1[1:]))
+        assert not rising, (h["lam"], c1)      # the contamination, pinned
+        ratio = h["kappa_2"] / h["kappa_1"]
+        assert 0.5 < ratio < 1.6, (h["lam"], ratio)   # near 1, not 2
+
+
+def test_censored_fits_are_flagged_and_stay_flagged(data):
+    """`kappa_at_grid_max` marks a fit whose kappa saturated the search
+    grid ceiling -- an instrument failure, not a rate.  Pinning the
+    censored set means a regeneration that silently changes which fits
+    saturate shows up as a test failure instead of looking identical to a
+    clean run."""
+    flags = {}
+    for pt in data["points"]:
+        for frame in ("antipodal", "unshifted"):
+            for fit in ("constrained", "free"):
+                flags[(pt["lam"], frame, fit)] = \
+                    pt[frame][fit]["kappa_at_grid_max"]
+    assert sum(flags.values()) == 9, sorted(k for k, v in flags.items() if v)
+    # every free-fit row saturates except the two smallest lambda
+    assert flags[(0.8, "antipodal", "constrained")] is True
+    # the rows test_sign_structure_where_flip_operates relies on for their
+    # AMPLITUDES are fine; only lambda = 0.8's kappa is censored
+    for lam in (1.5, 1.2, 1.0):
+        assert flags[(lam, "antipodal", "constrained")] is False
