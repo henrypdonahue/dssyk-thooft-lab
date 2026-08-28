@@ -6,7 +6,8 @@
 #   make reproduce-slow  ED sweeps behind the saved JSON         (~hours)
 #
 # Run the scripts from inside their module directory (module READMEs assume
-# this).  Dependencies: pip install -e ".[dev]"  (pinned; python 3.9).
+# this).  Dependencies: pip install -e ".[dev]"  (pinned; python 3.9-3.12,
+# reference tables certified on 3.9).
 
 PY ?= python3
 
@@ -41,6 +42,7 @@ reproduce:
 	cd duality && $(PY) antiscrambling.py
 	cd duality && $(PY) chord_moments.py --run
 	cd duality && $(PY) chord_charges.py
+	cd duality && $(PY) dirac_chord.py
 	cd duality && $(PY) plot_chord.py
 	cd duality && $(PY) plot_signflip.py
 
@@ -62,11 +64,14 @@ reproduce-slow:
 	cd syk-self-averaging && $(PY) moments_fast.py
 	cd syk-self-averaging && $(PY) exact_wick_dirac.py
 	cd syk-self-averaging && $(PY) exact_pair_moments.py
+	cd syk-self-averaging && $(PY) pair_moment_laws.py --deep
 	cd duality && $(PY) chord.py --spectra
 	cd duality && $(PY) chord_fold.py
 	cd duality && $(PY) signflip_probe.py
 	cd duality && $(PY) signflip_probe.py --deep
 	cd duality && $(PY) antipodal_modes.py
+	cd duality && $(PY) diagonal_chord.py --run
+	cd duality && $(PY) boost_forward.py
 	cd thooft-target && $(PY) generate_reference.py
 	cd thooft-target && $(PY) jacobi_solver.py
 	cd thooft-target && $(PY) thooft_spectrum.py --csv

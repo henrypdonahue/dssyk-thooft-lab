@@ -1,14 +1,18 @@
-# Draft note: exact self-averaging statistics + dictionary corrections
+# Draft note: exact self-averaging statistics, and the dictionary
 
-`main.tex` is a ~6-page standalone manuscript of the repo's exact results.
-It covers the `exact_wick.py` closed forms, triple verification,
-double-scaling and fixed-p consequences, and the corrected Mn/CP operator
-dictionary. Figure: `self_averaging.png` (copied from
-`syk-self-averaging/`). Regenerate it there.
+`main.tex` is a standalone manuscript, about six pages. It covers the
+`exact_wick.py` closed forms, their triple verification, the
+double-scaling and fixed-p consequences, and the corrected Mₙ/CP operator
+dictionary.
 
-**Status: draft for the author's review — not for distribution.** Resolve the two
-`TODO(author)` markers (affiliation, acknowledgments) before circulating.
+The figure is `self_averaging.png`, copied from `syk-self-averaging/`.
+Regenerate it there.
 
-This machine has no TeX toolchain. Compile on Overleaf (upload `main.tex` and `self_averaging.png`) or with
-`pdflatex main.tex` (twice, for references) anywhere TeX Live is installed.
-Every displayed equation is machine-verified in the repo test suites.
+**Status: a draft for the author's review. Not for distribution.**
+Resolve the two `TODO(author)` markers, affiliation and
+acknowledgments, before circulating.
+
+This machine has no TeX toolchain. Compile on Overleaf, uploading
+`main.tex` and `self_averaging.png`, or with `pdflatex main.tex` run
+twice for the references. Every displayed equation is machine-verified in
+the repo test suites.

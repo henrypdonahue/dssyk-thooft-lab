@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """Figure for the freeness-onset measurement (freeness.py).
 
-Reads freeness.json only -- nothing recomputed, nothing hardcoded.
+Reads freeness.json only.  Nothing is recomputed and nothing is
+hardcoded.
 
-(a) spec(E + F(t)) at the largest N: the exact binomial atoms at t = 0
-    melt into the ARCSINE law (the free convolution) by a few 1/J;
-(b) the order parameter: W1 distances of the spectrum to the arcsine
-    (falling, solid) and binomial (rising, dashed) laws vs tJ, per N;
-(c) the verdict: late-time plateaus vs Hilbert dimension -- a falling
-    trend supports the free product in the large-N limit.
+(a) spec(E + F(t)) at the largest N.  The exact binomial atoms at t = 0
+    melt into the ARCSINE law, the free convolution, within a few 1/J.
+(b) The order parameter.  W1 distances of the spectrum to the arcsine law
+    (falling, solid) and to the binomial law (rising, dashed), against
+    tJ, per N.
+(c) The verdict.  Late-time plateaus against Hilbert dimension.  A
+    falling trend supports the free product in the large-N limit.
 """
 import json
 import sys

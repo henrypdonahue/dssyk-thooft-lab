@@ -1,15 +1,15 @@
-"""The fold producers are executed, not just read back from JSON.
+"""The fold producers are executed here, not just read back from JSON.
 
-`fold_bench.py` and `fold_edge_probe.py` write the artifacts that carry the
-fold verdicts, but every other test in the repo reads only the
-committed JSON.  That leaves the producing code itself unexercised: a sign
-or scale corruption inside `bilocal4_crossed`, `hz_fold` or the connected
-ratio would leave the whole suite green and only show up the next time
-someone regenerated the data.
+fold_bench.py and fold_edge_probe.py write the artifacts that carry the
+fold verdicts.  But every other test in the repo reads only the committed
+JSON.  That leaves the producing code itself unexercised.  A sign or
+scale corruption inside bilocal4_crossed, hz_fold or the connected ratio
+would leave the whole suite green, and show up only the next time someone
+regenerated the data.
 
-These tests close that loop.  Both producers are deterministic given their
-seed, so the committed rows can be reproduced bit-for-bit rather than
-merely smoke-tested.
+These tests close that loop.  Both producers are deterministic given
+their seed, so the committed rows are reproduced bit for bit, not merely
+smoke-tested.
 """
 
 import json
@@ -26,9 +26,8 @@ HERE = Path(__file__).resolve().parent
 
 @pytest.fixture(scope="module")
 def scan_row():
+    # fold_scan.json is committed: missing = broken checkout, fail not skip
     path = HERE / "fold_scan.json"
-    if not path.exists():
-        pytest.skip("run fold_bench.py --scan first")
     pts = json.loads(path.read_text())["points"]
     return min((p for p in pts if p["p"] == 4), key=lambda q: q["N"])
 
@@ -80,9 +79,8 @@ def test_fold_edge_probe_runs_and_finds_the_edge_correlation():
 
 def test_committed_edge_probe_verdict():
     """The committed artifact says the same thing, more sharply."""
+    # fold_edge_probe.json is committed: missing = broken checkout, fail
     path = HERE / "fold_edge_probe.json"
-    if not path.exists():
-        pytest.skip("run fold_edge_probe.py first")
     d = json.loads(path.read_text())
     assert d["corr_Emax_folded"] < -0.8
     assert abs(d["corr_Emax_unfolded"]) < 0.3

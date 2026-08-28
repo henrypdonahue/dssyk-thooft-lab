@@ -1,37 +1,41 @@
 #!/usr/bin/env python3
 r"""
-Sparse SYK Hamiltonians (Majorana and complex), built by Jordan-Wigner.
-=======================================================================
+Sparse SYK Hamiltonians, Majorana and complex, by Jordan-Wigner.
+================================================================
 
-This is the reusable core for the self-averaging tests in this module.  It
-follows the conventions of Miyashita-Sekino-Susskind (arXiv:2607.05678),
-Section 3.
+This is the reusable core for the self-averaging tests in this module.
+It follows the conventions of Miyashita-Sekino-Susskind
+(arXiv:2607.05678), Section 3.
 
-Majorana model (their Eq. 3.2):
+THE MAJORANA MODEL, their Eq. 3.2:
 
     H = i^{p/2}  sum_{i_1<...<i_p}  J_{i_1...i_p}  psi_{i_1} ... psi_{i_p}
 
-with p even, N Majorana fermions psi_a (a = 0..N-1), and Gaussian couplings of
-variance (their Eq. 3.8, with the overall scale J = 1)
+with p even, N Majorana fermions psi_a for a = 0..N-1, and Gaussian
+couplings of variance (their Eq. 3.8, with the overall scale J = 1)
 
     Var(J) = p! / N^{p-1}.
 
-Conventions
------------
-We use Hermitian Majoranas normalized to  psi_a^2 = I,  {psi_a, psi_b} = 2 delta_ab.
-So the normalized (infinite-temperature) trace of the identity is 1 and
-Tr(psi_a^2)/dim = 1.  N must be even.  The Hilbert space has dimension 2^{N/2},
-built on N/2 qubits by the standard Jordan-Wigner strings
+CONVENTIONS.  Hermitian Majoranas normalized to psi_a^2 = I, so
+{psi_a, psi_b} = 2 delta_ab.  Then the normalized infinite-temperature
+trace of the identity is 1, and Tr(psi_a^2)/dim = 1.
+
+N must be even.  The Hilbert space has dimension 2^{N/2}, built on N/2
+qubits by the standard Jordan-Wigner strings
 
     psi_{2q}   = Z ... Z (q of them)  X  I ... I
     psi_{2q+1} = Z ... Z (q of them)  Y  I ... I .
 
-The factor i^{p/2} makes H Hermitian for even p (checked in the tests).
+The factor i^{p/2} makes H Hermitian for even p, which is checked in the
+tests.
 
-Complex/Dirac model (their Section 3, "Dirac case"): fermions c_i = (psi_{2i} +
-i psi_{2i+1})/2 carry a conserved U(1) charge Q = sum_i c_i^dagger c_i.  This
-charge is the seed of the paper's electromagnetic sector.  The model is provided
-here mainly so the singlet charge operator M0 = Q (their Eq. 4.24) is available.
+THE COMPLEX/DIRAC MODEL, their Section 3, "Dirac case".  The fermions are
+c_i = (psi_{2i} + i psi_{2i+1})/2, and they carry a conserved U(1) charge
+Q = sum_i c_i^dagger c_i.  That charge is the seed of the paper's
+electromagnetic sector.
+
+The model is provided here mainly so that the singlet charge operator
+M0 = Q, their Eq. 4.24, is available.
 """
 
 from __future__ import annotations

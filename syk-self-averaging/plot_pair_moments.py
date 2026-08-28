@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Figure for the exact finite-N pair moments (exact_pair_moments.json).
-Reads the JSON only; nothing recomputed.
+Reads the JSON only.  Nothing is recomputed.
 
-(a) fixed p = 4: |mu_2| and |mu_4| of the n = 1, 2, 3 pair channels vs N
-    (log-log), falling to the conserved-channel theorem's N = infinity
-    zero; N^-4 slope guide.
-(b) the double-scaling line lambda_chord = 2: |mu_2(n=2)| * pN vs p --
-    the observed c/(pN) regularity (c ~ 29-30).
+(a) Fixed p = 4.  |mu_2| and |mu_4| of the n = 1, 2, 3 pair channels
+    against N, log-log, falling to the conserved-channel theorem's
+    N = infinity zero.  With an N^-4 slope guide.
+(b) The double-scaling line lambda_chord = 2.  |mu_2(n=2)| * pN against
+    p, which is the observed c/(pN) regularity, with c about 29-30.
 """
 import json
 import sys

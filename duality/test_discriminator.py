@@ -1,9 +1,9 @@
-"""Tests for the KMS-axis discriminator note.
+"""Tests for the KMS-axis discriminator note (DISCRIMINATOR.md).
 
-The note's repo-side claims, pinned: the fake-temperature identity
-beta_fake * lambda_L = 2 pi across the repo's v machinery (tying the
-sine-dilaton (1.7) to this task), and the fold verdicts it quotes from the
-committed JSONs.
+The note's repo-side claims are pinned here.  The fake-temperature
+identity beta_fake * lambda_L = 2 pi, across the repo's v machinery,
+which ties sine-dilaton's Eq. (1.7) to this axis.  And the fold verdicts
+the note quotes from the committed JSONs.
 """
 
 import json

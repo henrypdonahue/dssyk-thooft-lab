@@ -1,19 +1,28 @@
 """Tests for the exact N = infinity singlet-channel moments.
 
-The load-bearing verdict encoded here: at strict N = infinity, fixed
-lambda, the H-derived singlet bilinear channels A_n = sum_i psi_i ad^n
-psi_i carry ZERO spectral weight away from omega = 0.  That is,
-mu_2 = mu_4 = mu_6 = 0 to machine precision for n = 1..5 at every lambda
-tested, and PROVEN for all n and all moments (chord_charges.py + its
-tests).  The random-operator O_Delta channels, by contrast, propagate
-(mu_2 = 2(1-q^Delta) != 0).  The word-expansion assembly behind this is
-validated as a per-instance operator identity in
-syk-self-averaging/test_mn_majorana.py.  The engine amplitudes behind it
-are validated against the brute-force enumerator in test_chord.py.
-Together with the ED bench falloff, this is the exact chord-level
-confirmation of the finding (the tower cancels at leading order).
-The M_n tower is a subleading-in-1/N effect at every coupling, not just
-at large q.
+THE VERDICT ENCODED HERE.  At strict N = infinity and fixed lambda, the
+i != j PAIR amplitude of the H-derived singlet bilinear channels
+A_n = sum_i psi_i ad^n psi_i carries ZERO spectral weight away from
+omega = 0.
+
+That is, mu_2 = mu_4 = mu_6 = 0 to machine precision for n = 1..5 at
+every lambda tested.  And it is PROVEN for all n and all moments, in
+chord_charges.py and its tests.
+
+THE CONTROL.  Random-operator O_Delta channels do propagate, with
+mu_2 = 2(1-q^Delta) != 0.
+
+The word-expansion assembly behind this is validated as a per-instance
+operator identity in syk-self-averaging/test_mn_majorana.py.  The engine
+amplitudes behind it are validated against the brute-force enumerator in
+test_chord.py.
+
+SCOPE, and CHORD.md carries the full statement.  This is a FLAVOR
+statement, not an invisibility statement.  The full singlet channel also
+has a flavor-diagonal part of the same order, and that part does
+propagate for n >= 2.  The full A_2 width rises to w_2 ~ 1.19 along
+lambda_chord = 2.  So at N = infinity the tower's weight is carried
+entirely by the diagonal channel.
 """
 
 import json
@@ -120,9 +129,10 @@ def test_ed_bench_scope():
     """Cross-module scope statement, post-review: the chord computation is
     the i != j flavor-PAIR amplitude.  The ED bench measures the full
     physical channel, which at dense-ED sizes is
-    flavor-diagonal-dominated.  The pair part of mu_0 is a few percent and
-    opposite in sign at N = 12-14, p = 4 (measured during the adversarial
-    review).  So the bench does NOT yet probe the chord cancellation: at
+    flavor-diagonal-dominated.  The pair part of mu_0 is opposite in sign
+    and grows fast with N: -0.6% at N = 12 to -34% by N = 16, p = 4
+    (measured during the adversarial review; CHORD.md quotes the series).
+    So the bench does NOT yet probe the chord cancellation: at
     the near-matched-lambda pair the RAW w2 rises with N.  What the bench
     establishes is the raw fixed-p turn-on toward the 't Hooft corner
     (asserted in syk-self-averaging/test_mn_majorana.py).  Here the

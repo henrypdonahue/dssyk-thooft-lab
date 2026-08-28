@@ -1,34 +1,37 @@
 #!/usr/bin/env python3
 r"""
-Exact Wick statistics on the U(N)/Dirac side: adjoint bilinear + singlet mu0.
-=============================================================================
+Exact Wick statistics on the U(N)/Dirac side.
+=============================================
 
-Two exact-disorder computations for the charge-conserving complex (Dirac) SYK
-model of dirac.py, both in the C-invariant "c_symmetric" ensemble (disjoint
-index pairs, real symmetric couplings -- the CP-sharp sub-ensemble):
+Two exact-disorder computations for the charge-conserving complex (Dirac)
+SYK model of dirac.py.  Both are done in the C-invariant "c_symmetric"
+ensemble: disjoint index pairs, real symmetric couplings, the CP-sharp
+sub-ensemble.
 
     H = sum_u x_u h_u,   h_u = c^dag_A c_B + c^dag_B c_A   (u = {A,B},
     A n B = empty, |A| = |B| = k = p/2),   x_u iid N(0, sigma^2),
     sigma^2 = coupling_variance_dirac(Nc, p) = (k!)^2 2^p / Nc^(p-1).
 
-Part 1: Var(B_ij) -- the U(N)-emergence analog of Majorana Var(B_jk)
---------------------------------------------------------------------
+PART 1: Var(B_ij), the U(N)-emergence analog of the Majorana Var(B_jk)
+----------------------------------------------------------------------
 The symmetry-violation observable is the adjoint bilinear
 
-    B_ij = Tr(c_i H c^dag_j H)/dim   (i != j),  and the diagonal B_ii.
+    B_ij = Tr(c_i H c^dag_j H)/dim   (i != j),  plus the diagonal B_ii.
 
-B_ij is QUADRATIC in the Gaussian x_u, so its disorder statistics reduce by
-Wick to trace combinatorics, exactly as in exact_wick.py.  But the
-disjointness constraint A n B = empty changes the census.  With
+B_ij is QUADRATIC in the Gaussian x_u.  So by Wick its disorder statistics
+reduce to trace combinatorics, exactly as in exact_wick.py.  But the
+disjointness constraint A n B = empty changes the census.
 
-    T_{alpha beta} = Tr(c_i O_alpha c^dag_j O_beta)/dim,   O_(A,B) = c^dag_A c_B
+With T_{alpha beta} = Tr(c_i O_alpha c^dag_j O_beta)/dim and
+O_(A,B) = c^dag_A c_B, over ordered keys alpha = (A,B), the trace is
+nonzero only if every mode's creation and annihilation counts balance.
 
-over ordered keys alpha = (A,B), the trace is nonzero only if every mode's
-creation and annihilation counts balance.  Per mode the admissible patterns
-are: mode i in A only or in C only; mode j in B only or in D only; any other
-mode untouched, in A n D, or in B n C (beta = (C,D)).  Solving these
-constraints kills the (i in A, j in B) and (i in C, j in D) cases (they force
-|D| = k-1).  It leaves exactly two families:
+Per mode the admissible patterns are: mode i in A only, or in C only;
+mode j in B only, or in D only; any other mode untouched, or in A n D, or
+in B n C, with beta = (C,D).
+
+Solving those constraints kills the (i in A, j in B) and (i in C, j in D)
+cases, because they force |D| = k-1.  Two families are left:
 
     Type I : alpha = (A,B) with i in A, j not in A u B,
              beta  = (B, (A\{i}) u {j});
@@ -36,82 +39,95 @@ constraints kills the (i in A, j in B) and (i in C, j in D) cases (they force
              beta  = ((B\{j}) u {i}, A).
 
 Each admissible product touches 2k+1 = p+1 modes, every one with FORCED
-occupation on the surviving basis states, so |T| = 2^-(p+1).  The sign is
-uniformly -1 and T_{alpha beta} = T_{beta alpha}.  The tests assert both by
-literal enumeration at p = 4 and p = 8, and only T^2 and the symmetry enter
-the variance.  No admissible beta equals alpha or (B,A), so
+occupation on the surviving basis states.  So |T| = 2^-(p+1).  The sign is
+uniformly -1, and T_{alpha beta} = T_{beta alpha}.  The tests assert both
+by literal enumeration at p = 4 and p = 8, and only T^2 and the symmetry
+enter the variance.
+
+No admissible beta equals alpha or (B,A).  So
 
     E[B_ij] = 0   exactly (i != j).
 
-In the unordered-pair variables x_u the quadratic form B_ij = x^T M x has M a
-perfect matching.  It matches the L = C(Nc-2, k-1) C(Nc-k-1, k) pairs
-containing i (and avoiding j) to the L pairs containing j (avoiding i).  Every
-nonzero entry is -2^-(p+1), in both orders.  Var(x^T M x) = 2 sigma^4 tr(M^2)
-gives, EXACTLY,
+In the unordered-pair variables x_u, the quadratic form B_ij = x^T M x has
+M a perfect matching.  It matches the L = C(Nc-2, k-1) C(Nc-k-1, k) pairs
+containing i, and avoiding j, to the L pairs containing j and avoiding i.
+Every nonzero entry is -2^-(p+1), in both orders.
+
+Var(x^T M x) = 2 sigma^4 tr(M^2) then gives, EXACTLY,
 
     Var(B_ij) = 4 sigma^4 C(Nc-2, k-1) C(Nc-k-1, k) / 4^(p+1)
               = (k!)^4 C(Nc-2, k-1) C(Nc-k-1, k) / Nc^(2p-2).
 
-Fixed p, large Nc:  Var -> k (k!)^2 / Nc^(p-1), i.e.
+At fixed p and large Nc, Var -> k (k!)^2 / Nc^(p-1), so
 
-    rms(B_ij) = sqrt(k) k! Nc^-(p-1)/2  (1 + O(1/Nc)),
+    rms(B_ij) = sqrt(k) k! Nc^-(p-1)/2  (1 + O(1/Nc)).
 
-the SAME power law N^-(p-1)/2 as the Majorana adjoint bilinear
-rms(B_jk) ~ (2 p!/sqrt((p-1)!)) N^-(p-1)/2 (exact_wick.py).  U(N) symmetry
-emergence is polynomially slow at fixed p on the Dirac side too, just with a
-smaller coefficient (p = 4: 2 sqrt(2) ~ 2.83 vs 48/sqrt(6) ~ 19.6 -- per
-complex mode vs per Majorana mode).
+That is the SAME power law N^-(p-1)/2 as the Majorana adjoint bilinear,
+rms(B_jk) ~ (2 p!/sqrt((p-1)!)) N^-(p-1)/2, from exact_wick.py.
 
-Diagonal: only beta = (B,A) survives, and its trace vanishes unless
-i not in A u B (where it is +2^-(p+1)), so
+So U(N) symmetry emergence is polynomially slow at fixed p on the Dirac
+side too.  The coefficient is just smaller.  At p = 4 it is
+2 sqrt(2) ~ 2.83 against 48/sqrt(6) ~ 19.6, which is per complex mode
+against per Majorana mode.
+
+THE DIAGONAL.  Only beta = (B,A) survives, and its trace vanishes unless
+i is not in A u B, where it is +2^-(p+1).  So
 
     E[B_ii] = sigma^2 C(Nc-1, k) C(Nc-k-1, k) 2^-(p+1)
             = E[m2] (Nc - p) / (2 Nc),
 
-with E[m2] = E[Tr H^2/dim] = sigma^2 C(Nc,k) C(Nc-k,k) 4^-k the c_symmetric
-mean of qed_campaign.py (recomputed here numerically from the h_u, not
-imported).  MEAN-VANISHING ARTIFACT: E[B_ii] = 0 exactly at Nc = p (every
-coupling then touches every mode).  Indeed B_ij vanishes identically there,
-Var = 0 too.  In Majorana units N_maj = 2 Nc this is the same (1 - 2p/N)
-factor as the Majorana p = N/2 artifact of exact_wick.py.  It carries an extra
-1/2 from the c-vs-psi normalization (c c^dag + c^dag c = 1 vs psi^2 = 1).
+with E[m2] = E[Tr H^2/dim] = sigma^2 C(Nc,k) C(Nc-k,k) 4^-k, the
+c_symmetric mean of qed_campaign.py.  It is recomputed here numerically
+from the h_u, not imported.
 
-Part 2: exact disorder-averaged mu0 (and mu2 at Nc = 6) of traceless M_2
+A MEAN-VANISHING ARTIFACT.  E[B_ii] = 0 exactly at Nc = p, where every
+coupling touches every mode.  Indeed B_ij vanishes identically there, and
+Var = 0 too.
+
+In Majorana units N_maj = 2 Nc this is the same (1 - 2p/N) factor as the
+Majorana p = N/2 artifact of exact_wick.py.  It carries an extra 1/2 from
+the c-against-psi normalization: c c^dag + c^dag c = 1 against psi^2 = 1.
+
+PART 2: exact disorder-averaged mu0, and mu2 at Nc = 6, of traceless M_2
 ------------------------------------------------------------------------
-The first dynamical singlet is M_2 = -sum_i cdot^dag_i cdot_i,
-cdot_i = i[H, c_i] (operator identity, dirac.py).  It is an explicit
-quadratic form in the couplings:
+The first dynamical singlet is M_2 = -sum_i cdot^dag_i cdot_i, with
+cdot_i = i[H, c_i].  That is an operator identity, from dirac.py.  It is
+an explicit quadratic form in the couplings:
 
     M_2 = sum_{u,v} x_u x_v G_uv,    G_uv = -sum_i [h_u, c_i]^T [h_v, c_i]
 
-(real matrices; G_uv^T = G_vu).  Traceless and CP-projected per COEFFICIENT
-(both operations are linear):  Gbar_uv = G_uv - (Tr G_uv/dim) 1, and with the
-unitary particle-hole C of dirac.particle_hole,
+with real matrices, and G_uv^T = G_vu.
+
+Traceless subtraction and CP projection are both linear, so they act per
+COEFFICIENT.  Gbar_uv = G_uv - (Tr G_uv/dim) 1, and with the unitary
+particle-hole C of dirac.particle_hole,
 
     G^pm_uv = (Gbar_uv pm C Gbar_uv C^T)/2,
 
-so  M2bar^ch = sum x_u x_v G^ch_uv with ch = CP-odd ("right" channel for
-n = 2, target CP = (-1)^(n+1) = -1) or CP-even ("wrong").  Then
+so M2bar^ch = sum x_u x_v G^ch_uv.  The channel ch is CP-odd, which is
+the "right" channel for n = 2 with target CP = (-1)^(n+1) = -1, or
+CP-even, the "wrong" one.
 
-    mu0(ch) = Tr((M2bar^ch)^2)/dim
-
-(M_2 is Hermitian, so the moments_pipeline symmetrized-spectral mu0 is
-exactly this Frobenius weight) is QUARTIC in x, and Isserlis' three pairings
-give the exact ensemble mean
+Then mu0(ch) = Tr((M2bar^ch)^2)/dim.  M_2 is Hermitian, so the
+moments_pipeline symmetrized-spectral mu0 is exactly this Frobenius
+weight.  It is QUARTIC in x, and Isserlis' three pairings give the exact
+ensemble mean
 
     E[mu0^ch] = sigma^4/dim [ Tr(S_ch^2)
                 + sum_{uv ordered} ( Tr(G^ch_uv G^ch_uv) + ||G^ch_uv||_F^2 ) ],
     S_ch = sum_u G^ch_uu,
 
-a sum over n_pairs^2 coupling pairs with every trace evaluated numerically
-(n_pairs = C(Nc,k) C(Nc-k,k)/2 = 45, 210, 630 at Nc = 6, 8, 10 for p = 4).
-This is this task's exact-finite-N half for the n = 2 singlet.  It reproduces
-the moments pipeline's ED means with NO diagonalization and NO sampling.
-(The symbolic N = infinity chord computation stays out of scope.)
+a sum over n_pairs^2 coupling pairs, with every trace evaluated
+numerically.  n_pairs = C(Nc,k) C(Nc-k,k)/2 is 45, 210 and 630 at
+Nc = 6, 8, 10 for p = 4.
+
+This is the exact-finite-N half for the n = 2 singlet.  It reproduces the
+moments pipeline's ED means with NO diagonalization and NO sampling.  The
+symbolic N = infinity chord computation stays out of scope.
 
 mu2(ch) = ||[H, M2bar^ch]||_F^2/dim is SEXTIC in x.  With
-C_{a,uv} = [h_a, Gs^ch_uv] (Gs = the u<->v symmetrized Gbar^ch), Isserlis'
-15 pairings collapse by the u<->v symmetry to
+C_{a,uv} = [h_a, Gs^ch_uv], where Gs is the u<->v symmetrized Gbar^ch,
+Isserlis' 15 pairings collapse by the u<->v symmetry to
 
     E[mu2^ch] = sigma^6/dim [ 2 S_AA + 4 S_AB + T_PP + 4 T_PQ + 4 T_QQ ],
     S_AA = sum_{a,u,v} Tr(C_{a,uv}^T C_{a,uv}),
@@ -120,26 +136,31 @@ C_{a,uv} = [h_a, Gs^ch_uv] (Gs = the u<->v symmetrized Gbar^ch), Isserlis'
     T_PP = sum_a Tr(P_a^T P_a),  T_PQ = sum_a Tr(P_a^T Q_a),
     T_QQ = sum_v Tr(Q_v^T Q_v).
 
-S_AB is an irreducible triple sum: ~n_pairs^3 operator-product traces.  At
-Nc = 6 (n = 45, dim 64) that is ~10^5 small dense products -- ~20 s.  At
-Nc = 8 (n = 210, dim 256) it is ~9.3e6 products of 256x256 operators, order
-days on this machine.  So mu2 is delivered EXACTLY at Nc = 6 only, with the
-Nc = 8 cost documented instead of half-done.
+S_AB is an irreducible triple sum, about n_pairs^3 operator-product
+traces.  At Nc = 6 (n = 45, dim 64) that is about 1e5 small dense
+products, roughly 20 s.  At Nc = 8 (n = 210, dim 256) it is about 9.3e6
+products of 256x256 operators, which is order days on this machine.
 
-Honesty box
+So mu2 is delivered EXACTLY at Nc = 6 only.  The Nc = 8 cost is
+documented rather than half-done.
+
+HONESTY BOX
 -----------
-* The uniform sign -2^-(p+1) and the symmetry T_{alpha beta} = T_{beta alpha}
-  are measured facts (enumeration), not derived here.  The magnitude and the
-  admissible-pair census are derived.  Var and E depend only on the measured
-  facts squared/symmetrized.  Every closed form is asserted against a literal
-  enumeration sharing no assembly code.
-* E[mu0], E[mu2] are exact ensemble means.  The moments.json comparison
-  numbers are ED disorder means with SEM (ddof=1), so agreement is a
-  statistical statement (z-scores stored in exact_wick_dirac.json).
+* The uniform sign -2^-(p+1) and the symmetry
+  T_{alpha beta} = T_{beta alpha} are measured facts, from enumeration.
+  They are not derived here.  The magnitude and the admissible-pair census
+  are derived.  Var and E depend only on the measured facts, squared and
+  symmetrized.  Every closed form is asserted against a literal
+  enumeration that shares no assembly code.
+* E[mu0] and E[mu2] are exact ensemble means.  The moments.json comparison
+  numbers are ED disorder means with SEM (ddof=1), so agreement there is a
+  statistical statement.  The z-scores are stored in
+  exact_wick_dirac.json.
 * moments.json stores w2 = mu2/(mu0 <H^2>/dim) as a mean of per-instance
   RATIOS.  The exact ratio-of-means E[mu2]/(E[mu0] E[m2]) differs at
-  O(relVar) ~ 1e-2.  The JSON stores the exact ratio-of-means labeled as
-  such.  The calibrated mu2 check is the direct slow-test ED ensemble mean.
+  O(relVar), about 1e-2.  The JSON stores the exact ratio-of-means,
+  labeled as such.  The calibrated mu2 check is the direct slow-test ED
+  ensemble mean.
 """
 
 from __future__ import annotations

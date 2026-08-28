@@ -13,11 +13,14 @@ jobs:
       fail-fast: false
       matrix:
         module: [thooft-target, syk-self-averaging, duality]
+        # 3.9 is the certified reference-table platform; 3.12 guards the top
+        # of the advertised requires-python range (pyproject: >=3.9,<3.13)
+        python: ["3.9", "3.12"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: ${{ matrix.python }}
       - name: Install pinned dependencies
         run: |
           python -m pip install --upgrade pip

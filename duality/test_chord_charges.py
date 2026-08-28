@@ -1,12 +1,17 @@
 """The conserved-channel theorem (chord_charges.py), asserted end to end.
 
-Pinned: the three-term close_j recursion as a matrix identity; the dressed
-propagator C(m) = P_m(T) (Motzkin polynomial) and [C(m), T] = 0 for
-m <= 8; the C(1), C(2) and Xhat_2 closed forms; [Xhat_n, T] = 0 for
-n <= 5; and, through the INDEPENDENT chord_moments word assembly, the
-theorem's punchline: every |mu_k|/gross <= 1e-12 for n <= 5, even k <= 6,
-both operator orderings.  All identities are exact; residuals are float
-noise, measured on the truncation-free interior block relative to scale.
+Pinned here: the three-term close_j recursion as a matrix identity; the
+dressed propagator C(m) = P_m(T), the Motzkin polynomial, with
+[C(m), T] = 0 for m <= 8; the C(1), C(2) and Xhat_2 closed forms;
+[Xhat_n, T] = 0 for n <= 5.
+
+And then the punchline, reached through the INDEPENDENT chord_moments
+word assembly: every |mu_k|/gross <= 1e-12 for n <= 5, even k <= 6, in
+both operator orderings.
+
+All of these identities are exact.  The residuals are float noise,
+measured on the truncation-free interior block, relative to the block
+scale.
 """
 
 import numpy as np

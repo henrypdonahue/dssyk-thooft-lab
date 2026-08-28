@@ -1,64 +1,79 @@
 #!/usr/bin/env python3
 r"""
-Anti-scrambling vs DSSYK_infinity: the OTOC sign test and the Euclidean fold.
-=============================================================================
+Anti-scrambling and DSSYK_infinity: the OTOC sign test, and the fold.
+=====================================================================
 
-Two papers of July 2026 sharpen what a
-de Sitter static-patch hologram must do at OTOC level:
+Two papers from July 2026 sharpen what a de Sitter static-patch hologram
+must do at OTOC level.
 
-  * Cui-Kolchmeyer 2607.13665 ("A de Sitter Anti-Scrambling Algebra"): the
-    dS observer's shockwave S-matrix has a NEGATIVE eikonal phase (time
-    ADVANCE).  Their Eq. (2.74) writes the semiclassical OTOC as
+CUI-KOLCHMEYER 2607.13665, "A de Sitter Anti-Scrambling Algebra".  The dS
+observer's shockwave S-matrix has a NEGATIVE eikonal phase, a time
+ADVANCE.  Their Eq. (2.74) writes the semiclassical OTOC as
 
-        OTOC/TOC = 1 - i x h_A h_B e^{(t2+t4-t1-t3)/2}
-                        / (sinh(t13/2) sinh(t24/2)),   x = c e^T,
+    OTOC/TOC = 1 - i x h_A h_B e^{(t2+t4-t1-t3)/2}
+                    / (sinh(t13/2) sinh(t24/2)),   x = c e^T,
 
-    with c > 0 = AdS (scrambling, time delay) and c < 0 = dS
-    (anti-scrambling).  The Maldacena-Shenker-Stanford chaos bound forces
-    c > 0 for any unitary QM in a KMS state at the dS temperature; dS
-    correlators violate the KMS assumption, and CK conclude that such
-    holograms are ruled out.  (2607.05678 -- this repo's target paper -- is
-    cited there as [12].  Its T_B = infinity hologram is NOT a KMS state at
-    the dS temperature, so it dodges the letter of the no-go; whether it can
-    produce c < 0 through a nontrivial dictionary is exactly the open
-    question quantified here.)
+with c > 0 for AdS (scrambling, time delay) and c < 0 for dS
+(anti-scrambling).
 
-  * Harlow-Zhao 2607.14215 ("Anti-scrambling and euclidean folds"): the dS
-    observer 2-pt function is thermal/KMS at beta_dS, the 4-pt function
-    anti-scrambles (their F(w) -> F(-w)), and they propose the QM origin is
-    a system with spectrum BOUNDED ABOVE AND BELOW evaluated on a Euclidean
-    FOLD: with beta_dS = 2pi, continue a standard thermal 4-pt correlator to
+The Maldacena-Shenker-Stanford chaos bound forces c > 0 for any unitary
+quantum system in a KMS state at the dS temperature.  dS correlators
+violate the KMS assumption, and CK conclude that such holograms are ruled
+out.
 
-        (tau1, tau2, tau3, tau4)^QM
-            = (-tau1, 2 pi n - tau2, 2 pi - tau3, 2 pi (n+1) - tau4)   (6.9)
+(2607.05678, this repo's target paper, is cited there as [12].  Its
+T_B = infinity hologram is NOT a KMS state at the dS temperature, so it
+dodges the letter of the no-go.  Whether it can produce c < 0 through a
+nontrivial dictionary is exactly the open question this module
+quantifies.)
 
-    (n integer; or the negative-temperature variant (6.12)), which flips the
-    sign of their w-variable and hence turns scrambling into
-    anti-scrambling.  They pose the test directly: "It would be interesting
-    to study the validity of this assumption in a concrete model such as
-    the SYK model."  Finite-N SYK has a bounded spectrum, so every folded
-    correlator is finite and exactly computable by ED.
+HARLOW-ZHAO 2607.14215, "Anti-scrambling and euclidean folds".  The dS
+observer 2-pt function is thermal at beta_dS, and the 4-pt function
+anti-scrambles, their F(w) -> F(-w).
 
-This module encodes the closed forms needed to run both tests against the
-repo's ED laboratory (syk-self-averaging/fold_bench.py):
+They propose that the quantum-mechanical origin is a system with a
+spectrum BOUNDED ABOVE AND BELOW, evaluated on a Euclidean FOLD.  With
+beta_dS = 2pi, continue a standard thermal 4-pt correlator to
 
-  * Streicher 1911.10171 large-q Majorana-SYK 4-pt functions, uniformly
-    valid in beta*scriptJ (all temperatures, including the T_B = infinity
-    hologram point):  TOC (3.3) and crossed OTOC (3.10), with f, g, the
-    squeezed coordinates, and the prefactor C(v).  Transcribed from the
-    arXiv LaTeX source at equation level (provenance below).
-  * The T = infinity limits: v -> beta*scriptJ/pi, Lyapunov rate
-    lambda_L = 2 pi v / beta -> 2 scriptJ = 2 sqrt(2) p in repo units --
-    the growth survives at infinite temperature and its sign is the
-    SCRAMBLING sign (c > 0) for every v in (0,1) (asserted in tests).
-  * The Harlow-Zhao fold map (6.9)/(6.12) in theta units (beta = 2 pi).
+    (tau1, tau2, tau3, tau4)^QM
+        = (-tau1, 2 pi n - tau2, 2 pi - tau3, 2 pi (n+1) - tau4)   (6.9)
 
-Conventions: theta = 2 pi tau / beta in (0, 2 pi); flavor-averaged bilocals
-G_hat(th_i, th_j) = (1/N) sum_k psi_k(th_i) psi_k(th_j);
-F(th1..th4) = <G_hat(th1,th2) G_hat(th3,th4)> with LITERAL operator order;
-F = F_d + script-F/N, F_d = G(th12m) G(th34m).  v solves
-beta scriptJ = pi v / cos(pi v / 2) (largeq_anchor.v_of_betaJ); repo bridge
-scriptJ = sqrt(2) p (ED-locked in test_largeq.py).
+with n an integer, or use the negative-temperature variant (6.12).  That
+flips the sign of their w-variable, and so turns scrambling into
+anti-scrambling.
+
+They pose the test directly: "It would be interesting to study the
+validity of this assumption in a concrete model such as the SYK model."
+Finite-N SYK has a bounded spectrum, so every folded correlator is finite
+and exactly computable by ED.
+
+WHAT THIS MODULE HOLDS
+----------------------
+The closed forms needed to run both tests against the repo's ED
+laboratory (syk-self-averaging/fold_bench.py).
+
+* Streicher 1911.10171, large-q Majorana-SYK 4-pt functions, uniformly
+  valid in beta*scriptJ.  That covers all temperatures, including the
+  T_B = infinity hologram point.  The TOC is his (3.3) and the crossed
+  OTOC his (3.10), with f, g, the squeezed coordinates, and the
+  prefactor C(v).  Transcribed from the arXiv LaTeX source at equation
+  level; provenance is below.
+* The T = infinity limits.  v -> beta*scriptJ/pi, and the Lyapunov rate
+  lambda_L = 2 pi v / beta -> 2 scriptJ = 2 sqrt(2) p in repo units.  The
+  growth survives at infinite temperature, and its sign is the SCRAMBLING
+  sign, c > 0, for every v in (0,1).  Asserted in the tests.
+* The Harlow-Zhao fold map (6.9)/(6.12) in theta units, beta = 2 pi.
+
+CONVENTIONS
+-----------
+theta = 2 pi tau / beta in (0, 2 pi).  Flavor-averaged bilocals are
+G_hat(th_i, th_j) = (1/N) sum_k psi_k(th_i) psi_k(th_j).
+F(th1..th4) = <G_hat(th1,th2) G_hat(th3,th4)> with LITERAL operator
+order.  F = F_d + script-F/N, with F_d = G(th12m) G(th34m).
+
+v solves beta scriptJ = pi v / cos(pi v / 2), in largeq_anchor.v_of_betaJ.
+The repo bridge is scriptJ = sqrt(2) p, locked against ED in
+test_largeq.py.
 """
 
 from __future__ import annotations
@@ -130,9 +145,9 @@ def otoc_ratio(th1, th2, th3, th4, v: float):
     satisfies OTOC - TOC = -2 exactly at the coincidence theta_2 = theta_3
     (the old form gives arbitrary values); and the exact N = infinity chord
     engine converges onto it as lambda -> 0, where the double-scaled theory
-    IS the large-q limit (chord/closed 0.964 -> 0.991 over lambda = 2 ->
-    0.2, tracking the TOC control 0.683 -> 0.980; against the old form the
-    same ratios run to 1.68, away from 1).
+    IS the large-q limit (chord/closed 0.964 -> 0.979 over lambda = 2 ->
+    0.5, the committed chord_fold.json range, tracking the TOC control;
+    against the old form the same ratios run to 1.68, away from 1).
     """
     ph12m = squeeze(np.asarray(th1) - th2, v)
     ph34m = squeeze(np.asarray(th3) - th4, v)
@@ -147,8 +162,11 @@ def otoc_ratio(th1, th2, th3, th4, v: float):
 
 def G2_thermal(theta, betaJ: float, q: float):
     """Large-q Euclidean 2-pt function on the thermal circle (beta = 2 pi in
-    theta units), as a single-valued MEROMORPHIC function of theta -- valid
-    at the complex/folded arguments the HZ map produces:
+    theta units), single-valued on the principal branch of the 2/q power --
+    with a branch-point divergence ~ (theta_pole - theta)^(-2/q) at
+    theta = pi + pi/v (the location test_g2_stays_physical measures by
+    bisection) -- valid at the complex/folded arguments the HZ map
+    produces:
 
         G(theta) = [ cos(pi v/2) / cos(pi v (1/2 - theta/(2 pi))) ]^{2/q}.
 

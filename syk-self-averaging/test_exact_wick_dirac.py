@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
-"""Asserting tests for exact_wick_dirac.py.
+"""Tests for exact_wick_dirac.py.
 
-Every closed form is checked against a literal enumeration route that shares
-no assembly code with it (T-matrix traces via dirac.apply_monomial chains vs
-pure binomial formulas; Isserlis pair sums vs the moments_pipeline ED means).
+Every closed form is checked against a literal enumeration route that
+shares no assembly code with it.  T-matrix traces through
+dirac.apply_monomial chains, against pure binomial formulas.  Isserlis
+pair sums, against the moments_pipeline ED means.
+
 The tests also check instance-level identities against the dense ED-side
 algebra.
 
-Run with:  pytest -q -m 'not slow'   (ED ensembles / Nc=8 / p=8 are slow)
+Run with: pytest -q -m 'not slow'.  The ED ensembles, Nc = 8 and p = 8,
+are slow.
 """
 
 import json

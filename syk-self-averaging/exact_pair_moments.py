@@ -5,78 +5,101 @@ Exact finite-N pair moments of the A_n channels: the approach to the zero.
 
 The conserved-channel theorem (duality/chord_charges.py) proves that the
 i != j pair moments of A_n = sum_i psi_i (ad_H)^n psi_i vanish at strict
-N = infinity, every lambda, every matter weight.  This module computes
-the SAME moments EXACTLY at finite N -- disorder-averaged by
-Wick/Isserlis, subset sums collapsed to intersection-parity profiles.
-No ED, no sampling noise: the measured 1/N approach to the proven zero
-(the first bite of this task's tower extraction).
+N = infinity, at every lambda and every matter weight.
 
-Method
+This module computes the SAME moments EXACTLY at finite N.
+Disorder-averaged by Wick/Isserlis, with the subset sums collapsed to
+intersection-parity profiles.  No ED and no sampling noise.  What comes
+out is the measured 1/N approach to the proven zero.
+
+METHOD
 ------
 E<Tr[H^a psi_i H^b psi_i H^c psi_j H^d psi_j]>/dim reduces by Isserlis to
 a sum over perfect matchings of the K = a+b+c+d H-slots.  Each matched
-pair carries one independent uniform p-subset.  The trace of any
-resulting Majorana word obeys the chord-diagram sign law (collapse
-argument; Gamma_c^2 = +1 in the i^{p/2} convention, so the all-disjoint
-base trace is +1):
+pair carries one independent uniform p-subset.
+
+The trace of any resulting Majorana word obeys the chord-diagram sign
+law.  (Collapse argument; Gamma_c^2 = +1 in the i^{p/2} convention, so
+the all-disjoint base trace is +1.)
 
     trace = prod_{crossing H-chord pairs (al,be)} (-1)^{|c_al & c_be|}
           x prod_{H-chords al, marks e}           (-1)^{b_e[al] [e in c_al]}
 
-where b_e[al] = parity of the number of e-marked fermion positions
-strictly inside chord al's span.  The disorder average therefore needs
-only E over independent uniform p-subsets of a parity product.  That is an
-exact integer sum over Venn-cell occupancy profiles, memoized per
-crossing/mark signature.  In chord units (divide a K-H word by
-sigma_H^K = (C(N,p) sigma^2)^{K/2}) sigma cancels entirely:
+where b_e[al] is the parity of the number of e-marked fermion positions
+strictly inside chord al's span.
+
+So the disorder average needs only the expectation, over independent
+uniform p-subsets, of a parity product.  That is an exact integer sum
+over Venn-cell occupancy profiles, memoized per crossing/mark signature.
+
+In chord units -- divide a K-H word by sigma_H^K = (C(N,p) sigma^2)^{K/2}
+-- sigma cancels entirely:
 
     t4bar(a,b,c,d) = sum_matchings E[sign],    E exact in QQ.
 
-The mu_k assembly (binomial ad-expansion, symmetrized, both orderings)
-is IMPORTED from duality/chord_moments.py, so the finite-N and N =
-infinity computations share it by construction.  t4bar -> chord t4 as
-N -> infinity at fixed lambda, and every mu_k>=1 must fall to zero.
+The mu_k assembly (binomial ad-expansion, symmetrized, both orderings) is
+IMPORTED from duality/chord_moments.py.  So the finite-N and N = infinity
+computations share it by construction.  t4bar tends to the chord t4 as
+N -> infinity at fixed lambda, and every mu_k with k >= 1 must fall to
+zero.
 
-Scope: n <= 3 and moments mu_0, mu_2, mu_4 (words up to K = 10 H-nodes,
-5 subsets).  Every signature goes through an exact element-wise DP, whose
-state is the per-subset fill counts, with integers via CRT residue
-tables.  Its cost is O(N (p+1)^m 2^m) per crossing set.  The closed
-m <= 3 Venn-profile sum is retained as the in-tree reference the DP is
-tested against.  The flavor sum gives exact finite-N
-identities used as end-to-end gates: A_1 = -2pH per instance, so
+SCOPE
+-----
+n <= 3, and moments mu_0, mu_2, mu_4.  Words up to K = 10 H-nodes, so 5
+subsets.
+
+Every signature goes through an exact element-wise DP whose state is the
+per-subset fill counts, with integers handled by CRT residue tables.  Its
+cost is O(N (p+1)^m 2^m) per crossing set.  The closed m <= 3
+Venn-profile sum is kept in-tree as the reference the DP is tested
+against.
+
+The flavor sum gives exact finite-N identities, used as end-to-end gates.
+A_1 = -2pH per instance, so
 
     (N - 1) mu_k^pair(n=1) + mu_k^diag(n=1) = 0   (k = 2 and 4), every N,
 
-with the diagonal channel (all four fermions on one flavor) computed by
-the same machinery.
+with the diagonal channel -- all four fermions on one flavor -- computed
+by the same machinery.
 
-Validation (test_exact_pair_moments.py + an adversarial referee pass,
-2026-08-19): literal Isserlis enumeration over ALL subset
-tuples with Pauli-string traces at small (N, p) (exact match);
-disorder-averaged dense ED (within errors); the n = 1 identity at
-machine precision; and the chord limit (t4bar -> chord t4).  The referee
-pass checked the sign law per configuration on ~5e5 adversarial
-subset tuples, the factorization and canonicalization against naive
-enumeration on all 311 possible m <= 3 signatures, and three independent
-routes through p = 10.
+VALIDATION (test_exact_pair_moments.py, plus an adversarial referee pass
+on 2026-08-19)
+------------------------------------------------------------------------
+Literal Isserlis enumeration over ALL subset tuples, with Pauli-string
+traces, at small (N, p): exact match.  Disorder-averaged dense ED: within
+errors.  The n = 1 identity: machine precision.  And the chord limit,
+t4bar -> chord t4.
 
-Precision note, and the practical cap.  The per-word values are exact
-rationals, but the mu_k assembly is float, so the alternating sums
-inherit rounding noise that grows fast with the gross magnitude.  The
-A_1 flavor-sum gate measures it directly.  On the committed scan:
+The referee pass checked the sign law per configuration on about 5e5
+adversarial subset tuples, the factorization and canonicalization against
+naive enumeration on all 311 possible m <= 3 signatures, and three
+independent routes through p = 10.
+
+PRECISION, AND THE PRACTICAL CAP
+--------------------------------
+The per-word values are exact rationals.  But the mu_k assembly is float,
+so the alternating sums inherit rounding noise, and it grows fast with
+the gross magnitude.  The A_1 flavor-sum gate measures that directly.  On
+the committed scan:
 
     N          64      96     128     192     256
     mu_2 gate  2e-14   7e-13  1e-12   2e-12   1.7e-11
     mu_4 gate  2e-12   3e-12  9e-12   1.2e-10 9.1e-10
 
-The mu_4 gate is the binding one: at N = 256 it sits at 9.1e-10 against
-the 1e-9 threshold asserted in test_committed_campaign -- a 9% margin.
-So N = 256 is the honest cap for the float assembly, NOT a round number
-some way beyond it.  Extending the scan (or adding mu_6) requires
-carrying _mu_ordered / _mu_ordered_swapped in Fractions; the word values
-themselves are already exact and need no change.
+The mu_4 gate is the binding one.  At N = 256 it sits at 9.1e-10 against
+the 1e-9 threshold asserted in test_committed_campaign, which is a 9%
+margin.  So N = 256 is the honest cap for the float assembly.  It is not
+a round number chosen some way beyond it.
 
-Output: exact_pair_moments.json (fixed-p scan + the double-scaling line).
+The cap is float-path-only.  channel_pair_moments(exact=True) carries the
+whole assembly in Fractions -- the accumulators in chord_moments'
+_mu_ordered start at int 0, so the table's type propagates -- which
+removes the cancellation noise entirely and raises the word cap to
+K = 12.  pair_moment_laws.py builds on that to interpolate the EXACT
+rational function mu_k(N) at fixed p.
+
+Output: exact_pair_moments.json, holding the fixed-p scan and the
+double-scaling line.
 """
 
 from __future__ import annotations
@@ -451,14 +474,15 @@ def _psi_psi_sign(symbols) -> int:
 
 
 def t4bar(N: int, p: int, a: int, b: int, c: int, d: int,
-          marks=('i', 'i', 'j', 'j')) -> float:
+          marks=('i', 'i', 'j', 'j'), exact: bool = False):
     """E<Tr[H^a psi H^b psi H^c psi H^d psi]>/dim / sigma_H^(a+b+c+d),
     fermion flavors per `marks` (two labels of two fermions each, in any
     arrangement, or one label; other patterns raise).  Odd H-count words
-    vanish (Isserlis)."""
+    vanish (Isserlis).  With exact=True the value is returned as the exact
+    Fraction (denominator a power of C(N,p)) instead of a float."""
     K = a + b + c + d
     if K % 2:
-        return 0.0
+        return Fraction(0) if exact else 0.0
     symbols = _word_symbols(a, b, c, d, marks)
     psi_sign = _psi_psi_sign(symbols)
     hpos = [k for k, s in enumerate(symbols) if s == 'H']
@@ -466,65 +490,94 @@ def t4bar(N: int, p: int, a: int, b: int, c: int, d: int,
     for matching in _matchings(hpos):
         m, S, bits = _signature(symbols, matching)
         tot += signature_expectation(N, p, m, S, bits)
-    return psi_sign * float(tot)
+    return psi_sign * tot if exact else psi_sign * float(tot)
 
 
-def t2bar(N: int, p: int, a: int, b: int) -> float:
+def t2bar(N: int, p: int, a: int, b: int, exact: bool = False):
     """E<Tr[H^a psi_i H^b psi_i]>/dim / sigma_H^(a+b)."""
     K = a + b
     if K % 2:
-        return 0.0
+        return Fraction(0) if exact else 0.0
     symbols = ['H'] * a + ['i'] + ['H'] * b + ['i']
     hpos = [k for k, s in enumerate(symbols) if s == 'H']
     tot = Fraction(0)
     for matching in _matchings(hpos):
         m, S, bits = _signature(symbols, matching)
         tot += signature_expectation(N, p, m, S, bits)
-    return float(tot)
+    return tot if exact else float(tot)
 
 
 class PairTab:
     """Finite-N drop-in for chord_moments.MomentTable: normalized
-    disorder-averaged words, i != j pair channel."""
+    disorder-averaged words, i != j pair channel.  exact=True keeps every
+    word as a Fraction, so the downstream mu_k assembly (whose
+    accumulators start at int 0) is exact rational arithmetic with no
+    cancellation noise."""
 
-    def __init__(self, N: int, p: int, marks=('i', 'i', 'j', 'j')):
+    def __init__(self, N: int, p: int, marks=('i', 'i', 'j', 'j'),
+                 exact: bool = False):
         if p % 2:
             raise ValueError("p must be even")
         self.N, self.p, self.marks = N, p, marks
+        self.exact = exact
         self._t4: dict = {}
         self._t2: dict = {}
 
     def t4(self, a, b, c, d):
         key = (a, b, c, d)
         if key not in self._t4:
-            self._t4[key] = t4bar(self.N, self.p, a, b, c, d, self.marks)
+            self._t4[key] = t4bar(self.N, self.p, a, b, c, d, self.marks,
+                                  exact=self.exact)
         return self._t4[key]
 
     def t2(self, a, b):
         if (a, b) not in self._t2:
-            self._t2[(a, b)] = t2bar(self.N, self.p, a, b)
+            self._t2[(a, b)] = t2bar(self.N, self.p, a, b, exact=self.exact)
         return self._t2[(a, b)]
 
 
 def channel_pair_moments(N: int, p: int, n: int,
                          marks=('i', 'i', 'j', 'j'),
-                         ks=(0, 2)) -> dict:
+                         ks=(0, 2), exact: bool = False) -> dict:
     """Exact finite-N symmetrized traceless mu_k of the A_n channel (per
-    flavor pair for the default marks).  Scope: K = k + 2n <= 10 H-nodes,
-    i.e. at most 5 subsets per word (the DP count handles any m; the
-    matching enumeration grows as (K-1)!!)."""
-    if max(ks) + 2 * n > 10:
-        raise ValueError("scope: k + 2n <= 10 (largest supported word)")
-    tab = PairTab(N, p, marks)
+    flavor pair for the default marks).  Scope: K = k + 2n <= 10 H-nodes
+    for the float assembly, <= 12 with exact=True, at most 6 subsets per
+    word (the DP count handles any m; the matching enumeration grows as
+    (K-1)!!: 945 at K = 10, 10395 at K = 12).
+
+    exact=True runs the whole assembly in Fractions: the per-word values
+    are exact rationals already, so the alternating mu_k sums come out
+    with NO cancellation noise and the float N = 256 cap (module
+    docstring) does not apply.  The returned mu/gross/w2 entries are then
+    Fractions.
+
+    Convention note (mu_0 and w2 only): the subtraction here is
+    ensemble-level, mu_0 = E<XY> - E<X>E<Y>.  The ED benches
+    (mn_majorana_bench.py, moments_pipeline.py) subtract the trace per
+    instance, which differs by the disorder covariance Cov(<X>, <Y>) --
+    an O(1/C(N,p))-scale term material only at small N, where the
+    committed mu_0/w2 values are therefore convention-specific.  The
+    k >= 1 moments involve no subtraction and are convention-free."""
+    cap = 12 if exact else 10
+    if max(ks) + 2 * n > cap:
+        raise ValueError(f"scope: k + 2n <= {cap} (largest supported word"
+                         + ("" if exact else "; exact=True extends to 12")
+                         + ")")
+    tab = PairTab(N, p, marks, exact=exact)
     out = {}
     for k in ks:
         v1, g1 = _mu_ordered(tab, n, k)
         v2, g2 = _mu_ordered_swapped(tab, n, k)
-        out[f"mu{k}"] = 0.5 * (v1 + v2)
-        out[f"gross{k}"] = 0.5 * (g1 + g2)
-    trX = _trace_part(tab, n)
-    out["mu0"] -= trX * trX
-    out["w2"] = (out["mu2"] / out["mu0"]) if out["mu0"] != 0 else float("nan")
+        out[f"mu{k}"] = (v1 + v2) / 2 if exact else 0.5 * (v1 + v2)
+        out[f"gross{k}"] = (g1 + g2) / 2 if exact else 0.5 * (g1 + g2)
+    if 0 in ks:
+        trX = _trace_part(tab, n)
+        out["mu0"] -= trX * trX
+        if 2 in ks:
+            if out["mu0"] != 0:
+                out["w2"] = out["mu2"] / out["mu0"]
+            else:
+                out["w2"] = float("nan")
     return out
 
 

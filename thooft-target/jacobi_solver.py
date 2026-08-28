@@ -1,79 +1,93 @@
 #!/usr/bin/env python3
 r"""
-Matched-exponent Jacobi solver for the 't Hooft equation at alpha != 0
-======================================================================
+Matched-exponent Jacobi solver for the 't Hooft equation at alpha != 0.
+=======================================================================
 
-The Chebyshev solver (thooft_spectrum.py) hardwires the
-alpha = 0 endpoint exponent 1/2 into its basis sqrt(x(1-x)) U_m.  Away
-from the duality point its convergence is therefore only algebraic.  The
-measured residuals in the Litvinov-Meshcheriakov sum-rule tests are
-1e-5..2e-4 (README "Precision notes").  This solver builds
-the TRUE endpoint exponent into the basis and restores fast convergence at
-alpha != 0.
+The Chebyshev solver in thooft_spectrum.py hardwires the alpha = 0
+endpoint exponent 1/2 into its basis, sqrt(x(1-x)) U_m.  Away from the
+duality point its convergence is therefore only algebraic.  The measured
+residuals in the Litvinov-Meshcheriakov sum-rule tests are 1e-5 to 2e-4;
+see the README's precision notes.
 
-The equation (FLZ arXiv:0905.2280 Eq. 1.1, equal masses alpha1 = alpha2 =
-alpha = pi m_q^2 / g^2):
+This solver builds the TRUE endpoint exponent into the basis, and
+restores fast convergence at alpha != 0.
+
+THE EQUATION.  FLZ arXiv:0905.2280 Eq. 1.1, at equal masses
+alpha1 = alpha2 = alpha = pi m_q^2 / g^2:
 
     2 pi^2 lambda phi(x) = alpha (1/x + 1/(1-x)) phi(x)
                            - FP-Int_0^1 phi(y)/(y-x)^2 dy ,      x in [0,1],
 
-phi(0) = phi(1) = 0, eigenvalue reported as 2 lambda_n = M_n^2/(pi g^2),
-exactly as in thooft_spectrum.py.
+with phi(0) = phi(1) = 0.  The eigenvalue is reported as
+2 lambda_n = M_n^2/(pi g^2), exactly as in thooft_spectrum.py.
 
-Endpoint exponent ('t Hooft 1974; FLZ Sec. 1; LM arXiv:2409.11324)
-------------------------------------------------------------------
-phi(x) ~ x^beta as x -> 0 (and (1-x)^beta at x -> 1) with
+THE ENDPOINT EXPONENT ('t Hooft 1974; FLZ Sec. 1; LM arXiv:2409.11324)
+-----------------------------------------------------------------------
+phi(x) ~ x^beta as x -> 0, and (1-x)^beta as x -> 1, with
 
     pi beta cot(pi beta) = -alpha ,        beta in (0, 1).
 
-Derivation (verified numerically in test_jacobi.py): substituting
-phi = x^beta into the equation, the finite-part integral produces the local
-singular term x^(beta-1) * FP-Int_0^inf t^beta/(t-1)^2 dt.  With
-Int_0^inf t^beta (t+z)^-2 dt = z^(beta-1) * pi beta / sin(pi beta) and the
-Hadamard finite part being the mean of the z -> e^{+-i pi} boundary values,
+DERIVATION, verified numerically in test_jacobi.py.  Substitute
+phi = x^beta into the equation.  The finite-part integral produces the
+local singular term x^(beta-1) * FP-Int_0^inf t^beta/(t-1)^2 dt.
+
+With Int_0^inf t^beta (t+z)^-2 dt = z^(beta-1) * pi beta / sin(pi beta),
+and with the Hadamard finite part being the mean of the z -> e^{+-i pi}
+boundary values,
 
     FP-Int_0^inf t^beta/(t-1)^2 dt = -pi beta cot(pi beta),
 
-so the x^(beta-1) terms cancel iff alpha + pi beta cot(pi beta) = 0.  At
-alpha = 0 this gives beta = 1/2 exactly (the Chebyshev case).  The root is
-unique in (0,1) for alpha > -1, because pi b cot(pi b) decreases
-monotonically from 1 to -inf there.  scipy brentq finds it at machine
-precision.  The tests assert the transcendental residual at the root.  They
-also re-derive the half-line finite-part identity itself through an
+so the x^(beta-1) terms cancel if and only if
+alpha + pi beta cot(pi beta) = 0.
+
+At alpha = 0 that gives beta = 1/2 exactly, which is the Chebyshev case.
+The root is unique in (0,1) for alpha > -1, because pi b cot(pi b)
+decreases monotonically from 1 to -inf there.  scipy brentq finds it at
+machine precision.
+
+The tests assert the transcendental residual at the root.  They also
+re-derive the half-line finite-part identity itself, through an
 independent subtracted scipy.quad regularization.
 
-Basis and Gram ("mass") matrix
+THE BASIS, AND THE GRAM MATRIX
 ------------------------------
     b_k(x) = C_k [x(1-x)]^beta P_k^(2beta,2beta)(2x - 1) ,   k = 0, 1, ...
 
-with P_k^(a,a) the (ultraspherical) Jacobi polynomials.  Weight choice: the
-L^2[0,1] Gram matrix of functions [x(1-x)]^beta p_k(x) is
-Int_0^1 [x(1-x)]^(2beta) p_n p_m dx.  The polynomials are therefore
-integrated against the weight [x(1-x)]^(2beta).  So the Jacobi family
-orthogonal w.r.t. THAT weight (parameters (2beta, 2beta)) makes the Gram
-matrix exactly diagonal.  With the normalization
+with P_k^(a,a) the ultraspherical Jacobi polynomials.
+
+Why that weight.  The L^2[0,1] Gram matrix of functions [x(1-x)]^beta
+p_k(x) is Int_0^1 [x(1-x)]^(2beta) p_n p_m dx.  So the polynomials are
+integrated against the weight [x(1-x)]^(2beta).  The Jacobi family
+orthogonal with respect to THAT weight, with parameters (2beta, 2beta),
+therefore makes the Gram matrix exactly diagonal.
+
+With the normalization
 
     C_k^-2 = ||[x(1-x)]^beta P_k||^2
            = Gamma(k+2beta+1)^2 / [ (2k+4beta+1) Gamma(k+1) Gamma(k+4beta+1) ]
 
-(closed form from the standard Jacobi norm h_k^(a,b), re-verified against
-Gauss-Jacobi quadrature in the tests) the Gram matrix is exactly the
-identity.  The generalized eigenproblem collapses to a standard symmetric
-one, with perfect conditioning.  Any other classical family (e.g.
-P^(beta,beta), which pairs with known Cauchy-transform closed forms) leaves
-a full, increasingly ill-conditioned Gram matrix.  For 2beta not an integer
-no polynomial family diagonalizes the finite-part operator itself.  The
-Tricomi/Sohngen construction needs the weight-exponent sum at the two
-endpoints to be an integer, which is what makes alpha = 0, i.e. 2beta = 1,
-special.
+which is the standard Jacobi norm h_k^(a,b), re-verified against
+Gauss-Jacobi quadrature in the tests, the Gram matrix is exactly the
+identity.  So the generalized eigenproblem collapses to a standard
+symmetric one, with perfect conditioning.
 
-Under x -> 1-x the basis splits into the two CP sectors by the parity of k,
-exactly as in the main solver (P_k^(a,a)(-xi) = (-1)^k P_k^(a,a)(xi)).
+Any other classical family leaves a full, increasingly ill-conditioned
+Gram matrix.  P^(beta,beta), for instance, pairs with known
+Cauchy-transform closed forms but does not diagonalize the Gram matrix.
 
-Discretization of the finite-part operator (weak form)
-------------------------------------------------------
-The same exact Gagliardo identity used by sine_solver.py: for u, v vanishing
-at the endpoints (any Holder exponent beta > 0),
+For 2beta not an integer, no polynomial family diagonalizes the
+finite-part operator itself.  The Tricomi/Sohngen construction needs the
+weight-exponent sum at the two endpoints to be an integer.  That is what
+makes alpha = 0, where 2beta = 1, special.
+
+Under x -> 1-x the basis splits into the two CP sectors by the parity of
+k, exactly as in the main solver, since
+P_k^(a,a)(-xi) = (-1)^k P_k^(a,a)(xi).
+
+DISCRETIZING THE FINITE-PART OPERATOR (the weak form)
+-----------------------------------------------------
+The same exact Gagliardo identity that sine_solver.py uses.  For u and v
+vanishing at the endpoints, at any Holder exponent beta > 0,
 
     <u, FP v> = -B[u, v] - <u, V v>,      V(x) = 1/x + 1/(1-x) = 1/(x(1-x)),
     B[u, v]   = (1/2) Int Int [u(x)-u(y)][v(x)-v(y)] / (x-y)^2 dx dy ,
@@ -82,64 +96,78 @@ so the Galerkin matrix of the full operator alpha*V - FP is
 
     A_nm = (alpha + 1) <b_n, V b_m> + B[b_n, b_m] ,
 
-manifestly SYMMETRIC.  The builder asserts that symmetry at assembly.  The
-alpha -> alpha+1 bare-mass shift appears exactly as in
-sine_solver/eigenfunctions.  Eigenvalues:
-A a = mu a with mu = 2 pi^2 lambda (Gram = identity).
+which is manifestly SYMMETRIC.  The builder asserts that symmetry at
+assembly.  The alpha -> alpha+1 bare-mass shift appears exactly as in
+sine_solver and eigenfunctions.  Eigenvalues solve A a = mu a with
+mu = 2 pi^2 lambda, since the Gram matrix is the identity.
 
-* Potential term: <b_n, V b_m> = C_n C_m Int [x(1-x)]^(2beta-1) P_n P_m dx
-  is a polynomial against the Jacobi weight (2beta-1, 2beta-1).  Gauss-Jacobi
-  quadrature evaluates it with enough nodes to be EXACT (up to rounding).
+THE POTENTIAL TERM.  <b_n, V b_m> = C_n C_m Int [x(1-x)]^(2beta-1) P_n P_m
+dx is a polynomial against the Jacobi weight (2beta-1, 2beta-1).
+Gauss-Jacobi quadrature evaluates it with enough nodes to be EXACT, up to
+rounding.
 
-* Gagliardo double integral: the integrand g(x,y) = [Du][Dv]/(x-y)^2 is
-  analytic across the diagonal (g -> u'v' as y -> x).  It has algebraic
-  branch points at the endpoints, so tensor Gauss-Legendre stalls.  We use a
-  tensor TANH-SINH (double-exponential) rule, x = (1 + tanh((pi/2) sinh u))/2,
-  |u| <= 4.  That rule handles arbitrary endpoint exponents at spectral
-  accuracy.  We assemble the off-diagonal part through the graph-Laplacian
-  form (Q_ij = w_i w_j/(x_i-x_j)^2, exactly symmetric).  The removable
-  diagonal contributes (1/2) sum_i w_i^2 b_n'(x_i) b_m'(x_i).  We store 1-x as
-  its own node array (the grid is symmetric), so no precision is lost at
-  x -> 1.
+THE GAGLIARDO DOUBLE INTEGRAL.  The integrand
+g(x,y) = [Du][Dv]/(x-y)^2 is analytic across the diagonal, since g -> u'v'
+as y -> x.  It has algebraic branch points at the endpoints, so tensor
+Gauss-Legendre stalls.
 
-  The node count must RESOLVE the basis.  The degree-2K top polynomial
-  oscillates with wavelength ~1/(4K) mid-interval, where the tanh-sinh
-  spacing is (pi/4)h.  Undersampling aliases the quadrature and produces
-  spurious eigenvalues (observed at K = 220 with 801 nodes).
-  The default is n_ts = max(501, 12K+1), measured safe for the lowest K/2
-  levels.
+We use a tensor TANH-SINH (double-exponential) rule,
+x = (1 + tanh((pi/2) sinh u))/2, with |u| <= 4.  That rule handles
+arbitrary endpoint exponents at spectral accuracy.
 
-  Measured accuracy of this scheme (see jacobi_convergence.json and the
-  anchor test): at beta = 1/2 we can compare the assembled B matrix against
-  the EXACT closed form B[B_n, B_m] = (pi^2/2)(m+1) delta_nm - 2 I_nm.  That
-  closed form follows from the Chebyshev eigenrelation of the finite-part
-  operator plus the odd-harmonic closed form I_nm of
-  thooft_spectrum._I_matrix.  At n_ts = 501 the worst entry error over a
-  21-function block is ~5e-13.  The alpha = 0 spectrum reproduces the
-  K-equivalent Chebyshev solver to ~1e-12 (same trial space, so any
-  difference IS pure quadrature error).
+The off-diagonal part is assembled through the graph-Laplacian form,
+Q_ij = w_i w_j/(x_i-x_j)^2, which is exactly symmetric.  The removable
+diagonal contributes (1/2) sum_i w_i^2 b_n'(x_i) b_m'(x_i).  We store
+1-x as its own node array, since the grid is symmetric, so no precision is
+lost as x -> 1.
 
-What is exact, what is measured
+THE NODE COUNT MUST RESOLVE THE BASIS.  The degree-2K top polynomial
+oscillates with wavelength about 1/(4K) mid-interval, where the tanh-sinh
+spacing is (pi/4)h.  Undersampling aliases the quadrature and produces
+spurious eigenvalues.  That was observed at K = 220 with 801 nodes.  The
+default is n_ts = max(501, 12K+1), measured safe for the lowest K/2
+levels.
+
+MEASURED ACCURACY OF THE SCHEME.  See jacobi_convergence.json and the
+anchor test.  At beta = 1/2 the assembled B matrix can be compared
+against the EXACT closed form
+B[B_n, B_m] = (pi^2/2)(m+1) delta_nm - 2 I_nm.  That closed form follows
+from the Chebyshev eigenrelation of the finite-part operator, plus the
+odd-harmonic closed form I_nm of thooft_spectrum._I_matrix.
+
+At n_ts = 501 the worst entry error over a 21-function block is about
+5e-13.  The alpha = 0 spectrum reproduces the K-equivalent Chebyshev
+solver to about 1e-12.  The trial space is the same, so any difference IS
+pure quadrature error.
+
+WHAT IS EXACT, WHAT IS MEASURED
 -------------------------------
-Exact: the endpoint-exponent condition; the Gagliardo identity; the Gram and
-potential matrix elements (Gauss-Jacobi of polynomial integrands); the
-beta = 1/2 anchor closed form.  Measured (jacobi_convergence.json): the
-quadrature floor is ~1e-12 on low eigenvalues at default settings.  At
-alpha = +/-0.5 the ground state converges below 1e-11 by K = 32.  The old
-solver there follows the exponent-mismatch algebraic law ~K^-(4 beta) (fitted
-rates match 4 beta to 2 digits: 2.34, 1.48) and still sits at 1e-7..1e-5 at
-K = 128.  The reference's K = 200 vs 160 self-consistency is ~4e-12.  The LM
-tables (their 6-digit floor) and the 20-digit LM sum rules certify that
-externally (s = 2: <= 3e-8, s >= 4: ~4e-12 relative).  Caveat: the true
-wavefunction also carries subleading endpoint structure NOT in this basis.
-That structure is a secondary exponent beta2 in (1,2), plus integer-power/log
-terms from the regular part of the kernel.  So alpha != 0 convergence, while
-fast, is not guaranteed spectral without bound.  At the K used here that
-structure sits below the measured 1e-11..1e-12 floor.
+Exact: the endpoint-exponent condition; the Gagliardo identity; the Gram
+and potential matrix elements, since Gauss-Jacobi is exact on polynomial
+integrands; and the beta = 1/2 anchor closed form.
 
-Conventions match thooft_spectrum.py throughout.  solve_sector_jacobi returns
-(two_lambda ascending, eigenvectors, degrees).  spectrum_jacobi interleaves
-the two CP sectors with the same explicit interleaving assertion.
+Measured, in jacobi_convergence.json: the quadrature floor is about 1e-12
+on low eigenvalues at default settings.  At alpha = +-0.5 the ground state
+converges below 1e-11 by K = 32.
+
+The old solver there follows the exponent-mismatch algebraic law
+~K^-(4 beta) -- the fitted rates match 4 beta to 2 digits, 2.34 and 1.48 --
+and still sits at 1e-7 to 1e-5 at K = 128.  The reference's K = 200
+against 160 self-consistency is about 4e-12.  The LM tables, at their
+6-digit floor, and the 20-digit LM sum rules certify that externally:
+s = 2 within 3e-8, s >= 4 about 4e-12 relative.
+
+A CAVEAT.  The true wavefunction also carries subleading endpoint
+structure that this basis does not have: a secondary exponent beta2 in
+(1,2), plus integer-power and log terms from the regular part of the
+kernel.  So alpha != 0 convergence, while fast, is not guaranteed
+spectral without bound.  At the K used here that structure sits below the
+measured 1e-11 to 1e-12 floor.
+
+Conventions match thooft_spectrum.py throughout.  solve_sector_jacobi
+returns (two_lambda ascending, eigenvectors, degrees).  spectrum_jacobi
+interleaves the two CP sectors, with the same explicit interleaving
+assertion.
 """
 
 from __future__ import annotations

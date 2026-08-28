@@ -1,46 +1,54 @@
 #!/usr/bin/env python3
 r"""
-Mode separation of the antipodal growth: a mechanism tested and refuted.
-========================================================================
+Mode separation of the antipodal growth: a mechanism, tested and refuted.
+=========================================================================
 
-The deep campaign left two open items: the flipped mode's rate, and a
-mechanism for the transient window.  The natural candidate had a sharp
-signature: in the semiclassical skeleton the growing tower e^{n v thL}
-rotates by e^{-i n pi} under the half-fake-period shift -- odd harmonics
-flip, even harmonics do not -- so the window would end when the
-unflippable n = 2 harmonic (rate exactly 2 kappa_1) overtakes.
+The deep campaign left two open items.  The flipped mode's rate, and a
+mechanism for the transient window.
 
-Two instruments, one verdict:
+The natural candidate had a sharp signature.  In the semiclassical
+skeleton the growing tower e^{n v thL} rotates by e^{-i n pi} under the
+half-fake-period shift.  Odd harmonics flip, even ones do not.  So the
+window would end when the unflippable n = 2 harmonic, at rate exactly
+2 kappa_1, overtakes.
 
-1. Shift-circle Fourier analysis (primary; no exponential fitting):
-   sample the curve at M shifts around the full fake circle and DFT in
-   Delta.  If the tower were harmonic, |c_n(thL)| would grow at rates
-   kappa_n = n kappa_1.  MEASURED: kappa_2/kappa_1 ~ 0.9-1.2 on the
-   rows with a measurable growth window (kappa_1 > 0.05; the lam = 1.5
-   row has both rates negative -- decaying modes, ratio undefined as a
-   growth comparison -- and is excluded by that gate in the tests), with
-   comparable weights |c_2/c_1| ~ 0.7-1.0 -- the harmonic mechanism is
-   REFUTED at finite lambda where it is testable.  The reason is structural: the
-   exact shift-response has CONTINUOUS frequency content set by the
-   energy band (each Lehmann line contributes its own e^{-dtau dE}), not
-   v-harmonics; the harmonic tower is only the strict lambda -> 0
+Two instruments, one verdict.
+
+1. SHIFT-CIRCLE FOURIER ANALYSIS (primary, and it needs no exponential
+   fitting).  Sample the curve at M shifts around the full fake circle
+   and take the DFT in Delta.  If the tower were harmonic, |c_n(thL)|
+   would grow at rates kappa_n = n kappa_1.
+
+   MEASURED: kappa_2/kappa_1 is about 0.9-1.2 on the rows with a
+   measurable growth window (kappa_1 > 0.05), with comparable weights
+   |c_2/c_1| about 0.7-1.0.  The lam = 1.5 row has both rates negative,
+   so the modes decay and the ratio is undefined as a growth comparison;
+   that gate excludes it in the tests.
+
+   So the harmonic mechanism is REFUTED at finite lambda, where it is
+   testable.  The reason is structural.  The exact shift-response has
+   CONTINUOUS frequency content, set by the energy band, because each
+   Lehmann line contributes its own e^{-dtau dE}.  It does not have
+   v-harmonics.  The harmonic tower is only the strict lambda -> 0
    skeleton.  This matches the earlier finding that the phase period (v)
    and the magnitude growth (kappa > v) decouple at finite lambda.
 
-2. Two-mode variable-projection fit (secondary): robustly establishes
-   the SIGNS -- A1 > 0 (flipped) with a smaller A2 < 0 (unflipped,
-   growing) wherever the flip operates -- but the rate surface is
-   degenerate (the free fit wanders, and lambda = 0.6 collapses
-   outright, kept as the recorded failure).  Rate extraction from these
-   curves is unreliable; the band's continuous content is why.
+2. TWO-MODE VARIABLE-PROJECTION FIT (secondary).  It establishes the
+   SIGNS robustly: A1 > 0, the flipped mode, with a smaller A2 < 0,
+   unflipped and growing, wherever the flip operates.
 
-Net: the anti-scrambling epoch ends because an unflipped growing
-component overtakes, but that component is NOT the semiclassical second
-harmonic; the flipped mode's dS-rate question remains open pending a
-method that resolves the band's continuous content (e.g. working
-directly with Lehmann data).
+   But the rate surface is degenerate.  The free fit wanders, and
+   lambda = 0.6 collapses outright, which is kept here as the recorded
+   failure.  Rate extraction from these curves is unreliable, and the
+   band's continuous content is why.
 
-Output: antipodal_modes.json; asserted in test_antipodal_modes.py.
+NET.  The anti-scrambling epoch ends because an unflipped growing
+component overtakes.  But that component is NOT the semiclassical second
+harmonic.  The flipped mode's dS-rate question stays open, and it needs a
+method that resolves the band's continuous content -- working directly
+with Lehmann data, for example.
+
+Output: antipodal_modes.json.  Asserted in test_antipodal_modes.py.
 """
 
 from __future__ import annotations
@@ -141,6 +149,10 @@ def harmonics(lam: float, betaJ: float = 2.0, p: int = 4, nmax: int = 90,
     R = np.empty((len(thLs), M))
     for j, d in enumerate(deltas):
         R[:, j] = _curve(cc, Nflav, float(d), thLs)
+    # Under the model R_j = sum_n A_n e^{-i n v Delta_j}, fft bin n holds
+    # A_{-n mod M}, not A_n; _curve takes .real, so |A_{-n}| = |A_n| and
+    # every magnitude diagnostic below is unaffected.  Dropping .real (a
+    # complex-ratio extension) would need np.fft.ifft * M instead.
     C = np.fft.fft(R, axis=1) / M          # c_n(thL), n = 0..M-1
     out = dict(lam=lam, betaJ=betaJ, v=v, M=M, thLs=thLs.tolist())
     for n in (0, 1, 2, 3):

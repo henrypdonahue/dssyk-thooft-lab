@@ -1,6 +1,9 @@
-"""Tests for antiscrambling.py: closed-form identities, the
-scrambling-sign verdict, the HZ fold map, and the ED ground truth in
-syk-self-averaging/fold_bench.json."""
+"""Tests for antiscrambling.py.
+
+Four things: the closed-form identities, the scrambling-sign verdict, the
+Harlow-Zhao fold map, and the ED ground truth in
+syk-self-averaging/fold_bench.json.
+"""
 
 import json
 from pathlib import Path
@@ -160,8 +163,7 @@ def test_fold_negT_is_reflection_of_fold():
 # ---------------------------------------------------------------------------
 @pytest.fixture(scope="module")
 def bench():
-    if not _BENCH.exists():
-        pytest.skip("run syk-self-averaging/fold_bench.py first")
+    # fold_bench.json is committed: missing = broken checkout, fail not skip
     return json.loads(_BENCH.read_text())["points"]
 
 
@@ -320,8 +322,7 @@ _SCAN = Path(__file__).resolve().parent.parent / "syk-self-averaging" / \
 
 @pytest.fixture(scope="module")
 def scan():
-    if not _SCAN.exists():
-        pytest.skip("run syk-self-averaging/fold_bench.py --scan first")
+    # fold_scan.json is committed: missing = broken checkout, fail not skip
     return json.loads(_SCAN.read_text())["points"]
 
 

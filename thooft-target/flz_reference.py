@@ -1,10 +1,13 @@
 """FLZ reference constants (arXiv:0905.2280), one provenance-checked copy.
 
-FLZ Tables 1 & 2, last column 2*lambda_n^(num), 14 significant digits,
-transcribed from the published paper (digit-for-digit audit against the
-fetched PDF, 2026-07-17 review).  validate.py, test_thooft.py and
-test_jacobi.py share this copy, so the literature anchor has exactly one
-place to audit.  The SOLVERS being validated share no code with this file.
+FLZ Tables 1 and 2, last column 2*lambda_n^(num), at 14 significant
+digits.  Transcribed from the published paper, with a digit-for-digit
+audit against the fetched PDF in the 2026-07-17 review.
+
+validate.py, test_thooft.py and test_jacobi.py all share this copy.  So
+the literature anchor has exactly one place to audit.
+
+The SOLVERS being validated share no code with this file.
 """
 
 from scipy.special import polygamma

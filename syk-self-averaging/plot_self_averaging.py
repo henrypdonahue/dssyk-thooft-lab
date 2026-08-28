@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
-"""Figures for the self-averaging test: (left) singlet relative variance vs N at
-fixed p (power law) and along the double-scaling line (super-exponential);
-(right) the symmetry-violation signal rms_off vs sqrt(N) for p = 4, 6, with the
-EXACT closed-form curve of exact_wick.py drawn through the ED points (no fit).
+"""Figures for the self-averaging test.
 
-Reads results.json (written by self_averaging.py) from the module directory,
-so the figure always shows the production numbers with their error bars --
-nothing is hardcoded and the scripts work from any cwd.  The right panel plots
-rms_off, the signal self_averaging.py designates as trustworthy; the ratio
-rms_off/rms_diag (whose p ~ N/2 denominator collapse exact_wick.py now
-derives) is deliberately NOT plotted.
+Left panel: the singlet relative variance against N, at fixed p, where it
+is a power law, and along the double-scaling line, where it is
+super-exponential.
+
+Right panel: the symmetry-violation signal rms_off against sqrt(N) for
+p = 4 and 6, with the EXACT closed-form curve of exact_wick.py drawn
+through the ED points.  No fit.
+
+Reads results.json, written by self_averaging.py, from the module
+directory.  So the figure always shows the production numbers with their
+error bars.  Nothing is hardcoded, and the scripts work from any cwd.
+
+The right panel plots rms_off, the signal self_averaging.py designates as
+trustworthy.  The ratio rms_off/rms_diag is deliberately NOT plotted; its
+p ~ N/2 denominator collapse is derived in exact_wick.py.
 """
 
 import json

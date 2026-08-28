@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""Tests for the comparison dictionary: every convention that could silently
-wreck a DSSYK <-> 't Hooft comparison is pinned here."""
+"""Tests for the comparison dictionary.
+
+Every convention that could silently wreck a DSSYK <-> 't Hooft
+comparison is pinned here.
+"""
 
 import math
 

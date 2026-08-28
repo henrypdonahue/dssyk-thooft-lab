@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Asserting tests for the Dirac/QED campaign (qed_campaign.py).
+"""Tests for the Dirac/QED campaign (qed_campaign.py).
 
-The tests check every closed form against an independent enumeration route
-(sparse-operator traces + literal Isserlis Wick) and against ED disorder
-ensembles.  They check the spectral pipeline against eigenbasis-free
-commutator identities.  Run with:  pytest -q  (the Nc = 10 ED ensemble is
-marked slow).
+Every closed form is checked against an independent enumeration route,
+which is sparse-operator traces plus literal Isserlis Wick, and against
+ED disorder ensembles.  The spectral pipeline is checked against
+eigenbasis-free commutator identities.
+
+Run with: pytest -q.  The Nc = 10 ED ensemble is marked slow.
 """
 
 import json
@@ -401,11 +402,9 @@ def test_spectral_ensemble_structure():
 
 
 def test_qed_campaign_json_structure():
-    """The committed campaign JSON has the advertised structure (skipped if
-    the campaign has not been run in this checkout)."""
+    """The committed campaign JSON has the advertised structure.  It is a
+    committed artifact: a missing file is a broken checkout and fails."""
     path = Path(__file__).resolve().parent / "qed_campaign.json"
-    if not path.exists():
-        pytest.skip("qed_campaign.json not present; run qed_campaign.py")
     data = json.loads(path.read_text())
     for key in ("citation_context", "m2_exact_table", "m2_ensembles",
                 "charging", "spectral"):
@@ -506,9 +505,8 @@ def test_capacitance_carries_an_inflated_uncertainty():
     emits an uncertainty, that it is sqrt(chi2/dof)-inflated where the fit
     is bad, and that the resulting band is wide enough to forbid the
     three-decimal reading the module used to print."""
+    # qed_campaign.json is committed: missing = broken checkout, fail
     path = Path(__file__).resolve().parent / "qed_campaign.json"
-    if not path.exists():
-        pytest.skip("run qed_campaign.py first")
     rows = json.loads(path.read_text())["charging"]
     assert rows
     for ch in rows:

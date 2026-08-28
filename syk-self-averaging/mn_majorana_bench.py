@@ -1,48 +1,57 @@
 #!/usr/bin/env python3
 r"""
-Majorana singlet-channel spectral moments: the ED side of the exact
-N = infinity chord computation.
-=================================================================
+Majorana singlet-channel moments: the ED side of the chord computation.
+=======================================================================
 
-duality/chord_moments.py computes the EXACT N = infinity spectral moments of
-the Majorana singlet bilinear channels
+duality/chord_moments.py computes the EXACT N = infinity spectral moments
+of the Majorana singlet bilinear channels
 
     A_n = sum_i psi_i (ad_H)^n psi_i ,      n = 1, 2, 3
 
-from the chord expansion (two matter chords of dimension Delta_psi = 1/p).
-This module measures the SAME channels by exact diagonalization at finite N
-along fixed p = 4 (lambda_chord = 2p^2/N falling), disorder-averaged with
-errors.  The chord prediction can then be checked as a genuine N -> infinity
-extrapolation with no Dirac-vs-Majorana channel caveat.  moments_pipeline.py
-measures the Dirac CP-resolved tower instead; both JSONs are kept.
+from the chord expansion, with two matter chords of dimension
+Delta_psi = 1/p.
 
-Conventions (single point of truth = dirac.symmetrized_weight, mirrored
-here): moments of the SYMMETRIZED T = infinity spectral function,
+This module measures the SAME channels by exact diagonalization at finite
+N, along fixed p = 4 with lambda_chord = 2p^2/N falling, disorder-averaged
+with errors.  So the chord prediction can be checked as a genuine
+N -> infinity extrapolation, with no Dirac-against-Majorana channel
+caveat.  moments_pipeline.py measures the Dirac CP-resolved tower
+instead, and both JSONs are kept.
+
+CONVENTIONS.  The single point of truth is dirac.symmetrized_weight,
+mirrored here.  These are moments of the SYMMETRIZED T = infinity
+spectral function:
 
     mu_k = [Tr(ad_H^k(A_h) A_h) + Tr(ad_H^k(A_a) A_a^dag)]/dim
-         = (1/2)[Tr(ad^k(A) A^dag) + Tr(ad^k(A^dag) A)]/dim ,
+         = (1/2)[Tr(ad^k(A) A^dag) + Tr(ad^k(A^dag) A)]/dim
 
-with A traceless (mu_0 subtracts the identity component; mu_{k>=1} is
-insensitive to it because the trace of a commutator vanishes).  Shape
-invariants reported: w2 = mu_2/(mu_0 <H^2>/dim) and kurt = mu_4 mu_0/mu_2^2.
+with A traceless.  mu_0 subtracts the identity component; mu_{k>=1} is
+insensitive to it, because the trace of a commutator vanishes.
 
-Exact anchor asserted in the tests: A_1 = -2p H identically (psi gamma psi
-summed over flavors = (N-2p) gamma for a p-Majorana string).  So the n = 1
-channel is conserved: mu_2 = mu_4 = 0 at EVERY N.  The chord side
-reproduces this identity exactly (an algebraic cancellation at any matter
-weight).  The stored residual is a float-noise yardstick, not a physics
-floor (see duality/chord_moments.py).
+Shape invariants reported: w2 = mu_2/(mu_0 <H^2>/dim) and
+kurt = mu_4 mu_0/mu_2^2.
 
-Scope caveat (from the adversarial review, 2026-08-16): the chord
+AN EXACT ANCHOR, asserted in the tests.  A_1 = -2p H identically, since
+psi gamma psi summed over flavors is (N-2p) gamma for a p-Majorana
+string.  So the n = 1 channel is conserved: mu_2 = mu_4 = 0 at EVERY N.
+
+The chord side reproduces that identity exactly, as an algebraic
+cancellation at any matter weight.  The stored residual is a float-noise
+yardstick, not a physics floor; see duality/chord_moments.py.
+
+SCOPE CAVEAT, from the adversarial review of 2026-08-16.  The chord
 computation is the i != j flavor-PAIR amplitude.  The bench measures the
-full physical channel, which at dense-ED sizes is DIAGONAL-dominated.  In
-the flavor decomposition at p = 4, n = 2, the summed pair part of mu_0 is
--3% of the total at N = 12 and -19% at N = 14, opposite in sign to the
-N = infinity per-pair value.  So these bench trends do NOT directly
-probe the chord cancellation at accessible N.  What they establish is the
-raw fixed-p turn-on of the channel toward the lambda -> 0 corner.
+full physical channel, which at dense-ED sizes is DIAGONAL-dominated.
 
-Output: mn_majorana_bench.json.  Runtime ~1 h.
+In the flavor decomposition at p = 4, n = 2, the summed pair part of mu_0
+is -3% of the total at N = 12 and -19% at N = 14, opposite in sign to the
+N = infinity per-pair value.
+
+So these bench trends do NOT directly probe the chord cancellation at
+accessible N.  What they establish is the raw fixed-p turn-on of the
+channel toward the lambda -> 0 corner.
+
+Output: mn_majorana_bench.json.  Runtime about 1 hour.
 """
 
 from __future__ import annotations
@@ -59,7 +68,9 @@ from syk import majorana_operators
 
 def a_n_tower(H: np.ndarray, psis: list, n_max: int) -> dict:
     """A_n = sum_i psi_i (ad_H)^n psi_i, built incrementally: D^0 = psi_i,
-    D^{k+1} = [H, D^k]."""
+    D^{k+1} = [H, D^k].  Computational-basis reference path; the production
+    route in instance_moments works in the eigenbasis (identical results,
+    asserted in test_mn_majorana.py, ~2x faster on the committed run)."""
     dim = H.shape[0]
     A = {n: np.zeros((dim, dim), dtype=complex) for n in range(1, n_max + 1)}
     for P in psis:
@@ -77,15 +88,25 @@ def instance_moments(N: int, p: int, seed: int, n_list=(1, 2, 3)) -> dict:
     E, V = np.linalg.eigh(H)
     omega = E[:, None] - E[None, :]
     escale2 = float(np.mean(E ** 2))
-    psis = [op.toarray() for op in majorana_operators(N)]
-    A = a_n_tower(H, psis, max(n_list))
+    # The tower in the eigenbasis, where ad_H is the elementwise product
+    # with omega: each commutator step is a Hadamard product instead of two
+    # dim^3 matmuls, and A_n needs no later rotation.  Rounding-level
+    # differences only vs a_n_tower (the reference path).
+    n_max = max(n_list)
+    A = {n: np.zeros((dim, dim), dtype=complex) for n in range(1, n_max + 1)}
+    for op in majorana_operators(N):
+        Pt = V.conj().T @ (op.toarray() @ V)
+        D = Pt
+        for n in range(1, n_max + 1):
+            D = omega * D
+            A[n] += Pt @ D
     out = {}
     for n in n_list:
-        M = V.conj().T @ A[n] @ V
-        M -= np.trace(M) / dim * np.eye(dim)
-        Mh = 0.5 * (M + M.conj().T)
-        Ma = 0.5 * (M - M.conj().T)
-        W = (np.abs(Mh) ** 2 + np.abs(Ma) ** 2) / dim
+        M = A[n] - np.trace(A[n]) / dim * np.eye(dim)
+        # (|Mh|^2 + |Ma|^2) = (|M|^2 + |M|^2.T)/2 for Mh/Ma the (anti-)
+        # Hermitian parts -- same symmetrized weight, one matrix fewer
+        absM2 = np.abs(M) ** 2
+        W = 0.5 * (absM2 + absM2.T) / dim
         mu = {k: float(np.sum(W * omega ** k)) for k in (0, 1, 2, 4)}
         out[n] = dict(mu0=mu[0], mu1=mu[1], mu2=mu[2], mu4=mu[4],
                       escale2=escale2)
@@ -95,12 +116,14 @@ def instance_moments(N: int, p: int, seed: int, n_list=(1, 2, 3)) -> dict:
 def ensemble(N: int, p: int, n_inst: int, seed0: int = 7000,
              n_list=(1, 2, 3)) -> list:
     rows = {n: [] for n in n_list}
+    gated = {n: 0 for n in n_list}
     for j in range(n_inst):
         inst = instance_moments(N, p, seed0 + j, n_list)
         for n, d in inst.items():
             if n == 1 or abs(d["mu2"]) < 1e-9 * abs(d["mu0"]) * d["escale2"]:
                 # conserved channel (n = 1 always; n >= 2 at the special
                 # (N, p) = (8, 4) identity point): kurt is 0/0, record zeros
+                gated[n] += 1
                 rows[n].append((d["mu0"], 0.0, 0.0,
                                 d["mu2"], d["mu4"], d["escale2"]))
             else:
@@ -108,6 +131,16 @@ def ensemble(N: int, p: int, n_inst: int, seed0: int = 7000,
                 kurt = d["mu4"] * d["mu0"] / d["mu2"] ** 2
                 rows[n].append((d["mu0"], w2, kurt,
                                 d["mu2"], d["mu4"], d["escale2"]))
+    # The gate must be all-or-none per (N, p, n): a partial trip would
+    # average exact zeros into finite w2/kurt ratios -- two different
+    # definitions in one mean, with no record.  Observed behavior is
+    # all-or-none (all instances at (8, 4), none elsewhere); enforce it.
+    for n, g in gated.items():
+        if n != 1 and g not in (0, n_inst):
+            raise RuntimeError(
+                f"conserved-channel gate tripped for {g}/{n_inst} instances "
+                f"at (N, p, n) = ({N}, {p}, {n}): w2/kurt would mix "
+                "definitions; investigate before averaging")
     out = []
     for n, vals in rows.items():
         arr = np.array(vals)

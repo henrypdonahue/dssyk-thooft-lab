@@ -3,53 +3,64 @@ r"""
 Boost-to-mass dictionary calibration.
 =====================================
 
-The DSSYK Hamiltonian generates BOOSTS (paper Sec. 2: H = i d/dt, Rindler time
-in the flat-space limit), and every spectrum-match proposal silently assumes
-"peaks in M_n boost-frequency correlators = 't Hooft meson masses".  This
-module computes what a mass actually looks like in a boost-frequency spectral
-function, exactly, in the simplest calibration case: a free scalar particle of
-mass m in 1+1d Minkowski vacuum, probed along a uniformly accelerated
-worldline of proper acceleration a.  The boost frequency omega is conjugate
-to boost time eta (the Rindler time that the boost generator translates);
-on the trajectory at Rindler radius 1/a proper time equals eta/a, so
-omega is the observer's proper-time frequency measured in units of a.
+The DSSYK Hamiltonian generates BOOSTS.  The paper says so in Sec. 2:
+H = i d/dt, Rindler time in the flat-space limit.
 
-Closed form (derived by expanding the Wightman function in plane waves,
-k = m sinh(theta), and using int du e^{i nu u - i z sinh u} =
-2 e^{pi nu / 2} K_{i nu}(z) twice):
+Every spectrum-match proposal then assumes, silently, that peaks in M_n
+boost-frequency correlators are 't Hooft meson masses.  This module
+computes what a mass actually looks like in a boost-frequency spectral
+function, exactly, in the simplest case you can solve.
+
+That case is a free scalar particle of mass m in 1+1d Minkowski vacuum,
+probed along a uniformly accelerated worldline of proper acceleration a.
+The boost frequency omega is conjugate to boost time eta, the Rindler
+time the boost generator translates.  On the trajectory at Rindler radius
+1/a, proper time equals eta/a, so omega is the observer's proper-time
+frequency measured in units of a.
+
+THE CLOSED FORM.  Expand the Wightman function in plane waves,
+k = m sinh(theta), then use
+int du e^{i nu u - i z sinh u} = 2 e^{pi nu / 2} K_{i nu}(z) twice:
 
     S(omega) = (1/(pi a)) e^{pi omega / a} [ K_{i omega/a}(m/a) ]^2 .
 
-K with imaginary order is real, so S > 0; detailed balance
-S(omega) = e^{2 pi omega/a} S(-omega) (the Unruh temperature a/2pi) is
-manifest.  The module verifies this closed form against an INDEPENDENT route:
-the position-space Wightman function W(tau) = (1/2pi) K_0(m d(tau)) with the
+K with imaginary order is real, so S > 0.  Detailed balance
+S(omega) = e^{2 pi omega/a} S(-omega), at the Unruh temperature a/2pi, is
+manifest.
+
+The module checks that closed form against an INDEPENDENT route: the
+position-space Wightman function W(tau) = (1/2pi) K_0(m d(tau)), with the
 exact worldline geodesic distance continued through the Euclidean section
-(d_E = (2/a) sin(a s/2), s = eps + i tau), numerically Fourier transformed --
-the epsilon regulator enters the comparison as the known factor
-e^{-omega eps}.
+(d_E = (2/a) sin(a s/2), s = eps + i tau), Fourier transformed
+numerically.  The epsilon regulator enters the comparison as the known
+factor e^{-omega eps}.
 
-Calibration facts this establishes (tested in test_boost.py):
+FOUR CALIBRATION FACTS (tested in test_boost.py)
 
-1.  A SINGLE discrete mass gives a smooth CONTINUUM in boost frequency -- no
-    pole, support on all omega.  Consequence for the duality test: broad
-    continua in M_n spectroscopy do NOT falsify a discrete meson tower, and
-    peak-hunting at fixed setup is the wrong observable.
-2.  The mass enters only through the scaling variable m/a (with one overall
-    1/a): S(omega; m, a) = (1/a) s(omega/a, m/a).  Masses must be extracted
-    from the SHAPE (the K_{i omega/a}(m/a) kernel -- e.g. via moments or
-    kernel inversion), not positions.  A 't Hooft tower {M_n} appears as a
-    SUM of such continua: S_tot = sum_n c_n S(omega; M_n, a).
-3.  Large mass is Boltzmann-suppressed, S ~ e^{-2m/a} at omega = 0 (the
-    K_{0}(x)^2 ~ (pi/2x) e^{-2x} tail): heavy tower members are exponentially
-    faint at fixed a.
-4.  DOCUMENTED TENSION: the bulk response is KMS-asymmetric at the Unruh
-    temperature, but the T_B = infinity hologram correlator
-    Tr(M(t)M)/dim is exactly omega-SYMMETRIC (measured in mn_spectroscopy).
-    The two can only match through a nontrivial state/frequency map (the
-    "tomperature" story of Rahman-Susskind 2401.08555) -- this unresolved map
-    is precisely what this task flags as the gating dictionary question, now
-    stated sharply.
+1. A SINGLE discrete mass gives a smooth CONTINUUM in boost frequency.
+   No pole, and support at all omega.  What that means for the duality
+   test: broad continua in M_n spectroscopy do NOT falsify a discrete
+   meson tower, and peak-hunting at fixed setup is the wrong observable.
+
+2. The mass enters only through the scaling variable m/a, with one
+   overall 1/a: S(omega; m, a) = (1/a) s(omega/a, m/a).  So masses have
+   to be extracted from the SHAPE, through the K_{i omega/a}(m/a) kernel,
+   by moments or by kernel inversion.  Not from positions.  A 't Hooft
+   tower {M_n} appears as a SUM of such continua,
+   S_tot = sum_n c_n S(omega; M_n, a).
+
+3. Large mass is Boltzmann-suppressed: S ~ e^{-2m/a} at omega = 0, from
+   the K_0(x)^2 ~ (pi/2x) e^{-2x} tail.  Heavy tower members are
+   exponentially faint at fixed a.
+
+4. A DOCUMENTED TENSION.  The bulk response is KMS-asymmetric at the
+   Unruh temperature.  But the T_B = infinity hologram correlator
+   Tr(M(t)M)/dim is exactly omega-SYMMETRIC, as mn_spectroscopy measures.
+
+   The two can only match through a nontrivial state and frequency map --
+   the "tomperature" story of Rahman-Susskind 2401.08555.  That
+   unresolved map is the gating dictionary question, and this module
+   states it sharply.
 """
 
 from __future__ import annotations

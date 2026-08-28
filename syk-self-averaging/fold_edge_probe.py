@@ -1,32 +1,39 @@
 #!/usr/bin/env python3
 r"""
-The fold's soft-edge mechanism, measured (epilogue).
-====================================================
+The fold's soft-edge mechanism, measured.
+=========================================
 
 Decider #2 (duality/chord_fold.py) found that at matched lambda the ED
-folded connected fraction is ~1.5-1.6x above the exact N = infinity
-value, while unfolded observables agree to ~10%.  The fold amplifies
-finite-N corrections.  Working hypothesis stated there: the folded
-e^{+tau H} weights are dominated by the SPECTRAL MAXIMUM, whose finite-N
-fluctuations the sharp-edged chord theory lacks.
+folded connected fraction sits 1.5-1.6x above the exact N = infinity
+value, while unfolded observables agree to about 10%.  The fold amplifies
+finite-N corrections.
 
-This module measures that mechanism directly: per-instance folded and
-unfolded connected fractions at the HZ (6.9) n = 1 configuration vs the
-instance's spectral extremes.  Findings (N = 12, p = 4, betaJ = 2,
-48 instances; fold_edge_probe.json, asserted in
-duality/test_chord_fold.py::test_soft_edge_mechanism):
+The working hypothesis stated there: the folded e^{+tau H} weights are
+dominated by the SPECTRAL MAXIMUM, whose finite-N fluctuations the
+sharp-edged chord theory does not have.
 
-  * corr(E_max, folded fraction) ~ -0.86 -- the folded observable is a
-    near-deterministic function of the instance's UPPER spectral edge;
-  * the unfolded control shows no such dependence (corr ~ +0.15), and its
-    instance-to-instance scatter is ~35x smaller;
-  * the correlation with the LOWER edge is weak (~ -0.23): the (6.9) fold
-    weights the upper edge specifically, as e^{+tau H} predicts.
+This module measures that mechanism directly.  It takes per-instance
+folded and unfolded connected fractions at the HZ (6.9) n = 1
+configuration, against the instance's spectral extremes.
 
-Consequence, stated honestly: folded correlators at ED sizes measure
-edge fluctuations (a Tracy-Widom-scale finite-N effect), not the bulk
-double-scaled dynamics.  That is WHY their 1/N convergence to the chord
-answer is slow and non-uniform.  It completes the decider-#2 story.
+FINDINGS at N = 12, p = 4, betaJ = 2, over 48 instances.  Stored in
+fold_edge_probe.json, asserted in
+duality/test_chord_fold.py::test_soft_edge_mechanism.
+
+  * corr(E_max, folded fraction) is about -0.86.  The folded observable is
+    a near-deterministic function of the instance's UPPER spectral edge.
+  * The unfolded control shows no such dependence, corr about +0.15, and
+    its instance-to-instance scatter is about 35x smaller.
+  * The correlation with the LOWER edge is weak, about -0.23.  So the
+    (6.9) fold weights the upper edge specifically, as e^{+tau H}
+    predicts.
+
+WHAT FOLLOWS, stated honestly.  Folded correlators at ED sizes measure
+edge fluctuations, which is a Tracy-Widom-scale finite-N effect.  They do
+not measure the bulk double-scaled dynamics.
+
+That is WHY their 1/N convergence to the chord answer is slow and
+non-uniform.  It completes the decider-#2 story.
 """
 
 from __future__ import annotations

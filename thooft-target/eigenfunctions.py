@@ -4,42 +4,49 @@ Eigenfunction-level validation of the 't Hooft solver.
 ======================================================
 
 The eigenvalues of thooft_spectrum.py are certified against FLZ.  The
-eigenvectors have no such anchor.  This module validates them.  The eventual
-DSSYK comparison needs matrix elements (decay constants, form factors), so the
-wavefunctions must be validated too.  Three independent checks, all encoded in
-test_thooft.py:
+eigenvectors have no such anchor.  This module validates them.
 
-1.  Parseval / completeness of the "decay constants".  With phi_n unit-
-    normalized in L^2[0,1], completeness of the eigenbasis gives exact sum
-    rules for the overlaps with 1 and with x:
+The eventual DSSYK comparison needs matrix elements, meaning decay
+constants and form factors.  So the wavefunctions have to be validated
+too.  Three independent checks, all encoded in test_thooft.py.
 
-        sum_n ( Int_0^1 phi_n dx )^2   = ||1||^2 = 1        (even sector only)
-        sum_n ( Int_0^1 x phi_n dx )^2 = ||x||^2 = 1/3      (both sectors)
+1. PARSEVAL / COMPLETENESS of the decay constants.  With phi_n
+   unit-normalized in L^2[0,1], completeness of the eigenbasis gives exact
+   sum rules for the overlaps with 1 and with x:
 
-    In the Chebyshev basis the overlaps are closed-form:
-    Int_0^1 sqrt(1-xi^2) U_m dx = (pi/4) delta_{m0} and
-    Int_0^1 xi sqrt(1-xi^2) U_m dx = (pi/8) delta_{m1}.  The first overlap
-    is therefore (pi/4) a_0^(n), the 't Hooft-model decay-constant column of
-    the eigenvector matrix.  These are genuine tests of the eigenvectors as a
-    complete orthonormal set.
+       sum_n ( Int_0^1 phi_n dx )^2   = ||1||^2 = 1     (even sector only)
+       sum_n ( Int_0^1 x phi_n dx )^2 = ||x||^2 = 1/3   (both sectors)
 
-2.  Independent Rayleigh-quotient recomputation.  Each reconstructed phi_n(x)
-    is pushed through the *weak-form* (Gagliardo) quadratic form of the
-    finite-part operator on Gauss-Legendre nodes.  That form is the
-    sine_solver's discretization-free representation.  It shares no basis or
-    closed-form matrix elements with the Chebyshev solver:
+   In the Chebyshev basis the overlaps are closed-form:
+   Int_0^1 sqrt(1-xi^2) U_m dx = (pi/4) delta_{m0}, and
+   Int_0^1 xi sqrt(1-xi^2) U_m dx = (pi/8) delta_{m1}.  So the first
+   overlap is (pi/4) a_0^(n), the 't Hooft-model decay-constant column of
+   the eigenvector matrix.
 
-        2 lambda[phi] = [ (alpha+1) Int V phi^2 + Gag[phi, phi] ] / (pi^2 Int phi^2)
+   These are genuine tests of the eigenvectors as a complete orthonormal
+   set.
 
-    (V = 1/x + 1/(1-x); the alpha -> alpha+1 shift is the endpoint self-energy
-    bundled into the Gagliardo form, exactly as in sine_solver.solve).
-    Recovering 2 lambda_n from the eigenvector to quadrature accuracy
-    validates the wavefunction against the operator itself.
+2. AN INDEPENDENT RAYLEIGH-QUOTIENT RECOMPUTATION.  Each reconstructed
+   phi_n(x) is pushed through the *weak-form* Gagliardo quadratic form of
+   the finite-part operator, on Gauss-Legendre nodes.  That form is the
+   sine_solver's discretization-free representation.  It shares no basis
+   and no closed-form matrix elements with the Chebyshev solver:
 
-3.  Cross-solver wavefunction overlap: |<phi_n^cheb, phi_n^sine>| -> 1.  The
-    sine-basis eigenvectors come from a different basis and different
-    singularity handling.  Overlap deviating from 1 only at the sine solver's
-    documented algebraic accuracy validates the shape, not just the value.
+       2 lambda[phi] = [ (alpha+1) Int V phi^2 + Gag[phi, phi] ]
+                       / (pi^2 Int phi^2)
+
+   with V = 1/x + 1/(1-x).  The alpha -> alpha+1 shift is the endpoint
+   self-energy bundled into the Gagliardo form, exactly as in
+   sine_solver.solve.
+
+   Recovering 2 lambda_n from the eigenvector, to quadrature accuracy,
+   validates the wavefunction against the operator itself.
+
+3. CROSS-SOLVER WAVEFUNCTION OVERLAP.  |<phi_n^cheb, phi_n^sine>| -> 1.
+   The sine-basis eigenvectors come from a different basis and different
+   singularity handling.  An overlap that deviates from 1 only at the sine
+   solver's documented algebraic accuracy validates the shape, not just
+   the value.
 """
 
 from __future__ import annotations

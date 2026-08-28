@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Plot the massless 't Hooft meson Regge trajectory, colored by CP."""
+"""Plot the massless 't Hooft meson Regge trajectory, colored by CP.
+"""
 
 import matplotlib
 matplotlib.use("Agg")

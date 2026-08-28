@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
-"""Asserting tests for the freeness-onset measurement (freeness.py).
+"""Tests for the freeness-onset measurement (freeness.py).
 
-Fast fresh-computation tests pin the exact t = 0 (classical/commuting)
-identities and the closed-form W1(binomial, arcsine) constant.  A quick
-ensemble at N = 12 asserts the measured classical -> free crossover itself.
-JSON-verdict tests assert the production N-trend (skip if freeness.json has
-not been generated).
+Fast fresh-computation tests pin the exact t = 0 identities, which are
+the classical commuting ones, and the closed-form W1(binomial, arcsine)
+constant.
+
+A quick ensemble at N = 12 asserts the measured classical -> free
+crossover itself.
+
+JSON-verdict tests assert the production N-trend.  They skip if
+freeness.json has not been generated.
 """
 import json
 from pathlib import Path
@@ -64,9 +68,9 @@ def test_classical_to_free_crossover_quick():
 
 
 def _load_json():
+    # freeness.json is committed: a missing file is a broken checkout and
+    # must FAIL the verdict tests, not skip them
     path = Path(__file__).resolve().parent / "freeness.json"
-    if not path.exists():
-        pytest.skip("freeness.json not present; run freeness.py")
     return json.loads(path.read_text())
 
 
@@ -109,7 +113,11 @@ def test_json_freeness_verdict():
     plat = np.array([pt["plateau_W1_arc"] for pt in pts])
     assert all(b < a for a, b in zip(plat, plat[1:]))
     slope = np.polyfit(np.log(dims), np.log(plat), 1)[0]
-    assert slope < -0.8
+    # two-sided: the README quotes ~dim^-0.9 as consistent with the ~1/dim
+    # floor (committed slope -0.93).  A slope steeper than any 1/dim
+    # mechanism (say -2) would signal a broken plateau extraction, not a
+    # sharper confirmation, so it must fail too.
+    assert -1.15 < slope < -0.8, slope
     for pt in pts:
         assert abs(pt["plateau_W1_bin"]
                    - data["w1_binomial_vs_arcsine"]) < 0.01

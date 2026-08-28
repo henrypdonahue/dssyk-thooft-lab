@@ -1,34 +1,37 @@
 #!/usr/bin/env python3
 r"""
-Fast Majorana-SYK Hamiltonian assembly via symplectic Pauli strings.
-====================================================================
+Fast Majorana-SYK Hamiltonian assembly, via symplectic Pauli strings.
+=====================================================================
 
-Every product of Jordan-Wigner Majoranas is a SINGLE Pauli string, so the
-Hamiltonian
+Every product of Jordan-Wigner Majoranas is a SINGLE Pauli string.  So
+the Hamiltonian
 
     H = i^{p/2} sum_{i_1<...<i_p} J_{i_1...i_p} psi_{i_1} ... psi_{i_p}
 
-is a sum of C(N,p) strings, each of which acts on a computational-basis state
-by one bit-flip pattern and one sign pattern.  Assembling H that way replaces
-the per-term sparse matmuls of syk.majorana_hamiltonian (the reference
-implementation, kept for cross-checking) with pure bitwise arithmetic.  That
-assembly is one to two orders of magnitude faster, which is what makes
-n_inst ~ 10^3 disorder ensembles and N = 20-22 ED affordable.
+is a sum of C(N,p) strings.  Each one acts on a computational-basis state
+by one bit-flip pattern and one sign pattern.
 
-Representation
---------------
-A string is (phase, x, z) with phase in {0,1,2,3} and x, z integer bitmasks
-over the nq = N/2 qubits, encoding the operator
+Assembling H that way replaces the per-term sparse matmuls of
+syk.majorana_hamiltonian, the reference implementation, which is kept for
+cross-checking.  It is one to two orders of magnitude faster.  That is
+what makes n_inst ~ 10^3 disorder ensembles, and N = 20-22 ED,
+affordable.
 
-    P = i^{phase} * X^x Z^z,      (X^x Z^z)|s> = (-1)^{popcount(z & s)} |s XOR x>
+REPRESENTATION.  A string is (phase, x, z), with phase in {0,1,2,3} and
+x, z integer bitmasks over the nq = N/2 qubits.  It encodes
 
-(Z acts first, then X).  Multiplication is exact integer arithmetic:
+    P = i^{phase} * X^x Z^z,
+    (X^x Z^z)|s> = (-1)^{popcount(z & s)} |s XOR x>
+
+Z acts first, then X.  Multiplication is exact integer arithmetic:
 
     (i^{p1} X^{x1} Z^{z1}) (i^{p2} X^{x2} Z^{z2})
         = i^{p1 + p2 + 2*popcount(z1 & x2)}  X^{x1 XOR x2}  Z^{z1 XOR z2}.
 
-Bit convention: qubit q of syk.majorana_operators (leftmost kron factor)
-corresponds to bit (nq-1-q) of the basis index, matching scipy's kron ordering.
+BIT CONVENTION.  Qubit q of syk.majorana_operators, the leftmost kron
+factor, corresponds to bit (nq-1-q) of the basis index.  That matches
+scipy's kron ordering.
+
 With Y = i X Z, the Jordan-Wigner Majoranas of syk.py are
 
     psi_{2q}   : phase 0, x = bit(q), z = bits(0..q-1)

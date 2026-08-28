@@ -1,14 +1,15 @@
 """Tests for the deep antipodal-map campaign (signflip_deep.json).
 
-What is pinned: the transient anti-scrambling window at the hologram
-point grows as lambda falls (the semiclassical dS epoch); the MSS-evasion
-mechanism (phase winding at constant magnitude); the honest negatives
-(no Gibbs shape, no continued-sech shape, no fake-period recurrence --
-the shifted contour is fold-adjacent and edge-dominated); and the rate
-ordering that flags mode contamination.
+Pinned here: the transient anti-scrambling window at the hologram point
+grows as lambda falls, which is the semiclassical dS epoch; the
+MSS-evasion mechanism, which is phase winding at constant magnitude; the
+honest negatives, which are no Gibbs shape, no continued-sech shape and
+no fake-period recurrence, because the shifted contour is fold-adjacent
+and edge-dominated; and the rate ordering that flags mode contamination.
 """
 
 import json
+import math
 from pathlib import Path
 
 import pytest
@@ -32,6 +33,13 @@ def test_hologram_window_grows_semiclassically(data):
     wins = [r["window_in_Jc_units"] for r in rows]
     assert all(w > 0 for w in wins)
     assert all(wins[i + 1] > wins[i] for i in range(len(wins) - 1))
+    # the quantitative form road_map quotes: the window grows like
+    # ~(1/2) ln(1/lambda) (committed pairwise slopes 0.53, 0.40, 0.49) --
+    # a power-law growth in 1/lambda would leave this band
+    slopes = [(w2 - w1) / math.log(r1["lam"] / r2["lam"])
+              for (r1, w1), (r2, w2) in zip(zip(rows, wins),
+                                            zip(rows[1:], wins[1:]))]
+    assert all(0.35 < s < 0.60 for s in slopes), slopes
     for r in rows:
         assert r["truncation_drift"] < 1e-4
         # the unshifted control scrambles from the start

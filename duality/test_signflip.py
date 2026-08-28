@@ -1,13 +1,21 @@
 """Tests for the antipodal sign-flip probe (signflip_probe.json).
 
-What is pinned: the closed-form flip is exact (Re a: a(0) -> -a(0) at
-Delta = pi/v, every temperature, with a(0) = -1/cos(pi v/2) -> -1 at the
-T_B = infinity hologram point; rotation law to 1e-6); the shifted 2-pt
-stays finite and positive up to a MEASURED propagator pole; and in the
-exact theory the flip is SEMICLASSICAL -- absent for lambda >= 1.8,
-present for lambda <= 1.7, while the unshifted control scrambles at every
-lambda.  The probe is a necessary-condition test of the candidate map, not
-a dictionary.
+Three things are pinned.
+
+THE CLOSED-FORM FLIP IS EXACT.  Re a goes from a(0) to -a(0) at
+Delta = pi/v, at every temperature, with a(0) = -1/cos(pi v/2), which
+tends to -1 at the T_B = infinity hologram point.  The rotation law holds
+to 1e-6.
+
+THE SHIFTED 2-PT FUNCTION stays finite and positive, up to a MEASURED
+propagator pole.
+
+IN THE EXACT THEORY THE FLIP IS SEMICLASSICAL.  It is absent for
+lambda >= 1.8 and present for lambda <= 1.7, while the unshifted control
+scrambles at every lambda.
+
+The probe tests a necessary condition of the candidate map.  It is not a
+dictionary.
 """
 
 import json
@@ -173,3 +181,49 @@ def test_second_configuration(data):
     assert cb["rotation_error"] < 1e-3
     assert cb["chord_lam1_unshifted"] == "down"
     assert cb["chord_lam1_antipodal"] == "up"
+
+
+def test_chord_scan_reproduces_its_committed_row(data):
+    """Execute the producer, do not just read its output.
+
+    Every other test here reads signflip_probe.json, which leaves
+    signflip_probe.py itself unexercised -- a corruption in the crossed
+    contour assembly (the shift construction, the flavor weight, the
+    direction logic) would keep the suite green until someone regenerated
+    the data.  The engine is deterministic, so the cheapest committed
+    chord row reproduces exactly (~0.9 s).  The producer's actual
+    arguments are reconstructed from the row itself (main() overrides the
+    chord_scan defaults for nmax and thL_grid)."""
+    import signflip_probe
+
+    row = max(data["chord"], key=lambda r: r["lam"])
+    grid = tuple(c["thL"] for c in row["rows"][0]["curve"])
+    out = signflip_probe.chord_scan(row["lam"], row["betaJ"], p=row["p"],
+                                    nmax=row["nmax"], thL_grid=grid)
+    assert out["truncation_drift"] == pytest.approx(
+        row["truncation_drift"], rel=1e-6, abs=1e-13)
+    for got, want in zip(out["rows"], row["rows"]):
+        assert got["direction"] == want["direction"]
+        assert got["re_move"] == pytest.approx(want["re_move"],
+                                               rel=1e-12, abs=1e-14)
+        for gc, wc in zip(got["curve"], want["curve"]):
+            assert gc["re"] == pytest.approx(wc["re"], rel=1e-12, abs=1e-14)
+            assert gc["im"] == pytest.approx(wc["im"], rel=1e-12, abs=1e-14)
+
+
+def test_detailed_balance_reproduces_its_committed_row(data):
+    """The tomperature-thermality verdict, recomputed from scratch (~0.02 s)
+    rather than read back: beta_eff = beta + beta_fake detailed balance and
+    the independent-engine cross-check."""
+    import signflip_probe
+
+    want = next(r for r in data["detailed_balance"]
+                if r["lam"] == 2.0 and r["betaJ"] == 2.0)
+    got = signflip_probe.detailed_balance(2.0, 2.0)
+    for key in ("beta_c", "dtau_c", "beta_eff", "beta_fake_c"):
+        assert got[key] == pytest.approx(want[key], rel=1e-12)
+    # the verdict structure itself, not just the stored residuals
+    assert got["beta_eff"] == pytest.approx(got["beta_c"]
+                                            + got["beta_fake_c"], rel=1e-12)
+    assert got["max_line_deviation"] < 1e-12
+    assert got["engine_check_dev"] < 1e-12

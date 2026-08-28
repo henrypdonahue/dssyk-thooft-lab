@@ -3,35 +3,40 @@ r"""
 ED reference bench for the large-q (lambda -> 0) anchor.
 ========================================================
 
-The lambda -> 0 corner is where the DSSYK <-> 't Hooft match is supposed to
-become exact.  Closed-form large-q SYK correlators are the analytic anchor
-there.  Before trusting any transcribed large-q formula, we need
-model-generated ground truth.  This module measures, by exact
-diagonalization with the fast Pauli-string builder,
+The lambda -> 0 corner is where the DSSYK <-> 't Hooft match is supposed
+to become exact.  Closed-form large-q SYK correlators are the analytic
+anchor there.
+
+Before trusting any transcribed large-q formula, we need model-generated
+ground truth.  This module measures it, by exact diagonalization with the
+fast Pauli-string builder:
 
     G(t)   = < psi_1(t) psi_1(0) >          (T = inf two-point function)
     C_2(t) = < Obar(t) Obar(0) >,  O = -(1/N) sum_a psidot_a psidot_a
-                                        (the M_2-type Majorana singlet;
-                                         traceless part)
 
-disorder-averaged with errors, along FIXED p with growing N, and stored in
-largeq_bench.json.  lambda = p^2/N falls along that trajectory -- the
-direction in which large-q formulas, whose corrections are O(1/q) AND
-O(lambda), must improve.  The comparison against the transcribed closed forms
-is in duality/largeq_anchor.py.
+O is the M_2-type Majorana singlet, traceless part.
 
-(A trap this module hit and now documents: the "obvious" singlet
+Results are disorder-averaged with errors, along FIXED p with growing N,
+and stored in largeq_bench.json.  lambda = p^2/N falls along that
+trajectory.  That is the direction in which large-q formulas, whose
+corrections are O(1/q) AND O(lambda), must improve.  The comparison
+against the transcribed closed forms is in duality/largeq_anchor.py.
+
+A TRAP THIS MODULE HIT, now documented.  The "obvious" singlet
 (i/N) sum psi_a psidot_a is exactly conserved.  The Majorana analog of
-M_1 = -(p/2)iH reads  sum_a psi_a [H, psi_a] = -2p H  in our psi^2 = 1
-normalization (asserted in the tests).  So that singlet is 100% static and
-useless as a dynamical probe.  The first genuinely dynamical member of the
-Majorana tower is sum psidot psidot, by the same conservation identity that
-fixes M_2.)
+M_1 = -(p/2)iH reads sum_a psi_a [H, psi_a] = -2p H in our psi^2 = 1
+normalization, which is asserted in the tests.
 
-Conventions: Var(J) = p!/N^{p-1} (paper's Eq. 3.8, script-J = 1), Majoranas
-psi_a^2 = 1.  With this normalization <H^2>/dim = C(N,p) p!/N^{p-1}.  The
-bench stores <H^2>/dim per instance, so any
-formula's energy-scale convention can be matched exactly rather than assumed.
+So that singlet is 100% static, and useless as a dynamical probe.  The
+first genuinely dynamical member of the Majorana tower is
+sum psidot psidot, by the same conservation identity that fixes M_2.
+
+CONVENTIONS.  Var(J) = p!/N^{p-1}, which is the paper's Eq. 3.8 with
+script-J = 1, and Majoranas with psi_a^2 = 1.  With that normalization
+<H^2>/dim = C(N,p) p!/N^{p-1}.
+
+The bench stores <H^2>/dim per instance.  So any formula's energy-scale
+convention can be matched exactly, rather than assumed.
 """
 
 from __future__ import annotations

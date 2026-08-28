@@ -1,48 +1,63 @@
 #!/usr/bin/env python3
 r"""
-Can a contour shift flip the scrambling sign?  An exploratory probe.
-====================================================================
+Can a contour shift flip the scrambling sign?  A probe.
+=======================================================
 
-The dS-dictionary problem, measured in this repo: under the flat time map
-DSSYK scrambles (Re a = -1 at every temperature).  A dS observer needs
-the opposite sign, and the Euclidean fold does not deliver it.  This
-module tests the next candidate: displace the probe pair by HALF THE FAKE
-PERIOD around the thermal circle (Delta = pi/v in Euclidean angle).  The
-fake period is 2 pi/v.  Geometrically this is an antipodal shift on the
-fake disk.  It is also what the Narovlansky-Verlinde dressing does: their
-operators sit at +-i beta_dS/4, i.e. half a period apart.  They call the
-two insertions antipodal.
+Here is the dS-dictionary problem, as this repo measures it.  Under the
+flat time map DSSYK scrambles, with a(v) < 0 at every temperature.  A dS
+observer needs the opposite sign.  The Euclidean fold does not deliver
+it.
 
-Three levels, one JSON:
+This module tests the next candidate.  Displace the probe pair by HALF
+THE FAKE PERIOD around the thermal circle, Delta = pi/v in Euclidean
+angle.  The fake period is 2 pi/v.
 
+Geometrically that is an antipodal shift on the fake disk.  It is also
+what the Narovlansky-Verlinde dressing does: their operators sit at
++-i beta_dS/4, which is half a period apart, and they call the two
+insertions antipodal.
+
+THREE LEVELS, ONE JSON
+----------------------
 1. Closed form (large-q, `antiscrambling.otoc_ratio`).  Shift the
-   (theta1, theta2) pair by Delta and extract the growth coefficient
-   a(Delta) by a complex fit in the late-time window.  Prediction from
-   the pole structure: a(Delta) = a(0) exp(-i v Delta).  So at
-   Delta = pi/v the coefficient flips exactly: Re a goes from -1 to +1.
-   The probe verifies the rotation law and the flip.
+   (theta1, theta2) pair by Delta.  Extract the growth coefficient
+   a(Delta) by a complex fit in the late-time window.
+
+   The pole structure predicts a(Delta) = a(0) exp(-i v Delta).  So at
+   Delta = pi/v the coefficient flips exactly: Re a goes from a(0) to
+   -a(0).
+
+   Read that for what it is.  Delta enters the growing mode's phase, so
+   half a period negates it, and the algebra is short.  The probe
+   verifies the rotation law and the flip.  The content is in levels 2
+   and 3.
 
 2. Two-point physicality.  The shifted W-V separation is
-   theta = pi/2 + Delta.  The continued large-q 2-pt stays real and
-   positive up to its pole at theta = pi + pi/v.  So the antipodal point
-   sits INSIDE the physical window, at margin pi/2 from the pole.
-   The probe records the values and the margin.
+   theta = pi/2 + Delta.  The continued large-q 2-pt function stays real
+   and positive up to its pole at theta = pi + pi/v.  So the antipodal
+   point sits INSIDE the physical window, with a margin of pi/2 from the
+   pole.  The probe records the values and the margin.
 
 3. Exact chord theory at finite lambda (`chord_fold.ChordCorrelators`).
-   Same shifted contours, exact in lambda, truncation-checked.  The
-   observable: does Re F/F_d move DOWN with Lorentzian time (scrambling)
-   at Delta = 0 and UP (anti-scrambling side) at Delta = pi/v?  Plus the
-   fitted coefficient where the window allows.
+   The same shifted contours, exact in lambda, truncation-checked.
 
-Honesty: a sign flip under a contour shift is NECESSARY for this
-candidate map, not sufficient.  It does not by itself build the dS
-dictionary.  The full correlator suite must stay consistent, and the
-algebra story (why the observer's operators live there) is NV's
-construction to complete.  This probe measures whether the mechanism
-survives exactness in lambda.  That is the question the closed form
-cannot answer.
+   The observable: does Re F/F_d move DOWN with Lorentzian time
+   (scrambling) at Delta = 0, and UP (the anti-scrambling side) at
+   Delta = pi/v?  Plus the fitted coefficient wherever the window allows.
 
-Output: signflip_probe.json; asserted in test_signflip.py; narrated in
+HONESTY
+-------
+A sign flip under a contour shift is NECESSARY for this candidate map.
+It is not sufficient.  It does not by itself build the dS dictionary.
+
+The full correlator suite must stay consistent, and the algebra story --
+why the observer's operators live there -- is NV's construction to
+complete.
+
+What this probe measures is whether the mechanism survives exactness in
+lambda.  That is the question the closed form cannot answer.
+
+Output: signflip_probe.json.  Asserted in test_signflip.py.  Narrated in
 DISCRIMINATOR.md.
 """
 

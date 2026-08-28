@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
-"""Validation of the massless 't Hooft spectrum against Fateev-Lukyanov-
-Zamolodchikov (arXiv:0905.2280): eigenvalue tables, exact sum rules, and the
-large-n asymptotic expansion."""
+"""Validation of the massless 't Hooft spectrum against
+Fateev-Lukyanov-Zamolodchikov (arXiv:0905.2280).
+
+Three checks: the eigenvalue tables, the exact sum rules, and the large-n
+asymptotic expansion.
+"""
 
 import sys
 

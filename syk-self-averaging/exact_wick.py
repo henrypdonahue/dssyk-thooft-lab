@@ -9,30 +9,34 @@ The symmetry-violation observable of self_averaging.py is
     Gamma_c = i^{p/2} psi_{c1}...psi_{cp}   (ascending p-subsets c),
     J_c iid N(0, sigma^2),  sigma^2 = p!/N^{p-1}.
 
-B_jk is QUADRATIC in the Gaussian couplings, so its full disorder statistics
-reduce, by Wick's theorem, to Majorana trace combinatorics.  Those
-combinatorics are computable in closed form at ANY (N, p), including the
-double-scaling regime p ~ sqrt(N), N ~ 10^3 that instance-level ED
-(dim 2^{N/2}) can never reach.  This module carries self_averaging.py's
-Eq. (3.28) test into that regime.
+B_jk is QUADRATIC in the Gaussian couplings.  So by Wick's theorem its
+full disorder statistics reduce to Majorana trace combinatorics.
 
-Derivation (asserted step-by-step against string enumeration in the tests)
+Those combinatorics are computable in closed form at ANY (N, p).  That
+includes the double-scaling regime p ~ sqrt(N), N ~ 10^3, which
+instance-level ED at dim 2^{N/2} can never reach.  This module carries
+self_averaging.py's Eq. (3.28) test into that regime.
+
+DERIVATION (asserted step by step against string enumeration in the tests)
 --------------------------------------------------------------------------
 The normalized Majorana trace of a monomial vanishes unless every index
-appears an even number of times.  With T_cd = Tr(psi_j Gamma_c psi_k
-Gamma_d)/dim and j != k, nonvanishing requires the symmetric difference
-c XOR d = {j, k}, i.e.
+appears an even number of times.
+
+Take T_cd = Tr(psi_j Gamma_c psi_k Gamma_d)/dim with j != k.  Then
+non-vanishing needs the symmetric difference c XOR d = {j, k}, so
 
     d = (c \ {j}) u {k}   (j in c, k not in c),      or j <-> k.
 
-Writing c = e u {j}, d = e u {k} (|e| = p-1) and pulling psi_j, psi_k out of
-the ordered products gives
+Write c = e u {j} and d = e u {k}, with |e| = p-1, and pull psi_j and
+psi_k out of the ordered products:
 
     T_cd = i^p sigma_c sigma_d (-1)^{(p-1)(p-2)/2},     T_dc = T_cd,
 
-with sigma's = +-1 reordering signs.  Hence T_cd^2 = T_cd T_dc = +1 for every
-admissible pair.  E[B_jk] = sigma^2 sum_c T_cc = 0 (no admissible c), and the
-two surviving Wick pairings give, EXACTLY,
+with the sigmas being the +-1 reordering signs.  Hence
+T_cd^2 = T_cd T_dc = +1 for every admissible pair.
+
+E[B_jk] = sigma^2 sum_c T_cc = 0, because there is no admissible c.  And
+the two surviving Wick pairings give, EXACTLY,
 
     Var(B_jk) = sigma^4 [ sum_{cd} T_cd^2 + sum_{cd} T_cd T_dc ]
               = 4 sigma^4 C(N-2, p-1),
@@ -41,80 +45,103 @@ so the typical single-instance symmetry violation is
 
     rms(B_jk) = 2 (p!/N^{p-1}) sqrt(C(N-2, p-1)).
 
-The same algebra on the diagonal (T_cc = -1 for j in c, +1 otherwise -- i.e.
-psi_j Gamma_c psi_j Gamma_c = -+1) gives
+The same algebra on the diagonal, where T_cc = -1 for j in c and +1
+otherwise, because psi_j Gamma_c psi_j Gamma_c = -+1, gives
 
-    E[B_jj] = sigma^2 [ C(N,p) - 2 C(N-1,p-1) ] = sigma^2 C(N,p) (1 - 2p/N):
+    E[B_jj] = sigma^2 [ C(N,p) - 2 C(N-1,p-1) ]
+            = sigma^2 C(N,p) (1 - 2p/N)
 
-the ensemble-mean diagonal VANISHES at p = N/2.  This derives, rather than
-just flags, the "ratio artifact" self_averaging.py warns about.
+So the ensemble-mean diagonal VANISHES at p = N/2.  That derives the
+"ratio artifact" self_averaging.py warns about, rather than just flagging
+it.
 
-What this settles
+WHAT THIS SETTLES
 -----------------
-Along the double-scaling line p = sqrt(lambda N):
+Along the double-scaling line p = sqrt(lambda N),
 
     ln rms(B_jk) = -(1/4) sqrt(N) ln N (1 + o(1))        (at lambda = 1),
 
-super-exponential in sqrt(N): smaller than e^{-a sqrt N} for EVERY a, exactly
-as the paper's Eq. (3.28) bound demands.  This is now verified by exact
-computation in the regime the bound is about, not extrapolated from N <= 18
-fits.  At fixed p (the regime where the 't Hooft comparison lives) the same
-formula is the power law rms ~ 2 p!/sqrt((p-1)!) N^{-(p-1)/2}.  Symmetry
-emergence is polynomially slow exactly where the spectrum match is to be made
-(the fixed-p caveat in the top-level README).
+which is super-exponential in sqrt(N).  It is smaller than e^{-a sqrt N}
+for EVERY a, exactly as the paper's Eq. (3.28) bound demands.
 
-Extension: exact disorder statistics of the singlet fourth moment m4
---------------------------------------------------------------------
-m4 = Tr(H^4)/dim is QUARTIC in the couplings, so E[m4] is a 3-pairing Wick
-sum and Var(m4) an 8th-order one (105 pair partitions).  Both are still pure
-Majorana trace combinatorics, exact at any (N, p).  Two facts drive everything
-(both asserted against string enumeration in test_exact_wick_m4.py):
+That is now verified by exact computation in the regime the bound is
+about.  It is not extrapolated from N <= 18 fits.
 
-  * exchange sign:  Gamma_c Gamma_d = (-1)^{|c n d|} Gamma_d Gamma_c  for
-    p even, so  Tr(Gamma_c Gamma_d Gamma_c Gamma_d)/dim = (-1)^{|c n d|};
-  * support: a product of Gamma's has nonzero normalized trace iff the
-    symmetric difference of the index sets is empty, and then equals +-1.
+At fixed p, which is the regime where the 't Hooft comparison lives, the
+same formula is the power law rms ~ 2 p!/sqrt((p-1)!) N^{-(p-1)/2}.  So
+symmetry emergence is polynomially slow exactly where the spectrum match
+has to be made.  That is the fixed-p caveat in the top-level README.
+
+EXTENSION: EXACT STATISTICS OF THE SINGLET FOURTH MOMENT m4
+------------------------------------------------------------
+m4 = Tr(H^4)/dim is QUARTIC in the couplings.  So E[m4] is a 3-pairing
+Wick sum, and Var(m4) is an 8th-order one, with 105 pair partitions.
+Both are still pure Majorana trace combinatorics, exact at any (N, p).
+
+Two facts drive everything.  Both are asserted against string enumeration
+in test_exact_wick_m4.py.
+
+  * The exchange sign.  Gamma_c Gamma_d = (-1)^{|c n d|} Gamma_d Gamma_c
+    for p even, so Tr(Gamma_c Gamma_d Gamma_c Gamma_d)/dim =
+    (-1)^{|c n d|}.
+  * Support.  A product of Gammas has nonzero normalized trace only if the
+    symmetric difference of the index sets is empty, and then it equals
+    +-1.
 
 With C = C(N,p), sigma^2 = p!/N^{p-1}, and the crossing sum
 
     K(N,p) = sum_{j=0}^p (-1)^j C(p,j) C(N-p, p-j),
 
-Isserlis' theorem (exact at coincident indices; the diagonal c=d=e=f is the
-threefold pairing, i.e. E[J^4] = 3 sigma^4, automatically) gives
+Isserlis' theorem gives
 
     E[m4] = sigma^4 [ 2 C^2 + C K ],       E[m4]/E[m2]^2 = 2 + K/C.
 
-K/C is the chord q-parameter:  K/C -> exp(-lambda_chord) = exp(-2 p^2/N)
-(measured: |K/C - q| = O(N^-2) at fixed p; -> e^{-2 lambda} with O(1/p)
-error along p = sqrt(lambda N)).  So E[m4]/E[m2]^2 -> 2 + q is the chord
-count for the 4th moment (2 non-crossing diagrams + 1 crossing, weight q).
+(It is exact at coincident indices: the diagonal c = d = e = f is the
+threefold pairing, so E[J^4] = 3 sigma^4 comes out automatically.)
 
-Var(m4): of the 105 pairings of the 8 couplings, 9 reproduce E[m4]^2.  The
-72 with a single cross-pair force both crossing subsets equal (support
-argument) and sum to 8 sigma^8 C (2C+K)^2.  The 24 four-cross pairings
-reduce, by the dihedral symmetry of the trace, to 8 sigma^8 (Z + 2W), where
-(|x1 XOR x2| = 2m fixes |x1 n x2| = p - m, whence the sign in W)
+K/C is the chord q-parameter.  K/C -> exp(-lambda_chord) = exp(-2 p^2/N).
+Measured: |K/C - q| = O(N^-2) at fixed p, and it goes to e^{-2 lambda}
+with O(1/p) error along p = sqrt(lambda N).
 
-    Z = sum_m C(N,2m) [C(2m,m) C(N-2m,p-m)]^2   (# 4-tuples, empty symdiff),
-    W = sum_m (-1)^{p-m} C(N,2m) [C(2m,m) C(N-2m,p-m)]^2.
+So E[m4]/E[m2]^2 -> 2 + q, which is the chord count for the 4th moment:
+two non-crossing diagrams plus one crossing, at weight q.
 
-So, EXACTLY and in closed binomial form (no residual pattern sum):
+Var(m4).  Of the 105 pairings of the 8 couplings, 9 reproduce E[m4]^2.
+The 72 with a single cross-pair force both crossing subsets to be equal,
+by the support argument, and sum to 8 sigma^8 C (2C+K)^2.  The 24
+four-cross pairings reduce, by the dihedral symmetry of the trace, to
+8 sigma^8 (Z + 2W), where |x1 XOR x2| = 2m fixes |x1 n x2| = p - m, which
+is where the sign in W comes from:
+
+    Z = sum_m C(N,2m) [C(2m,m) C(N-2m,p-m)]^2
+    W = sum_m (-1)^{p-m} C(N,2m) [C(2m,m) C(N-2m,p-m)]^2
+
+Z counts the 4-tuples with empty symmetric difference.
+
+So, exactly, and in closed binomial form with no residual pattern sum:
 
     Var(m4)    = 8 sigma^8 [ C (2C+K)^2 + Z + 2W ],
     relVar(m4) = 8/C  +  8 (Z + 2W) / (C^2 (2C+K)^2).
 
-The first term is exactly 8/C at every (N, p), so relVar(m4) =
-4 relVar(m2) x (1 + O(4^p/C)).  Fixed p: relVar(m4) -> 8 p!/N^p (measured
-ratio to 8/C: 1.070 at (12,4), 1.00013 at (60,4)).  Along p = sqrt(N) the
-correction dies super-exponentially (< 1e-6 by N = 100), so
+The first term is exactly 8/C at every (N, p).  So
+relVar(m4) = 4 relVar(m2) x (1 + O(4^p/C)).
+
+At fixed p, relVar(m4) -> 8 p!/N^p.  Measured ratio to 8/C: 1.070 at
+(12,4), and 1.00013 at (60,4).
+
+Along p = sqrt(N) the correction dies super-exponentially, below 1e-6 by
+N = 100.  So
 
     ln relVar(m4) = -(1/2) sqrt(N) ln N (1 + o(1)),
 
-the SAME Eq. (3.27) super-exponential law and leading coefficient as
-relVar(m2) = 2/C(N,p), with relVar(m4)/relVar(m2) -> 4.  The 4th moment
-extends the m2 self-averaging anchor at a fixed factor.  Verified: brute
-enumeration (shared code: none) at (6,2), (8,2), (6,4), (8,4) to < 1e-9.
-ED disorder ensembles at N = 12, 14 (250/200 instances) within 1 sigma.
+which is the SAME Eq. (3.27) super-exponential law, with the same leading
+coefficient, as relVar(m2) = 2/C(N,p), and relVar(m4)/relVar(m2) -> 4.
+
+So the 4th moment extends the m2 self-averaging anchor at a fixed factor.
+
+Verified three ways: brute enumeration sharing no code, at (6,2), (8,2),
+(6,4) and (8,4), to better than 1e-9; and ED disorder ensembles at
+N = 12 and 14, with 250 and 200 instances, within 1 sigma.
 """
 
 from __future__ import annotations

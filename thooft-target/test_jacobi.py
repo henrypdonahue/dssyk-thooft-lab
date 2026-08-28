@@ -1,22 +1,26 @@
 #!/usr/bin/env python3
-"""Asserting tests for the matched-exponent Jacobi solver (jacobi_solver.py).
+"""Tests for the matched-exponent Jacobi solver (jacobi_solver.py).
 
 Every tolerance below is tied to a measurement recorded in
-jacobi_convergence.json (regenerate with `python3 jacobi_solver.py`).  Each has
-a safety margin of roughly 10-100x over the measured residual.
-The three correctness gates of the workstream:
+jacobi_convergence.json.  Regenerate it with `python3 jacobi_solver.py`.
+Each tolerance has a safety margin of roughly 10-100x over the measured
+residual.
 
-  (a) alpha = 0: FLZ Tables 1-2 to ~1e-8 at moderate K   -> measured 5.3e-9
-      at K = 60 (test_alpha0_flz_tables);
-  (b) alpha != 0: LM anchors at least as well as the Chebyshev solver, plus a
-      demonstrated convergence-rate improvement                -> measured
-      factor ~1.5e5 (alpha=0.5) and ~1.8e7 (alpha=-0.5) at K = 32
-      (test_convergence_beats_old_solver);
-  (c) higher-s LM sum rules s = 2..7 at all five LM alpha values including
-      alpha = 1 (no published eigenvalue table there -- a pure prediction
-      against their exact closed forms)   -> measured s2 <= 3e-8,
-      s3 <= 2e-10 absolute, s4..7 <= 4e-12 relative
-      (test_lm_sum_rules_s2_to_s7).
+The three correctness gates:
+
+(a) alpha = 0.  FLZ Tables 1-2 to about 1e-8 at moderate K.  Measured
+    5.3e-9 at K = 60, in test_alpha0_flz_tables.
+
+(b) alpha != 0.  The LM anchors are matched at least as well as by the
+    Chebyshev solver, with a demonstrated convergence-rate improvement.
+    Measured factors of about 1.5e5 at alpha = 0.5 and about 1.8e7 at
+    alpha = -0.5, at K = 32, in test_convergence_beats_old_solver.
+
+(c) Higher-s LM sum rules, s = 2..7, at all five LM alpha values,
+    including alpha = 1 where there is no published eigenvalue table.
+    That one is a pure prediction against their exact closed forms.
+    Measured: s2 within 3e-8, s3 within 2e-10 absolute, and s4..7 within
+    4e-12 relative, in test_lm_sum_rules_s2_to_s7.
 """
 
 import json

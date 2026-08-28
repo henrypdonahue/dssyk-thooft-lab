@@ -1,67 +1,74 @@
 #!/usr/bin/env python3
 r"""
-'t Hooft meson spectrum at the renormalized-massless point
-==========================================================
+The 't Hooft meson spectrum at the renormalized-massless point.
+===============================================================
 
-This module solves 't Hooft's (1974) integral equation for the meson mass
+This module solves 't Hooft's 1974 integral equation for the meson mass
 spectrum of large-N QCD in 1+1 dimensions.  It solves it at the special
-quark-mass point that the DSSYK_infty <-> 't Hooft duality needs
+quark-mass point the DSSYK_infty <-> 't Hooft duality needs
 (Miyashita-Sekino-Susskind, 2607.05678).
 
-The equation (Fateev-Lukyanov-Zamolodchikov, arXiv:0905.2280, Eq. 1.1) is
+THE EQUATION.  Fateev-Lukyanov-Zamolodchikov, arXiv:0905.2280, Eq. 1.1:
 
     2 pi^2 lambda  phi(x)
         = ( alpha1/x + alpha2/(1-x) ) phi(x)
           - FP-Int_0^1  phi(y) / (y - x)^2  dy ,        x in [0,1]
 
-with the Hadamard finite-part (double-pole) integral and boundary conditions
-phi(0) = phi(1) = 0.  The quark-mass parameters are
+The integral is a Hadamard finite part, a double pole.  The boundary
+conditions are phi(0) = phi(1) = 0.  The quark-mass parameters are
+alpha_i = pi m_i^2 / g^2 - 1, and the physical meson masses are
+M_n^2 = 2 pi g^2 lambda_n.
 
-    alpha_i = pi m_i^2 / g^2 - 1 ,
+THE POINT WE WANT is renormalized m_q^2 = 0.  In MSS the renormalized
+mass obeys m_q^2 = m_bare^2 - g^2/pi, so alpha = pi m_q^2 / g^2 = 0.
 
-and the physical meson masses are  M_n^2 = 2 pi g^2 lambda_n.
+That is FLZ's exactly studied case, alpha1 = alpha2 = 0, at bare mass
+m = g/sqrt(pi).  Be careful: it is NOT the chiral limit, which is
+alpha = -1.  It is a regular theory with a mass gap.
 
-The point we want:  m_q^2 (renormalized) = 0.
-    In MSS the renormalized mass obeys  m_q^2 = m_bare^2 - g^2/pi,
-    so alpha = pi m_q^2 / g^2 = 0.  This is FLZ's exactly-studied case
-    alpha1 = alpha2 = 0  (bare mass m = g/sqrt(pi)).  It is NOT the chiral
-    limit (that is alpha = -1).  It is a regular theory with a mass gap.
+UNITS.  We report the dimensionless eigenvalue
+2 lambda_n = M_n^2 / (pi g^2), so M_n^2 is in units of pi g^2.
+Equivalently M_n^2 = 2 pi g^2 lambda_n.
 
-Units.  We report the dimensionless eigenvalue
-    2 lambda_n = M_n^2 / (pi g^2),
-i.e. M_n^2 in units of pi g^2.  (Equivalently M_n^2 = 2 pi g^2 lambda_n.)
+METHOD: the standard Chebyshev / Multhopp-type spectral basis.
+---------------------------------------------------------------
+At alpha = 0 the solution behaves as phi(x) ~ sqrt(x(1-x)) at both ends.
+The endpoint exponent is beta = 1/2, from pi beta cot(pi beta) = -alpha.
 
-------------------------------------------------------------------------------
-Method (the standard Chebyshev / Multhopp-type spectral basis)
---------------------------------------------------------------
-At alpha = 0 the solution behaves as phi(x) ~ sqrt(x(1-x)) at both ends.  The
-endpoint exponent is beta = 1/2, from  pi beta cot(pi beta) = -alpha.
-Map x = (1+xi)/2, xi in [-1,1], and expand
+Map x = (1+xi)/2 with xi in [-1,1], and expand
 
     phi(x) = sqrt(1 - xi^2) * sum_m a_m U_m(xi),
 
-where U_m is the Chebyshev polynomial of the 2nd kind.  These basis functions
-are exact eigenfunctions of the hypersingular (finite-part) operator:
+where U_m is the Chebyshev polynomial of the second kind.
 
-    FP-Int_{-1}^{1}  sqrt(1-eta^2) U_m(eta) / (xi - eta)^2  d eta = -pi (m+1) U_m(xi).
+Those basis functions are exact eigenfunctions of the hypersingular
+finite-part operator:
 
-Rayleigh-Ritz / Galerkin projection onto the same basis turns the problem into
-a generalized symmetric-definite eigenproblem
+    FP-Int_{-1}^{1} sqrt(1-eta^2) U_m(eta) / (xi - eta)^2 d eta
+        = -pi (m+1) U_m(xi).
+
+Rayleigh-Ritz / Galerkin projection onto the same basis turns the problem
+into a generalized symmetric-definite eigenproblem
 
         D a = Lambda S a ,   Lambda = 2 pi^2 lambda,
 
-    D_{nm} = pi^2 (m+1) delta_{nm},                              (diagonal)
+    D_{nm} = pi^2 (m+1) delta_{nm},                        (diagonal)
     S_{nm} = Int_{-1}^{1} (1-xi^2) U_n(xi) U_m(xi) d xi
            = (1/2) [ f(n-m) - f(n+m+2) ],
            f(k) = 2/(1-k^2) if k even, else 0.
 
-S is the (symmetric, positive-definite) Gram matrix of the basis functions in
-L^2[0,1].  D is diagonal.  Both are block-diagonal under xi -> -xi, i.e. under
-x -> 1-x.  Even-degree m  -> phi symmetric;  odd-degree m -> phi antisymmetric.
-Those two blocks are the two CP sectors.  This is a variational method, so the
-eigenvalues converge monotonically from above as the basis size grows.
+S is the symmetric positive-definite Gram matrix of the basis functions in
+the xi measure.  That is exactly twice the L^2[0,1] Gram, since
+dx = d xi/2.  D is assembled in the same measure, so Lambda is unchanged.
 
-Then  2 lambda_n = Lambda_n / pi^2.
+Both matrices are block-diagonal under xi -> -xi, which is x -> 1-x.
+Even-degree m gives symmetric phi, odd-degree m gives antisymmetric phi.
+Those two blocks are the two CP sectors.
+
+This is a variational method, so the eigenvalues converge monotonically
+from above as the basis grows.
+
+Then 2 lambda_n = Lambda_n / pi^2.
 """
 
 from __future__ import annotations

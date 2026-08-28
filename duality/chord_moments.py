@@ -3,48 +3,60 @@ r"""
 Exact N = infinity singlet-channel spectral moments.
 ====================================================
 
-The DSSYK side of the moments-vs-sum-rules contact: EXACT N = infinity,
-T_B = infinity spectral moments of the Majorana singlet bilinear channels
+This is the DSSYK side of the moments-against-sum-rules contact.  It
+computes exact N = infinity, T_B = infinity spectral moments of the
+Majorana singlet bilinear channels
 
     A_n = sum_i psi_i (ad_H)^n psi_i ,        n = 1 .. 5,
 
-computed from the chord expansion with two single-fermion matter chords
-(Delta_psi = 1/p, weight qt = q^{1/p}).  Everything reduces to finite exact
-combinations of mixed chord moments
+from the chord expansion, with two single-fermion matter chords
+(Delta_psi = 1/p, weight qt = q^{1/p}).
+
+Everything reduces to finite exact combinations of mixed chord moments,
 
     T4(a,b,c,d) = < Tr[ H^a psi_i H^b psi_i H^c psi_j H^d psi_j ] >,
     T2(a,b)     = < Tr[ H^a psi_i H^b psi_i ] >          (i != j, per pair)
 
-evaluated by the validated transfer-matrix engine (chord.py) with EXACT
-integer powers.  Truncation plays no role: a word with K H-nodes never
+evaluated by the transfer-matrix engine in chord.py, with exact integer
+powers.  Truncation plays no role here: a word with K H-nodes never
 occupies more than K/2 + 2 chords.
 
-Assembly (module test = the operator identity A_1 = -2p H):
+ASSEMBLY.  The module test is the operator identity A_1 = -2p H.
 
     ad^n psi = sum_r (-1)^r C(n,r) H^{n-r} psi H^r,
     X = psi ad^n psi ,   Y = X^dag = (-1)^n (ad^n psi) psi ,
     mu_k^sym = (1/2)[ Tr(ad^k(X) Y) + Tr(ad^k(Y) X) ]   (k even),
 
 expanded into T4 words with binomial coefficients.  mu_0 subtracts the
-identity component <X><Y> (T2 words).  Shape invariants (normalization- and
-flavor-count-free): w2 = mu_2/mu_0 (chord units have <H^2> = 1) and
+identity component <X><Y>, which is a sum of T2 words.
+
+Shape invariants are free of normalization and of the flavor count:
+w2 = mu_2/mu_0, since chord units have <H^2> = 1, and
 kurt = mu_4 mu_0 / mu_2^2.
 
-Error budget: the chord cancellations are EXACT algebraic identities of
-the chord amplitudes at any finite matter weight Delta_psi.  There is no
-finite-p matter-weight floor; test_chord_moments.py asserts this across a
-Delta_psi scan.  The cancellations are now PROVEN: the chord
-representation of every A_n insertion is a polynomial in the transfer
-matrix T, so every moment mu_k (k >= 1) vanishes at every n.  The proof
-is the dressed-propagator recursion of chord_charges.py, discovered
-numerically here first.  The reported a1_residual is therefore the
-FLOAT-CANCELLATION yardstick |mu_2|/gross, not a physical finite-p
-effect.  That yardstick is the residual of the alternating sum relative
-to its pre-cancellation magnitude, ~1e-16.  It calibrates how much of the
-measured 'zero' could be rounding noise.
+WHAT THE ZEROS MEAN.  The chord cancellations are exact algebraic
+identities of the chord amplitudes, at any finite matter weight
+Delta_psi.  There is no finite-p matter-weight floor, and
+test_chord_moments.py asserts that across a Delta_psi scan.
 
-The lambda -> 0 asymptote of the O_Delta channel kurtosis is the
-semiclassical value 3 + 1/Delta (Fourier transform of sech^{2Delta}).
+The cancellations are now PROVEN.  The chord representation of every A_n
+insertion is a polynomial in the transfer matrix T, so every moment
+mu_k with k >= 1 vanishes at every n.  The proof is the
+dressed-propagator recursion in chord_charges.py, found numerically here
+first.
+
+So the reported a1_residual is a FLOAT-CANCELLATION yardstick,
+|mu_2|/gross, not a physical finite-p effect.  It is the residual of the
+alternating sum relative to its pre-cancellation magnitude, about 1e-16.
+It calibrates how much of the measured zero could be rounding noise.
+
+SCOPE.  These are i != j PAIR amplitudes.  The full channel also has a
+flavor-diagonal part of the same order, which does not vanish for n >= 2.
+See CHORD.md and diagonal_chord.py.
+
+THE CONTROL.  The lambda -> 0 asymptote of the O_Delta channel kurtosis
+is the semiclassical value 3 + 1/Delta, the Fourier transform of
+sech^{2Delta}.  Random matter propagates; the H-built bilinears do not.
 The exact closed forms
 
     mu_2(Delta) = 2 (1 - qt),
@@ -53,8 +65,8 @@ The exact closed forms
 and the mu_6 closed form (odelta_moments) are asserted against the engine
 in test_chord_moments.py.
 
-Output: chord_moments.json (the comparison against the ED bench and the
-Dirac moments.json trend lives in the tests + CHORD.md).
+Output: chord_moments.json.  The comparison against the ED bench and the
+Dirac moments.json trend lives in the tests and in CHORD.md.
 """
 
 from __future__ import annotations
@@ -102,8 +114,10 @@ def _mu_ordered(tab: MomentTable, n: int, k: int):
     (-1)^{n+r+r'+s} C(k,s) C(n,r) C(n,r').  Returns (value, gross) where
     gross = sum of |term|, the cancellation yardstick.  The amplitudes
     grow with [n]_q powers as q -> 1, so 'zero' must be judged against
-    it."""
-    tot, gross = 0.0, 0.0
+    it.  The accumulators start as int 0 so the arithmetic follows the
+    table's type: float for MomentTable, exact Fractions for the
+    finite-N exact tables (exact_pair_moments.PairTab(exact=True))."""
+    tot, gross = 0, 0
     for s in range(k + 1):
         for r in range(n + 1):
             for rp in range(n + 1):
@@ -122,8 +136,9 @@ def _mu_ordered_swapped(tab: MomentTable, n: int, k: int):
     from assembling
     Tr[H^{k-s} (H^{n-r} psi H^r psi) H^s (psi H^{n-r'} psi H^{r'})] and
     rotating the leading H-block around the trace.  Returns (value,
-    gross)."""
-    tot, gross = 0.0, 0.0
+    gross); int-0 accumulators for the same exact-Fractions reason as
+    _mu_ordered."""
+    tot, gross = 0, 0
     for s in range(k + 1):
         for r in range(n + 1):
             for rp in range(n + 1):

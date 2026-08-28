@@ -1,10 +1,12 @@
-"""Tests for the Majorana singlet-channel moments bench (this task ED side).
+"""Tests for the Majorana singlet-channel moments bench.
 
-The two exact identities that anchor the whole story:
-  * A_1 = -2p H identically (so the n = 1 channel is conserved at every N);
-  * the binomial word-expansion used by duality/chord_moments.py is a
-    per-instance OPERATOR identity (validated here against dense algebra,
-    independent of any chord input).
+Two exact identities anchor the whole story.
+
+  * A_1 = -2p H identically, so the n = 1 channel is conserved at every N.
+  * The binomial word-expansion used by duality/chord_moments.py is a
+    per-instance OPERATOR identity.  It is validated here against dense
+    algebra, independent of any chord input.
+
 Plus the committed-JSON assertions: the measured N-falloff of the n >= 2
 channel moments toward the chord prediction w2 = 0 at N = infinity.
 """
@@ -150,3 +152,32 @@ def test_bench_matched_lambda_honest_negative(bench):
         assert abs(r4["lambda_chord"] - r6["lambda_chord"]) < 0.1
         # the honest negative: raw w2 larger at larger N (matched lambda)
         assert r6["w2"] > r4["w2"]
+
+
+def test_eigenbasis_tower_matches_reference_path():
+    """instance_moments builds the tower in the eigenbasis (ad_H there is
+    the Hadamard product with omega -- the 2x production path); a_n_tower
+    is the computational-basis reference.  The two must agree to rounding
+    on every reported moment, including the conserved n = 1 zeros."""
+    import mn_majorana_bench as mb
+
+    N, p, seed = 10, 4, 7001
+    rng = np.random.default_rng(seed)
+    H = majorana_hamiltonian_fast(N, p, rng)
+    dim = H.shape[0]
+    E, V = np.linalg.eigh(H)
+    omega = E[:, None] - E[None, :]
+    psis = [op.toarray() for op in majorana_operators(N)]
+    A = mb.a_n_tower(H, psis, 3)
+    got = mb.instance_moments(N, p, seed)
+    for n in (1, 2, 3):
+        M = V.conj().T @ A[n] @ V
+        M -= np.trace(M) / dim * np.eye(dim)
+        Mh = 0.5 * (M + M.conj().T)
+        Ma = 0.5 * (M - M.conj().T)
+        W = (np.abs(Mh) ** 2 + np.abs(Ma) ** 2) / dim
+        scale = float(np.sum(W)) * float(np.mean(E ** 2))
+        for k in (0, 1, 2, 4):
+            ref = float(np.sum(W * omega ** k))
+            assert abs(got[n][f"mu{k}"] - ref) < 1e-10 * max(scale, 1.0), \
+                (n, k, got[n][f"mu{k}"], ref)

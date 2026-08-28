@@ -52,7 +52,8 @@
  "flz_d_constants_alpha0": {
   "d+": 0.963178456398,
   "d-": 0.433582639833,
-  "ratio_exact": "sqrt(2)/pi"
+  "ratio_exact": "sqrt(2)/pi",
+  "status": "transcribed, not yet consumed: the only available EXTERNAL anchor at the eigenfunction level (the internal checks are Parseval/weak-form/cross-solver).  Consuming it needs FLZ's (arXiv:0905.2280) definition of the endpoint constants d+- transcribed alongside -- do that before writing the test, do not guess the normalization."
  },
  "lm_two_lambda_tables": {
   "comment": "2*lambda_n (converted from LM lambda_n x2), interleaved by parity; 6 significant digits in lambda => absolute uncertainty up to ~1e-4 on 2*lambda at the top of the tables",

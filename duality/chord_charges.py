@@ -1,14 +1,21 @@
 #!/usr/bin/env python3
 r"""
-The conserved-channel theorem: why every A_n is conserved at N = infinity.
-==========================================================================
+The conserved-channel theorem: why the pair channel is frozen at N = inf.
+=========================================================================
 
-`chord_moments.py` DISCOVERED (numerically, machine precision) that the
+`chord_moments.py` found this numerically, at machine precision.  The
 singlet bilinear channels A_n = sum_i psi_i (ad_H)^n psi_i carry no
-propagating weight at N = infinity.  This module PROVES it, and supplies
-the verification apparatus the tests assert.
+propagating weight at N = infinity, in their i != j pair amplitude.  This
+module proves it, and supplies the apparatus the tests assert.
 
-Setup (formal, unscaled chord basis; T|n> = |n+1> + [n]_q |n-1>).  In a
+THE PICTURE.  At N = infinity the bulk is a length.  |n> means the bulk
+is n chords long, and T lengthens or shortens it.  A particle is a chord
+stretched across the bulk; it gets dragged as the bulk moves, and that is
+what puts weight at nonzero frequency.  You build A_n out of the
+Hamiltonian.  The result below is that such a probe is not a particle.
+It is the bulk.
+
+SETUP (formal, unscaled chord basis; T|n> = |n+1> + [n]_q |n-1>).  In a
 sequential pair word  H^a psi_i H^b psi_i H^c psi_j H^d psi_j  the i-pair
 factors through the zero-chord sector as the DRESSED PROPAGATOR
 
@@ -16,57 +23,74 @@ factors through the zero-chord sector as the DRESSED PROPAGATOR
 
 where open |n> = |n, 0>, T_M is the one-matter transfer matrix, and
 close |n0, n1> = q^(D n1) |n0 + n1>  (D = the matter weight Delta_psi).
+C(m) is the whole block psi H^m psi, seen from the chord line.
 
-Lemma (the three-term recursion).  Define the j-fold closes
+LEMMA (the three-term recursion).  Define the j-fold closes
 
     close_j |n0, n1> = [n1][n1-1]...[n1-j+1] q^(D (n1-j)) |n0+n1-j> .
 
-A direct computation with the chord rules gives, with SCALAR coefficients,
+The chord rules give, with SCALAR coefficients,
 
     close_j o T_M = q^(D+j) T o close_j + [j]_q close_{j-1}
                     + (1 - q^(2D+j)) close_{j+1} .
 
-(The two matching conditions collapse to [n1+1] - q^j [n1-j+1] = [j] and
-q^(-D) = q^(D+j) + d_j q^(-D) -- both n1-independent.)  Iterating from
-close_0 and using close_{j>0} o open = 0, close_0 o open = 1:
+The coefficients being scalars is the whole result.  The two matching
+conditions collapse to [n1+1] - q^j [n1-j+1] = [j] and
+q^(-D) = q^(D+j) + d_j q^(-D).  Neither depends on the chord occupation.
+Had they, the family would not close, and the channel would propagate
+like anything else.
+
+Iterate from close_0.  Use close_{j>0} o open = 0 and close_0 o open = 1:
 
     C(m) = P_m(T) ,
 
 a POLYNOMIAL in T: the Motzkin-path polynomial of length m.  At height j
 it carries flat weight q^(D+j) T, down weight [j]_q, and up weight
-1 - q^(2D+j).  First cases (verified exactly):
+1 - q^(2D+j).  First cases, verified exactly:
 
     C(1) = q^D T ,          C(2) = q^(2D) T^2 + (1 - q^(2D)) .
 
-Theorem (conserved channels).  The chord representation of the A_n
+THEOREM (conserved channels).  The chord representation of the A_n
 insertion is
 
     Xhat_n = sum_r (-1)^r C(n, r) C(n-r) T^r      [= d^n/dt^n C(t) e^{-tT}|_0]
 
 -- a polynomial in T by the lemma.  Hence ad_T^k(Xhat_n) = 0.  EVERY
 spectral moment mu_k (k >= 1, even and odd, both operator orderings) of
-every A_n pair channel therefore vanishes identically at N = infinity,
-at every lambda and every matter weight.  Explicit conserved charges:
+every A_n PAIR channel therefore vanishes at N = infinity, at every
+lambda and every matter weight.  Explicitly:
 
     Xhat_1 = -(1 - q^D) T ,
     Xhat_2 = (1 - q^D)^2 T^2 + (1 - q^(2D)) .
 
-The contrast that makes this physical: a random operator O_Delta inserts
-q^(Delta n-hat), which does NOT commute with T.  It propagates
-(mu_2 = 2(1 - q^Delta)), while the H-derived bilinears cannot.  The meson
-tower of arXiv:2607.05678 must therefore live entirely in 1/N
-corrections.  CHORD.md carries the consequence.
+Xhat_1 is proportional to T.  That is the N = infinity image of the exact
+finite-N law A_1 = -2pH, so the n = 1 case lands on something known
+independently.  Xhat_2 is the closed form of the A_2 chord image; note it
+is conserved for the trivial reason that any polynomial in H is, so it is
+not a new symmetry.  The content is that the channel reduces to such a
+polynomial.
 
-Scope: the i != j pair amplitude, strict N = infinity.  This is exactly
-the object chord_moments.py computes.  Finite-N and the flavor-diagonal
-channel are untouched (see mn_majorana_bench.py).
+WHAT DOES PROPAGATE.  A random operator O_Delta inserts q^(Delta n-hat),
+which does NOT commute with T because T changes n.  So random matter
+propagates, with mu_2 = 2(1 - q^Delta).  The bulk holds particles
+perfectly well.  The discriminator is not the size of the operator.  It
+is whether its couplings are correlated with H's.
 
-Verification (test_chord_charges.py): the recursion as a matrix identity,
-C(m) = P_m(T) and [C(m), T] = 0 for m <= 8, the closed forms, [Xhat_n, T]
-= 0 for n <= 5, and the word-level zeros |mu_k|/gross <= 1e-12 for
-n <= 5, even k <= 6 through the independent chord_moments assembly.
-Truncation note: on a finite chord lattice the identities hold exactly on
-the interior block (truncation intrudes at most m rows from the top).
+SCOPE, AND IT IS LOAD-BEARING.  This is the i != j pair amplitude at
+strict N = infinity -- exactly the object chord_moments.py computes.  The
+full channel also has a flavor-diagonal part of the SAME order, and that
+part does not vanish for n >= 2.  So the tower does propagate at
+N = infinity, with all of its weight diagonal.  See CHORD.md, and
+diagonal_chord.py for the diagonal law.  Finite-N corrections are in
+../syk-self-averaging/exact_pair_moments.py.
+
+VERIFICATION (test_chord_charges.py): the recursion as a matrix identity;
+C(m) = P_m(T) and [C(m), T] = 0 for m <= 8; the closed forms;
+[Xhat_n, T] = 0 for n <= 5; and the word-level zeros |mu_k|/gross <= 1e-12
+for n <= 5, even k <= 6, through the independent chord_moments assembly.
+
+TRUNCATION.  On a finite chord lattice the identities hold exactly on the
+interior block; truncation intrudes at most m rows from the top.
 Residuals are measured there, relative to the block scale.
 """
 

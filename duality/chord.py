@@ -1,40 +1,54 @@
 #!/usr/bin/env python3
 r"""
-The exact N = infinity chord engine.
-====================================
+The N = infinity chord engine.
+==============================
 
-Double-scaled SYK at N = infinity (lambda = 2p^2/N fixed) is exactly
-solvable by chord combinatorics (Berkooz-Isachenkov-Narovlansky-Torrents
-1811.02584).  Conventions come from the review Berkooz-Mamroud
-2407.09396.  Both papers are equation-checked.  This module implements
-the solution as finite sparse linear algebra.  No special functions.
+At N = infinity the bulk is a length.  |n> means the bulk is n chords
+long, and the transfer matrix T lengthens it or shortens it.  A particle
+is a chord stretched across the bulk.  Everything this module computes is
+a walk on that length.
 
-  * Transfer matrix [review (2.15)-(2.16)]: T|n> = |n+1> + [n]_q |n-1>.
-    Moments <Tr H^k>/<Tr H^2>^{k/2} = <0|T^k|0>; spectrum
-    E(theta) = 2 cos(theta)/sqrt(1-q)  [review (2.21)].
-  * Matter of dimension Delta [review (2.26)-(2.30)]: an H-chord crossing
-    the M-chord weighs q^Delta.  The T = infinity 2-pt function is exactly
-    <0| e^{+itT} q^{Delta n} e^{-itT} |0>  [review (2.29)].  The
-    theta-integral (2.30) is coded separately as a cross-check.
-  * One and two matter chords on the contour (stack construction: closing
-    an object crosses everything opened after it that is still open).
-    This reproduces the one-particle transfer matrices [review
-    (5.18)-(5.20)] and evaluates ANY operator ordering on ANY complex
-    contour.  Crossed and Euclidean-folded contours are included.
-    Matter-matter crossings weigh q^{Delta_1 Delta_2} times a fermionic
-    sign (-1) for single-Majorana matter.  This is the same minus that
-    fold_bench.py derives.
+Double-scaled SYK at N = infinity (lambda = 2p^2/N fixed) is solved by
+chord combinatorics (Berkooz-Isachenkov-Narovlansky-Torrents 1811.02584).
+Conventions come from the review Berkooz-Mamroud 2407.09396.  Both papers
+are equation-checked.  This module writes the solution as finite sparse
+linear algebra.  There are no special functions.
 
-Units: the chord Hamiltonian has <H^2> = 1.  Exact bridge to repo units
-(psi^2 = 1, Var J = p!/N^{p-1}):  sigma_H^2 = C(N,p) p!/N^{p-1}, and
-t_chord = t_repo * sigma_H.  In double scaling this gives
+THE PIECES
+
+* Transfer matrix [review (2.15)-(2.16)]: T|n> = |n+1> + [n]_q |n-1>.
+  Open a new chord, or close one of the n open ones.  Closing the k-th
+  crosses k-1 others, so the closing weight sums to [n]_q.  Moments are
+  <Tr H^k>/<Tr H^2>^{k/2} = <0|T^k|0>, and the spectrum is
+  E(theta) = 2 cos(theta)/sqrt(1-q)  [review (2.21)].
+
+* Matter of dimension Delta [review (2.26)-(2.30)]: an H-chord that
+  crosses the matter chord weighs q^Delta.  The T = infinity 2-pt
+  function is exactly <0| e^{+itT} q^{Delta n} e^{-itT} |0>  [review
+  (2.29)].  The theta-integral (2.30) is coded separately, as a
+  cross-check.
+
+* One and two matter chords on the contour, by a stack construction:
+  closing an object crosses everything opened after it that is still
+  open.  This reproduces the one-particle transfer matrices [review
+  (5.18)-(5.20)], and it evaluates ANY operator ordering on ANY complex
+  contour.  Crossed and Euclidean-folded contours are included.
+  Matter-matter crossings weigh q^{Delta_1 Delta_2} times a fermionic
+  sign (-1) for single-Majorana matter.  That is the same minus sign
+  fold_bench.py derives independently.
+
+UNITS.  The chord Hamiltonian has <H^2> = 1.  The bridge to repo units
+(psi^2 = 1, Var J = p!/N^{p-1}) is exact: sigma_H^2 = C(N,p) p!/N^{p-1},
+and t_chord = t_repo * sigma_H.  In double scaling that gives
 beta_chord = betaJ * e^{-lambda/8}/sqrt(lambda), with scriptJ = sqrt(2) p.
 
-Truncation: finite chord lattice n <= nmax; q^n suppresses large n.
-Campaign JSONs store paired truncations, and the tests assert stability.
-Per-equation provenance lives in the function docstrings.  Validation:
-test_chord.py (enumerator, closed forms, Krawtchouk microscopy, ED
-anchors).
+TRUNCATION.  The chord lattice is finite, n <= nmax, and q^n suppresses
+large n.  Campaign JSONs store paired truncations, and the tests assert
+stability.
+
+Per-equation provenance lives in the function docstrings.  The engine is
+held up by test_chord.py: a brute-force enumerator, the published closed
+forms, Krawtchouk microscopy, and ED anchors.
 """
 
 from __future__ import annotations

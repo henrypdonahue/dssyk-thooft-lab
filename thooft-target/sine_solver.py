@@ -1,37 +1,40 @@
 #!/usr/bin/env python3
 r"""
-Independent cross-check solver for 't Hooft's equation (sine basis)
-===================================================================
+Independent cross-check solver for 't Hooft's equation (sine basis).
+====================================================================
 
-This is a *deliberately independent* second solver.  We use it only to
-validate the main Chebyshev-U spectral solver (thooft_spectrum.py).  In
-particular it validates the quark-mass (potential) machinery, which is
-invisible at the duality point alpha = 0.  It shares no code, no basis, and no
-closed-form matrix elements with the main solver.
+This is a deliberately INDEPENDENT second solver.  We use it only to
+validate the main Chebyshev-U spectral solver, thooft_spectrum.py.
 
-Method
-------
-Expand the wavefunction in the sine basis
+In particular it validates the quark-mass (potential) machinery, which is
+invisible at the duality point alpha = 0.  It shares no code, no basis,
+and no closed-form matrix elements with the main solver.
+
+METHOD.  Expand the wavefunction in the sine basis
 
     phi(x) = sum_k a_k sin(k pi x),    k = 1..N,
 
-which satisfies the boundary conditions phi(0) = phi(1) = 0 by construction.
-Unlike the Chebyshev-U basis it does NOT build in the sqrt(x(1-x)) endpoint
-behavior, so it converges only algebraically.  That is fine for a 3-4 digit
-cross-check.  It is useless for high precision.  That mismatch is the point.
-Agreement between the two methods cannot be an artifact of a shared
-discretization.
+which satisfies phi(0) = phi(1) = 0 by construction.
 
-This solver handles the finite-part (hypersingular) operator through its exact
-weak form.  For any u, v vanishing at the endpoints,
+Unlike the Chebyshev-U basis, it does NOT build in the sqrt(x(1-x))
+endpoint behavior.  So it converges only algebraically.  That is fine for
+a 3-4 digit cross-check, and useless for high precision.
+
+That mismatch is the point.  Agreement between the two methods cannot be
+an artifact of a shared discretization.
+
+This solver handles the finite-part (hypersingular) operator through its
+exact weak form.  For any u and v vanishing at the endpoints,
 
     <u, FP v> = -B[u, v] - <u, V v>,      V(x) = 1/x + 1/(1-x),
     B[u, v]   = (1/2) Int Int [u(x)-u(y)][v(x)-v(y)] / (x-y)^2 dx dy
 
-(the same Gagliardo identity stated in jacobi_solver.py).  The B integrand
-is *regular* on the diagonal (it tends to u'(x)v'(x) as y -> x), so an
-ordinary tensor Gauss-Legendre rule evaluates it.  't Hooft's equation in
-FLZ normalization,
+which is the same Gagliardo identity stated in jacobi_solver.py.
+
+The B integrand is REGULAR on the diagonal, tending to u'(x)v'(x) as
+y -> x.  So an ordinary tensor Gauss-Legendre rule evaluates it.
+
+'t Hooft's equation in FLZ normalization,
 
     2 pi^2 lambda phi = alpha V(x) phi - FP-Int phi(y)/(y-x)^2 dy,
 
@@ -41,7 +44,7 @@ then becomes the generalized eigenproblem
 
 with G_{nm} = <sin_n, sin_m>, Pi_{nm} = <sin_n, V sin_m>, and W = -B the
 weak-form matrix assembled below.  The alpha -> alpha + 1 shift is the
-bare-mass endpoint self-energy hidden in the finite part (see solve()).
+bare-mass endpoint self-energy hidden in the finite part; see solve().
 """
 
 from __future__ import annotations

@@ -1,72 +1,89 @@
 #!/usr/bin/env python3
 r"""
-ED laboratory for the anti-scrambling sign test and the Harlow-Zhao fold.
-=========================================================================
+ED laboratory for the anti-scrambling sign test, and the fold.
+==============================================================
 
-Ground truth for duality/antiscrambling.py.  Finite-N
-Majorana SYK has a spectrum bounded above AND below, so every Euclidean-FOLDED
-correlator (Harlow-Zhao 2607.14215 Sec. 6) is finite and exactly computable.
-That is the mechanism they propose for de Sitter anti-scrambling and pose as
-an open test "in a concrete model such as the SYK model".  This module runs
-that test at ED scale.  It also runs the scrambling-sign measurement of the
-standard (unfolded) OTOC that Cui-Kolchmeyer 2607.13665 make the dS
-discriminator.
+This is ground truth for duality/antiscrambling.py.
 
-Correlator conventions (locked to Streicher 1911.10171 via
-duality/antiscrambling.py; asserted in duality/test_antiscrambling.py):
+Finite-N Majorana SYK has a spectrum bounded above AND below.  So every
+Euclidean-FOLDED correlator (Harlow-Zhao 2607.14215 Sec. 6) is finite and
+exactly computable.  That is the mechanism they propose for de Sitter
+anti-scrambling, and they pose it as an open test "in a concrete model
+such as the SYK model".  This module runs that test at ED scale.
 
-  * theta in (0, 2pi) is Euclidean angle; complex slot times
-    z = -i beta theta/(2pi)  (Im theta = Lorentzian theta-time, growth rate
-    v per unit theta-time); psi(z) = e^{izH} psi e^{-izH}.
-  * UNCROSSED (TOC) configurations are path-ordered as written:
-        F = (1/N^2) sum_ij Tr[rho psi_i(z1) psi_i(z2) psi_j(z3) psi_j(z4)].
-  * The CROSSED configuration theta1 > theta3 > theta2 > theta4 is the
-    path-ordered correlator: operator sequence by descending
-    standard-configuration theta, WITH the fermionic transposition sign:
-        F = -(1/N^2) sum_ij Tr[rho psi_i(z1) psi_j(z3) psi_i(z2) psi_j(z4)].
-    The leading minus is DERIVED, not fitted.  Reaching descending-theta
-    order is a single transposition (psi_i(z2) past psi_j(z3)), which for
-    anticommuting fields costs one (-1).  It is cross-validated against the
-    independently transcribed Streicher (3.10) closed form.  The wrong sign
-    is not a mere normalization.  Here F ~= F_d (the connected part is a
-    small difference), so flipping F's sign moves the connected RATIO
-    N*(F - F_d)/F_d by ~2N (the x25 sign-discrimination margin quoted in
-    ANTISCRAMBLING.md).
-  * At finite dimension the ordered-trace expression is an ENTIRE function
-    of the four thetas.  The FOLD is Harlow-Zhao's continuation (6.9),
-    theta^QM = (-t1, 2pi n - t2, 2pi - t3, 2pi(n+1) - t4).  So the fold is
-    evaluated by freezing the operator sequence at its standard-configuration
-    order and moving the arguments.  e^{+tau H} segments appear.  They are
-    finite precisely because the spectrum is bounded (HZ's requirement).
+It also runs the scrambling-sign measurement of the standard, unfolded
+OTOC, which Cui-Kolchmeyer 2607.13665 make the dS discriminator.
 
-Measurements (disorder-averaged, bootstrap errors over instances):
+CORRELATOR CONVENTIONS.  These are locked to Streicher 1911.10171 through
+duality/antiscrambling.py, and asserted in
+duality/test_antiscrambling.py.
 
-  g2        -- thermal 2-pt vs the large-q closed form: conventions lock +
-               the O(1/p, lambda) error floor that calibrates everything
-               else.  The floor is LARGE at ED sizes, deviation ratios
-               ~0.5.  So 4-pt comparisons are sign/trend-level, and every
-               fold verdict is read against the same-size unfolded floor.
-  g2_fold   -- the 2-pt fold (HZ fig 7c): ED literal continuation to
-               theta < 0 vs the continued closed form, which has a POLE at
-               theta = -pi(1/v - 1).  Whether the finite-N object follows
-               the continued semiclassical form toward its pole is the
-               2-pt version of the "continuation commutes" question.
-  toc/otoc  -- Euclidean 4-pt at uncrossed/crossed configurations vs
-               Streicher (3.3)/(3.10).
-  growth_*  -- Lorentzian OTOC at the symmetric crossed configuration:
-               script-F/F_d vs Lorentzian theta-time thL.  The closed form
-               has Re a = -1 growth (scrambling, CK's c > 0) at EVERY
-               temperature.  The ED trend is the model-level verdict.
-  fold_*    -- the SAME configuration through the HZ fold map (6.9, n=1),
-               Euclidean and Lorentzian: ED vs continued closed form.
-               Tracking at the calibrated floor supports HZ's
-               continuation-commutes assumption in SYK.  Refusal to follow
-               the continued form (e.g. toward its poles) is a Stokes-type
-               obstruction.  Either way, first data on their question.
+* theta in (0, 2pi) is the Euclidean angle.  Complex slot times are
+  z = -i beta theta/(2pi), so Im theta is Lorentzian theta-time, with
+  growth rate v per unit theta-time.  psi(z) = e^{izH} psi e^{-izH}.
 
-Output: fold_bench.json.  Runtime ~10 min default (the crossed evaluator
-is O(N^2) batched dense matmuls; the committed artifact's own runtime_s
-sum to 580 s).  `--quick` runs a reduced campaign (~2 min).
+* UNCROSSED (TOC) configurations are path-ordered as written:
+
+      F = (1/N^2) sum_ij Tr[rho psi_i(z1) psi_i(z2) psi_j(z3) psi_j(z4)].
+
+* The CROSSED configuration theta1 > theta3 > theta2 > theta4 is the
+  path-ordered correlator: the operator sequence runs by descending
+  standard-configuration theta, WITH the fermionic transposition sign:
+
+      F = -(1/N^2) sum_ij Tr[rho psi_i(z1) psi_j(z3) psi_i(z2) psi_j(z4)].
+
+  The leading minus is DERIVED, not fitted.  Reaching descending-theta
+  order takes a single transposition, psi_i(z2) past psi_j(z3), which
+  costs one (-1) for anticommuting fields.  It is cross-validated against
+  the independently transcribed Streicher (3.10) closed form.
+
+  The wrong sign is not a mere normalization.  Here F is close to F_d,
+  since the connected part is a small difference.  So flipping F's sign
+  moves the connected RATIO N*(F - F_d)/F_d by about 2N.  That is the 25x
+  sign-discrimination margin quoted in ANTISCRAMBLING.md.
+
+* At finite dimension the ordered-trace expression is an ENTIRE function
+  of the four thetas.  The FOLD is Harlow-Zhao's continuation (6.9),
+  theta^QM = (-t1, 2pi n - t2, 2pi - t3, 2pi(n+1) - t4).  So the fold is
+  evaluated by freezing the operator sequence at its
+  standard-configuration order and moving the arguments.  e^{+tau H}
+  segments appear.  They are finite precisely because the spectrum is
+  bounded, which is HZ's requirement.
+
+MEASUREMENTS, disorder-averaged, with bootstrap errors over instances.
+
+g2 -- the thermal 2-pt function against the large-q closed form.  This
+locks the conventions, and it fixes the O(1/p, lambda) error floor that
+calibrates everything else.  That floor is LARGE at ED sizes, with
+deviation ratios around 0.5.  So 4-pt comparisons here are sign and
+trend level, and every fold verdict is read against the same-size
+unfolded floor.
+
+g2_fold -- the 2-pt fold (HZ fig 7c).  The ED literal continuation to
+theta < 0, against the continued closed form, which has a POLE at
+theta = -pi(1/v - 1).  Whether the finite-N object follows the continued
+semiclassical form toward that pole is the 2-pt version of the
+"continuation commutes" question.
+
+toc/otoc -- Euclidean 4-pt functions at the uncrossed and crossed
+configurations, against Streicher (3.3) and (3.10).
+
+growth_* -- the Lorentzian OTOC at the symmetric crossed configuration.
+script-F/F_d against Lorentzian theta-time thL.  The closed form has
+growth with a(v) < 0, which is scrambling, CK's c > 0, at EVERY
+temperature.  The ED trend is the model-level verdict.
+
+fold_* -- the SAME configuration through the HZ fold map (6.9, n=1),
+Euclidean and Lorentzian, ED against the continued closed form.  Tracking
+at the calibrated floor would support HZ's continuation-commutes
+assumption in SYK.  Refusal to follow the continued form, for example
+toward its poles, is a Stokes-type obstruction.  Either way, this is
+first data on their question.
+
+Output: fold_bench.json.  Runtime is about 10 minutes by default; the
+crossed evaluator is O(N^2) batched dense matmuls, and the committed
+artifact's own runtime_s values sum to 580 s.  `--quick` runs a reduced
+campaign in about 2 minutes.
 """
 
 from __future__ import annotations

@@ -3,36 +3,43 @@ r"""
 The chord-side Euclidean fold at N = infinity.
 ==============================================
 
-Decider #1 (`syk-self-averaging/fold_bench.py --scan`, fold_scan.json)
-established at ED sizes that the Harlow-Zhao-folded crossed 4-pt drifts
-away from the continued large-q closed form with growing N at fixed
-lambda.  It also established that the folded connected fraction reaches
-O(1).  The final word was explicitly deferred to the exact double-scaled
-theory.  The fold is a contour statement, and chord correlators are
-analytic in the chord times.  The chord engine (chord.py, validated)
-evaluates ANY complex contour.  This module runs that computation -- the
-last open fold question.
+Decider #1 was `syk-self-averaging/fold_bench.py --scan`, in
+fold_scan.json.  At ED sizes it established two things.  The
+Harlow-Zhao-folded crossed 4-pt function drifts away from the continued
+large-q closed form as N grows at fixed lambda.  And the folded connected
+fraction reaches O(1).
 
-Everything mirrors fold_bench.py exactly: the same theta configurations,
-the same HZ (6.9) fold map n = 1, the same frozen path-order convention,
-and the same connected ratio script-F/F_d = N (F - F_d)/F_d with
-N = 2p^2/lambda_chord.  The chord replacements are:
+The final word was deferred, on purpose, to the exact double-scaled
+theory.  The fold is a contour statement, chord correlators are analytic
+in the chord times, and the validated engine in chord.py evaluates ANY
+complex contour.  This module runs that computation.  It is the last open
+fold question.
 
-  * Tr[e^{-beta H} psi(z_1) psi(z_3) psi(z_2) psi(z_4)] -> the exact
-    two-matter-chord contour amplitude (Delta_psi = 1/p, fermionic
-    matter-matter crossing sign = fold_bench's derived transposition minus);
-  * the units bridge: beta_chord = beta_phys sigma_H.  Primary rows use the
-    N = infinity form betaJ e^{-lambda/8}/sqrt(lambda).  ED-comparison
-    columns use the exact finite-N sigma_H(N, p) of the matched scan point.
+Everything mirrors fold_bench.py exactly.  The same theta
+configurations.  The same HZ (6.9) fold map at n = 1.  The same frozen
+path-order convention.  The same connected ratio
+script-F/F_d = N (F - F_d)/F_d, with N = 2p^2/lambda_chord.
 
-Objects per lambda: toc / otoc / fold (Euclidean), growth_thL / fold_thL
-(Lorentzian theta-time on the (theta_1, theta_2) pair), the folded and
-unfolded connected fractions, the continued Streicher closed forms
-(duality/antiscrambling.py), and the ED
-columns from fold_scan.json at matched lambda.  Truncation is doubled and
-the drift stored.
+Two chord replacements:
 
-Output: chord_fold.json; verdicts asserted in test_chord_fold.py and
+  * Tr[e^{-beta H} psi(z_1) psi(z_3) psi(z_2) psi(z_4)] becomes the exact
+    two-matter-chord contour amplitude, at Delta_psi = 1/p, with the
+    fermionic matter-matter crossing sign equal to fold_bench's derived
+    transposition minus.
+  * The units bridge is beta_chord = beta_phys sigma_H.  Primary rows use
+    the N = infinity form betaJ e^{-lambda/8}/sqrt(lambda).
+    ED-comparison columns use the exact finite-N sigma_H(N, p) of the
+    matched scan point.
+
+Objects recorded per lambda: toc, otoc and fold (Euclidean); growth_thL
+and fold_thL (Lorentzian theta-time on the (theta_1, theta_2) pair); the
+folded and unfolded connected fractions; the continued Streicher closed
+forms from duality/antiscrambling.py; and the ED columns from
+fold_scan.json at matched lambda.
+
+Truncation is doubled, and the drift is stored.
+
+Output: chord_fold.json.  Verdicts asserted in test_chord_fold.py, and
 narrated in ANTISCRAMBLING.md.
 """
 

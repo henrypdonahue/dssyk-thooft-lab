@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""Asserting tests for the baryon-sector machinery (baryons.py).
+"""Tests for the baryon-sector machinery (baryons.py).
 
-The tests check every closed form against an independent route.  They check
-the sector blocks against the dense builder AND against the sparse
-Jordan-Wigner reference.  They check the correlator collapse against full ED
-that knows nothing about it.  They check the sector-m2 closed form against a
-structurally different enumeration and against ensemble ED means.  They check
-the DeltaE statistics against the Gaussian-sum prediction.
+Every closed form is checked against an independent route.  The sector
+blocks are checked against the dense builder AND against the sparse
+Jordan-Wigner reference.  The correlator collapse is checked against full
+ED that knows nothing about it.  The sector-m2 closed form is checked
+against a structurally different enumeration, and against ensemble ED
+means.  The DeltaE statistics are checked against the Gaussian-sum
+prediction.
 
-Run with:  pytest -q -m 'not slow'   (two heavier statistical anchors are slow)
+Run with: pytest -q -m 'not slow'.  Two heavier statistical anchors are
+marked slow.
 """
 
 from math import comb

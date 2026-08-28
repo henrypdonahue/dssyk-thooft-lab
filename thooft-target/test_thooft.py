@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Asserting regression tests for the massless 't Hooft spectrum.
+"""Regression tests for the massless 't Hooft spectrum.
 
-Run with:  pytest -q        (or  python3 -m pytest -q)
+Run with: pytest -q, or python3 -m pytest -q.
 
-Every check that validate.py *prints*, this file *asserts* with an explicit
-tolerance.  The package therefore fails loudly if a change breaks the physics.
-The whole suite is double precision and runs in a few seconds (the sine
-cross-check quadrature dominates the cost).
+Every check that validate.py PRINTS, this file ASSERTS, with an explicit
+tolerance.  So the package fails loudly if a change breaks the physics.
+
+The whole suite is double precision and runs in a few seconds.  The sine
+cross-check quadrature dominates the cost.
 """
 
 import json

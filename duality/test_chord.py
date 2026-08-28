@@ -1,15 +1,19 @@
-"""Validation battery for the chord engine.
+"""The validation battery for the chord engine.
 
-Three independent legs hold it up:
-  1. the brute-force chord-diagram enumerator (shares only the microscopic
-     Wick weights with the engine, none of the transfer-matrix bookkeeping);
-  2. the published closed forms: theta-integral 2-pt (review 2407.09396
-     (2.30)), mu_2 = 2(1-q^Delta), Touchard-Riordan moments;
-  3. the microscopic Krawtchouk check that the chord weight q = e^{-2p^2/N}
-     is the right N -> infinity limit of the exact finite-N crossing average
-     (no chords involved at all).
-Plus the repo bridges: the large-q sech^{2Delta} anchor and the finite-N ED
-anchor from fold_bench.json.
+Three independent legs hold it up.
+
+1. The brute-force chord-diagram enumerator.  It shares only the
+   microscopic Wick weights with the engine, and none of the
+   transfer-matrix bookkeeping.
+2. The published closed forms: the theta-integral 2-pt function (review
+   2407.09396 (2.30)), mu_2 = 2(1-q^Delta), and the Touchard-Riordan
+   moments.
+3. The microscopic Krawtchouk check.  The chord weight q = e^{-2p^2/N} is
+   the right N -> infinity limit of the exact finite-N crossing average.
+   No chords are involved at all.
+
+Plus the two repo bridges: the large-q sech^{2Delta} anchor, and the
+finite-N ED anchor from fold_bench.json.
 """
 
 import json

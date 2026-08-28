@@ -1,12 +1,15 @@
 """Exact finite-N pair moments (exact_pair_moments.py), validated five ways.
 
-Pinned: the profile-sum evaluator equals the literal Isserlis enumeration
-exactly (all subset tuples, Pauli-string traces -- zero shared code).  The
-A_1 = -2pH flavor-sum identity ((N-1) mu2_pair + mu2_diag = 0) holds at
-machine precision, and gates the whole pipeline end to end.
+Pinned here.  The profile-sum evaluator equals the literal Isserlis
+enumeration exactly, over all subset tuples, with Pauli-string traces and
+zero shared code.
+
+The A_1 = -2pH flavor-sum identity, (N-1) mu2_pair + mu2_diag = 0, holds
+at machine precision, and it gates the whole pipeline end to end.
+
 Disorder-averaged dense ED agrees within errors.  t4bar converges to the
-chord t4 at matched q = e^(-2p^2/N).  The committed campaign shows mu_2
-falling to the conserved-channel theorem's N = infinity zero.
+chord t4 at matched q = e^(-2p^2/N).  And the committed campaign shows
+mu_2 falling to the conserved-channel theorem's N = infinity zero.
 """
 
 import json
@@ -253,8 +256,17 @@ def test_full_channel_is_not_conserved_only_the_pair_part_is():
     Control: at n = 1 the two parts must cancel identically, because
     A_1 = -2pH is exactly conserved.  At n = 2 they must not.  Without this
     test the docs could drift back to claiming the tower is invisible at
-    N = infinity, which it is not."""
-    for (p, N) in [(4, 16), (6, 36)]:
+    N = infinity, which it is not.
+
+    The four w2 fingerprints pinned here are the series CHORD.md,
+    road_map.md, and the root README quote (full A_2 width 1.044 -> 1.194
+    along lambda_chord = 2).  The committed exact_pair_moments.json stores
+    the pair channel only, so this recomputation (~0.4 s total) is the
+    series' sole committed guard."""
+    expected_w2 = {(4, 16): 1.044, (6, 36): 1.118,
+                   (8, 64): 1.164, (10, 100): 1.194}
+    w2s = []
+    for (p, N) in [(4, 16), (6, 36), (8, 64), (10, 100)]:
         def full(n):
             pair = channel_pair_moments(N, p, n, ks=(0, 2))
             diag = channel_pair_moments(N, p, n, marks=('i', 'i', 'i', 'i'),
@@ -271,16 +283,10 @@ def test_full_channel_is_not_conserved_only_the_pair_part_is():
 
         mu0_2, mu2_2, _ = full(2)
         w2 = mu2_2 / mu0_2
-        assert w2 > 0.9, (p, N, w2)      # the full A_2 channel propagates
+        assert abs(w2 - expected_w2[(p, N)]) < 0.01, (p, N, w2)
+        w2s.append(w2)
     # and the width RISES along the double-scaling line rather than falling
-    w2s = []
-    for (p, N) in [(4, 16), (6, 36)]:
-        pair = channel_pair_moments(N, p, 2, ks=(0, 2))
-        diag = channel_pair_moments(N, p, 2, marks=('i', 'i', 'i', 'i'),
-                                    ks=(0, 2))
-        w2s.append((N * diag["mu2"] + N * (N - 1) * pair["mu2"])
-                   / (N * diag["mu0"] + N * (N - 1) * pair["mu0"]))
-    assert w2s[1] > w2s[0], w2s
+    assert all(b > a for a, b in zip(w2s, w2s[1:])), w2s
 
 
 def test_expectation_core_m5_vs_literal_enumeration():

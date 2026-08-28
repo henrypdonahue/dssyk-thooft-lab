@@ -1,40 +1,51 @@
 #!/usr/bin/env python3
 r"""
-Singlet-moment pipeline: groundwork.
-====================================
+Singlet-moment pipeline: the groundwork.
+========================================
 
-The eventual N = infinity comparison ("moments vs 't Hooft sum rules",
-road_map this task) needs the DSSYK side's spectral moments
+The eventual N = infinity comparison, moments against 't Hooft sum rules,
+needs the DSSYK side's spectral moments
 
     mu_k(n, CP) = int domega omega^k S_n^{CP}(omega)
                 = Tr( ad_H^k(Mbar_n^{CP}) (Mbar_n^{CP})^dag ) / dim
 
-of the CP-resolved, traceless tower operators.  This module measures them by
-ED with disorder error bars along the FIXED-p trajectory (p = 4, Nc growing:
-lambda = p^2/Nc falls toward the 't Hooft-matching corner).  It reports the
-dimensionless shape invariants that survive normalization ambiguities:
+of the CP-resolved, traceless tower operators.
 
-    w2   = mu_2 / (mu_0 * Tr(H^2)/dim)              -- mean-square frequency
-           in units of the instance's own energy scale sqrt(Tr H^2/dim),
-    kurt = mu_4 mu_0 / mu_2^2                       -- shape (kurtosis-like).
+This module measures them by ED, with disorder error bars, along the
+FIXED-p trajectory: p = 4 with Nc growing, so lambda = p^2/Nc falls toward
+the 't Hooft-matching corner.
 
-Why moments and shape invariants: BOOST.md shows boost-frequency data cannot
-be compared to bulk masses peak-by-peak.  Single masses are continua, and the
-hologram/bulk frequency map -- the tomperature identification -- is not yet
-fixed.  Moment RATIOS of dimensionless shape parameters are the objects most
-robust to that unresolved map.  This pipeline therefore publishes exactly
-those, with statistics.  They are ready for the exact chord/Wick N = infinity
+It reports the dimensionless shape invariants that survive normalization
+ambiguities:
+
+    w2   = mu_2 / (mu_0 * Tr(H^2)/dim)
+           the mean-square frequency, in units of the instance's own
+           energy scale sqrt(Tr H^2/dim)
+    kurt = mu_4 mu_0 / mu_2^2
+           the shape, kurtosis-like
+
+WHY MOMENTS, AND WHY SHAPE INVARIANTS.  BOOST.md shows that
+boost-frequency data cannot be compared to bulk masses peak by peak.
+Single masses are continua, and the hologram/bulk frequency map -- the
+tomperature identification -- is not yet fixed.
+
+Moment RATIOS of dimensionless shape parameters are the objects most
+robust to that unresolved map.  So this pipeline publishes exactly those,
+with statistics.  They are ready for the exact chord/Wick N = infinity
 computation to be checked against.
 
-Hermiticity subtlety (caught by this module's own test): for n >= 3 the raw
-M_n is NOT +-Hermitian (dirac.py).  So the ordered correlator
-Tr(M_n(t)M_n^dag) has genuinely nonvanishing odd-in-omega parts.  At
-T_B = infinity (the Boltzmann temperature) the exact relation is
-S_{AA^dag}(omega) = S_{A^dag A}(-omega), symmetric only for the combined
-object.  We therefore use the SYMMETRIZED spectral function.  That is, we
-split each CP-projected operator into Hermitian + anti-Hermitian parts and
-add their (individually omega-symmetric) weights.  Odd moments then vanish
-identically (asserted in the tests).
+A HERMITICITY SUBTLETY, caught by this module's own test.  For n >= 3 the
+raw M_n is NOT +-Hermitian; see dirac.py.  So the ordered correlator
+Tr(M_n(t)M_n^dag) has genuinely nonvanishing odd-in-omega parts.
+
+At T_B = infinity the exact relation is
+S_{AA^dag}(omega) = S_{A^dag A}(-omega), which is symmetric only for the
+combined object.
+
+So we use the SYMMETRIZED spectral function.  Split each CP-projected
+operator into Hermitian and anti-Hermitian parts, and add their
+individually omega-symmetric weights.  Odd moments then vanish
+identically, which is asserted in the tests.
 """
 
 from __future__ import annotations

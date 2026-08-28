@@ -1,63 +1,83 @@
 #!/usr/bin/env python3
 r"""
-Chiral condensate, GMOR corner, and the vacuum energy (this task, bulk half).
-=============================================================================
+Chiral condensate, the GMOR corner, and the vacuum energy.
+==========================================================
 
-Section 5 of the target paper (Miyashita-Sekino-Susskind arXiv:2607.05678,
-"Holographic Tuning") transplants a 4d fine-tuning problem into a bulk dual,
-large-N QCD2, that is SUPER-RENORMALIZABLE.  Its only mass renormalization is
-the finite shift m_q^2 = m_bare^2 - g^2/pi.  Its vacuum energy receives one
-FINITE interaction correction, computable exactly.  This module computes that
-correction.  It also validates the exact inputs against this repo's own solver
-in a regime it had never touched (the chiral corner alpha -> -1).
+Section 5 of the target paper (Miyashita-Sekino-Susskind
+arXiv:2607.05678, "Holographic Tuning") transplants a 4d fine-tuning
+problem into a bulk dual, large-N QCD2, that is SUPER-RENORMALIZABLE.
 
-Exact inputs (Litvinov-Meshcheriakov arXiv:2409.11324 Sec. 6.1, fetched and
-transcribed 2026-08-16; their alpha == this repo's alpha = pi m_q^2/g^2,
-a = 1 + alpha = pi m_bare^2/g^2):
+Its only mass renormalization is the finite shift
+m_q^2 = m_bare^2 - g^2/pi.  Its vacuum energy receives one FINITE
+interaction correction, and that correction is computable exactly.
 
-  * the condensate at ARBITRARY quark mass [LM (6.1), due to Burkardt]:
+This module computes it.  It also checks the exact inputs against this
+repo's own solver, in a regime the solver had never touched: the chiral
+corner, alpha -> -1.
+
+EXACT INPUTS.  Litvinov-Meshcheriakov arXiv:2409.11324 Sec. 6.1, fetched
+and transcribed on 2026-08-16.  Their alpha is this repo's
+alpha = pi m_q^2/g^2, and a = 1 + alpha = pi m_bare^2/g^2.
+
+  * The condensate at ARBITRARY quark mass, LM (6.1), due to Burkardt:
+
         <psibar psi> = (m Nc/2pi) { log(pi/(1+alpha)) - 1 - gamma_E
                                     + alpha log 4 - alpha^2 I(alpha) },
         I(alpha) = (1/4) Int_-inf^inf dt/t^2 (sinh 2t - 2t)
                    / [cosh t (alpha sinh t + t cosh t)],
-    with m = m_bare = g sqrt((1+alpha)/pi);
-  * its chiral limit [LM (6.2), Zhitnitsky]:
-        <psibar psi> -> -Nc sqrt(g^2/(12 pi));
-  * GMOR [LM (6.3)]: (Nc/pi) M_0^2 ~= -4 m <psibar psi>, giving the pion
-        eigenvalue 2 lambda_0 = M_0^2/(pi g^2) -> (2/pi) sqrt(a/3).
 
-What is computed and asserted here:
+    with m = m_bare = g sqrt((1+alpha)/pi).
 
-  1. f(alpha) = <psibar psi>/(Nc g), dimensionless, on (-1, 0].  The I(alpha)
-     integral has an integrable near-singularity at alpha -> -1
-     (denominator ~ t(t^2/3 + a) at small t).  It reproduces EXACTLY the
-     pi/sqrt(3a) Zhitnitsky divergence -- asserted, plus the duality-point
-     value f(0) = (log pi - 1 - gamma_E)/(2 pi sqrt(pi)) = -0.038834...
-  2. The GMOR corner vs the matched-exponent Jacobi solver: 2 lambda_0 at
-     alpha = -1 + a approaches (2/pi) sqrt(a/3) with a measured NLO
-     (2lambda_0/LO - 1) ~= sqrt(a).  Measured basis convergence at K = 96:
-     10+ digits for a >= 0.04, ~8 digits at the a = 0.02 endpoint.  The
-     subleading endpoint structure grows as beta ~ sqrt(3a)/pi shrinks.
-     Those figures are far inside every tolerance used.  First solver data
-     in the chiral corner.
-  3. The vacuum-energy curve by Feynman-Hellmann in the bare mass at fixed
-     g (dE_vac/dm_bare = <psibar psi>):
+  * Its chiral limit, LM (6.2), Zhitnitsky:
+
+        <psibar psi> -> -Nc sqrt(g^2/(12 pi)).
+
+  * GMOR, LM (6.3): (Nc/pi) M_0^2 ~= -4 m <psibar psi>, which gives the
+    pion eigenvalue 2 lambda_0 = M_0^2/(pi g^2) -> (2/pi) sqrt(a/3).
+
+WHAT IS COMPUTED AND ASSERTED HERE
+
+1. f(alpha) = <psibar psi>/(Nc g), dimensionless, on (-1, 0].  The
+   I(alpha) integral has an integrable near-singularity as alpha -> -1,
+   where the denominator behaves as t(t^2/3 + a) at small t.  It
+   reproduces EXACTLY the pi/sqrt(3a) Zhitnitsky divergence, which is
+   asserted.  So is the duality-point value
+   f(0) = (log pi - 1 - gamma_E)/(2 pi sqrt(pi)) = -0.038834...
+
+2. The GMOR corner, against the matched-exponent Jacobi solver.  2
+   lambda_0 at alpha = -1 + a approaches (2/pi) sqrt(a/3), with a measured
+   next-order term (2lambda_0/LO - 1) about sqrt(a).
+
+   Measured basis convergence at K = 96: 10+ digits for a >= 0.04, and
+   about 8 digits at the a = 0.02 endpoint.  The subleading endpoint
+   structure grows as beta ~ sqrt(3a)/pi shrinks.  Those figures are far
+   inside every tolerance used.  This is first solver data in the chiral
+   corner.
+
+3. The vacuum-energy curve, by Feynman-Hellmann in the bare mass at fixed
+   g, so dE_vac/dm_bare = <psibar psi>:
+
         eps(alpha) = [E_vac(alpha) - E_vac(-1)]/(Nc g^2)
                    = Int_{-1}^{alpha} f(a') (dm/dalpha')/g dalpha',
         dm/dalpha = g / (2 sqrt(pi (1+alpha))).
-     In the m variable the integrand (the condensate f itself) is FINITE
-     through the chiral point.  In the alpha variable it has an integrable
-     (1+alpha)^{-1/2} endpoint singularity, with integrand*sqrt(1+alpha)
-     -> f_chiral/(2 sqrt(pi)) = -1/(4 pi sqrt(3)).  eps(0) -- the
-     interaction vacuum-energy shift at the duality point, in units
-     Nc g^2 -- is a single finite number.  That is the entire 2d counterpart
-     of Sec. 5's "vacuum energy corrections": one finite, parameter-free
-     constant.  Nothing requires tuning.  Under the dictionary
-     (alpha_bar = gbar^2 N = p^2, g^2 = lambda J^2 -> 0 with tau = p^2
-     m_q^2 fixed), the shift per flavor-mode vanishes as lambda.  The
-     Holographic-Tuning mechanism has no divergence to cancel in this bulk.
 
-Output: condensate.json (curve + corner scan + the numbers above).
+   In the m variable the integrand, which is the condensate f itself, is
+   FINITE through the chiral point.  In the alpha variable it has an
+   integrable (1+alpha)^{-1/2} endpoint singularity, with
+   integrand*sqrt(1+alpha) -> f_chiral/(2 sqrt(pi)) = -1/(4 pi sqrt(3)).
+
+   eps(0), the interaction vacuum-energy shift at the duality point in
+   units of Nc g^2, is a single finite number.  That is the entire 2d
+   counterpart of Sec. 5's "vacuum energy corrections": one finite,
+   parameter-free constant.  Nothing requires tuning.
+
+   Under the dictionary (alpha_bar = gbar^2 N = p^2, and
+   g^2 = lambda J^2 -> 0 with tau = p^2 m_q^2 fixed), the shift per
+   flavor-mode vanishes as lambda.  So the Holographic-Tuning mechanism
+   has no divergence to cancel in this bulk.
+
+Output: condensate.json, holding the curve, the corner scan, and the
+numbers above.
 """
 
 from __future__ import annotations

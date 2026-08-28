@@ -1,19 +1,29 @@
 #!/usr/bin/env python3
 r"""
-Arbitrary-precision massless 't Hooft spectrum (mpmath).
+Arbitrary-precision massless 't Hooft spectrum, in mpmath.
+==========================================================
 
-Same Rayleigh-Ritz / Chebyshev-U method as thooft_spectrum.py, but carried out
-in arbitrary-precision arithmetic.  The eigenvalues can therefore be pushed
-well past the double-precision floor (~1e-13).  The matrix elements D and S are
-*rational* (times pi^2 in D).  The only precision limit is therefore the
-working precision and the basis-truncation error, both controllable.
+The same Rayleigh-Ritz / Chebyshev-U method as thooft_spectrum.py, but
+carried out in arbitrary-precision arithmetic.  So the eigenvalues can be
+pushed well past the double-precision floor of about 1e-13.
 
-Generalized eigenproblem  D a = Lambda S a  (S symmetric positive definite).
-At alpha = 0 (the duality point) D is diagonal & positive.  This reduces by a
-single O(K^2) scaling to the standard symmetric
+The matrix elements D and S are RATIONAL, times pi^2 in D.  So the only
+precision limits are the working precision and the basis-truncation
+error.  Both are controllable.
+
+The generalized eigenproblem is D a = Lambda S a, with S symmetric
+positive definite.
+
+At alpha = 0, the duality point, D is diagonal and positive.  That reduces
+the problem by a single O(K^2) scaling to the standard symmetric
+
     A = D^{-1/2} S D^{-1/2},   A = A^T,   eig(A) = {1/Lambda_n},
-with no Cholesky and no matrix inversion.  Then  2 lambda_n = Lambda_n / pi^2.
-(For alpha != 0, D is non-diagonal and a Cholesky reduction is used instead.)
+
+with no Cholesky and no matrix inversion.  Then
+2 lambda_n = Lambda_n / pi^2.
+
+For alpha != 0, D is not diagonal, and a Cholesky reduction is used
+instead.
 """
 
 from mpmath import mp, mpf, matrix, cholesky, eigsy, pi, nstr

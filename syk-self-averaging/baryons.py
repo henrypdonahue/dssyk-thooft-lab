@@ -1,229 +1,283 @@
 #!/usr/bin/env python3
 r"""
-Baryon-sector first contact: ED data for the paper's
-baryon claims in the one-flavor U(N)/Dirac-SYK dictionary.
-==========================================================
+Baryon-sector first contact: ED data for the paper's baryon claims.
+===================================================================
 
-What the paper actually says about baryons -- quoted in full, because it is
-short (arXiv:2607.05678 source; local copy papers/arXiv-2607.05678v1/):
+Here is what the paper says about baryons, quoted in full, because it is
+short (arXiv:2607.05678 source; local copy in papers/):
 
   line 273:  "The SM has features closely resembling the real Standard
       Model: A U(1) x SU(N) gauge theory, aka QED x QCD; electric forces;
       quarks; mesons; baryons; Regge trajectories; confinement."
 
-  line 871:  "In a similar way there are forces between heavy states such as
-      Baryons in the 't Hooft model.  These forces may be identified as
+  line 871:  "In a similar way there are forces between heavy states such
+      as Baryons in the 't Hooft model.  These forces may be identified as
       Gravitational.  They are too weak to affect mesons unless the number
       of mesons is of order N^{1/2}, but they affect Baryons."
 
-That is the paper's ENTIRE baryon discussion.  Nothing is derived.  The
-"baryon mass ~ N" is the background large-N fact (Witten 1979; 't Hooft-model
-baryons) the sentences lean on.  The "gravitational-strength inter-baryon
-forces" claim is asserted, not computed.  This module produces the first ED
-data on the hologram side.
+That is the entire baryon discussion.  Nothing is derived.  "Baryon mass
+~ N" is the background large-N fact the sentences lean on (Witten 1979,
+and 't Hooft-model baryons).  The gravitational-strength inter-baryon
+force is asserted, not computed.
 
-The baryon operator and an EXACT collapse (finding 1)
+This module produces the first ED data on the hologram side.
+
+FINDING 1: THE BARYON OPERATOR, AND AN EXACT COLLAPSE
 -----------------------------------------------------
-In the one-flavor dictionary the quarks are the c^dag_i, and the baryon is
-the epsilon-tensor contraction of all Nc of them:
+In the one-flavor dictionary the quarks are the c^dag_i, and the baryon
+is the epsilon-tensor contraction of all Nc of them:
 
-    B^dag = c^dag_0 c^dag_1 ... c^dag_{Nc-1},
+    B^dag = c^dag_0 c^dag_1 ... c^dag_{Nc-1}
 
-the unique maximal-charge operator (it fills every mode).  The charge sectors
-Q = 0 and Q = Nc are ONE-DIMENSIONAL (|empty>, |full>), and every term of the
-charge-conserving H carries p/2 >= 2 annihilators, so
+That is the unique maximal-charge operator.  It fills every mode.
 
-    <empty|H|empty> = 0                                  (exact: c_B|empty>=0),
-    <full |H|full > = (-1)^{k(k-1)/2} sum_A J_AA,   k = p/2   (exact, generic),
+The charge sectors Q = 0 and Q = Nc are ONE-DIMENSIONAL, |empty> and
+|full>.  Every term of the charge-conserving H carries p/2 >= 2
+annihilators.  So
 
-where the sign is a Jordan-Wigner lemma for this module's ascending-monomial
+    <empty|H|empty> = 0                            (exact: c_B|empty> = 0)
+    <full |H|full > = (-1)^{k(k-1)/2} sum_A J_AA,  k = p/2  (exact, generic)
+
+The sign is a Jordan-Wigner lemma for this module's ascending-monomial
 convention: <s|c^dag_A c_A|s> = (-1)^{k(k-1)/2} for A a subset of occ(s).
-The annihilation parities are counted on s.  The re-creation parities are
-counted on s minus A.  The difference is #{pairs in A} = k(k-1)/2.  Both
-statements are asserted against dense ED in test_baryons.py.  Consequently
-the T = infinity baryon two-point function collapses to a single undamped
-oscillation,
+Count the annihilation parities on s, and the re-creation parities on s
+minus A.  The difference is #{pairs in A} = k(k-1)/2.  Both statements
+are asserted against dense ED in test_baryons.py.
+
+So the T = infinity baryon 2-point function collapses to a single
+undamped oscillation:
 
     G(t) = Tr(B(t) B^dag)/dim = exp(-i DeltaE t)/dim,
-    DeltaE = <full|H|full> - <empty|H|empty> = (-1)^{k(k-1)/2} sum_A J_AA,
+    DeltaE = <full|H|full> - <empty|H|empty> = (-1)^{k(k-1)/2} sum_A J_AA
 
-with |G(t)| = 1/dim identically.  DeltaE is a sum of C(Nc,k) i.i.d. real
-Gaussians, Var(DeltaE) = C(Nc,k) sigma^2 with sigma^2 = (k!)^2 2^p/Nc^{p-1},
-so the ONLY frequency the correlator carries is
+with |G(t)| = 1/dim identically.
 
-    DeltaE_typ = sqrt(C(Nc,k)) sigma  ~  Nc^{-1/2}   (p = 4)  -->  0,
+DeltaE is a sum of C(Nc,k) iid real Gaussians, with
+Var(DeltaE) = C(Nc,k) sigma^2 and sigma^2 = (k!)^2 2^p/Nc^{p-1}.  So the
+ONLY frequency the correlator carries is
 
-and in the c_symmetric (CP-sharp) ensemble, which has no diagonal couplings,
-DeltaE = 0 EXACTLY.  So the naive baryon two-point function at T = infinity
-carries NO information about the extensive baryon mass.  Its one frequency
-VANISHES at large Nc instead of growing like Nc.  Worse, B^dag annihilates
-every state of nonzero charge, so <psi|B(t)B^dag|psi> = 0 for ANY state
-without an empty-sector component.  That includes the interacting ground
-state, which is at Q ~ Nc/2.  In the one-flavor model there is no baryon
-spectroscopy to be had from two-point functions at all.  This exact collapse
-is itself the first result of this module.
+    DeltaE_typ = sqrt(C(Nc,k)) sigma  ~  Nc^{-1/2}   (p = 4)  -->  0
 
-The physical mass proxy: sector energetics (finding 2, measured)
-----------------------------------------------------------------
-The baryon mass must therefore be read from CHARGE-SECTOR ENERGETICS.  With
-E0(q) the ground-state energy of the charge-q sector (dimension C(Nc,q)),
+And in the c_symmetric (CP-sharp) ensemble, which has no diagonal
+couplings, DeltaE = 0 EXACTLY.
+
+So the naive baryon 2-point function at T = infinity carries NO
+information about the extensive baryon mass.  Its one frequency VANISHES
+at large Nc, instead of growing like Nc.
+
+It is worse than that.  B^dag annihilates every state of nonzero charge,
+so <psi|B(t)B^dag|psi> = 0 for ANY state without an empty-sector
+component.  That includes the interacting ground state, which sits at
+Q ~ Nc/2.  In the one-flavor model there is no baryon spectroscopy to be
+had from 2-point functions at all.
+
+This exact collapse is itself the first result of the module.
+
+FINDING 2: THE PHYSICAL MASS PROXY IS SECTOR ENERGETICS
+-------------------------------------------------------
+So the baryon mass has to be read from CHARGE-SECTOR ENERGETICS.  With
+E0(q) the ground-state energy of the charge-q sector, of dimension
+C(Nc,q),
 
     M_B(Nc) = E0(Q = Nc) - E0(global ground state)
 
-is the cost of charging the equilibrium state up to the unique baryon
-(= fully filled) state.  That cost is the 0+1d analog of the baryon rest
-mass.  Honest framing: in this one-flavor model E0(Nc) is O(Nc^{-1/2})
-(exactly 0 for c_symmetric).  M_B is therefore dominated by the DEPTH of the
-charging curve.  That is, "baryon mass ~ N" here reduces to extensivity of
-the SYK ground-state energy.  The module measures M_B(Nc) with disorder
-statistics (mean +- SEM, ddof=1) for Nc = 4..10 at p = 4 in both ensembles.
-It then fits a*Nc + b vs a*Nc^gamma vs a*Nc by weighted chi^2.  The AIC is
-chi2 + 2K, the same-noise comparison as in self_averaging.py.  Delta-AIC < 2
-means indistinguishable.
+is the cost of charging the equilibrium state up to the unique baryon,
+the fully filled state.  That cost is the 0+1d analog of the baryon rest
+mass.
 
-Baryon-baryon interaction proxy (finding 3, measured)
------------------------------------------------------
-There is no spatial separation in 0+1d, so no force in the literal sense.
-The accessible analog is the CURVATURE of the charging curve at maximal
-charge,
+Honest framing.  In this one-flavor model E0(Nc) is O(Nc^{-1/2}), and
+exactly 0 for c_symmetric.  So M_B is dominated by the DEPTH of the
+charging curve.  "Baryon mass ~ N" here reduces to extensivity of the SYK
+ground-state energy.
+
+The module measures M_B(Nc) with disorder statistics (mean +- SEM,
+ddof=1) for Nc = 4..10 at p = 4, in both ensembles.  It then fits
+a*Nc + b against a*Nc^gamma against a*Nc, by weighted chi^2.  The AIC is
+chi2 + 2K, the same-noise comparison used in self_averaging.py.
+Delta-AIC < 2 means indistinguishable.
+
+FINDING 3: THE BARYON-BARYON INTERACTION PROXY
+----------------------------------------------
+There is no spatial separation in 0+1d, so there is no force in the
+literal sense.  The accessible analog is the CURVATURE of the charging
+curve at maximal charge:
 
     Delta2(Nc-1) = E0(Nc) + E0(Nc-2) - 2 E0(Nc-1)
-                 = [cost of the 2nd baryon-hole] - [cost of the 1st],
+                 = [cost of the 2nd baryon-hole] - [cost of the 1st]
 
-the interaction energy of two holes in the baryon.  The sharp testable
-version of "inter-baryon forces are gravitational-strength" is an Nc-scaling
-HIERARCHY.  Is Delta2 parametrically suppressed relative to a meson reference
-scale?  The module measures Delta2(Nc-1) statistics and fits the power law
-of |mean| and of the ratio |Delta2|/escale.  This is a charging-curve
-statement, NOT a spatial force measurement -- stated wherever the numbers
-are reported.
+That is the interaction energy of two holes in the baryon.
 
-Denominator caveat (load-bearing for the headline exponent): the reference
-scale used here is escale = sqrt(Tr H^2/dim), the TOTAL many-body spectral
-width.  It grows like sqrt(Nc) by the coupling normalization.  It is NOT the
-O(1) excitation energy of the M_n meson oscillations that this repo measures
-in mn_spectroscopy.py.  The ratio exponent therefore depends on the
-denominator choice.  Against the many-body width the asymptotic edge estimate
-reads ratio ~ 1/Nc.  Against an O(1) meson excitation energy the same
-estimate reads |Delta2| ~ Nc^{-1/2}.  The QUALITATIVE conclusion is robust to
-the choice: the edge curvature is parametrically suppressed at large Nc under
+The sharp testable version of "inter-baryon forces are
+gravitational-strength" is an Nc-scaling HIERARCHY.  Is Delta2
+parametrically suppressed relative to a meson reference scale?  The
+module measures Delta2(Nc-1) statistics, and fits the power law of |mean|
+and of the ratio |Delta2|/escale.
+
+This is a charging-curve statement.  It is NOT a spatial force
+measurement, and that is stated wherever the numbers are reported.
+
+A DENOMINATOR CAVEAT, and it is load-bearing for the headline exponent.
+The reference scale used here is escale = sqrt(Tr H^2/dim), the TOTAL
+many-body spectral width.  It grows like sqrt(Nc) by the coupling
+normalization.  It is NOT the O(1) excitation energy of the M_n meson
+oscillations that mn_spectroscopy.py measures.
+
+So the ratio exponent depends on the denominator choice.  Against the
+many-body width, the asymptotic edge estimate reads ratio ~ 1/Nc.
+Against an O(1) meson excitation energy, the same estimate reads
+|Delta2| ~ Nc^{-1/2}.  The QUALITATIVE conclusion is robust to the
+choice: the edge curvature is parametrically suppressed at large Nc under
 either denominator.  The specific power is not robust.
 
-Exact edge structure (derived here, asserted in tests): every H term needs
-B a subset of occ (k modes) and A inside the complement-plus-B.  Blocks
-with q < k therefore vanish IDENTICALLY (free quarks below charge p/2).  In
-the c_symmetric ensemble (A, B disjoint) the mirror blocks q > Nc - k vanish
-too, so E0(Nc) = E0(Nc-1) = 0 exactly and Delta2(Nc-1) = E0(Nc-2) = E0(2) < 0
-(particle-hole symmetry E0(q) = E0(Nc-q) holds per instance).  The
-c_symmetric charging curve is therefore exactly CONCAVE at the edge: the
-second hole is cheaper than the first (which is free).  The generic ensemble
-has no such identity.  Its edge blocks are fed by the diagonal and
-near-diagonal couplings.
+EXACT EDGE STRUCTURE, derived here and asserted in tests.  Every H term
+needs B a subset of occ (k modes), and A inside the complement plus B.
+So blocks with q < k vanish IDENTICALLY -- free quarks below charge p/2.
 
-Sector second moment, closed form (cross-validation anchor)
------------------------------------------------------------
-For both ensembles the disorder mean of the sector-restricted second moment
-is (Wick: only the pairing J_AB with J_BA = conj(J_AB) survives, and
-T_AB T_BA = T_AB T_AB^dag is 0/1 on the diagonal),
+In the c_symmetric ensemble, where A and B are disjoint, the mirror
+blocks q > Nc - k vanish too.  So E0(Nc) = E0(Nc-1) = 0 exactly, and
+Delta2(Nc-1) = E0(Nc-2) = E0(2) < 0, since particle-hole symmetry
+E0(q) = E0(Nc-q) holds per instance.
 
-    E[Tr_q H^2]/dim_q = sigma^2 sum_{(A,B) in table} C(Nc-|AuB|, q-k) / C(Nc,q),
+The c_symmetric charging curve is therefore exactly CONCAVE at the edge:
+the second hole is cheaper than the first, which is free.  The generic
+ensemble has no such identity.  Its edge blocks are fed by the diagonal
+and near-diagonal couplings.
 
-with the sum over the SAME ordered-pair table draw_couplings uses (all pairs
-incl. diagonal for "generic"; ordered disjoint pairs for "c_symmetric").
-Grouping by overlap j = |A n B| gives the equivalent combinatorial form
-sum_j n_pairs(j) C(Nc-2k+j, q-k) with n_pairs(j) = C(Nc,k)C(k,j)C(Nc-k,k-j)
-(generic; c_symmetric keeps only j = 0).  Both routes are computed
-independently and asserted equal, and the ensemble ED means are checked
-against them within error bars.  Summing over q recovers the
-coupling_variance_dirac normalization statement Tr H^2/dim ~ Nc.
-
-Measured results (p = 4, Nc = 4..10, production run -> baryons.json)
+THE SECTOR SECOND MOMENT, IN CLOSED FORM (a cross-validation anchor)
 --------------------------------------------------------------------
-  *  M_B grows strongly and monotonically in both ensembles.  Weighted fits:
-     generic:      nominal lead a*Nc^gamma, gamma = 0.795 +- 0.021 (Delta-AIC
-                   4.0 over a*Nc + b with a = 0.73 +- 0.02, b = 1.19 +- 0.13);
-     c_symmetric:  nominal lead a*Nc + b with a = 0.619 +- 0.004,
-                   b = -1.04 +- 0.03 (Delta-AIC 115 over the power law;
-                   gamma alone = 1.30 because of the negative offset).
-     Both are reported by fit_verdict as "cannot discriminate": the window
-     Nc = 4..10 spans 2.5x, well under the decade the guard requires, so a
-     2-parameter selection cannot identify an asymptotic form no matter how
-     large the nominal AIC lead.
-     Honest verdict: the window is CONSISTENT with "baryon mass ~ N".  Both
-     ensembles are well described by a linear law with an O(1) offset, and
-     pure a*Nc is strongly rejected in-window by finite-size offsets.  But
-     Nc <= 10 cannot pin the asymptotic exponent, and the two ensembles'
-     preferred effective forms differ at this size.  c_symmetric chi2/dof is
-     ~ 15 for the best model.  With SEMs this small the fits RESOLVE
-     finite-size curvature beyond any 2-parameter form.
-  *  The hierarchy (effective in-window exponents): |Delta2(Nc-1)|/escale
-     falls like Nc^(-1.79 +- 0.03) in the generic ensemble.  That fit is
-     good, chi2/dof = 5.2/5.  There |Delta2| ~ Nc^(-1.31 +- 0.03) with
-     Delta2 > 0, a convex edge.  In c_symmetric the ratio falls like
-     Nc^(-0.85 +- 0.04).  There the power-law form is itself REJECTED,
-     chi2/dof = 194/5, and the error is quoted after sqrt(chi2/dof)
-     inflation.  In that ensemble Delta2 < 0 exactly = E0(2), a concave
-     edge, and |Delta2| saturates in-window with its own rejected fit
-     Nc^(+0.34 +- 0.12), chi2/dof = 629/5.
-     What these numbers DEMONSTRATE is the qualitative hierarchy only.  The
-     edge curvature falls relative to the many-body width, by many sigma, in
-     both ensembles.  They do NOT confirm the specific asymptotic edge
-     estimate |Delta2| ~ Nc^{-1/2}, escale ~ Nc^{+1/2} => ratio ~ 1/Nc.
-     The generic in-window ratio exponent -1.79 +- 0.03 is ~25 fit-sigma
-     from -1.  Generic |Delta2| goes as Nc^{-1.31}, not Nc^{-0.5}.  The
-     c_symmetric exponents also fail their own fits (pre-asymptotic window).
-     The estimate is supported at the level of VALUES, not window exponents.
-     c_symmetric Delta2 = E0(2) exactly.  The heuristic sparse-GOE edge
-     -2 sqrt(C(Nc-2,2) sigma^2) (csym_edge_estimate) gives -2.68 at Nc = 10
-     vs measured -2.52 +- 0.01.  The measured/estimate ratio rises
-     0.87 -> 0.94 over the production window Nc = 6..10, and reaches 0.96 at
-     Nc = 12 in an out-of-window check; it approaches 1 from below.  The
-     estimate's pre-asymptotic peak at Nc = 5 + sqrt(7) ~ 7.6 matches the
-     observed in-window saturation of |Delta2|.  So ratio ~ 1/Nc is the
-     plausible ASYMPTOTIC reading, consistent with but NOT established by
-     this window.  In the only sense accessible in 0+1d the baryon-baryon
-     term is parametrically suppressed relative to the many-body width.
-     That is compatible with the "gravitational-strength" reading (see the
-     denominator caveat above for how the power depends on the reference
-     scale).  The sign (attractive vs repulsive analog) is
-     ensemble-DEPENDENT, and therefore not a robust prediction of the
-     construction.
-  *  Scale check: generic escale ~ Nc^(0.48 +- 0.01), the designed sqrt(Nc)
-     (chi2/dof = 7.6/5).  c_symmetric escale shows Nc^(1.16 +- 0.08)
-     in-window (power law REJECTED, chi2/dof = 589/5, error
-     sqrt(chi2/dof)-inflated).  This is because the disjointness constraint
-     discards an O(p^2/Nc) coupling fraction that is order one at these
-     sizes.  ALL c_symmetric window exponents are effective, not asymptotic.
-  *  The collapse frequency: measured std(DeltaE) falls from 2.36 (Nc = 4)
-     to 1.83 (Nc = 10).  It tracks the sqrt(C(Nc,2)) sigma closed form, which
-     is exact; the measured agreement is statistical, ~1 sigma.  Meanwhile
-     M_B grows 4.0 -> 8.4.  So the naive correlator's only frequency and the
-     physical mass proxy move in OPPOSITE directions with Nc.
+For both ensembles the disorder mean of the sector-restricted second
+moment is, by Wick, where only the pairing J_AB with J_BA = conj(J_AB)
+survives and T_AB T_BA = T_AB T_AB^dag is 0/1 on the diagonal,
 
-What is exact vs measured vs conjectured
-----------------------------------------
-  EXACT (asserted): sector reassembly = dense H; the correlator collapse;
-    DeltaE closed form; DeltaE = 0 (c_symmetric); vanishing edge blocks;
-    Delta2 = E0(2) (c_symmetric); PH palindromy; sector-m2 closed form
-    (two routes).
-  MEASURED (with error bars): M_B(Nc) statistics and its extensivity fits;
-    Delta2 statistics and scaling; the Delta2/escale hierarchy.  Where a
-    power-law fit is statistically rejected (chi2 > 5 dof) the exponent is
-    reported as an effective in-window slope with sqrt(chi2/dof)-inflated
-    errors.  It is also flagged as rejected in the JSON, the prints, and the
-    figure.
-  HEURISTIC (checked numerically, not proved): the sparse-GOE semicircle
-    edge estimate csym_edge_estimate for the c_symmetric E0(2); the
-    ratio ~ 1/Nc asymptotic reading of the hierarchy built on it.
-  CONJECTURED / not tested: any identification of Delta2 with a bulk
-    gravitational force; the O(sqrt N)-meson mechanism (needs multi-meson
-    states, out of ED reach here); multi-baryon physics (needs >= 2 flavors,
-    out of scope).
+    E[Tr_q H^2]/dim_q
+        = sigma^2 sum_{(A,B) in table} C(Nc-|AuB|, q-k) / C(Nc,q)
 
-Conventions: mode i <-> bit (Nc-1-i) (dirac.py); H from dirac_hamiltonian;
-d/dt X = i[H, X]; ensembles "generic" and "c_symmetric" as in draw_couplings.
+summed over the SAME ordered-pair table draw_couplings uses: all pairs
+including the diagonal for "generic", and ordered disjoint pairs for
+"c_symmetric".
+
+Grouping by overlap j = |A n B| gives the equivalent combinatorial form
+sum_j n_pairs(j) C(Nc-2k+j, q-k), with
+n_pairs(j) = C(Nc,k)C(k,j)C(Nc-k,k-j) for generic, and c_symmetric
+keeping only j = 0.
+
+Both routes are computed independently and asserted equal, and the
+ensemble ED means are checked against them within error bars.  Summing
+over q recovers the coupling_variance_dirac normalization statement
+Tr H^2/dim ~ Nc.
+
+MEASURED RESULTS (p = 4, Nc = 4..10; the production run writes
+baryons.json)
+--------------------------------------------------------------------
+M_B grows strongly and monotonically in both ensembles.  Weighted fits:
+
+    generic:      nominal lead a*Nc^gamma, gamma = 0.795 +- 0.021
+                  (Delta-AIC 4.0 over a*Nc + b, with a = 0.73 +- 0.02 and
+                  b = 1.19 +- 0.13)
+    c_symmetric:  nominal lead a*Nc + b, with a = 0.619 +- 0.004 and
+                  b = -1.04 +- 0.03 (Delta-AIC 115 over the power law;
+                  gamma alone is 1.30, because of the negative offset)
+
+Both are reported by fit_verdict as "cannot discriminate".  The window
+Nc = 4..10 spans a factor of 2.5, well under the decade the guard
+requires, so a 2-parameter selection cannot identify an asymptotic form,
+no matter how large the nominal AIC lead.
+
+Honest verdict.  The window is CONSISTENT with "baryon mass ~ N".  Both
+ensembles are well described by a linear law with an O(1) offset, and
+pure a*Nc is strongly rejected in-window by finite-size offsets.  But
+Nc <= 10 cannot pin the asymptotic exponent, and the two ensembles'
+preferred effective forms differ at this size.  c_symmetric chi2/dof is
+about 15 for the best model: with SEMs this small the fits RESOLVE
+finite-size curvature beyond any 2-parameter form.
+
+THE HIERARCHY, in effective in-window exponents.  |Delta2(Nc-1)|/escale
+falls like Nc^(-1.79 +- 0.03) in the generic ensemble, and that fit is
+good, chi2/dof = 5.2/5.  There |Delta2| ~ Nc^(-1.31 +- 0.03) with
+Delta2 > 0, a convex edge.
+
+In c_symmetric the ratio falls like Nc^(-0.85 +- 0.04).  There the
+power-law form is itself REJECTED, chi2/dof = 194/5, and the error is
+quoted after sqrt(chi2/dof) inflation.  In that ensemble Delta2 < 0 and
+equals E0(2) exactly, a concave edge, and |Delta2| saturates in-window
+with its own rejected fit Nc^(+0.34 +- 0.12), chi2/dof = 629/5.
+
+What these numbers establish is the QUALITATIVE hierarchy only.  The edge
+curvature falls relative to the many-body width, by many sigma, in both
+ensembles.
+
+They do NOT support the specific asymptotic edge estimate
+|Delta2| ~ Nc^{-1/2} with escale ~ Nc^{+1/2}, giving ratio ~ 1/Nc.  The
+generic in-window ratio exponent -1.79 +- 0.03 is about 25 fit-sigma from
+-1.  Generic |Delta2| goes as Nc^{-1.31}, not Nc^{-0.5}.  The
+c_symmetric exponents also fail their own fits, because the window is
+pre-asymptotic.
+
+The estimate is supported at the level of VALUES, not window exponents.
+c_symmetric Delta2 = E0(2) exactly.  The heuristic sparse-GOE edge
+-2 sqrt(C(Nc-2,2) sigma^2), in csym_edge_estimate, gives -2.68 at Nc = 10
+against a measured -2.52 +- 0.01.  The measured/estimate ratio rises
+0.87 -> 0.94 over the production window Nc = 6..10, and reaches 0.96 at
+Nc = 12 in an out-of-window check.  It approaches 1 from below.  The
+estimate's pre-asymptotic peak at Nc = 5 + sqrt(7) ~ 7.6 matches the
+observed in-window saturation of |Delta2|.
+
+So ratio ~ 1/Nc is the plausible ASYMPTOTIC reading.  It is consistent
+with this window, and not established by it.
+
+In the only sense accessible in 0+1d, the baryon-baryon term is
+parametrically suppressed relative to the many-body width.  That is
+compatible with the "gravitational-strength" reading; see the denominator
+caveat above for how the power depends on the reference scale.  The sign,
+which would be the attractive-against-repulsive analog, is
+ensemble-DEPENDENT.  So it is not a robust prediction of the
+construction.
+
+A SCALE CHECK.  Generic escale goes as Nc^(0.48 +- 0.01), which is the
+designed sqrt(Nc), chi2/dof = 7.6/5.  c_symmetric escale shows
+Nc^(1.16 +- 0.08) in-window, with the power law REJECTED,
+chi2/dof = 589/5, and the error sqrt(chi2/dof)-inflated.  The reason is
+that the disjointness constraint discards an O(p^2/Nc) coupling fraction
+that is order one at these sizes.  ALL c_symmetric window exponents are
+effective, not asymptotic.
+
+THE COLLAPSE FREQUENCY.  Measured std(DeltaE) falls from 2.36 at Nc = 4
+to 1.83 at Nc = 10.  It tracks the sqrt(C(Nc,2)) sigma closed form, which
+is exact; the measured agreement is statistical, about 1 sigma.
+Meanwhile M_B grows from 4.0 to 8.4.
+
+So the naive correlator's only frequency and the physical mass proxy move
+in OPPOSITE directions with Nc.
+
+WHAT IS EXACT, WHAT IS MEASURED, WHAT IS CONJECTURED
+----------------------------------------------------
+EXACT, and asserted: sector reassembly equals dense H; the correlator
+collapse; the DeltaE closed form; DeltaE = 0 for c_symmetric; the
+vanishing edge blocks; Delta2 = E0(2) for c_symmetric; particle-hole
+palindromy; and the sector-m2 closed form, by two routes.
+
+MEASURED, with error bars: the M_B(Nc) statistics and its extensivity
+fits; the Delta2 statistics and scaling; and the Delta2/escale hierarchy.
+Where a power-law fit is statistically rejected (chi2 > 5 dof), the
+exponent is reported as an effective in-window slope with
+sqrt(chi2/dof)-inflated errors.  It is also flagged as rejected in the
+JSON, in the prints, and in the figure.
+
+HEURISTIC, checked numerically and not proved: the sparse-GOE semicircle
+edge estimate csym_edge_estimate for the c_symmetric E0(2), and the
+ratio ~ 1/Nc asymptotic reading of the hierarchy built on it.
+
+CONJECTURED, and not tested here: any identification of Delta2 with a
+bulk gravitational force; the O(sqrt N)-meson mechanism, which needs
+multi-meson states and is out of ED reach; and multi-baryon physics,
+which needs at least 2 flavors and is out of scope.
+
+CONVENTIONS.  Mode i maps to bit (Nc-1-i), as in dirac.py.  H comes from
+dirac_hamiltonian.  d/dt X = i[H, X].  The ensembles "generic" and
+"c_symmetric" are as in draw_couplings.
+
 Run from inside syk-self-averaging/.  __main__ writes baryons.json and
-baryons.png in ~2-4 min.
+baryons.png in 2-4 minutes.
 """
 
 from __future__ import annotations

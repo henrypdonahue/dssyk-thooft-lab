@@ -1,9 +1,10 @@
 """Tests for the antipodal mode separation (antipodal_modes.json).
 
-What is pinned: the sign structure (a flipped positive component plus a
-smaller unflipped negative one wherever the flip operates), the
-REFUTATION of the harmonic-tower mechanism (kappa_2/kappa_1 far from 2,
-comparable harmonic weights), and the recorded fit degeneracies.
+Pinned here: the sign structure, which is a flipped positive component
+plus a smaller unflipped negative one wherever the flip operates; the
+REFUTATION of the harmonic-tower mechanism, where kappa_2/kappa_1 is far
+from 2 and the harmonic weights are comparable; and the recorded fit
+degeneracies.
 """
 
 import json
@@ -96,3 +97,23 @@ def test_censored_fits_are_flagged_and_stay_flagged(data):
     # AMPLITUDES are fine; only lambda = 0.8's kappa is censored
     for lam in (1.5, 1.2, 1.0):
         assert flags[(lam, "antipodal", "constrained")] is False
+
+
+def test_harmonics_reproduces_its_committed_row(data):
+    """Execute the producer, do not just read its output.
+
+    Every other test here reads antipodal_modes.json, so a regression in
+    the shift-circle DFT (the primary, fitting-free experiment behind the
+    harmonic-tower refutation) would keep the suite green until someone
+    regenerated the data.  The engine is deterministic; one committed
+    harmonics row reproduces exactly (~2.5 s)."""
+    import antipodal_modes
+
+    want = max(data["harmonics"], key=lambda h: h["lam"])
+    got = antipodal_modes.harmonics(want["lam"], betaJ=want["betaJ"],
+                                    M=want["M"], thLs=tuple(want["thLs"]))
+    for key in ("abs_c0", "abs_c1", "abs_c2", "abs_c3"):
+        assert got[key] == pytest.approx(want[key], rel=1e-12, abs=1e-14)
+    for key in ("kappa_1", "kappa_2", "kappa_3",
+                "c2_over_c1_last", "c2_over_c1_first"):
+        assert got[key] == pytest.approx(want[key], rel=1e-12, abs=1e-14)

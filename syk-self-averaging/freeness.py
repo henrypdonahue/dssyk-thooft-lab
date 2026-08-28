@@ -1,71 +1,83 @@
 #!/usr/bin/env python3
 r"""
-freeness onset -- the early/late free-product transition, measured.
-===================================================================
+Freeness onset: the early/late free-product transition, measured.
+=================================================================
 
-Cui-Kolchmeyer 2607.13665 (Sec. 4) argue that past the scrambling time the
-algebras of early and late observer operators combine as a FREE PRODUCT.
-All mixed moments are governed by free independence with respect to the
-trace state.  At T_B = infinity (the Boltzmann temperature) the SYK state
-IS the normalized trace tau = Tr/dim.
-So the claim becomes a concrete, instance-level statement about mixed moments
-of a(0) and b(t), directly measurable by ED.  Nobody has exhibited (or
-refuted) this transition in a microscopic dS-candidate model.  This module is
-the first data.
+Cui-Kolchmeyer 2607.13665 (Sec. 4) argue that past the scrambling time
+the algebras of early and late observer operators combine as a FREE
+PRODUCT.  All mixed moments are then governed by free independence with
+respect to the trace state.
 
-The design avoids the graded-freeness subtlety of odd (fermionic) variables:
-the HEADLINE pair is bosonic,
+At T_B = infinity, the Boltzmann temperature, the SYK state IS the
+normalized trace tau = Tr/dim.  So the claim becomes a concrete,
+instance-level statement about mixed moments of a(0) and b(t), directly
+measurable by ED.
+
+Nobody has exhibited the transition, or refuted it, in a microscopic
+dS-candidate model.  This module is the first data.
+
+THE DESIGN avoids the graded-freeness subtlety of odd (fermionic)
+variables.  The headline pair is bosonic:
 
     E = i psi_0 psi_1,      F(t) = i psi_2(t) psi_3(t),
 
-both Hermitian, traceless, and squaring to 1 (spectrum +-1, half-half).
+both Hermitian, traceless, and squaring to 1, so the spectrum is +-1,
+half and half.
 
-  * t = 0: E and F live on disjoint mode pairs, so they COMMUTE and the
-    trace factorizes -- classical independence.  The spectrum of E + F is
-    then EXACTLY the binomial law {-2: 1/4, 0: 1/2, +2: 1/4}.
-  * Free independence: for two symmetries with spectrum +-1 the pair
-    distribution is completely determined by the traces of alternating
-    words.  Also, E, F free  <=>  spec(E + F) is the ARCSINE law on (-2, 2),
-    density 1/(pi sqrt(4 - x^2)).  That law is the free convolution
-    Bernoulli [+] Bernoulli.  The classical convolution is the binomial.
+* At t = 0, E and F live on disjoint mode pairs.  So they COMMUTE and the
+  trace factorizes: classical independence.  The spectrum of E + F is then
+  EXACTLY the binomial law {-2: 1/4, 0: 1/2, +2: 1/4}.
+* Free independence: for two symmetries with spectrum +-1 the pair
+  distribution is completely determined by the traces of alternating
+  words.  Also, E and F are free if and only if spec(E + F) is the
+  ARCSINE law on (-2, 2), with density 1/(pi sqrt(4 - x^2)).  That law is
+  the free convolution Bernoulli [+] Bernoulli.  The classical
+  convolution is the binomial.
 
-So the Wasserstein-1 distances of spec(E + F(t)) to the binomial and to the
-arcsine law are a complete, parameter-free order parameter for the
-classical -> free crossover of the pair (E, F(t)).  (W1 = integrated
-|CDF difference|: exact and stable for atomic spectra, where the KS sup is
-ill-conditioned at shared atoms.)  Alongside, the alternating-word battery
-(free prediction 0 for every entry):
+So the Wasserstein-1 distances of spec(E + F(t)) to the binomial and to
+the arcsine law are a complete, parameter-free order parameter for the
+classical -> free crossover of the pair (E, F(t)).
+
+(W1 is the integrated |CDF difference|.  It is exact and stable for
+atomic spectra, where the KS sup is ill-conditioned at shared atoms.)
+
+Alongside it runs the alternating-word battery, where freeness predicts 0
+for every entry:
 
     m_k(t)  = tau[(E F(t))^k],  k = 1, 2, 3
-              (m_1 = the 2-pt function -- decays by ordinary thermalization;
-               m_2 = the even OTOC, classical value 1 at t = 0;
-               m_3 starts at 0 and must STAY 0 under freeness),
     w_4(t)  = tau[a b(t) a b(t)],  a = psi_0, b = psi_2
-              (the standard Majorana OTOC, = -1 at t = 0; the odd-variable
-               counterpart, reported as auxiliary data).
 
-Everything is evaluated in the eigenbasis of one disorder realization
-(F(t) is a phase-Hadamard product -- O(dim^2) per time), disorder-averaged
-with SEM error bars; per-instance KS distances (freeness is claimed per
-instance; singlet self-averaging is the measured 1/C(N,p)).
+m_1 is the 2-pt function, and it decays by ordinary thermalization.  m_2
+is the even OTOC, with classical value 1 at t = 0.  m_3 starts at 0 and
+must STAY 0 under freeness.  w_4 is the standard Majorana OTOC, equal to
+-1 at t = 0.  It is the odd-variable counterpart, reported as auxiliary
+data.
 
-What a verdict looks like
--------------------------
-  * Onset: W1_bin rises from 0 while W1_arc falls from its t = 0 value
-    W1(binomial, arcsine) = 1 - 4(sqrt(2)-1)/pi ~= 0.4726 (closed form,
-    asserted against quadrature in the tests).  Compare the crossover time
-    t_x (W1_arc = W1_bin) against 1/lambda_L ~ 1/(2 scriptJ) [this task:
-    lambda_L -> 2 scriptJ at T_B = infinity].
-  * Depth: the late-time plateau of W1_arc and of |m_k|.  Exact freeness at
-    finite dim is impossible (random-matrix fluctuations of the spectrum
-    give W1 ~ dim^{-1/2}-ish floors).  The honest statement is therefore the
-    N-trend of the plateau.  A plateau falling with dim supports "free
-    product in the large-N limit".  An N-independent floor refutes it.
+Everything is evaluated in the eigenbasis of one disorder realization,
+where F(t) is a phase-Hadamard product, so O(dim^2) per time.  Results are
+disorder-averaged with SEM error bars.  KS distances are per instance,
+because freeness is claimed per instance, and singlet self-averaging is
+the measured 1/C(N,p).
 
-Time is reported in units of 1/scriptJ, scriptJ = sqrt(2) p (the repo's
-ED-locked conventions bridge, duality/LARGEQ.md).
+WHAT A VERDICT LOOKS LIKE
 
-Run:  python3 freeness.py [--quick]     (production writes freeness.json)
+Onset.  W1_bin rises from 0 while W1_arc falls from its t = 0 value,
+W1(binomial, arcsine) = 1 - 4(sqrt(2)-1)/pi ~= 0.4726.  That is a closed
+form, asserted against quadrature in the tests.  Compare the crossover
+time t_x, where W1_arc = W1_bin, against 1/lambda_L ~ 1/(2 scriptJ),
+since lambda_L -> 2 scriptJ at T_B = infinity.
+
+Depth.  The late-time plateau of W1_arc and of |m_k|.  Exact freeness at
+finite dimension is impossible, because random-matrix fluctuations of the
+spectrum give W1 floors of order dim^{-1/2}.  So the honest statement is
+the N-trend of the plateau.  A plateau falling with dim supports "free
+product in the large-N limit".  An N-independent floor refutes it.
+
+Time is reported in units of 1/scriptJ, with scriptJ = sqrt(2) p, the
+repo's ED-locked conventions bridge (duality/LARGEQ.md).
+
+Run: python3 freeness.py [--quick].  The production run writes
+freeness.json.
 """
 from __future__ import annotations
 

@@ -1,48 +1,59 @@
 #!/usr/bin/env python3
 r"""
-First single-realization spectroscopy of the M_n tower (Dirac SYK, T = inf).
-============================================================================
+First single-realization spectroscopy of the M_n tower.
+=======================================================
 
-The paper's "best test of the duality" needs the spectrum of the U(N)-singlet
-tower M_n = sum_i c^dag_i (d^n/dt^n) c_i.  Nobody -- the authors included --
-has published even an exploratory ED look at these correlators.  This script
-is that first look.
+Dirac SYK, T = infinity.
 
-What it computes, for ONE disorder realization (legitimate because the meson
-spectral function is a singlet, and the measured self-averaging principle is
-relVar ~ 2 / #independent couplings -- see self_averaging.py; the c_symmetric
-Dirac ensemble at Nc = 10, p = 4 has 630 independent couplings, so ~0.3%):
+The paper's "best test of the duality" needs the spectrum of the
+U(N)-singlet tower M_n = sum_i c^dag_i (d^n/dt^n) c_i.  Nobody has
+published even an exploratory ED look at these correlators, the authors
+included.  This script is that first look.
+
+WHAT IT COMPUTES, for ONE disorder realization:
 
     S_n(omega) = (1/dim) sum_{a,b} |<a| Mbar_n |b>|^2
-                                     delta(omega - (E_a - E_b)),
+                                     delta(omega - (E_a - E_b))
 
-the infinite-temperature spectral weight of the traceless tower operator
-Mbar_n, plus its CP-RESOLVED versions S_n^+-(omega).  On a C-invariant
-instance (dirac.draw_couplings ensemble="c_symmetric") the script splits the
-operator with cp_projections into definite-CP parts BEFORE taking matrix
-elements.  The raw M_n for n >= 2 are CP-mixtures (see dirac.py).  The
-CP-resolved spectral functions are the objects the paper's CP = (-1)^{n+1}
-assignment can be tested on.
+That is the infinite-temperature spectral weight of the traceless tower
+operator Mbar_n, plus its CP-RESOLVED versions S_n^+-(omega).
 
-Exact structural checks built in:
-  * n = 0, 1: all spectral weight is at omega = 0 (conserved charge and
-    Hamiltonian -- the non-propagating photon/graviton).  Machine-exact.
-  * n >= 2: weight moves to omega != 0 (the dynamical candidates).
+One realization is legitimate here because the meson spectral function is
+a singlet, and the measured self-averaging principle is
+relVar ~ 2/#independent couplings (see self_averaging.py).  The
+c_symmetric Dirac ensemble at Nc = 10, p = 4 has 630 independent
+couplings, so about 0.3%.
 
-What this is NOT: the duality test.  At Nc = 10-12 and p = 4 the coupling is
-lambda = p^2/Nc ~ 1.3-1.6, far from the lambda -> 0 corner where the 't Hooft
-match is expected.  Nc is also far from large-N.  Expect broad
-spectral distributions, not sharp meson peaks.  The deliverables are the
-pipeline, the conserved-mode checks, the CP-channel resolution, and a first
-data point for how the weight organizes.  These are inputs for the
-moments-vs-sum-rules program, not a spectrum match.
+On a C-invariant instance (dirac.draw_couplings ensemble="c_symmetric")
+the script splits the operator with cp_projections into definite-CP parts
+BEFORE taking matrix elements.  The raw M_n for n >= 2 are CP mixtures;
+see dirac.py.  The CP-resolved spectral functions are the objects the
+paper's CP = (-1)^{n+1} assignment can be tested on.
 
-Output: mn_spectra.json (histogrammed S_n^+-, summary numbers) and
-mn_spectra.png.  Runtime ~seconds at Nc = 10 (default).  Pass --big for
-Nc = 12 (~minutes, dim 4096).  That writes to the separate stem
-mn_spectra_big.{json,png}, so the committed Nc = 10 artifacts survive.
-Bin edges are spectrum-scaled per run, so big/non-big histograms are not
-bin-aligned.
+EXACT STRUCTURAL CHECKS BUILT IN.
+
+  * n = 0 and 1: all spectral weight is at omega = 0.  That is the
+    conserved charge and the Hamiltonian, the non-propagating photon and
+    graviton.  Machine-exact.
+  * n >= 2: weight moves to omega != 0.  These are the dynamical
+    candidates.
+
+WHAT THIS IS NOT: the duality test.  At Nc = 10-12 and p = 4 the coupling
+is lambda = p^2/Nc ~ 1.3-1.6, far from the lambda -> 0 corner where the
+'t Hooft match is expected.  Nc is also far from large-N.  Expect broad
+spectral distributions, not sharp meson peaks.
+
+The deliverables are the pipeline, the conserved-mode checks, the
+CP-channel resolution, and a first data point for how the weight
+organizes.  Those are inputs for the moments-against-sum-rules program.
+They are not a spectrum match.
+
+Output: mn_spectra.json, holding histogrammed S_n^+- and summary numbers,
+plus mn_spectra.png.  Runtime is seconds at Nc = 10, the default.  Pass
+--big for Nc = 12, which takes minutes at dim 4096, and writes to the
+separate stem mn_spectra_big.{json,png} so the committed Nc = 10
+artifacts survive.  Bin edges are spectrum-scaled per run, so big and
+non-big histograms are not bin-aligned.
 """
 
 from __future__ import annotations

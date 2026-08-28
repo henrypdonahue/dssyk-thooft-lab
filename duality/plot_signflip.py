@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """Figure for the antipodal-map probes (signflip_probe.json,
-signflip_deep.json).  Reads the JSONs only; nothing recomputed.
+signflip_deep.json).  Reads the JSONs only.  Nothing is recomputed.
 
-(a) the rotation law: Re a(Delta) around the half fake circle, closed
-    form -- the exact flip at the antipode;
-(b) the exact-theory onset: re_move of the antipodal trend vs lambda
-    (up = anti-scrambling), with the unshifted control;
-(c) the hologram point: the transient anti-scrambling window vs lambda
-    (in Jc units), with its ~ half ln(1/lambda) growth;
-(d) the frame's thermality at beta_eff = beta + beta_fake: the residuals.
+(a) The rotation law.  Re a(Delta) around the half fake circle, closed
+    form.  The exact flip at the antipode.
+(b) The exact-theory onset.  re_move of the antipodal trend against
+    lambda, where up means anti-scrambling, with the unshifted control.
+(c) The hologram point.  The transient anti-scrambling window against
+    lambda, in Jc units, with its ~half ln(1/lambda) growth.
+(d) The frame's thermality at beta_eff = beta + beta_fake: the residuals.
     The per-line law is exact by construction, so the panel shows what is
-    actually measured -- the independent contour-engine check and the
-    float-level line residual, per (lambda, betaJ) row.
+    actually measured.  That is the independent contour-engine check and
+    the float-level line residual, per (lambda, betaJ) row.
 """
 import json
 import sys

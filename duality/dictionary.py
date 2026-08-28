@@ -3,40 +3,49 @@ r"""
 The DSSYK_infinity <-> 't Hooft comparison dictionary.
 ======================================================
 
-Every convention needed to compare a DSSYK number against the 't Hooft
-yardstick is encoded ONCE and unit-tested here.  It was built before the
-DSSYK side of the comparison exists.  So when a number finally appears,
-an index offset, factor of 2, or normalization has exactly one place to
-be wrong.
+Before you can compare a DSSYK number against a 't Hooft number, you have
+to fix conventions.  Every one of them is encoded here, once, with a
+test.
 
-The four load-bearing corrections (top-level README), as code:
+This was built before the DSSYK side of the comparison existed.  So when
+a number finally appears, an index offset, a factor of 2, or a
+normalization has exactly one place to be wrong.
 
-  1. Index offset:      n_paper = n_FLZ + 2   (paper adds the non-dynamical
-                        photon n=0 and graviton n=1 below the dynamical tower).
-  2. Where the match lives:  fixed p, lambda -> 0 ('t Hooft scaling
-                        alpha_bar = p^2 fixed), NOT the lambda-fixed
-                        double-scaling line.
-  3. Normalization:     M_0 = Q exactly;  M_1 = -(p/2) i H  (not the paper's
-                        M_1 = H) -- m1_coefficient below.
-  4. Conventions:       the PAPER's lambda is p^2/N.  The CHORD literature
-                        (Berkooz et al., the machinery any DSSYK solve will
-                        use) defines lambda_chord = 2p^2/N and q =
-                        exp(-lambda_chord).  The clash is INTERNAL to the
-                        Susskind corpus too.  The companion
-                        arXiv:2501.09423 Eq. (3.6) defines
-                        lambda = 2p^2/N (chord convention), while
-                        2607.05678 Sec. 4.1 uses p^2/N.  A silent factor
-                        of 2 here would wreck any quantitative match,
-                        hence the explicit converters.
+THE FOUR LOAD-BEARING CORRECTIONS, AS CODE
 
-Mass units.  thooft-target reports the dimensionless eigenvalue
-2*lambda_n = M_n^2/(pi g^2) at the duality point alpha = pi m_q^2/g^2 = 0.
+1. INDEX OFFSET.  n_paper = n_FLZ + 2.  The paper adds the non-dynamical
+   photon (n = 0) and graviton (n = 1) below the dynamical tower.
+
+2. WHERE THE MATCH LIVES.  Fixed p, lambda -> 0, which is 't Hooft
+   scaling with alpha_bar = p^2 fixed.  It is NOT the lambda-fixed
+   double-scaling line.
+
+3. NORMALIZATION.  M_0 = Q exactly.  M_1 = -(p/2) i H, not the paper's
+   M_1 = H.  See m1_coefficient below.
+
+4. CONVENTIONS.  The PAPER's lambda is p^2/N.  The CHORD literature
+   (Berkooz et al., the machinery any DSSYK solve will use) defines
+   lambda_chord = 2p^2/N and q = exp(-lambda_chord).
+
+   The clash is internal to the Susskind corpus too.  The companion
+   arXiv:2501.09423 Eq. (3.6) defines lambda = 2p^2/N, the chord
+   convention, while 2607.05678 Sec. 4.1 uses p^2/N.  A silent factor of
+   2 here would wreck any quantitative match.  Hence the explicit
+   converters.
+
+MASS UNITS
+
+thooft-target reports the dimensionless eigenvalue
+2*lambda_n = M_n^2/(pi g^2), at the duality point
+alpha = pi m_q^2/g^2 = 0.
+
 Physical masses need a value of g^2, or of the string tension
-tau = alpha_bar * m_q^2 = p^2 m_q^2.  Here alpha_bar = gbar^2 N is the
+tau = alpha_bar * m_q^2 = p^2 m_q^2.  Note alpha_bar = gbar^2 N is the
 dimensionless coupling, not the dimensionful g^2 N.  The duality fixes
 that value only through the dictionary.
-RATIOS of masses-squared are parameter-free, so the comparison tables
-below are built from ratios and from the interleave splittings.  Those
+
+RATIOS of masses-squared are parameter-free.  So the comparison tables
+below are built from ratios, and from the interleave splittings.  Those
 are the sharpest falsifiable fingerprints available today.
 """
 

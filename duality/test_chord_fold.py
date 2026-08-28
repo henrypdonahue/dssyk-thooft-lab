@@ -1,20 +1,23 @@
 """Tests for the chord-side Euclidean fold at N = infinity.
 
 The committed chord_fold.json is the N = infinity answer to the question
-fold_scan.json (decider #1) posed at ED sizes.  Verdict encoded here:
+fold_scan.json, decider #1, posed at ED sizes.  Three verdicts are
+encoded here.
 
-  * the UNFOLDED crossed OTOC ratio is lambda-stable and real -- the
-    control behaves at N = infinity exactly as it did in the ED scan;
-  * the FOLDED connected fraction stays O(1) as lambda -> 0 (no lambda ~
-    1/N suppression), so the N-scaled folded ratio diverges away from the
-    continued Streicher closed form ~ 1/lambda: Harlow-Zhao's
-    "continuation commutes with the semiclassical limit" fails IN THE
-    DOUBLE-SCALED THEORY ITSELF -- the ED N-obstruction was real, and it
-    is a lambda-obstruction at N = infinity;
-  * on the fold the 1/N convergence itself degrades: at matched lambda the
-    ED folded values sit ~1.5-1.6x above the exact N = infinity ones
-    (unfolded: <= 10% away) -- the fold amplifies finite-N corrections,
-    consistent with a soft-spectral-edge mechanism.
+* The UNFOLDED crossed OTOC ratio is lambda-stable and real.  The control
+  behaves at N = infinity exactly as it did in the ED scan.
+
+* The FOLDED connected fraction stays O(1) as lambda -> 0.  There is no
+  lambda ~ 1/N suppression.  So the N-scaled folded ratio diverges away
+  from the continued Streicher closed form, like 1/lambda.  Harlow-Zhao's
+  assumption that continuation commutes with the semiclassical limit
+  fails IN THE DOUBLE-SCALED THEORY ITSELF.  The ED N-obstruction was
+  real, and at N = infinity it is a lambda-obstruction.
+
+* On the fold, the 1/N convergence itself degrades.  At matched lambda
+  the ED folded values sit 1.5-1.6x above the exact N = infinity ones,
+  while unfolded values are within 10%.  The fold amplifies finite-N
+  corrections, which is consistent with a soft-spectral-edge mechanism.
 """
 
 import json

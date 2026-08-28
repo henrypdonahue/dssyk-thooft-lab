@@ -1,42 +1,53 @@
 #!/usr/bin/env python3
 r"""
-The large-q (lambda -> 0) anchor: verified closed forms and their structure.
-============================================================================
+The large-q (lambda -> 0) anchor: closed forms, and their structure.
+====================================================================
 
-Every formula here was transcribed from the
-source papers with equation-level verification (see the provenance block
-at the bottom).  test_largeq.py checks each one against this repo's ED
-bench (syk-self-averaging/largeq_bench.json).
+Every formula here was transcribed from its source paper with
+equation-level verification.  The provenance block is at the bottom.
+test_largeq.py checks each one against this repo's ED bench,
+syk-self-averaging/largeq_bench.json.
 
-Conventions bridge (exact, no approximation):
-    repo (psi^2 = 1, Var J = p!/N^{p-1})  <->  Maldacena-Stanford 1604.07818
-    (psi^2 = 1/2, <j^2> = J^2 (q-1)!/N^{q-1}, script-J^2 = q J^2 2^{1-q}):
-        rescaling psi = sqrt(2) psi_MS forces  J_MS^2 = q 2^q,  hence
-        script-J^2 = 2 q^2  ->  script-J = sqrt(2) q  in repo units.
-    (Streicher 1911.10171 and Choi-Mezei-Sarosi 1912.00004 use the same
-    script-J.  All three papers' v solve the same equation.)
+THE CONVENTIONS BRIDGE (exact, no approximation)
 
-The structural result this module encodes (the finding):
+    repo (psi^2 = 1, Var J = p!/N^{p-1})
+        <-> Maldacena-Stanford 1604.07818
+            (psi^2 = 1/2, <j^2> = J^2 (q-1)!/N^{q-1},
+             script-J^2 = q J^2 2^{1-q})
 
-  * The large-q singlet 4-point function is known in closed form at ALL
-    temperatures (Streicher 3.3/3.10; CMS 3.16/3.20), with every
-    temperature-dependence absorbed into v.
-  * Its analytic structure in the Sommerfeld-Watson plane is MEROMORPHIC
-    with contributions ONLY from m = 0 (Hamiltonian exchange; the entire TOC)
-    and m = +-v (the scramblon, OTOC only).  The would-be bilinear tower
-    CANCELS at leading order, and its couplings are O(1/q^2)
-    (Gross-Rosenhaus 1702.08016 Eq. 2.15).  That tower is the
-    quantization sets M^e/M^o below, the all-temperature analog of
-    k(h) = 1.
-  * Therefore: THE lambda -> 0 ANCHOR OF THE 'T HOOFT MATCH CANNOT COME FROM
-    THE LEADING LARGE-q FOUR-POINT FUNCTION.  The meson tower first appears
-    in the O(1/q) corrections, organized on the exact-in-betaJ skeleton
-    (the M^e/M^o sets).  The residues of that skeleton at finite
-    temperature are unpublished.  Computing them IS proper.
-  * Encouragingly for the correspondence: M^e/M^o alternate (even/odd), the
-    exact CP-alternation slot of the 't Hooft tower.  At T = infinity the
-    sets degenerate to integers (in 2pi/beta units).  That is consistent
-    with BOOST.md: physical masses are not boost-frequency peak positions.
+Rescaling psi = sqrt(2) psi_MS forces J_MS^2 = q 2^q.  Hence
+script-J^2 = 2 q^2, so script-J = sqrt(2) q in repo units.
+
+Streicher 1911.10171 and Choi-Mezei-Sarosi 1912.00004 use the same
+script-J.  All three papers' v solve the same equation.
+
+THE STRUCTURAL FINDING THIS MODULE ENCODES
+
+* The large-q singlet 4-point function is known in closed form at ALL
+  temperatures (Streicher 3.3/3.10; CMS 3.16/3.20), with every
+  temperature dependence absorbed into v.
+
+* Its analytic structure in the Sommerfeld-Watson plane is meromorphic,
+  with contributions from only two places.  m = 0, which is Hamiltonian
+  exchange and the entire TOC.  And m = +-v, the scramblon, in the OTOC
+  only.
+
+* The would-be bilinear tower CANCELS at leading order.  Its couplings
+  are O(1/q^2) (Gross-Rosenhaus 1702.08016 Eq. 2.15).  That tower is the
+  quantization sets M^e/M^o below, which are the all-temperature analog
+  of k(h) = 1.
+
+* THEREFORE the lambda -> 0 anchor of the 't Hooft match cannot come from
+  the leading large-q 4-point function.  The meson tower first appears in
+  the O(1/q) corrections, organized on the exact-in-betaJ skeleton, the
+  M^e/M^o sets.  The residues of that skeleton at finite temperature are
+  unpublished.  Computing them is the open task.
+
+* Encouraging for the correspondence: M^e and M^o alternate, even and
+  odd.  That is the exact CP-alternation slot of the 't Hooft tower.  At
+  T = infinity the sets degenerate to integers, in 2pi/beta units.  That
+  is consistent with BOOST.md, where physical masses are not
+  boost-frequency peak positions.
 """
 
 from __future__ import annotations

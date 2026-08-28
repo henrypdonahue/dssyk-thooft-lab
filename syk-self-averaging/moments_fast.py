@@ -4,70 +4,88 @@ Charge-sector-blocked fast reimplementation of the moment pipeline.
 ===================================================================
 
 moments_pipeline.instance_moments diagonalizes the FULL 2^Nc-dimensional
-Hamiltonian and drags dense 2^Nc x 2^Nc matrices through the derivative
-tower.  That path was measured at ~37 min/instance at Nc = 12 on this
-machine.  But every object in that pipeline is graded by the conserved U(1)
-charge, so the whole computation decomposes over popcount sectors.  The
-largest block at Nc = 12 is C(12,6) = 924, and eigh(924) is trivial vs
-eigh(4096).  This module is a sector-blocked reimplementation with IDENTICAL
-semantics: same seed -> same draw_couplings call -> same disorder instance ->
-same mu_k numbers (asserted against the dense path in test_moments_fast.py at
-Nc = 6, 8, 10).
+Hamiltonian, and drags dense 2^Nc x 2^Nc matrices through the derivative
+tower.  That path was measured at about 37 min per instance at Nc = 12 on
+this machine.
 
-Derivation of the block structure (each step asserted in the tests):
+But every object in that pipeline is graded by the conserved U(1) charge.
+So the whole computation decomposes over popcount sectors.  The largest
+block at Nc = 12 is C(12,6) = 924, and eigh(924) is trivial next to
+eigh(4096).
 
- 1. [H, Q] = 0 (dirac.py), so in the occupation basis H = direct-sum of
-    blocks H_q over the popcount-q sectors S_q, dim(S_q) = C(Nc, q).
- 2. c_i lowers Q by one.  Its only nonzero block maps S_q -> S_{q-1} (one
-    signed entry per column that has mode i occupied; columns without mode i
-    are annihilated).  The derivative chain c^(n) = i[H, c^(n-1)] preserves
-    that corner.  With block-diagonal H and X in the (q-1, q) corner, [H, X]
-    is H_{q-1} X_q - X_q H_q, still in the (q-1, q) corner.
- 3. M_n = sum_i c_i^dag c_i^(n) is therefore block-diagonal:
-    (M_n)_q = sum_i (C_{i,q})^dag (C^(n)_{i,q}) with C_{i,q} the S_q -> S_{q-1}
-    block.  Since C_{i,q} is a partial signed permutation (injective on the
-    occupied-i columns), the chain step n = 1 and every accumulation
-    C^dag_{i,q} X are pure indexing operations.  Only chain steps n >= 2 need
-    real matrix products.
- 4. The unitary particle-hole map C (dirac.particle_hole) is a signed
-    COMPLEMENT permutation: C|s> = sign(s) |~s|, so it maps S_q -> S_{Nc-q}.
-    Conjugating a block-diagonal X therefore stays block-diagonal, but the
-    sector-q block of C X C^dag comes from the MIRROR block q' = Nc - q:
-        (C X C^dag)_q = B_{q'} X_{q'} B_{q'}^dag ,   q' = Nc - q,
-    with B_{q'} the (signed permutation) S_{q'} -> S_q block of C.  The CP
-    projections X_pm = (X +- C X C^dag)/2 thus couple mirror sector PAIRS
-    (q, Nc - q).  There are no off-diagonal blocks anywhere: the mixing is
-    entirely between the diagonal blocks of the pair.  Implemented as signed
-    index manipulation (no matmul); asserted against dense cp_conjugate.
- 5. Traceless subtraction is a scalar shift of each diagonal block.  The
-    Hermitian/anti-Hermitian split acts blockwise.  V = direct-sum V_q, so
-    Wt = V^dag op V is block-diagonal and
-        mu_k = sum_q sum_{ab in S_q} W_q[a,b] (E_qa - E_qb)^k .
-    The h/a split commutes with the eigenbasis rotation, so we compute
-    Wt = V_q^dag op_q V_q ONCE and split Wt afterwards (algebraically
-    identical, half the matmuls).
+This module is a sector-blocked reimplementation with IDENTICAL
+semantics.  Same seed gives the same draw_couplings call, gives the same
+disorder instance, gives the same mu_k numbers.  That is asserted against
+the dense path in test_moments_fast.py at Nc = 6, 8 and 10.
 
-Exact-degeneracy caveat (why "identical" still means ~1e-12, not bitwise):
-on a C-invariant instance the mirror sectors are exactly isospectral
-(E_q = E_{Nc-q} pairwise).  The dense eigh is then free to rotate
-eigenvectors inside those cross-sector degenerate pairs.  The moments are
-invariant under any rotation within a degenerate eigenspace: the weight
-P_E op P_{E'} has a basis-independent Frobenius norm, and omega depends only
-on the eigenvalues.  So blocked and dense mu_k agree to roundoff (gated at
-1e-9 relative in the tests, observed ~1e-12).  Individual matrix elements of
-Wt are NOT comparable between the two paths; only the mu_k are.
+THE BLOCK STRUCTURE.  Each step is asserted in the tests.
 
-What is exact vs measured here: the block decomposition (points 1-5) is an
-exact operator statement, asserted numerically.  All physics output (mu_k,
-w2, kurt and their disorder error bars) is measured ED data identical in
-meaning to moments_pipeline.py.
+1. [H, Q] = 0 (dirac.py).  So in the occupation basis H is a direct sum of
+   blocks H_q over the popcount-q sectors S_q, with dim(S_q) = C(Nc, q).
 
-Cost: the dense path is O(n_couplings * 4^Nc) assembly + O(8^Nc) linear
-algebra.  The blocked path replaces 8^Nc = (sum_q C(Nc,q))^3-ish work by
-sum_q C(Nc,q)^3-ish work (~34x in these units at Nc = 12; measured
-end-to-end speedup ~140x).  It also needs only
-sum_q C(Nc,q)^2 = C(2Nc, Nc) storage per operator (43 MB at Nc = 12,
-642 MB at Nc = 14) instead of 4^Nc.
+2. c_i lowers Q by one.  Its only nonzero block maps S_q -> S_{q-1}, with
+   one signed entry per column that has mode i occupied; columns without
+   mode i are annihilated.  The derivative chain c^(n) = i[H, c^(n-1)]
+   preserves that corner: with block-diagonal H and X in the (q-1, q)
+   corner, [H, X] = H_{q-1} X_q - X_q H_q is still in the (q-1, q) corner.
+
+3. M_n = sum_i c_i^dag c_i^(n) is therefore block-diagonal, with
+   (M_n)_q = sum_i (C_{i,q})^dag (C^(n)_{i,q}), where C_{i,q} is the
+   S_q -> S_{q-1} block.  C_{i,q} is a partial signed permutation,
+   injective on the occupied-i columns.  So the chain step n = 1, and
+   every accumulation C^dag_{i,q} X, are pure indexing operations.  Only
+   chain steps n >= 2 need real matrix products.
+
+4. The unitary particle-hole map C (dirac.particle_hole) is a signed
+   COMPLEMENT permutation: C|s> = sign(s) |~s|, so it maps S_q -> S_{Nc-q}.
+   Conjugating a block-diagonal X therefore stays block-diagonal, but the
+   sector-q block of C X C^dag comes from the MIRROR block q' = Nc - q:
+
+       (C X C^dag)_q = B_{q'} X_{q'} B_{q'}^dag ,   q' = Nc - q,
+
+   with B_{q'} the signed-permutation S_{q'} -> S_q block of C.  So the CP
+   projections X_pm = (X +- C X C^dag)/2 couple mirror sector PAIRS
+   (q, Nc - q).  There are no off-diagonal blocks anywhere: the mixing is
+   entirely between the diagonal blocks of the pair.  This is implemented
+   as signed index manipulation, with no matmul, and asserted against the
+   dense cp_conjugate.
+
+5. Traceless subtraction is a scalar shift of each diagonal block.  The
+   Hermitian/anti-Hermitian split acts blockwise.  V is a direct sum of
+   V_q, so Wt = V^dag op V is block-diagonal and
+
+       mu_k = sum_q sum_{ab in S_q} W_q[a,b] (E_qa - E_qb)^k .
+
+   The h/a split commutes with the eigenbasis rotation, so we compute
+   Wt = V_q^dag op_q V_q ONCE and split Wt afterwards.  That is
+   algebraically identical, at half the matmuls.
+
+AN EXACT-DEGENERACY CAVEAT: why "identical" means about 1e-12, not
+bitwise.  On a C-invariant instance the mirror sectors are exactly
+isospectral, E_q = E_{Nc-q} pairwise.  The dense eigh is then free to
+rotate eigenvectors inside those cross-sector degenerate pairs.
+
+The moments are invariant under any rotation within a degenerate
+eigenspace.  The weight P_E op P_{E'} has a basis-independent Frobenius
+norm, and omega depends only on the eigenvalues.  So blocked and dense
+mu_k agree to roundoff, gated at 1e-9 relative in the tests, and observed
+at about 1e-12.
+
+Individual matrix elements of Wt are NOT comparable between the two
+paths.  Only the mu_k are.
+
+WHAT IS EXACT, WHAT IS MEASURED.  The block decomposition, points 1-5, is
+an exact operator statement, asserted numerically.  All physics output --
+mu_k, w2, kurt, and their disorder error bars -- is measured ED data,
+identical in meaning to moments_pipeline.py.
+
+COST.  The dense path is O(n_couplings * 4^Nc) assembly plus O(8^Nc)
+linear algebra.  The blocked path replaces 8^Nc, which is roughly
+(sum_q C(Nc,q))^3, by roughly sum_q C(Nc,q)^3.  That is about 34x in these
+units at Nc = 12, and the measured end-to-end speedup is about 140x.
+
+It also needs only sum_q C(Nc,q)^2 = C(2Nc, Nc) storage per operator,
+which is 43 MB at Nc = 12 and 642 MB at Nc = 14, instead of 4^Nc.
 """
 
 from __future__ import annotations
@@ -474,7 +492,8 @@ def main():
                     help="attempt ONE Nc=14 instance (seed 100) if the "
                          "measured Nc=12 timing extrapolates below ~40 min")
     ap.add_argument("--n-inst", type=int, default=None,
-                    help="override the timing-based Nc=12 instance count")
+                    help="override the Nc=12 instance count "
+                         "(default 40, the committed ensemble)")
     ap.add_argument("--dense-partial", default=None,
                     help="path to a concurrent dense-ED partial JSON for the live cross-check")
     ap.add_argument("--plot", action="store_true",
@@ -497,22 +516,19 @@ def main():
           f"lambda = {p * p / Nc:.3f}, largest block C(12,6) = {comb(12, 6)}")
     print(f"predicted peak memory: {peak_memory_gb(Nc):.2f} GB\n")
 
-    # -- production ensemble, timing-adaptive instance count ---------------
+    # -- production ensemble: fixed instance count -------------------------
+    # n_inst defaults to the committed count (40, matching the Nc = 6, 8
+    # statistics) so `make reproduce-slow` regenerates moments_nc12.json
+    # with machine-independent ensemble statistics; the first instance's
+    # wall-clock only sets the printed ETA.  --n-inst is the explicit
+    # override for a quick look on slow hardware.
     t0 = time.perf_counter()
     insts = [instance_moments_blocked(Nc, p, seed0, n_list)]
     t_first = time.perf_counter() - t0
-    if args.n_inst is not None:
-        n_inst = args.n_inst
-    elif t_first > 90.0:
-        n_inst = 12
-    elif t_first > 45.0:
-        n_inst = 16
-    elif t_first > 15.0:
-        n_inst = 20
-    else:
-        n_inst = 40          # match the committed Nc = 6, 8 statistics
+    n_inst = args.n_inst if args.n_inst is not None else 40
     print(f"instance seed={seed0}: {t_first:.1f} s  "
-          f"(dense path measured ~37 min) -> n_inst = {n_inst}")
+          f"(dense path measured ~37 min) -> n_inst = {n_inst}, "
+          f"ETA ~{t_first * (n_inst - 1) / 60.0:.0f} min")
     times = [t_first]
     for j in range(1, n_inst):
         t0 = time.perf_counter()

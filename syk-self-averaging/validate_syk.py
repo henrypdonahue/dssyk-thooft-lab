@@ -1,23 +1,28 @@
 #!/usr/bin/env python3
 r"""
-Validate the SYK construction against the textbook signature: random-matrix
-level statistics that cycle through GOE / GUE / GSE with N mod 8.  That cycle
-is the Bott periodicity of the Majorana SYK ensemble.
+Validate the SYK construction against its textbook signature.
+=============================================================
 
-Diagnostic: the mean adjacent-gap ratio  <r>,  r_n = min(s_n,s_{n-1})/max(...),
-s_n = E_{n+1}-E_n.  It needs no spectral unfolding and has known universal
-values:
+Random-matrix level statistics cycle through GOE, GUE and GSE with
+N mod 8.  That cycle is the Bott periodicity of the Majorana SYK
+ensemble.
+
+THE DIAGNOSTIC is the mean adjacent-gap ratio <r>, with
+r_n = min(s_n, s_{n-1})/max(s_n, s_{n-1}) and s_n = E_{n+1} - E_n.  It
+needs no spectral unfolding, and it has known universal values:
 
     Poisson  0.3863     GOE  0.5307     GUE  0.5996     GSE  0.6744
 
-Crucial subtlety: H commutes with fermion parity, so
-its spectrum is a superposition of two independent blocks.  When the two blocks
-are mixed, the level repulsion is washed out and <r> fakes the Poisson value
-~0.39.  You must resolve parity first.  In our Jordan-Wigner convention parity
-is diagonal: P = (-1)^{N/2} Z^{⊗N/2}.  So a sector is just the
-computational-basis states of fixed qubit-parity (even/odd popcount).
+A CRUCIAL SUBTLETY.  H commutes with fermion parity, so its spectrum is a
+superposition of two independent blocks.  Mix the two blocks and the
+level repulsion is washed out, and <r> fakes the Poisson value of about
+0.39.
 
-Predicted class by N mod 8 (within a parity sector):
+So you must resolve parity first.  In our Jordan-Wigner convention parity
+is diagonal, P = (-1)^{N/2} Z^{(x)N/2}.  So a sector is just the
+computational-basis states of fixed qubit-parity, even or odd popcount.
+
+PREDICTED CLASS by N mod 8, within a parity sector:
 
     N mod 8 = 0 -> GOE      = 2 -> GUE      = 4 -> GSE      = 6 -> GUE
 """

@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Correctness gates for the charge-sector-blocked moment pipeline
-(moments_fast.py).  The tests assert every structural claim in its
-derivation against the dense path (moments_pipeline / dirac).  They share
-no blocked code.
+(moments_fast.py).
 
-Run from this directory:  pytest -q test_moments_fast.py -m 'not slow'
-(the Nc = 10 end-to-end gate is slow: dense reference takes ~2 min).
+Every structural claim in its derivation is asserted against the dense
+path, in moments_pipeline and dirac.  These tests share no blocked code.
+
+Run from this directory: pytest -q test_moments_fast.py -m 'not slow'.
+The Nc = 10 end-to-end gate is slow, because the dense reference takes
+about 2 minutes.
 """
 
 import time

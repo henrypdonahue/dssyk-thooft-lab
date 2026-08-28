@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""Tests for the large-q anchor: conventions bridge, closed forms
-vs the ED bench, and the structure of the would-be tower."""
+"""Tests for the large-q anchor.
+
+Three things: the conventions bridge, the closed forms against the ED
+bench, and the structure of the would-be tower.
+"""
 
 import json
 from math import comb, factorial
@@ -25,7 +28,7 @@ def test_v_solver_limits():
         assert np.pi * v / np.cos(np.pi * v / 2) == pytest.approx(bj, rel=1e-10)
 
 
-@pytest.mark.skipif(not _BENCH.exists(), reason="run largeq_bench.py first")
+# largeq_bench.json is committed: missing = broken checkout, fail not skip
 def test_conventions_bridge_H2():
     """The exact repo <-> MS bridge implies <H^2>/dim = C(N,p) p!/N^{p-1};
     the bench must confirm it within errors (locks the scriptJ = sqrt(2) p
@@ -36,7 +39,6 @@ def test_conventions_bridge_H2():
         assert r["m2_mean"] == pytest.approx(exact, rel=0.05)
 
 
-@pytest.mark.skipif(not _BENCH.exists(), reason="run largeq_bench.py first")
 def test_G_prediction_at_1_over_p_accuracy():
     """G(t) = sech(sqrt(2) p t)^{2/p} must match ED with NO free parameters
     at the O(1/p) level.  (The p = 4 deviations do not shrink with N: the

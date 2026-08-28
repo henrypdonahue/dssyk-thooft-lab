@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Asserting tests for the SYK harness and the self-averaging measurement.
+"""Tests for the SYK harness and the self-averaging measurement.
 
-Run with:  pytest -q     (the RMT test is marked slow; deselect with -m 'not slow')
+Run with: pytest -q.  The RMT test is marked slow; deselect it with
+-m 'not slow'.
 """
 
 
@@ -267,6 +268,20 @@ def test_wick_double_scaling_superexponential():
     slopes = [r["ln_rms"] / np.sqrt(r["N"]) for r in rows]
     assert all(b < a for a, b in zip(slopes, slopes[1:]))
     assert slopes[-1] < -2.0
+    # The SHARP form the README/road_map quote: ln rms = -(1/4) sqrt(N) ln N
+    # (lambda = 1), with the derived -(1/2) sqrt(N) subleading term
+    # (Stirling on 2 sigma^2 sqrt(C(N-2, p-1))).  Convergence of the raw
+    # ratio is only ~1/ln N, so the coefficient is pinned through the
+    # subtracted ratio's monotone approach to -1/4 -- a wrong coefficient
+    # or a missing ln N factor fails every line below.
+    rows = double_scaling_scan(1.0, [100, 400, 1600, 6400, 25600])
+    ratio = [r["ln_rms"] / (np.sqrt(r["N"]) * np.log(r["N"])) for r in rows]
+    assert -0.31 < ratio[-1] < -0.27
+    sub = [(r["ln_rms"] + 0.5 * np.sqrt(r["N"]))
+           / (np.sqrt(r["N"]) * np.log(r["N"])) for r in rows]
+    assert all(b < a for a, b in zip(sub, sub[1:]))      # toward -1/4 ...
+    assert all(s > -0.25 for s in sub)                   # ... from above
+    assert abs(sub[-1] + 0.25) < 0.01                    # and lands on it
 
 
 def test_wick_fixed_p_powerlaw():

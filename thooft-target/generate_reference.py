@@ -1,5 +1,7 @@
 """Generate a certified high-precision reference table.
-Runs two basis sizes and reports agreeing digits per level."""
+
+Runs two basis sizes, and reports the agreeing digits per level.
+"""
 from mpmath import mp, nstr, fabs
 from thooft_highprec import solve_sector_mp
 import json, time

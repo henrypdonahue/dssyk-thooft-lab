@@ -1,62 +1,68 @@
 #!/usr/bin/env python3
 r"""
-Charge-conserving complex (Dirac) SYK: the U(1)/"QED" sector of the duality.
-============================================================================
+Charge-conserving complex (Dirac) SYK: the U(1) "QED" sector.
+=============================================================
 
 The U(N) side of Miyashita-Sekino-Susskind (arXiv:2607.05678) is the Dirac
-SYK model.  It has complex fermions c_i, i = 0..Nc-1, and a charge-conserving
-Hamiltonian containing p/2 creation and p/2 annihilation operators per term:
+SYK model.  It has complex fermions c_i, i = 0..Nc-1, and a
+charge-conserving Hamiltonian with p/2 creation and p/2 annihilation
+operators per term:
 
-    H = sum_{|A|=|B|=p/2}  J_{AB}  c^dag_{a1} ... c^dag_{ak} c_{b1} ... c_{bk},
+    H = sum_{|A|=|B|=p/2}  J_{AB}  c^dag_{a1}...c^dag_{ak} c_{b1}...c_{bk},
 
-    (A, B ascending index sets, k = p/2;  J_{BA} = conj(J_{AB}) so H = H^dag;
-     diagonal couplings J_{AA} real.)
+with A and B ascending index sets, k = p/2, J_{BA} = conj(J_{AB}) so that
+H = H^dag, and real diagonal couplings J_{AA}.
 
-This is the sector where the paper's electromagnetic story lives.  M_0 = Q is
-the conserved U(1) charge ("photon"), M_1 the conserved "graviton", and the
-tower  M_n = sum_i c^dag_i (d^n/dt^n) c_i  the meson candidates.  The module
-provides the Hamiltonian (fast bitwise builder + independent sparse reference),
-the charge, the M_n tower, and the (unitary) particle-hole/CP machinery.  That
-is everything the operator-identity and CP tests in test_syk.py exercise.
+This is the sector where the paper's electromagnetic story lives.  M_0 = Q
+is the conserved U(1) charge, the "photon".  M_1 is the conserved
+"graviton".  And the tower M_n = sum_i c^dag_i (d^n/dt^n) c_i holds the
+meson candidates.
 
-Operator identities encoded here (and asserted in the tests):
+The module supplies the Hamiltonian (a fast bitwise builder plus an
+independent sparse reference), the charge, the M_n tower, and the unitary
+particle-hole/CP machinery.  That is everything the operator-identity and
+CP tests in test_syk.py exercise.
 
-  *  [H, Q] = 0                       (charge conservation; the U(1) exists)
-  *  M_0 = Q                          (paper Sec. 4.3, exact)
-  *  M_1 = -(p/2) i H                 (NOT the paper's M_1 = H; forced by
-                                       symmetry: Qdot = 0 makes M_1
-                                       anti-Hermitian, so it cannot equal a
-                                       nonzero Hermitian H.)
-  *  M_2 = - sum_i cdot^dag_i cdot_i  (because M_1 is conserved,
-                                       d/dt M_1 = sum ci^dag cddot_i
-                                       + sum cdot^dag cdot_i = 0; the paper's
-                                       psi^dag psiddot = +psidot^dag psidot
-                                       has the sign wrong.)
-  *  M_n^dag = (-1)^n M_n  holds for n = 0, 1, 2 and FAILS for n >= 3
-                                      (measured; the "n-th derivative of one
-                                       Hermitian bilinear" picture survives
-                                       whole only through n = 2).
+OPERATOR IDENTITIES ENCODED HERE, and asserted in the tests.
 
-CP structure (the paper's CP = (-1)^{n+1}, Sec. 4.3), as actually measured:
+  * [H, Q] = 0.  Charge conservation, so the U(1) exists.
+  * M_0 = Q.  Exact; paper Sec. 4.3.
+  * M_1 = -(p/2) i H.  NOT the paper's M_1 = H.  Symmetry forces it:
+    Qdot = 0 makes M_1 anti-Hermitian, so it cannot equal a nonzero
+    Hermitian H.
+  * M_2 = -sum_i cdot^dag_i cdot_i.  Because M_1 is conserved,
+    d/dt M_1 = sum ci^dag cddot_i + sum cdot^dag cdot_i = 0.  The paper's
+    psi^dag psiddot = +psidot^dag psidot has the sign wrong.
+  * M_n^dag = (-1)^n M_n holds for n = 0, 1, 2 and FAILS for n >= 3.  That
+    is measured.  The "n-th derivative of one Hermitian bilinear" picture
+    survives whole only through n = 2.
 
-  *  The relevant operation is the UNITARY particle-hole map C.  See
-     particle_hole() for why it cannot be antiunitary (M_1 ~ iH).
-  *  On a C-invariant instance (draw_couplings ensemble="c_symmetric"),
-     CP of the traceless M_0 (i.e. Q - Nc/2; C Q C = Nc - Q, so only the
-     shifted charge is CP-odd) is -1 and CP(M_1) = +1, both EXACTLY.
-  *  For n >= 2 the raw M_n operators are CP-MIXTURES (wrong-channel
-     Frobenius weight ~15-65%, varying with n, Nc and instance; measure with
-     wrong_channel_weight).  This is structural, not numerical.
-     M_n = d^n/dt2^n O(t1,t2)|_{t1=t2} differentiates only ONE time argument,
-     so total-time-derivative (commutator) pieces carrying the opposite CP
-     contaminate the operator.  The sharp version of the paper's assignment
-     must therefore be stated at the level of CP-RESOLVED spectral functions
-     (split with cp_projections, then take two-point functions).
-     mn_spectroscopy.py measures exactly that.
+CP STRUCTURE, the paper's CP = (-1)^{n+1} of Sec. 4.3, as actually
+measured.
 
-Conventions: occupation-number basis on Nc qubits, mode i <-> bit (Nc-1-i) of
-the basis index.  That matches the kron order of syk.dirac_operators, against
-which the fast builder is tested.  d/dt X = i[H, X].
+  * The relevant operation is the UNITARY particle-hole map C.  See
+    particle_hole() for why it cannot be antiunitary, since M_1 ~ iH.
+  * On a C-invariant instance (draw_couplings ensemble="c_symmetric"), CP
+    of the traceless M_0, which is Q - Nc/2 because C Q C = Nc - Q so only
+    the shifted charge is CP-odd, is -1.  And CP(M_1) = +1.  Both are
+    EXACT.
+  * For n >= 2 the raw M_n operators are CP MIXTURES.  The wrong-channel
+    Frobenius weight runs about 15-65%, varying with n, Nc and instance;
+    measure it with wrong_channel_weight.
+
+    This is structural, not numerical.  M_n = d^n/dt2^n O(t1,t2)|_{t1=t2}
+    differentiates only ONE time argument.  So total-time-derivative
+    (commutator) pieces carrying the opposite CP contaminate the operator.
+
+    The sharp version of the paper's assignment therefore has to be stated
+    at the level of CP-RESOLVED spectral functions: split with
+    cp_projections, then take 2-point functions.  mn_spectroscopy.py
+    measures exactly that.
+
+CONVENTIONS.  Occupation-number basis on Nc qubits, with mode i mapping to
+bit (Nc-1-i) of the basis index.  That matches the kron order of
+syk.dirac_operators, against which the fast builder is tested.
+d/dt X = i[H, X].
 """
 
 from __future__ import annotations
@@ -195,6 +201,14 @@ def _monomial_structure(Nc: int, A, B, states: np.ndarray):
     if (1 << Nc) > _MONOMIAL_CACHE_MAX_DIM:
         valid, rows, signs = apply_monomial(Nc, A, B, states)
         return rows[valid], states[valid], signs[valid]
+    # the cache key ignores `states`, which is sound only for the full
+    # basis; a sector-restricted caller (the moments_fast.blocked_* calling
+    # pattern) must use apply_monomial directly, and this guard keeps a
+    # future one from silently reading full-basis results
+    if len(states) != (1 << Nc):
+        raise ValueError("_monomial_structure caches full-basis results "
+                         f"only; got a {len(states)}-state subset for "
+                         f"Nc = {Nc} -- call apply_monomial directly")
     key = (Nc, A, B)
     hit = _MONOMIAL_CACHE.get(key)
     if hit is None:

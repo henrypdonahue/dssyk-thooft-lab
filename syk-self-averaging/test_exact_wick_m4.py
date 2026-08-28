@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
-"""Asserting tests for the m4 extension of exact_wick.py: exact disorder
-statistics of the singlet fourth moment m4 = Tr(H^4)/dim.
+"""Tests for the m4 extension of exact_wick.py.
 
-Verification chain (each closed form against an independent route sharing
-no assembly code):
-  * exchange sign and support facts: literal Pauli-string traces;
-  * Z, W combinatorics: literal set enumeration (frozensets, no binomials);
-  * E[m4], Var(m4): the collected coupling polynomial + Gaussian moment
-    formula (no Wick pairing taxonomy) at (6,2), (8,2), (6,4) fast and
-    (8,4) slow-marked;
-  * relVar(m4): fresh ED disorder ensembles at N = 12, 14;
-  * micro-anchor (N=2, p=2): hand values E[m4] = 3 sigma^4, Var = 96 sigma^8.
+These pin the exact disorder statistics of the singlet fourth moment
+m4 = Tr(H^4)/dim.  Each closed form is checked against an independent
+route that shares no assembly code.
 
-Run with:  pytest -q -m 'not slow'   (the (8,4) enumeration is ~25 s)
+  * The exchange-sign and support facts: literal Pauli-string traces.
+  * The Z and W combinatorics: literal set enumeration, using frozensets
+    and no binomials.
+  * E[m4] and Var(m4): the collected coupling polynomial plus the Gaussian
+    moment formula, with no Wick pairing taxonomy, at (6,2), (8,2) and
+    (6,4) fast, and (8,4) marked slow.
+  * relVar(m4): fresh ED disorder ensembles at N = 12 and 14.
+  * A micro-anchor at (N=2, p=2): the hand values E[m4] = 3 sigma^4 and
+    Var = 96 sigma^8.
+
+Run with: pytest -q -m 'not slow'.  The (8,4) enumeration takes about
+25 s.
 """
 
 from itertools import combinations, product

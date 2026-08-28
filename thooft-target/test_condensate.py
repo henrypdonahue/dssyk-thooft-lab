@@ -1,7 +1,8 @@
-"""Tests for the condensate / GMOR-corner / vacuum-energy module.
+"""Tests for the condensate, the GMOR corner, and the vacuum energy.
 
-Anchors: LM arXiv:2409.11324 (6.1)-(6.3) [transcribed], the Zhitnitsky
-chiral value, and this repo's own Jacobi solver in the chiral corner.
+The anchors are LM arXiv:2409.11324 (6.1)-(6.3), transcribed; the
+Zhitnitsky chiral value; and this repo's own Jacobi solver in the chiral
+corner.
 """
 
 import json

@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
-"""Figures for the chord-engine campaigns (these tasks/26; CHORD.md).
+"""Figures for the chord-engine campaigns (CHORD.md).
 
 Reads chord_spectra.json, chord_fold.json and
-../syk-self-averaging/mn_majorana_bench.json only -- nothing recomputed,
-nothing hardcoded.
+../syk-self-averaging/mn_majorana_bench.json.  Nothing is recomputed and
+nothing is hardcoded.
 
-(a) the verdict: exact N = infinity spectral functions S_Delta
-    (fine window at the semiclassical scale) vs the sech^{2 Delta}
-    transform, lambda falling -- structureless continua converging
-    linearly in lambda;
-(b) the length channel and the exact-in-lambda de Sitter length growth
-    <n(t)> vs -(2/lambda) log sech(Jc t);
-(c) the decider: folded vs unfolded connected fractions vs
-    lambda -- the fold breaks the 1/N (~lambda) hierarchy at N = infinity;
-(d) the bench: raw w2 rising toward the 't Hooft corner along
-    fixed p, plus the matched-lambda pair -- the honest negative
-    (chord prediction: 0).
+(a) The verdict.  Exact N = infinity spectral functions S_Delta, with a
+    fine window at the semiclassical scale, against the sech^{2 Delta}
+    transform, as lambda falls.  Structureless continua, converging
+    linearly in lambda.
+(b) The length channel, and the exact-in-lambda de Sitter length growth
+    <n(t)> against -(2/lambda) log sech(Jc t).
+(c) The decider.  Folded against unfolded connected fractions, against
+    lambda.  The fold breaks the 1/N (~lambda) hierarchy at N = infinity.
+(d) The bench.  Raw w2 rising toward the 't Hooft corner along fixed p,
+    plus the matched-lambda pair.  This is the honest negative; the chord
+    prediction for the pair channel is 0.
 """
 import json
 import sys

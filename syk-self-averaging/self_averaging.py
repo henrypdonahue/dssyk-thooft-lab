@@ -1,48 +1,53 @@
 #!/usr/bin/env python3
 r"""
-Numerical test of the self-averaging claims of
-Miyashita-Sekino-Susskind (arXiv:2607.05678), Section 3.5.
+The self-averaging claims of arXiv:2607.05678 Sec. 3.5, tested.
+===============================================================
 
-This module tests two claims:
+Two claims:
 
-  (3.27)  Var<W> ~ p!/N^p   for singlet (O(N)-invariant) observables W;
-  (3.28)  symmetry violations <= exp(-a sqrt(N))  for non-singlet (adjoint) ones.
+  (3.27)  Var<W> ~ p!/N^p   for singlet, O(N)-invariant, observables W
+  (3.28)  symmetry violations <= exp(-a sqrt(N))  for adjoint ones
 
-A subtlety that governs the whole exercise
+A SUBTLETY THAT GOVERNS THE WHOLE EXERCISE
 ------------------------------------------
-At *fixed* p, p!/N^p is a power law N^{-p}: self-averaging, but only
-polynomially fast.  The paper's striking *super-exponential* suppression
-(e^{-aN}, e^{-a sqrt N}) lives in the DOUBLE-SCALING limit p = sqrt(lambda N),
-where p grows with N.  Exact diagonalization caps out near N ~ 18-20 (Hilbert
-dim 2^{N/2}), which cannot reach large p and large N together.  That is the
-same wall the headline spectrum-match computation hits.
+At *fixed* p, p!/N^p is a power law N^{-p}.  That is self-averaging, but
+only polynomially fast.
 
-So we split the test into what each tool can actually establish:
+The paper's striking *super-exponential* suppression (e^{-aN},
+e^{-a sqrt N}) lives in the DOUBLE-SCALING limit p = sqrt(lambda N),
+where p grows with N.
 
-  A. The self-averaging *mechanism*, exactly and analytically.  The singlet
-     second moment m2 = Tr(H^2)/dim = sum_c J_c^2 has relative variance exactly
-     2 / C(N,p).  This needs no diagonalization, so we can follow it along the
-     double-scaling line p = sqrt(lambda N) to large N and show it becomes
-     super-exponential.  That is Eq. (3.27) with its promised e^{-aN} tail.
+Exact diagonalization caps out near N ~ 18-20, at Hilbert dimension
+2^{N/2}.  It cannot reach large p and large N together.  That is the same
+wall the headline spectrum-match computation hits.
 
-  B. Higher singlet moments m4, m6 at accessible (N, p) by ED: do they
-     self-average at the same ~1/C(N,p) rate as m2, or slower?
+So the test is split into what each tool can actually establish.
 
-  C. Symmetry violation at accessible (N, p) by ED.  The off-diagonal of the
-     H-dressed adjoint bilinear  B_{jk} = Tr(psi_j H psi_k H)/dim  has zero
-     ensemble mean for j != k.  Its typical size measures how much one disorder
-     instance breaks O(N).  We measure its decay with N and with p.
+A. THE MECHANISM, exactly and analytically.  The singlet second moment
+   m2 = Tr(H^2)/dim = sum_c J_c^2 has relative variance exactly 2/C(N,p).
+   That needs no diagonalization.  So we can follow it along the
+   double-scaling line p = sqrt(lambda N) to large N, and see it become
+   super-exponential.  That is Eq. (3.27) with its promised e^{-aN} tail.
 
-     (The e^{-a sqrt N} FORM cannot be discriminated from a steep power law in
-     the ED window.  The fits below say so explicitly, with Delta-AIC.  But
-     the disorder VARIANCE of B_jk is exactly computable by Wick contraction at
-     any (N, p).  See exact_wick.py, which carries this test into the
-     double-scaling regime that ED cannot reach.)
+B. HIGHER SINGLET MOMENTS m4 and m6, at accessible (N, p), by ED.  Do
+   they self-average at the same ~1/C(N,p) rate as m2, or slower?
 
-Statistics: every ensemble estimate below carries an error bar.  For a relative
-variance estimated from n draws the sampling error is ~ relVar*sqrt(2/(n-1))
-(Gaussian approximation for the variance of a sample variance).  The rms values
-carry the standard error of the mean over draws.
+C. SYMMETRY VIOLATION at accessible (N, p), by ED.  The off-diagonal of
+   the H-dressed adjoint bilinear B_{jk} = Tr(psi_j H psi_k H)/dim has
+   zero ensemble mean for j != k.  Its typical size measures how much one
+   disorder instance breaks O(N).  We measure its decay with N and with p.
+
+   The e^{-a sqrt N} FORM cannot be told apart from a steep power law in
+   the ED window.  The fits below say so explicitly, with Delta-AIC.  But
+   the disorder VARIANCE of B_jk is exactly computable by Wick contraction
+   at any (N, p).  See exact_wick.py, which carries this test into the
+   double-scaling regime ED cannot reach.
+
+STATISTICS.  Every ensemble estimate below carries an error bar.  For a
+relative variance estimated from n draws, the sampling error is about
+relVar*sqrt(2/(n-1)), the Gaussian approximation for the variance of a
+sample variance.  The rms values carry the standard error of the mean over
+draws.
 """
 
 from __future__ import annotations
