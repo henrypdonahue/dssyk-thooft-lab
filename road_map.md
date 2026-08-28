@@ -178,13 +178,30 @@ at every order, and that the match must therefore be made at fixed p,
 λ → 0, does not follow from this theorem. It is withdrawn. The fixed-p
 argument survives separately, on the self-averaging side.
 
-**The finite-N laws are now exact.** `exact_pair_moments.py` measures the
-approach to the pair zero by Wick plus a CRT residue-table dynamic
-program, with no ED. `pair_moment_laws.py` then turns those float
-regularities into certified closed forms: μ₂ ~ N^−(n+2) exactly through
-n = 4, with A(n=1) = −16p²(p−1) and A(n=2) = −64p³(p−1)(4p−5), and the
-exact double-scaling constants c₂ = 28.92 → 30.53 over p = 4..16. Those
-are the numbers the chord-side derivation has to reproduce.
+**The finite-N laws are now exact, out to the K = 12 word frontier.**
+`exact_pair_moments.py` measures the approach to the pair zero by Wick
+plus a CRT residue-table dynamic program, with no ED.
+`pair_moment_laws.py` turns those float regularities into certified
+closed forms, and `pair_moment_ladder.py` extends them to K = 12 words.
+The organizing structure is the word length K = k + 2n. Every computed
+law — 45 of them, k = 2..10, K = 4..12 — has deficit exactly K/2 + 1,
+so μ₂ ~ N^−(n+2) is certified through n = 5, μ₄ ~ N^−(n+3) through
+n = 4, and μ₆ ~ N^−(n+4) through n = 3. The leading coefficient obeys
+A(n=1, k) = A(n=2, k−2) *exactly*, at every rung and every p, while
+every deeper step differs (at K = 10, p = 2 the coefficients run
+21 : 21 : 14 : 9 × (−2¹⁷) over n = 1..4). So ad-shifting is exact at
+leading 1/N order for the first step of the ladder only. The k = 2
+family is A(n) = −2^(2n+2) p^(n+1) (p−1) Q_n(p) with Q₁ = 1,
+Q₂ = 4p − 5, and the newly identified Q₃ = 34p² − 108p + 91, certified
+at p = 18. The other K = 8 family is
+A(1,6) = A(2,4) = −256p⁴(p−1)(34p² − 93p + 64), certified at p = 18 too:
+the same prefactor and the same leading 34p² as A(3,2), differing only
+below. The double-scaling constant is exact to p = 48:
+c₂ = 28.92 → 31.65 at p = 48 and still rising, with a windowed-1/p
+limit estimate c₂(∞) = 32.334 (order-2 through order-4 windows agree
+to 1.4e-3; not 97/3, which sits 8e-4 below the stable order-4 value)
+that the artifact records as an estimate, not a law. Those are the
+numbers the chord-side derivation has to reproduce.
 
 ### The dS axis
 
@@ -242,22 +259,34 @@ viewpoint. The **diagonal channel**, which carries the tower's N = ∞
 weight, is a strict-N = ∞ chord computation.
 
 **The 1/N law at fixed p is now exact**, and needs no chord derivation
-(`pair_moment_laws.py`). P(N) = 2μ_k C(N,p)^m is a polynomial in N, so
-interpolation gives the closed forms, certified out of sample.
-μ₂ ~ N^−(n+2) exactly through n = 4, with A(n=1) = −16p²(p−1) and
-A(n=2) = −64p³(p−1)(4p−5) certified at p = 14. μ₄ dies one power faster,
-deficit n+3, sharing its leading coefficient with μ₂(n+1).
+(`pair_moment_laws.py`, `pair_moment_ladder.py`). P(N) = 2μ_k C(N,p)^m
+is a polynomial in N, so interpolation gives the closed forms, certified
+out of sample. The deficit is K/2 + 1 with K = k + 2n at every one of
+the 45 computed laws, through the K = 12 frontier. The leading
+coefficient is shared across the n = 1 → 2 step exactly and across no
+other step: μ₄(n=1) shares with μ₂(n=2), μ₆(n=1) with μ₄(n=2), and so
+on up the ladder, while A(2,4) ≠ A(3,2) already in the committed data.
+An earlier version of this note generalized the n = 1 coincidence to all
+n; that was an overstatement, and the ladder campaign is what refutes
+it. Closed forms in p: A(n=1) = −16p²(p−1), A(n=2) = −64p³(p−1)(4p−5),
+A(n=3) = −256p⁴(p−1)(34p² − 108p + 91), and for the other K = 8 family
+A(1,6) = A(2,4) = −256p⁴(p−1)(34p² − 93p + 64), each certified out of
+sample.
 
 What remains for theory: the chord-side derivation that *reproduces*
-these exact targets, and the large-p limit of the double-scaling
-constant. c₂(p) = 28.92 → 30.53 over p = 4..16 is exact, and still
-rising.
+these exact targets — the deficit rule, the exact first step, the broken
+deeper steps, the Q_n polynomials — and the large-p limit of the
+double-scaling constant. c₂(p) is exact to p = 48 (31.654) and still
+rising; the windowed extrapolation c₂(∞) = 32.334(1) is an estimate, and
+a closed form for it is not identified.
 
-**Extending to μ₆** needs K = 12 H-node words. That is unlocked now — the
-exact-Fractions assembly removed the float N = 256 cap and raised the
-word guard — but the (K−1)!! matching enumeration (10395 at K = 12, with
-m = 6 chord canonicalization) makes it hours per point in pure Python.
-n = 4 (K = 10) is done.
+**The μ₆ / K = 12 extension is done** (`pair_moment_ladder.py`). Three
+engine changes — hoisted signature multisets, coset canonicalization,
+DP-target aggregation — plus a 7-worker pool made K = 12 words
+affordable. The whole frontier at p = 2, (n,k) = (5,2), (4,4), (3,6),
+(2,8), (1,10), is computed, every deficit is 7, and every evaluation is
+gated by the exact k = 10 flavor-sum identity in Fractions. The p = 4
+frontier laws are affordable with `--deep` (hours) and have not been run.
 
 **The flavor-diagonal channel at N = ∞ is done**
 (`duality/diagonal_chord.py`). It is the parity-law diagram sum, derived

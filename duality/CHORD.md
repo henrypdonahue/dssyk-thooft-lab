@@ -167,10 +167,19 @@ c = 28.9, 28.9, 29.4, 29.8 over (p, N) = (4,16)…(10,100). For n = 3,
 c = 203, 200, 202, 205. The n = 2 constant drifts slowly upward. The
 n = 3 one is flat to 2% and not monotone.
 
-`pair_moment_laws.py` then replaces the fits with certified closed forms.
-μ₂ ~ N^−(n+2) holds exactly through n = 4. The coefficients are
-A(n=1) = −16p²(p−1) and A(n=2) = −64p³(p−1)(4p−5). The double-scaling
-constant runs c₂ = 28.92 → 30.53 over p = 4..16.
+`pair_moment_laws.py` then replaces the fits with certified closed forms,
+and `pair_moment_ladder.py` carries them to the K = 12 word frontier
+(k + 2n ≤ 12, so μ₆ through n = 3 and μ₂ through n = 5). Every law has
+deficit K/2 + 1: μ₂ ~ N^−(n+2) exactly through n = 5. The leading
+coefficient is shared across the n = 1 → 2 step at every rung,
+A(n=1, k) = A(n=2, k−2), and across no deeper step. The k = 2
+coefficients are A(n=1) = −16p²(p−1), A(n=2) = −64p³(p−1)(4p−5), and
+A(n=3) = −256p⁴(p−1)(34p² − 108p + 91); the other K = 8 family is
+A(1,6) = A(2,4) = −256p⁴(p−1)(34p² − 93p + 64). The double-scaling
+constant runs c₂ = 28.92 → 31.65 over p = 4..48, exact, still rising,
+with a windowed limit estimate c₂(∞) = 32.334(1).
+(The float scan above is n ≤ 3 with μ₀/μ₂/μ₄; the exact-Fractions
+path behind the laws has no such cap short of K = 12.)
 
 Validation of the finite-N engine: literal Isserlis enumeration (exact
 match), dense ED, the chord limit at the Krawtchouk N⁻² rate, and the

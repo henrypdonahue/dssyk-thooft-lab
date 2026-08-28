@@ -29,13 +29,13 @@ paper and of the open problems is in [road_map.md](road_map.md).
 
 | module | role | tests |
 |---|---|---|
-| [thooft-target/](thooft-target) | the yardstick: the 't Hooft meson spectrum to 12+ digits, the condensate, the vacuum energy | 45 |
-| [syk-self-averaging/](syk-self-averaging) | the SYK-side claims: self-averaging, the Mₙ/CP sector, QED and baryon campaigns, freeness, the exact 1/N laws | 189 |
-| [duality/](duality) | the dictionary, the N = ∞ chord engines, the conserved-channel theorem, the OTOC laboratory, the KMS discriminator | 236 |
+| [thooft-target/](thooft-target) | the yardstick: the 't Hooft meson spectrum to 12+ digits, the FLZ anchors, the condensate, the vacuum energy | 48 |
+| [syk-self-averaging/](syk-self-averaging) | the SYK-side claims: self-averaging, the Mₙ/CP sector, QED and baryon campaigns, freeness, the exact 1/N laws and their K = 12 ladder | 205 |
+| [duality/](duality) | the dictionary, the N = ∞ chord engines, the conserved-channel theorem (Majorana and Dirac), the OTOC laboratory, the KMS discriminator, the boost inverse problem, the JT-dS vacuum-energy note, the derived large-q skeleton | 284 |
 
-Install once with `pip install -e ".[dev]"`. Then `make test` runs the 458
-fast tests in about 90 seconds. `make test-all` adds the slow ED sweeps,
-470 in total.
+Install once with `pip install -e ".[dev]"`. Then `make test` runs the 523
+fast tests in about five minutes. `make test-all` adds the slow ED sweeps,
+537 in total.
 
 ## Main results
 
@@ -56,10 +56,15 @@ weight. The n = 1 case is the exact operator identity A₁ = −2pH. The
 engine measures the same zeros to n = 5 and μ₆.
 
 The finite-N approach to that zero is now an exact law, not a fit
-(`syk-self-averaging/pair_moment_laws.py`). μ₂ ~ N^−(n+2) holds exactly
-through n = 4. The coefficients are certified: A(n=1) = −16p²(p−1) and
-A(n=2) = −64p³(p−1)(4p−5). On the double-scaling line the constant runs
-c₂ = 28.92 → 30.53 over p = 4..16.
+(`syk-self-averaging/pair_moment_laws.py`, `pair_moment_ladder.py`),
+out to the K = 12 word frontier. Every moment μ_k of every Aₙ pair
+channel dies as N^−(K/2+1) with K = k + 2n, at all 45 computed laws.
+The leading coefficient is shared across the n = 1 → 2 step exactly,
+at every rung, and across no other step. The certified closed forms
+are A(n=1) = −16p²(p−1), A(n=2) = −64p³(p−1)(4p−5) and
+A(n=3) = −256p⁴(p−1)(34p² − 108p + 91). On the double-scaling line
+the constant runs c₂ = 28.92 → 31.65 over p = 4..48, exact, with a
+windowed limit estimate c₂(∞) = 32.334(1).
 
 **The scope matters, and it is the whole story.** ⟨AₙAₙ⟩ has two parts.
 The pair channel (i ≠ j) is the coherent one. The diagonal channel
@@ -131,20 +136,28 @@ solver stays accurate at nonzero quark mass.
 
 ## What is still open
 
-**Extract the tower.** The exact 1/N laws and the diagonal chord law are
-in hand. The chord-side derivation is not. Neither is the step from
-moments to a spectrum, and the boost-kernel forward check says that step
-needs node-level data, or the state map fixed first. This is a live race
-with the authors.
+**Extract the tower.** The exact 1/N laws, the K = 12 ladder and the
+diagonal chord law are in hand. The chord-side derivation is not. The
+step from moments to a spectrum now has its price list
+(`duality/boost_inverse.py`): one moment per level, each level costing
+one to two more digits, and no mass digits at all until the state map
+fixes the regulator — so node-level data it is. The Dirac pair channel
+is frozen too (`duality/dirac_chord.py`); its diagonal half and CP
+resolution are open. This is a live race with the authors.
 
 **The O(1/q) residues.** The tower cancels at leading order in large q.
-It first appears at O(1/q), on a skeleton whose finite-temperature
-residues are unpublished.
+It first appears at O(1/q), on a skeleton that is now derived in-repo
+(`duality/largeq_kernel.py`) and whose finite-temperature residues are
+unpublished.
 
 **The tomperature map.** Now reduced to one constrained-sector step in
 NV's construction.
 
-**The JT-dS entropy relation.** The paper writes ε = 3/(8S) only in D = 4.
+**The JT-dS entropy relation.** Settled as far as it settles
+(`duality/jt_ds_vacuum.py`): the D = 4 relation is the instance of a
+general-D identity that degenerates at D = 2; JT-dS supplies an exact
+first law and a family of reduction-inherited relations whose exponent
+is a dictionary input.
 
 Two problems are out of scope. Proving DSSYK∞ = JT-dS, which the authors
 assume. And the 1+1 → 3+1 uplift, which no source constructs.

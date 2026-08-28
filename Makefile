@@ -76,6 +76,8 @@ reproduce-slow:
 	cd duality && $(PY) boost_forward.py
 	cd duality && $(PY) boost_inverse.py
 	cd duality && $(PY) largeq_kernel.py
+	cd syk-self-averaging && $(PY) pair_moment_ladder.py
+	cd syk-self-averaging && $(PY) pair_moment_ladder.py --ds-extend 32,36,40,44,48
 	cd thooft-target && $(PY) generate_reference.py
 	cd thooft-target && $(PY) jacobi_solver.py
 	cd thooft-target && $(PY) thooft_spectrum.py --csv

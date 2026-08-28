@@ -135,10 +135,28 @@ certified out of sample. Results:
   were their shadows.
 - The leading coefficients have certified closed forms in p:
   A(n=1) = −16p²(p−1) and A(n=2) = −64p³(p−1)(4p−5).
-- μ₄ dies one power faster, and shares its leading coefficient with
-  μ₂(n+1).
+- μ₄ dies one power faster, and at n = 1 shares its leading coefficient
+  with μ₂(n=2).
 - The exact double-scaling constants run c₂ = 28.92 → 30.53 over
   p = 4..16, still rising.
+
+**The ladder** (`pair_moment_ladder.py`) carries this to the K = 12 word
+frontier, with K = k + 2n the word length:
+
+- deficit = K/2 + 1 at every one of the 45 laws, k = 2..10 — so
+  μ₂ ~ N^−(n+2) through n = 5, μ₄ ~ N^−(n+3) through n = 4, and
+  μ₆ ~ N^−(n+4) through n = 3;
+- A(n=1, k) = A(n=2, k−2) exactly at every rung and every p, and every
+  deeper step differs (K = 10, p = 2: 21 : 21 : 14 : 9 × (−2¹⁷) over
+  n = 1..4) — the coincidence above is the first step of a ladder and
+  nothing more;
+- A(n=3) = −256p⁴(p−1)(34p² − 108p + 91), certified at p = 18, so the
+  k = 2 family is −2^(2n+2) p^(n+1)(p−1) Q_n(p) with deg Q_n = n − 1;
+  the other K = 8 family is A(1,6) = A(2,4) = −256p⁴(p−1)(34p² − 93p + 64),
+  same prefactor, same leading 34p², certified at p = 18;
+- c₂(p) exact to p = 48 (31.654) and still rising, with a windowed
+  extrapolation c₂(∞) = 32.334(1) recorded as an estimate (orders 2–4
+  agree to 1.4e-3); c₃(p) = 208.33, 209.76 at p = 14, 16, still rising.
 
 What is left for the chord side is to *derive* these targets.
 
@@ -186,6 +204,7 @@ Read `rms_off`, not the ratio, which is artifacted at p = N/2.
 | `exact_wick_dirac.py` | the Dirac counterpart: exact Var(B_ij) for U(N) emergence (rms ~ Nc^(−(p−1)/2)), and ED-free singlet-moment anchors |
 | `exact_pair_moments.py` | exact finite-N pair moments of Aₙ (Wick + CRT residue-table DP, no ED; n ≤ 3, μ₀/μ₂/μ₄; exact-Fractions assembly to K = 12) |
 | `pair_moment_laws.py` | the exact 1/N laws by interpolation: deficits n+2 through n = 4, closed forms A(n=1,2)(p) certified at p = 14, exact double-scaling c(p) |
+| `pair_moment_ladder.py` | the μ₆ / K = 12 extension and the word-length ladder: deficit K/2+1 at all 45 laws, the exact n = 1 → 2 coefficient step, the K = 12 frontier, A(n=3)(p) certified at p = 18, c₂(p) exact to p = 48 (multiprocessing; `--refit`, `--ds-extend`) |
 | `mn_spectroscopy.py` | CP-resolved Mₙ spectral functions |
 | `moments_pipeline.py` | CP-resolved moment invariants with statistics |
 | `moments_fast.py` | charge-sector-blocked reimplementation (~140× at Nc = 12; dense equivalence measured at 5e-15 against a 1e-9 gate) |
@@ -198,7 +217,7 @@ Read `rms_off`, not the ratio, which is artifacted at p = N/2.
 | `mn_majorana_bench.py` | Majorana singlet-channel moments (the ED side of the chord computation) |
 | `validate_syk.py`, `self_averaging.py` | RMT validation; the §3.5 measurement |
 | `plot_self_averaging.py`, `plot_freeness.py`, `plot_pair_moments.py` | figures (they read the JSONs) |
-| `test_*.py` | the asserting suites (189 tests, 178 fast) |
+| `test_*.py` | the asserting suites (205 tests, 193 fast) |
 
 ## Usage
 
@@ -209,6 +228,8 @@ python3 self_averaging.py       # the 3.27 measurement            (~2 min)
 python3 exact_wick.py           # exact 3.28 + double-scaling scan (~1 s)
 python3 exact_pair_moments.py   # the approach to the chord zero  (~6 min)
 python3 pair_moment_laws.py --deep  # the exact 1/N laws          (~27 min)
+python3 pair_moment_ladder.py       # the K = 12 ladder campaign   (~2 h, 7 cores)
+python3 pair_moment_ladder.py --ds-extend 32,36,40,44,48   # c2(p) to p = 48
 python3 dirac.py                # Dirac/QED identities + CP report (~5 s)
 python3 mn_spectroscopy.py      # Mn spectral functions           (seconds)
 python3 qed_campaign.py         # the QED campaign
