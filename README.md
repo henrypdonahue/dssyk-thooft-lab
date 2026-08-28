@@ -13,9 +13,9 @@ sliver fills the whole static patch, and it has de Sitter geometry.
 Is there life in the sliver?
 
 Miyashita, Sekino and Susskind answer yes
-([arXiv:2607.05678](https://arxiv.org/abs/2607.05678)). The life is
-'t Hooft mesons. Their claim: DSSYK at infinite temperature is dual to
-the 't Hooft model, which is large-N QCD in two dimensions. They name one
+([arXiv:2607.05678](https://arxiv.org/abs/2607.05678)). The life is 't
+Hooft mesons. Their claim: DSSYK at infinite temperature is dual to the
+'t Hooft model, which is large-N QCD in two dimensions. They name one
 test as the best one. Match the two mass spectra.
 
 Nobody has run that test. This repo builds the parts you need to run it,

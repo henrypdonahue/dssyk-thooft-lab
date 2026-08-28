@@ -34,7 +34,7 @@ function to about 1e-12.
    Unruh temperature. The T = ∞ hologram's symmetrized correlator is
    exactly ω-symmetric. An asymmetric response can only appear through a
    nontrivial state and frequency map. That map is the "tomperature"
-   identification (Rahman–Susskind 2401.08555). Until it is fixed,
+   identification (Rahman–Susskind [2401.08555](https://arxiv.org/abs/2401.08555)). Until it is fixed,
    comparing DSSYK spectral shapes to bulk masses is
    convention-ambiguous. This is the gating question of the headline
    test, stated precisely.

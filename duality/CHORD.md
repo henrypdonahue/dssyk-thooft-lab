@@ -29,8 +29,10 @@ which ones are the bulk itself.
 ## The engine
 
 Double-scaled SYK at N = ∞ (λ = 2p²/N fixed) is solved by chord
-combinatorics (Berkooz et al. 1811.02584). Conventions follow the review
-2407.09396. Both are equation-checked.
+combinatorics (Berkooz et al.
+[1811.02584](https://arxiv.org/abs/1811.02584)). Conventions follow the
+review [2407.09396](https://arxiv.org/abs/2407.09396). Both are
+equation-checked.
 
 `chord.py` writes that solution as finite sparse linear algebra. It has
 the transfer matrix, matter chords of weight q^Δ, and the one- and

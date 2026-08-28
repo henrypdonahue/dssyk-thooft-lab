@@ -1,10 +1,13 @@
 # The large-q anchor: what is really in the λ → 0 corner
 
-`largeq_anchor.py` encodes the large-q SYK closed forms, equation-checked
-against their sources (Maldacena–Stanford 1604.07818; Streicher
-1911.10171; Choi–Mezei–Sárosi 1912.00004; Gross–Rosenhaus 1702.08016).
-It applies this repo's conventions bridge, 𝒥 = √2 p. The forms are
-checked against the ED bench in `syk-self-averaging/largeq_bench.json`.
+`largeq_anchor.py` encodes the large-q SYK closed forms,
+equation-checked against their sources (Maldacena–Stanford
+[1604.07818](https://arxiv.org/abs/1604.07818); Streicher
+[1911.10171](https://arxiv.org/abs/1911.10171); Choi–Mezei–Sárosi
+[1912.00004](https://arxiv.org/abs/1912.00004); Gross–Rosenhaus
+[1702.08016](https://arxiv.org/abs/1702.08016)). It applies this repo's
+conventions bridge, 𝒥 = √2 p. The forms are checked against the ED bench
+in `syk-self-averaging/largeq_bench.json`.
 
 ## The structural finding
 

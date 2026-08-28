@@ -1,10 +1,10 @@
 # The NV dressing is the antipodal shift: the identification note
 
-*Companion to `DISCRIMINATOR.md` and `ANTISCRAMBLING.md`. Source read for
-this note: Narovlansky–Verlinde, "Double-scaled SYK and de Sitter
-Holography," arXiv:2310.16994, cited below by their equation numbers.
-`test_nv_dressing.py` asserts every checkable statement. The conditional
-ones are labeled.*
+*Companion to `DISCRIMINATOR.md` and `ANTISCRAMBLING.md`. Source read
+for this note: Narovlansky–Verlinde, "Double-scaled SYK and de Sitter
+Holography," [arXiv:2310.16994](https://arxiv.org/abs/2310.16994), cited
+below by their equation numbers. `test_nv_dressing.py` asserts every
+checkable statement. The conditional ones are labeled.*
 
 `DISCRIMINATOR.md` names the discriminating computation on the dS axis:
 the OTOC sign of NV's dressed operators. `road_map.md` notes that the
@@ -60,7 +60,7 @@ The identification is a dictionary of displacements. It is exact at the
 level of where insertions sit on the contour, given one identification of
 scales.
 
-| NV (2310.16994) | this repo |
+| NV ([2310.16994](https://arxiv.org/abs/2310.16994)) | this repo |
 |---|---|
 | β_dS (Eq. 10, fixed to 2π by KMS matching, §2.3/§3.3) | β_fake = β/v (chord units: `beta_fake_c` = β_c/v) |
 | single dressing e^(±β_dS H/4), Eq. 33, "a 90° rotation" | quarter-fake-period shift Δ = π/(2v), giving a(Δ) = −i·a(0), a literal 90° rotation of the growth coefficient |

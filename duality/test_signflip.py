@@ -193,7 +193,15 @@ def test_chord_scan_reproduces_its_committed_row(data):
     the data.  The engine is deterministic, so the cheapest committed
     chord row reproduces exactly (~0.9 s).  The producer's actual
     arguments are reconstructed from the row itself (main() overrides the
-    chord_scan defaults for nmax and thL_grid)."""
+    chord_scan defaults for nmax and thL_grid).
+
+    TOLERANCE.  Cross-platform the last two digits of this chain move, so
+    the value comparisons run at rel=1e-9 -- far above the measured
+    platform spread, far below any real regression (a 1e-8 perturbation
+    of the producer is still caught).  The first curve is a Euclidean
+    contour, where the chord correlator is exactly real: its committed
+    "im" is float noise about zero (|im| <= 2.3e-15) and reproduces no
+    digits at all across platforms.  That one is asserted as a BOUND."""
     import signflip_probe
 
     row = max(data["chord"], key=lambda r: r["lam"])
@@ -205,10 +213,14 @@ def test_chord_scan_reproduces_its_committed_row(data):
     for got, want in zip(out["rows"], row["rows"]):
         assert got["direction"] == want["direction"]
         assert got["re_move"] == pytest.approx(want["re_move"],
-                                               rel=1e-12, abs=1e-14)
+                                               rel=1e-9, abs=1e-12)
         for gc, wc in zip(got["curve"], want["curve"]):
-            assert gc["re"] == pytest.approx(wc["re"], rel=1e-12, abs=1e-14)
-            assert gc["im"] == pytest.approx(wc["im"], rel=1e-12, abs=1e-14)
+            assert gc["re"] == pytest.approx(wc["re"], rel=1e-9, abs=1e-12)
+            if abs(wc["im"]) < 1e-12:        # analytic zero: bound it
+                assert abs(gc["im"]) < 1e-12
+            else:
+                assert gc["im"] == pytest.approx(wc["im"],
+                                                 rel=1e-9, abs=1e-12)
 
 
 def test_detailed_balance_reproduces_its_committed_row(data):

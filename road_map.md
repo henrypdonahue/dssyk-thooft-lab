@@ -1,4 +1,4 @@
-# Road map — stress-testing DSSYK∞ ↔ 't Hooft (arXiv:2607.05678)
+# Road map — stress-testing DSSYK∞ ↔ 't Hooft ([arXiv:2607.05678](https://arxiv.org/abs/2607.05678))
 
 What the paper claims. What this repo has settled. What is left. The
 literature snapshot is current as of 2026-08-24.
@@ -15,7 +15,7 @@ confidence levels attached.
 1. **Assumed.** Their words: "unproved but we will assume it." DSSYK∞ =
    JT-de Sitter static-patch holography.
 2. **Quasi-derived** (§3.5, from two example diagrams, with the
-   systematics deferred to arXiv:2501.09423). Perfect self-averaging,
+   systematics deferred to [arXiv:2501.09423](https://arxiv.org/abs/2501.09423)). Perfect self-averaging,
    Var⟨W⟩ ≈ p!/Nᵖ < e^(−a√N). Hence *emergent* O(N)/U(N) symmetry of
    single disorder instances in the flat-space limit.
 3. **Argued by counting.** The entropy match S = N log 2 gives
@@ -73,7 +73,8 @@ made. This repo makes that a printed, tested table rather than a remark.
 An independent re-derivation of the whole Galerkin assembly. A
 re-verification of the hypersingular Chebyshev-U identity by regularized
 quadrature. And a check of the anchor constants against FLZ's published
-tables (arXiv:0905.2280), digit for digit.
+tables ([arXiv:0905.2280](https://arxiv.org/abs/0905.2280)), digit for
+digit.
 
 The worst deviation over n ≤ 29 is 4.5e-12, which is the level of FLZ's
 own last printed digit at the top of the range. Against their Padé the
@@ -105,13 +106,14 @@ relVar(m₄) = 4·relVar(m₂)(1+o(1)). The Dirac/U(N) counterpart is in
 `exact_wick_dirac.py`, with rms ~ Nc^(−(p−1)/2).
 
 **Worth telling the authors.** The "systematic derivation" that §3.5
-defers to arXiv:2501.09423 **is not there**. That paper never mentions
-self-averaging. Its counting rule (Eq. 4.26) is magnitude-only and
-part-empirical (their §6.2), and its n ≪ p approximation fails precisely
-in the diagram-B regime, with error ~e^p. That is harmless for the bound
-and fatal for prefactors. `exact_wick.py` appears to be the only complete
-prefactor-exact derivation. It agrees with both papers at leading order,
-and it adds the exact pinning factor 4p(N−p)/N(N−1).
+defers to [arXiv:2501.09423](https://arxiv.org/abs/2501.09423) **is not
+there**. That paper never mentions self-averaging. Its counting rule
+(Eq. 4.26) is magnitude-only and part-empirical (their §6.2), and its n
+≪ p approximation fails precisely in the diagram-B regime, with error
+~e^p. That is harmless for the bound and fatal for prefactors.
+`exact_wick.py` appears to be the only complete prefactor-exact
+derivation. It agrees with both papers at leading order, and it adds the
+exact pinning factor 4p(N−p)/N(N−1).
 
 ### The dictionary needs four corrections
 
@@ -127,7 +129,8 @@ M₁† = −M₁, so M₁ cannot equal the Hermitian H. Verified to 1.3e-15.
 one.
 
 **λ = p²/N against λ_chord = 2p²/N.** This factor of two is internal to
-the Susskind corpus. 2501.09423 Eq. 3.6 uses 2p²/N.
+the Susskind corpus. [2501.09423](https://arxiv.org/abs/2501.09423) Eq.
+3.6 uses 2p²/N.
 
 Raw Mₙ for n ≥ 2 are CP mixtures with 15–65% wrong-channel content. So
 CP = (−1)^(n+1) only lives in CP-resolved correlators.
@@ -270,13 +273,14 @@ inversion needs either node-level data, or the state map fixed first. The
 ε* consistency table in `boost_forward.json` is the recorded spec.
 
 **The Dirac/complex-SYK chord machinery** has its H-sector built
-(`duality/dirac_chord.py`, on Berkooz–Narovlansky–Raj 2006.13983). The
-chord sum is the Majorana one at q = e^(−p²/Nc) = e^(−λ_paper), so the
-factor-2 landmine is Majorana-only. It is verified microscopically and
-against ED (m₄/m₂² deviation +0.198 → +0.004 over Nc = 8 → 12,
-c_symmetric). M₁ = −(p/2)iH is a transfer-matrix insertion, so it is an
-exactly conserved channel. Charged random probes carry Δ = (a+b)/p, with
-fixed-charge q(𝒬) and BNR asymmetry factors.
+(`duality/dirac_chord.py`, on Berkooz–Narovlansky–Raj
+[2006.13983](https://arxiv.org/abs/2006.13983)). The chord sum is the
+Majorana one at q = e^(−p²/Nc) = e^(−λ_paper), so the factor-2 landmine
+is Majorana-only. It is verified microscopically and against ED (m₄/m₂²
+deviation +0.198 → +0.004 over Nc = 8 → 12, c_symmetric). M₁ = −(p/2)iH
+is a transfer-matrix insertion, so it is an exactly conserved channel.
+Charged random probes carry Δ = (a+b)/p, with fixed-charge q(𝒬) and BNR
+asymmetry factors.
 
 Still open, and what the CP-resolved data is actually waiting on: chord
 rules for the H-correlated tower operators M_{n≥2}. Those are
@@ -336,10 +340,11 @@ tower extraction.
 
 **The order-of-limits problem.** T_B → ∞, N → ∞, λ fixed against λ → 0,
 and the boost-spectrum → invariant-mass reorganization. The
-chaos-to-integrability transition at small λ (2403.01950, 2601.09801) is
-the likely mechanism zone. This is where the duality most plausibly
-*fails*, and a sharp statement of where it holds would be a real
-contribution.
+chaos-to-integrability transition at small λ
+([2403.01950](https://arxiv.org/abs/2403.01950),
+[2601.09801](https://arxiv.org/abs/2601.09801)) is the likely mechanism
+zone. This is where the duality most plausibly *fails*, and a sharp
+statement of where it holds would be a real contribution.
 
 **Freeness sharpening.** The ln N onset-time question needs sizes beyond
 ED.
@@ -361,32 +366,42 @@ are the ways around it.
 ## Context
 
 The QCD₂ side is effectively solved beyond FLZ. Ambrosino–Komatsu recast
-'t Hooft's equation as a TQ-Baxter integrable system (2312.15598,
-2406.11078), and Litvinov–Meshcheriakov (2409.11324) give independent
-high-precision spectra. So numerical effort should go almost entirely to
-the DSSYK side.
+'t Hooft's equation as a TQ-Baxter integrable system
+([2312.15598](https://arxiv.org/abs/2312.15598),
+[2406.11078](https://arxiv.org/abs/2406.11078)), and
+Litvinov–Meshcheriakov ([2409.11324](https://arxiv.org/abs/2409.11324))
+give independent high-precision spectra. So numerical effort should go
+almost entirely to the DSSYK side.
 
-The DSSYK toolkit is mature. Chord techniques (1811.02584; review
-Berkooz–Mamroud 2407.09396; path integral 2403.05980). And the
-chaos-to-integrability transition at small λ is directly reusable for the
-λ → 0 regime the duality needs.
+The DSSYK toolkit is mature. Chord techniques
+([1811.02584](https://arxiv.org/abs/1811.02584); review Berkooz–Mamroud
+[2407.09396](https://arxiv.org/abs/2407.09396); path integral
+[2403.05980](https://arxiv.org/abs/2403.05980)). And the
+chaos-to-integrability transition at small λ is directly reusable for
+the λ → 0 regime the duality needs.
 
 The duality sits in contested territory. Narovlansky–Verlinde
-(2310.16994) and the sine-dilaton program (Blommaert et al. 2404.03535,
-2505.08116) propose *different* bulk duals, and Rahman–Susskind 2407.12988
-argues the identifications conflict. A clean meson-tower match, or
-mismatch, would be the first quantitative discriminator among all three
-programs. `duality/DISCRIMINATOR.md` lays out that axis.
+([2310.16994](https://arxiv.org/abs/2310.16994)) and the sine-dilaton
+program of Blommaert–Mertens–Papalini
+([2404.03535](https://arxiv.org/abs/2404.03535)) propose *different*
+bulk duals. Okuyama ([2505.08116](https://arxiv.org/abs/2505.08116))
+reaches dS JT gravity from DSSYK by a further route. And Rahman–Susskind
+([2407.12988](https://arxiv.org/abs/2407.12988)) argues the
+identifications conflict. A clean meson-tower match, or mismatch, would
+be the first quantitative discriminator among all three programs.
+`duality/DISCRIMINATOR.md` lays out that axis.
 
 **Convention landmine.** This paper uses λ = p²/N with no q. The chord
 literature uses λ = 2p²/N, q = e^(−λ). Any reuse of chord results must
 pass through a tested conversion.
 
-**Priority.** As of 2026-08-24 the target paper has exactly one citation:
-Cui–Kolchmeyer 2607.13665, which argues that dS observer OTOCs
-*anti-scramble*, and poses a structural challenge to observer-centric
-static-patch holography. Its same-week companion Harlow–Zhao 2607.14215
-proposes the Euclidean-fold mechanism, and poses the SYK test that
+**Priority.** As of 2026-08-24 the target paper has exactly one
+citation: Cui–Kolchmeyer [2607.13665](https://arxiv.org/abs/2607.13665),
+which argues that dS observer OTOCs *anti-scramble*, and poses a
+structural challenge to observer-centric static-patch holography. Its
+same-week companion Harlow–Zhao
+[2607.14215](https://arxiv.org/abs/2607.14215) proposes the
+Euclidean-fold mechanism, and poses the SYK test that
 `duality/ANTISCRAMBLING.md` answers.
 
 The authors' promised meson-spectrum computation has not appeared. The

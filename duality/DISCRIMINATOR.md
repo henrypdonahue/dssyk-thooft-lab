@@ -1,9 +1,13 @@
 # The KMS/OTOC axis: telling the three duals apart
 
 *Companion to `ANTISCRAMBLING.md` and `CHORD.md`. Sources read for this
-note: Narovlansky–Verlinde 2310.16994, Blommaert–Mertens–Papalini
-2404.03535, Cui–Kolchmeyer 2607.13665, Harlow–Zhao 2607.14215.
-`test_discriminator.py` asserts the repo-side numbers.*
+note: Narovlansky–Verlinde
+[2310.16994](https://arxiv.org/abs/2310.16994),
+Blommaert–Mertens–Papalini
+[2404.03535](https://arxiv.org/abs/2404.03535), Cui–Kolchmeyer
+[2607.13665](https://arxiv.org/abs/2607.13665), Harlow–Zhao
+[2607.14215](https://arxiv.org/abs/2607.14215). `test_discriminator.py`
+asserts the repo-side numbers.*
 
 ## The axis
 
@@ -27,7 +31,7 @@ Two facts from this repo sit on that axis:
 
 ## Where each program sits
 
-### 1. MSS flat-space (this repo's target, 2607.05678)
+### 1. MSS flat-space (this repo's target, [2607.05678](https://arxiv.org/abs/2607.05678))
 
 The hologram is the T = ∞ maximal-entropy state. It is not KMS at the dS
 temperature. So the no-go is dodged, in letter.
@@ -39,7 +43,7 @@ fold cannot be that map.
 
 **Status: open pressure. This is the proposal's weakest axis.**
 
-### 2. Narovlansky–Verlinde doubled DSSYK (2310.16994)
+### 2. Narovlansky–Verlinde doubled DSSYK ([2310.16994](https://arxiv.org/abs/2310.16994))
 
 They dress their operators and shift them by ±iβ_dS/4, with β_dS
 "adjusted... to match the KMS property" (their §2.3).
@@ -56,7 +60,7 @@ fake-period shifts, tested). Conditional on the constrained-sector
 projection acting trivially on the crossed channel, the answer is
 already measured here: anti-scrambling, semiclassical, transient.
 
-### 3. Sine-dilaton gravity (2404.03535)
+### 3. Sine-dilaton gravity ([2404.03535](https://arxiv.org/abs/2404.03535))
 
 Their bulk is a black hole. Their words: "a smooth black hole with
 Hawking temperature equal to the fake temperature" (their §1). The fake

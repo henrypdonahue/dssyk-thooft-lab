@@ -69,10 +69,11 @@ the closed form and in the exact theory for λ ≤ 1.7, and it makes the
 Mode separation is in `antipodal_modes.py`. Figure: `plot_signflip.py`.
 
 **[NV-DRESSING.md](NV-DRESSING.md)** and `test_nv_dressing.py`. The
-identification note. NV's ±iβ_dS/4 dressing (2310.16994 Eqs. 33–34,
-61–62) is the fake-period contour shift, exactly, at the contour and
-2-point levels. The composition algebra and the thermality are tested.
-What remains is the constrained-sector step.
+identification note. NV's ±iβ_dS/4 dressing
+([2310.16994](https://arxiv.org/abs/2310.16994) Eqs. 33–34, 61–62) is
+the fake-period contour shift, exactly, at the contour and 2-point
+levels. The composition algebra and the thermality are tested. What
+remains is the constrained-sector step.
 
 **[BOOST.md](BOOST.md)** and `boost_mass.py`. Boost-to-mass calibration.
 One mass gives a boost-frequency continuum with nodes, not a peak. So
@@ -91,12 +92,12 @@ anchor, with the conventions bridge 𝒥 = √2 p locked against ED. The
 meson tower cancels at leading order. The anchor lives at O(1/q).
 
 `dirac_chord.py`. The complex-SYK chord layer (Berkooz–Narovlansky–Raj
-2006.13983). The chord sum is the Majorana one at q = e^(−p²/Nc) =
-e^(−λ_paper), so the factor-2 landmine is Majorana-only. It is
-ED-verified. M₁ = −(p/2)iH is an exactly conserved transfer-matrix
-insertion. Charged probes carry Δ = (a+b)/p at fixed charge q(𝒬). Chord
-rules for the H-correlated M_{n≥2} tower are unpublished, and that is
-pinned here as the stated gap.
+[2006.13983](https://arxiv.org/abs/2006.13983)). The chord sum is the
+Majorana one at q = e^(−p²/Nc) = e^(−λ_paper), so the factor-2 landmine
+is Majorana-only. It is ED-verified. M₁ = −(p/2)iH is an exactly
+conserved transfer-matrix insertion. Charged probes carry Δ = (a+b)/p at
+fixed charge q(𝒬). Chord rules for the H-correlated M_{n≥2} tower are
+unpublished, and that is pinned here as the stated gap.
 
 ```bash
 python3 dictionary.py            # the yardstick in both conventions

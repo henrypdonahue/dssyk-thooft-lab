@@ -42,7 +42,7 @@ def test_fold_bench_reproduces_its_committed_row(scan_row):
         fold_n=scan_row["fold_n"])
     for key in ("toc", "otoc", "fold"):
         assert out[key]["re"] == pytest.approx(scan_row[key]["re"],
-                                               rel=1e-12, abs=1e-12)
+                                               rel=1e-9, abs=1e-12)
     # and the qualitative structure the verdicts rest on
     assert out["toc"]["re"] > 0                  # time-ordered
     assert out["otoc"]["re"] < 0                 # crossed: scrambling sign

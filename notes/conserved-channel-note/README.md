@@ -12,7 +12,8 @@ part does *not* vanish for n ≥ 2. The full A₂ width rises to ≈ 1.19 along
 λ_chord = 2, while the n = 1 parts cancel to 3e-16, which is A₁ = −2pH.
 
 So the result is a statement about flavor structure. Whatever weight the
-tower of arXiv:2607.05678 carries at N = ∞ is entirely diagonal.
+tower of [arXiv:2607.05678](https://arxiv.org/abs/2607.05678) carries at
+N = ∞ is entirely diagonal.
 
 **Status: a draft for the author's review. Not for distribution.**
 Resolve the two `TODO(author)` markers, affiliation and

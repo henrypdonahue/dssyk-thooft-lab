@@ -174,10 +174,10 @@ def test_chord_fold_reproduces_its_committed_row(data):
                                row["nmax"])
     for key in ("toc", "otoc", "fold"):
         assert out[key]["re"] == pytest.approx(row[key]["re"],
-                                               rel=1e-12, abs=1e-14)
+                                               rel=1e-9, abs=1e-12)
     for key in ("fold_connected_fraction", "otoc_connected_fraction"):
         assert out[key]["re"] == pytest.approx(row[key]["re"],
-                                               rel=1e-12, abs=1e-14)
+                                               rel=1e-9, abs=1e-12)
     # the structure the verdict rests on, recomputed from scratch
     assert out["toc"]["re"] > 0
     assert out["otoc"]["re"] < 0

@@ -106,14 +106,23 @@ def test_harmonics_reproduces_its_committed_row(data):
     the shift-circle DFT (the primary, fitting-free experiment behind the
     harmonic-tower refutation) would keep the suite green until someone
     regenerated the data.  The engine is deterministic; one committed
-    harmonics row reproduces exactly (~2.5 s)."""
+    harmonics row reproduces (~2.5 s).
+
+    TOLERANCE.  The chain is a chord transfer-matrix build, a complex
+    contour evaluation, then a DFT.  It is deterministic on one machine,
+    but the last two digits move between platforms (different libm and
+    BLAS): the measured macOS-arm64 against linux-x86-64 spread on this
+    row is 1.2e-12 relative.  So rel=1e-9, three orders above that spread
+    and nine below anything a real regression would do -- a wrong sign,
+    weight or contour moves these by O(1).  A 1e-8 perturbation of the
+    producer is still caught."""
     import antipodal_modes
 
     want = max(data["harmonics"], key=lambda h: h["lam"])
     got = antipodal_modes.harmonics(want["lam"], betaJ=want["betaJ"],
                                     M=want["M"], thLs=tuple(want["thLs"]))
     for key in ("abs_c0", "abs_c1", "abs_c2", "abs_c3"):
-        assert got[key] == pytest.approx(want[key], rel=1e-12, abs=1e-14)
+        assert got[key] == pytest.approx(want[key], rel=1e-9, abs=1e-12)
     for key in ("kappa_1", "kappa_2", "kappa_3",
                 "c2_over_c1_last", "c2_over_c1_first"):
-        assert got[key] == pytest.approx(want[key], rel=1e-12, abs=1e-14)
+        assert got[key] == pytest.approx(want[key], rel=1e-9, abs=1e-12)
