@@ -69,6 +69,26 @@ the ε* consistency table in `boost_forward.json`: one smearing scale has
 to fit every channel, not one scale per channel. The tower discriminant
 is the nodes.
 
+## The inverse direction is now measured
+
+`boost_inverse.py` runs moments → spectrum on the same solvable kernel
+at certified precision (orders ≤ 23, a dps-doubling gate, errors below
+1e-140). The weights-from-moments map for the first 12 levels is
+super-geometrically ill-conditioned: log₁₀(σ₁/σⱼ) ≈ a(j−1) + b(j−1)²
+with a = 1.54 → 0.44 over aε = 0.1 → 1.6 and b ≈ 0.05, so each level
+costs about one to two digits more than the last. Double-precision
+moments resolve 9–12 levels, and the count saturates at K = L moments.
+Two masses split by δ need a third moment known to ~0.05 δ², and an
+unresolved pair drags the fitted single mass down by 0.21 δ².
+
+The decisive number for fact 4 above: moment invariants carry regulator
+leverage 0.93–1.02 (a digit of ε costs a digit of mass), while node
+positions have leverage exactly zero and transfer as dm/m ≈ 0.46√η
+despite the double zeros of S ~ K². Until the state map fixes ε,
+moments carry no mass digits at all; conditional on a fixed map, they
+beat nodes only below the 0.46√η crossover. The node route wins, and
+now with its price list.
+
 *Scope: free scalar, 1+1 dimensions, single particle, sharp worldline.
 Composite operators smear the kernel. Interactions dress it. This
 calibration bounds what shape data can show. It does not fix the

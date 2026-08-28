@@ -262,6 +262,10 @@ mechanism is unknown, and it is not a p = N/2 law.
 
 Two more caveats. The chord evaluation uses the standard leading-chord
 matter weight q^(1/p), but the pair-channel zeros hold at any weight, so
-the weight is not the source. The Dirac CP-resolved data
-(`../syk-self-averaging/moments.json`) waits on the complex-SYK chord
-layer, and the Dirac ↔ Majorana channel map is not one-to-one.
+the weight is not the source. On the Dirac side the pair half now
+transfers (`dirac_chord.py`): the bare-fermion census gives a lone
+crossing of exactly 1 − p/Nc, the Majorana sign census at N = 2Nc, so
+the theorem holds verbatim at (q_dirac, Δ = 1/p). The Dirac CP-resolved
+data (`../syk-self-averaging/moments.json`) still waits on the diagonal
+half and the CP resolution, and the Dirac ↔ Majorana channel map is not
+one-to-one.

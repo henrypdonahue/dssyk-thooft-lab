@@ -53,7 +53,7 @@
   "d+": 0.963178456398,
   "d-": 0.433582639833,
   "ratio_exact": "sqrt(2)/pi",
-  "status": "transcribed, not yet consumed: the only available EXTERNAL anchor at the eigenfunction level (the internal checks are Parseval/weak-form/cross-solver).  Consuming it needs FLZ's (arXiv:0905.2280) definition of the endpoint constants d+- transcribed alongside -- do that before writing the test, do not guess the normalization."
+  "status": "consumed (2026-08-27) by flz_dconstants.py, asserted in test_thooft.py::test_flz_d_constants_*.  Definition pinned from the FLZ full text: d+- are NOT eigenfunction quantities (the earlier 'endpoint constants' guess was wrong) -- they are the constants in the large-(-lambda) asymptotics of the spectral determinants D+-(lambda) (FLZ Eq. 4.16), with no analytic expression individually (only the ratio d-/d+ = sqrt(2)/pi is exact, Eq. 4.20), and computable from the eigenvalues alone via the convergent products of Eq. (4.21): d+ = Gamma(3/8)/sqrt(2pi) prod (m+3/8)/lambda_{2m}, d- = Gamma(7/8)/sqrt(2pi) prod (m+7/8)/lambda_{2m+1}.  So this anchor certifies the SPECTRUM through an infinite-product functional independent of the G^(s) power sums; the eigenfunction-level checks remain internal.  Measured deviation (Chebyshev K=300, n_cut=80, Eq. 1.6 tail + residual fit): d+ -4.3e-13, d- -1.7e-13 (the 12 printed digits' own rounding floor is 5e-13); computed ratio minus sqrt(2)/pi = -4.2e-14; Jacobi cross-solver K=60 agrees to 1.5e-8 (its quadrature floor)."
  },
  "lm_two_lambda_tables": {
   "comment": "2*lambda_n (converted from LM lambda_n x2), interleaved by parity; 6 significant digits in lambda => absolute uncertainty up to ~1e-4 on 2*lambda at the top of the tables",

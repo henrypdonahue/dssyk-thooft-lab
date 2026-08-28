@@ -44,7 +44,7 @@ matched-exponent Jacobi basis [x(1−x)]^β, with β solving
 πβ cot(πβ) = −α exactly. That restores spectral accuracy off the duality
 point, where the Chebyshev basis is only algebraic.
 
-## What is checked (45 tests)
+## What is checked (48 tests)
 
 | check | result |
 |---|---|
@@ -55,10 +55,14 @@ point, where the Chebyshev basis is only algebraic.
 | independent solver (`sine_solver.py`) | a different basis, no shared code; it checks the quark-mass machinery |
 | Jacobi solver at α ≠ 0 | β = ½ anchor to ~5e-13; α = ±0.5 ground state below 1e-11 by K = 32; LM sum rules s = 2 to ~3e-8, s ≥ 4 to ~4e-12 |
 | asymptotics | 2λn → n + 3/4; matrix elements against quadrature to machine precision |
+| FLZ d± constants (`flz_dconstants.py`, their Eq. 4.21 products) | d₊, d₋ to ~4e-13 at K = 300, the anchor's own 12-digit floor; d₋/d₊ = √2/π to 4e-14; Jacobi cross-solver to its 1.5e-8 quadrature floor |
 
 **The decay constants are new data.** No published wavefunction tables
 exist. In the φ(0⁺) > 0 convention every fn is positive and decreasing,
-with f₀ = +0.9428.
+with f₀ = +0.9428. FLZ's d± are spectral-determinant constants, not
+wavefunction data — pinning their definition corrected the anchor's
+earlier description — so the only external eigenvalue-adjacent anchor is
+now consumed, and the wavefunctions remain internally validated only.
 
 ## Precision notes
 
@@ -92,7 +96,8 @@ python3 thooft_spectrum.py   # print the spectrum
 python3 validate.py          # the validation report (exit code = pass/fail)
 python3 eigenfunctions.py    # wavefunction checks and decay constants
 python3 condensate.py        # condensate, GMOR corner, vacuum energy
-pytest -q                    # 45 tests (~3 s)
+python3 flz_dconstants.py    # the FLZ d± anchor, consumed
+pytest -q                    # 48 tests (~20 s warm; first run builds fixtures)
 ```
 
 ## The result

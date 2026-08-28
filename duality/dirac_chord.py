@@ -72,28 +72,99 @@ docstrings there)
   chord image is -(p/2) i sigma_H T, an insertion of the transfer matrix
   itself.  Its 2-pt function is time-independent, and its Lehmann weight
   away from omega = 0 vanishes identically.
+* Census leg, gate G3 pair half.  The lone-crossing factor of a BARE
+  c_i / c^dag_i chord against a c_symmetric H-chord is exactly 1 - p/Nc
+  (derivation below), measured per sample at Nc = 16, 32, 64 with the
+  compressed-register sampler, converging on q_Dirac^{1/p} at the census
+  rate p^2/(2 Nc^2).
+* Theorem-transfer leg, gate G3 pair half.  chord_charges' recursion,
+  dressed-propagator and charge identities re-verified at
+  (q_Dirac(Nc, p), Delta = 1/p), plus the word-level moment zeros through
+  the independent chord_moments assembly at the Dirac q.
 
-SCOPE: what is NOT established.  Gate G3 stops here.
-----------------------------------------------------
+GATE G3, SPLIT: the H-correlated tower M_{n>=2}, pair against diagonal
+----------------------------------------------------------------------
 BNR's matter rules cover probes whose couplings are drawn INDEPENDENTLY
-of the Hamiltonian's [BNR Sec. 7.1].
+of the Hamiltonian's [BNR Sec. 7.1].  The repo's tower operators
+M_n = sum_i c^dag_i (d^n/dt^n) c_i for n >= 2 are polynomials in the
+SAME couplings as H (M_2 = sum x_u x_v G_uv, exact_wick_dirac.py), and
+no published source provides H-correlated chord rules.  Checked: BNR
+2006.13983; the review 2407.09396, whose full text mentions complex SYK
+only in its reference list; the U(M)-symmetric chords of 2302.11882; and
+the transfer-matrix construction of 2512.07715.  So
+MN_TOWER_CHORD_RULES_PUBLISHED stays False.
 
-The repo's tower operators M_n = sum_i c^dag_i (d^n/dt^n) c_i for n >= 2
-are polynomials in the SAME couplings as H.  M_2 = sum x_u x_v G_uv, see
-exact_wick_dirac.py.  So their chord treatment needs H-correlated matter
-chords, which is the analytic 1/N chord machinery road_map.md lists as
-open.
+THE PAIR HALF NEVER NEEDED SUCH RULES.  On the Majorana side,
+chord_moments.py expands A_n = sum_i psi_i (ad_H)^n psi_i binomially
+into explicit words H^a psi H^b psi ... whose matter chords are BARE
+single fermions, and the conserved-channel theorem of chord_charges.py
+is a statement about (q, Delta) alone.  The Dirac tower has the
+identical word structure -- (ad_H)^n c = sum_r (-1)^r C(n,r) H^{n-r} c H^r,
+with the i^n from d/dt = i ad_H an overall constant -- so the i != j
+pair moments reduce to words Tr[H^a c^dag_i H^b c_i H^c c^dag_j H^d c_j]
+with two bare, sequential, mutually non-crossing c-chords.  The one
+microscopic input the transfer needs is the crossing weight of a bare
+c chord against an H-chord.
 
-No published source provides those rules.  Checked: BNR 2006.13983; the
-review 2407.09396, whose full text mentions complex SYK only in its
-reference list; the U(M)-symmetric chords of 2302.11882; and the
-transfer-matrix construction of 2512.07715.
+THE CENSUS (derived here, in the style of exact_wick_dirac.py Part 1;
+measured per sample in the tests).  The c_symmetric H-chord endpoint is
+h_u = c^dag_A c_B + c^dag_B c_A = X + X^dag, A n B = empty,
+|A| = |B| = k = p/2.  h_u^2 = prod_A n prod_B (1-n) +
+prod_B n prod_A (1-n) is diagonal, so the uncrossed word has
+tr(c_i c^dag_i h_u h_u)/dim = 2^{-2k} for EVERY u, i included or not.
+The crossed word tr(c_i h_u c^dag_i h_u) splits into two cases.
+i outside A u B: c^dag_i moves through the even h_u with no
+Jordan-Wigner sign, so crossed = uncrossed exactly.  i inside A u B:
+all four cross terms die -- (X, X) and (X^dag, X^dag) are unbalanced in
+mode i's counts, and in (X, X^dag) and (X^dag, X) an occupation clash
+kills the word (for i in A, the outer c^dag_A finds mode i refilled by
+the inner c^dag_i, or c^dag_i finds it already filled by c^dag_A; i in B
+mirrors under h.c.).  So the crossed word vanishes IDENTICALLY there,
+and the ensemble-averaged lone-crossing factor is EXACTLY the avoidance
+probability
 
-So this module does NOT compare to the CP-resolved M_n moments of
-moments_pipeline.py.  It says so here rather than fabricating an
-insertion rule.  The neutral-bilinear channel below is BNR's INDEPENDENT
-random bilinear (a = b = 1, Delta = 2/p).  That is a legitimate published
-object.  It is not the M_n tower.
+    R(Nc) = 1 - p/Nc = e^{-p/Nc} + O(p^2/Nc^2)  ->  q_Dirac^{1/p}.
+
+Consistency: the Majorana census is the sign average
+E[(-1)^{|{i} n I|}] = 1 - 2p/N, and at N = 2 Nc that equals 1 - p/Nc.
+The Dirac ensemble KILLS the crossed word where the Majorana one
+sign-flips it, and the two censuses agree under the same N = 2 Nc bridge
+as q itself.  So the Dirac single-fermion chord is BARE with
+Delta = 1/p at q = q_Dirac: the same (q, Delta) evaluation map as BNR's
+independent probes [BNR (7.17)], now established for the bare fermion
+the tower words actually contain, where BNR's independence assumption is
+unavailable.
+
+CONSEQUENCE, the Dirac conserved pair channel.  chord_charges' theorem
+applies verbatim at (q_Dirac(Nc, p), Delta = 1/p): the chord
+representation of every Dirac pair-channel insertion is a polynomial in
+the transfer matrix (xhat_dirac below), with
+
+    Xhat_1 = -(1 - q^{1/p}) T ,
+    Xhat_2 = (1 - q^{1/p})^2 T^2 + (1 - q^{2/p}) ,
+
+so every spectral moment of every M_n PAIR (i != j) channel vanishes at
+Nc = infinity, at every n, both orderings, odd k included.  n = 1 lands
+on gate G2's exact law M_1 = -(p/2) i H.  The per-word normalization
+tr(c_i c^dag_i)/dim = 1/2 per matter chord (psi = sqrt(2) c) is uniform
+across a channel's words, so it cannot disturb the zeros.  The theorem
+side holds at ANY q, so it covers the fixed-charge sectors q(Qs) too;
+the census itself is the unprojected trace, i.e. the Qs = 0 statement.
+And the census is derived in the c_symmetric ensemble -- the CP-sharp
+ensemble the moments pipeline actually uses; the generic ensemble shares
+the Nc = infinity limit (gate G1's pattern) but its census is not
+written here.
+
+STILL NOT established, and said plainly: the flavor-diagonal (i = j)
+half of the channel -- which on the Majorana side carries ALL of the
+tower's N = infinity weight (diagonal_chord.py) -- has no Dirac
+derivation here, and the CP RESOLUTION of the Dirac M_n (the
+cp_projections split that the CP-resolved data is actually waiting on)
+is untouched.  Gate G3's comparison to the moments_pipeline data therefore
+remains open; this module closes its pair half only.  The
+neutral-bilinear channel below stays what it was: BNR's INDEPENDENT
+random bilinear (a = b = 1, Delta = 2/p), a legitimate published object
+that is not the M_n tower.
 """
 
 from __future__ import annotations
@@ -104,9 +175,16 @@ import numpy as np
 
 from chord import (Contour, Sector0, g2_closed_form, rho_theta,
                    energy_theta, s_omega_smooth, vertex2_matrix)
+from chord_charges import transfer_formal, xhat_matrix
 
-# what gate G3 would need and does not have; tested so the claim is pinned
+# what gate G3 would need from the LITERATURE and does not have; tested so
+# the claim is pinned
 MN_TOWER_CHORD_RULES_PUBLISHED = False
+# the PAIR (i != j) half of gate G3 is derived in-repo instead: the
+# bare-fermion census (module docstring) + the conserved-channel theorem
+# (chord_charges.py) evaluated at (q_dirac, Delta = 1/p).  The
+# flavor-diagonal half and the CP resolution remain open.
+MN_TOWER_PAIR_CHANNEL_DERIVED = True
 
 
 # ---------------------------------------------------------------------------
@@ -313,6 +391,38 @@ def m1_offdiagonal_weight(Nc: int, p: int, nmax: int = 60,
 
 
 # ---------------------------------------------------------------------------
+# gate G3, pair half: the Dirac conserved pair channel
+# ---------------------------------------------------------------------------
+def bare_fermion_crossing(Nc: int, p: int) -> float:
+    """Exact finite-Nc lone-crossing factor of a BARE c_i / c^dag_i chord
+    against one c_symmetric H-chord,
+
+        E[tr(c_i h_u c^dag_i h_u)] / E[tr(c_i c^dag_i h_u h_u)] = 1 - p/Nc :
+
+    the crossed word vanishes identically when i lies in the H-chord's
+    support and equals the uncrossed word exactly when it does not
+    (census, module docstring).  DERIVED; measured per sample in the
+    tests.  Nc -> infinity limit e^{-p/Nc} = q_dirac^{1/p}, deviation
+    p^2/(2 Nc^2) + O(p^3/Nc^3).  Equals the Majorana sign census
+    1 - 2p/N at N = 2 Nc."""
+    if not 0 < p <= Nc:
+        raise ValueError("need 0 < p <= Nc")
+    return 1.0 - p / float(Nc)
+
+
+def xhat_dirac(n: int, Nc: int, p: int, nmax: int = 24) -> np.ndarray:
+    """The chord representation of the Dirac pair-channel insertion of
+    M_n's i != j amplitude: chord_charges.xhat_matrix at
+    (q_dirac(Nc, p), Delta = 1/p), in the formal chord basis
+    T|m> = |m+1> + [m]_q |m-1>.  A polynomial in T by the
+    conserved-channel theorem, so every M_n pair moment vanishes at
+    Nc = infinity.  Closed forms: xhat_dirac(1) = -(1 - q^{1/p}) T (the
+    Nc = infinity image of the exact law M_1 = -(p/2) i H, gate G2) and
+    xhat_dirac(2) = (1 - q^{1/p})^2 T^2 + (1 - q^{2/p})."""
+    return xhat_matrix(n, nmax, q_dirac(Nc, p), 1.0 / p)
+
+
+# ---------------------------------------------------------------------------
 # charged-probe two-point functions [BNR (7.18), (7.23)]
 # ---------------------------------------------------------------------------
 def g2_charged(beta1: complex, beta2: complex, Nc: int, p: int, a: int,
@@ -389,5 +499,14 @@ if __name__ == "__main__":
     print(f"  g2 charged (Qs=0) vs Majorana closed form: "
           f"{g0.real:.10f} vs {gm.real:.10f}")
     print(f"  neutral bilinear moments: {neutral_bilinear_moments(Nc, p)}")
+    print(f"  bare-fermion lone crossing (census): 1 - p/Nc = "
+          f"{bare_fermion_crossing(Nc, p):.6f} -> q^(1/p) = "
+          f"{q ** (1.0 / p):.6f}")
+    X1 = xhat_dirac(1, Nc, p, nmax=16)
+    dev = np.abs((X1 + (1 - q ** (1.0 / p))
+                  * transfer_formal(16, q))[:10, :10]).max()
+    print(f"  Xhat_1 + (1 - q^(1/p)) T dev = {dev:.2e}  "
+          f"(pair half of gate G3 closed; diagonal half open)")
     print(f"  M_n tower chord rules published: "
-          f"{MN_TOWER_CHORD_RULES_PUBLISHED} (gate G3 stops; see docstring)")
+          f"{MN_TOWER_CHORD_RULES_PUBLISHED}; pair half derived in-repo: "
+          f"{MN_TOWER_PAIR_CHANNEL_DERIVED} (see docstring)")

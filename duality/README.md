@@ -87,9 +87,24 @@ regulator turns. The coupling-weighted tower sits within 5% of a single
 mass at the invariant level. So the tower discriminant is the nodes, not
 the moments.
 
+`boost_inverse.py`. The inverse direction, measured at certified
+precision. The weights-from-moments map saturates at one moment per
+level and is super-geometrically ill-conditioned (each level costs
+~1–2 more digits). Moment invariants carry regulator leverage ≈ 1, so
+they carry no mass digits until the state map fixes ε; node positions
+carry leverage exactly zero. The node verdict, with its price list.
+
 **[LARGEQ.md](LARGEQ.md)** and `largeq_anchor.py`. The large-q, λ → 0
 anchor, with the conventions bridge 𝒥 = √2 p locked against ED. The
 meson tower cancels at leading order. The anchor lives at O(1/q).
+`largeq_kernel.py` derives the 𝓜ᵉ/𝓜ᵒ skeleton from the
+Maldacena–Stanford kernel eigenproblem and reproduces the transcribed
+sets to 3e-12 — the perturbable substrate for the O(1/q) task.
+
+`jt_ds_vacuum.py`. The JT-dS analog of ε = 3/(8S), sympy-certified:
+the general-D identity with c₄ = 3/8, the fourfold D → 2 degeneration,
+the exact first law δS = −2πℓ²ρ, and the reduction-inherited family
+whose exponent is a dictionary input.
 
 `dirac_chord.py`. The complex-SYK chord layer (Berkooz–Narovlansky–Raj
 [2006.13983](https://arxiv.org/abs/2006.13983)). The chord sum is the
@@ -97,7 +112,11 @@ Majorana one at q = e^(−p²/Nc) = e^(−λ_paper), so the factor-2 landmine
 is Majorana-only. It is ED-verified. M₁ = −(p/2)iH is an exactly
 conserved transfer-matrix insertion. Charged probes carry Δ = (a+b)/p at
 fixed charge q(𝒬). Chord rules for the H-correlated M_{n≥2} tower are
-unpublished, and that is pinned here as the stated gap.
+unpublished; the pair half never needed them — the bare-fermion census
+(lone crossing exactly 1 − p/Nc, the Majorana sign census at N = 2Nc)
+transfers the conserved-channel theorem verbatim to (q_dirac, Δ = 1/p),
+freezing every Mₙ pair channel at Nc = ∞. The diagonal half and the CP
+resolution are pinned as the remaining gap.
 
 ```bash
 python3 dictionary.py            # the yardstick in both conventions
@@ -108,5 +127,8 @@ python3 chord_charges.py         # the conserved-channel theorem  (~1 s)
 python3 chord_fold.py            # the fold at N = inf            (~10 s)
 python3 signflip_probe.py        # the antipodal map              (~15 s)
 python3 signflip_probe.py --deep # its deep campaign              (~15 s)
-pytest -q                        # 236 tests
+python3 jt_ds_vacuum.py          # the JT-dS vacuum-energy note    (~5 s)
+python3 largeq_kernel.py         # the derived large-q skeleton    (~5 min)
+python3 boost_inverse.py         # moments -> spectrum conditioning (~3 min)
+pytest -q                        # 284 tests
 ```

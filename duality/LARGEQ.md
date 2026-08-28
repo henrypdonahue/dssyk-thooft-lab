@@ -27,6 +27,17 @@ organized on the exact-in-temperature skeleton 𝓜ᵉ/𝓜ᵒ, whose
 finite-temperature residues are unpublished. Computing them is the open
 task. That is where the quantitative content of the λ → 0 corner lives.
 
+**The skeleton is now derived, not transcribed.** `largeq_kernel.py`
+takes the Maldacena–Stanford finite-T ladder-kernel eigenproblem (their
+3.112–3.118) at k = 1, in the antipodal variable a Schrödinger problem
+[−d²/dz² + 1/(2cos²(z/2))]ψ = (m/2v)²ψ on (−vπ, vπ) with Dirichlet
+walls, and solves it by parity-split sine-Galerkin. The derived sets
+match the transcribed CMS 3.3 roots to 3e-12 across v = 0.05..0.95, the
+grid-doubling shift is 4e-11, and m = 0 and m = ±v come out as the
+exact solutions that fail the Dirichlet condition while their
+eigenfunctions degenerate — CMS's Regge-pole slots, derived. That is the
+perturbable object the O(1/q) computation has to be built on.
+
 ## Encouraging structure
 
 𝓜ᵉ and 𝓜ᵒ **interleave**. That even/odd alternation is exactly the

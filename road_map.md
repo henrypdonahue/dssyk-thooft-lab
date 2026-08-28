@@ -88,8 +88,14 @@ matched-exponent basis [x(1−x)]^β: the ground state is below 1e-11 by
 K = 32, and the LM sum rules come out to about 1e-12.
 
 Eigenfunctions are checked (Parseval 3e-6, weak-form Rayleigh ~1e-6,
-cross-solver overlap > 0.9999). The decay constants are new data. No
-published wavefunction tables exist.
+cross-solver overlap > 0.9999). FLZ's spectral-determinant constants d±
+are consumed too (`flz_dconstants.py`): their Eq. 4.21 products
+reproduce both 12-digit values at the anchor's own rounding floor, and
+the exact ratio √2/π to 4e-14. Pinning their definition corrected a
+mischaracterization — d± are spectrum functionals, not wavefunction
+data — so the external eigenfunction-anchor slot is genuinely empty.
+The decay constants are new data. No published wavefunction tables
+exist.
 
 ### Self-averaging, exactly
 
@@ -261,16 +267,25 @@ rate. The diagonal A₂ width at λ_chord = 2 is w₂ = 4.67(9) at Δψ → 0. T
 full-channel limit of ≈ 1.31(5) is a diagonal-against-pair cancellation
 whose missing chord-side piece is the pair channel's 1/N coefficient.
 
-**Moments → spectrum** is an inverse problem, and it is unanswered. With
-μ_k → 0 at N = ∞, which finite-N object carries the tower, and how many
-moments a Regge trajectory needs, are both open.
+**Moments → spectrum.** The forward direction was run first
+(`duality/boost_forward.py`): boost-kernel moments diverge, S → 1/ω, the
+regulated invariants sweep the whole SYK band as the regulator dial
+turns, and the coupling-weighted tower sits within 5% of single-mass at
+the invariant level. The ε* consistency table in `boost_forward.json` is
+the recorded spec.
 
-The forward direction has now been run (`duality/boost_forward.py`).
-Boost-kernel moments diverge, S → 1/ω. The regulated invariants sweep the
-whole SYK band as the regulator dial turns. And the coupling-weighted
-tower sits within 5% of single-mass at the invariant level. So the
-inversion needs either node-level data, or the state map fixed first. The
-ε* consistency table in `boost_forward.json` is the recorded spec.
+**"How many moments" is now answered on the solvable kernel**
+(`duality/boost_inverse.py`). Exactly as many as there are levels — the
+singular spectrum of the weights→moments map saturates at K = L — and
+each level costs 0.8–2.4 digits of moment precision more than the last
+(log₁₀(σ₁/σⱼ) ≈ a(j−1) + b(j−1)², a = 1.54 → 0.44 over aε = 0.1 → 1.6,
+b ≈ 0.05). Double precision buys 9–12 of 12 levels; 8 digits buy 6–10.
+Resolving a δ-split pair takes a third moment known to ~0.05 δ².
+Decisively: moment invariants carry regulator leverage ≈ 1.0, so with
+the state map unfixed they carry zero mass digits, while node positions
+carry exactly zero leverage. The "needs node-level data" verdict is now
+quantitative, conditional on the e^(−εω) regulator and the free kernel.
+Which finite-N object carries the tower remains open.
 
 **The Dirac/complex-SYK chord machinery** has its H-sector built
 (`duality/dirac_chord.py`, on Berkooz–Narovlansky–Raj
@@ -282,9 +297,17 @@ is a transfer-matrix insertion, so it is an exactly conserved channel.
 Charged random probes carry Δ = (a+b)/p, with fixed-charge q(𝒬) and BNR
 asymmetry factors.
 
-Still open, and what the CP-resolved data is actually waiting on: chord
-rules for the H-correlated tower operators M_{n≥2}. Those are
-unpublished, and it is the same chord-side derivation listed above.
+The pair (i ≠ j) half of the M_{n≥2} chord question is now closed
+in-repo. The tower's pair words carry bare single-fermion chords, the
+lone-crossing census is exactly 1 − p/Nc → q_dirac^(1/p), and the
+conserved-channel theorem applies verbatim at (q_dirac, Δ = 1/p): every
+Dirac pair moment vanishes at Nc = ∞, with X̂₁ = −(1−q^(1/p))T the image
+of M₁ = −(p/2)iH. No published source provides H-correlated chord
+rules, and the pair half did not need them.
+
+Still open, and what the CP-resolved data is actually waiting on: the
+flavor-diagonal channel at the Dirac q, and the CP resolution of the
+Dirac Mₙ.
 
 Comparison to `thooft-target` then goes through the BOOST.md kernel — a
 mass is a Bessel-kernel continuum with nodes, not a peak — and through
@@ -301,6 +324,14 @@ couplings are O(1/q²). It first appears at O(1/q), organized on the
 exact-in-temperature skeleton 𝓜ᵉ/𝓜ᵒ, whose finite-temperature residues
 are unpublished. Computing them is the open task. And how the 1/q
 expansion at fixed λ relates to the 1/N one deserves a clean answer.
+
+The skeleton itself is now a derived object rather than a transcription
+(`duality/largeq_kernel.py`): the Maldacena–Stanford finite-T kernel
+eigenproblem at k = 1, discretized by parity-split sine-Galerkin,
+reproduces the CMS quantization sets to 3e-12 across v = 0.05..0.95, and
+locates m = 0 and m = ±v as the exact non-Dirichlet solutions whose
+eigenfunctions degenerate. That is the perturbable substrate the O(1/q)
+computation needs; the residues on it are still the open task.
 
 ### The tomperature map
 
@@ -330,8 +361,23 @@ semiclassical, transient.
 
 ### The bulk side
 
-**JT-dS ε = 3/(8S).** The paper writes it only in D = 4. Deriving the
-JT-dS analog is the still-open theory half of the vacuum-energy story.
+**JT-dS ε = 3/(8S) — settled as far as it settles**
+(`duality/jt_ds_vacuum.py`). The general-D law is
+ε_D ≡ ρG^(D/(D−2)) = c_D S^(−2/(D−2)) with c₄ = 3/8 exactly,
+sympy-certified; the paper's relation is its D = 4 instance, and the
+1/S power is dimension-specific. The direct D → 2 continuation
+degenerates fourfold (no dimensionless ρG^a, G_μν ≡ 0, Λ and c_D vanish,
+the ℓ-elimination dies), machine-checked. What JT-dS actually supplies
+is the exact first law δS = −2πℓ²ρ = −δE/T_dS (the dilaton shifts, ℓ is
+rigid; the sign of SVVV [2203.00700](https://arxiv.org/abs/2203.00700)
+Eq. 9), plus the reduction-inherited family — S⁻² from a dS₃ parent,
+machine-checked end to end; S⁻¹ from near-Nariai dS₄ (MTY
+[1904.01911](https://arxiv.org/abs/1904.01911)) — whose exponent the
+intrinsic JT data (φ₀, φ_r, ℓ) cannot choose. That parent choice is a
+named dictionary input, alongside the tomperature map. The measured 2d
+condensate now has a first-law image, δS = +2π(0.0407)N_c(gℓ)²: finite,
+with nothing for Holographic Tuning to cancel, on both sides of the
+first law.
 
 **The finite-N coupling curve ḡ²(N).** Their Fig. 17 is a sketch with no
 formula, yet the whole set-it-and-forget-it inversion rests on it. Match

@@ -1,0 +1,176 @@
+{
+ "provenance": "jt_ds_vacuum.py -- the JT-dS analog of eps = 3/(8S): general-D identity derived and certified; D -> 2 degeneration as a fourfold negative statement; JT-dS first law + dS3 reduction machine-checked; labels [D]/[T]/[C] per docstring",
+ "paper_statement": {
+  "arxiv": "2607.05678",
+  "file": "papers/arXiv-2607.05678v1/HologramsSM.tex",
+  "section": "Fine Tuning?",
+  "lines": {
+   "eps_rho_G2": [
+    1014,
+    1016
+   ],
+   "eps_3_8S": [
+    1018,
+    1020
+   ]
+  },
+  "displays": [
+   "\\epsilon = \\rho G^2",
+   "\\epsilon = \\frac{3}{8 S}"
+  ],
+  "note": "both displays unnumbered \\be...\\ee; papers/ is gitignored, source local-only, test skips if absent"
+ },
+ "conventions": {
+  "signature": "(-,+,...,+), spheres and dS have R > 0",
+  "einstein": "G_mn + Lam*g_mn = 8*pi*G*T_mn",
+  "vacuum_stress": "T_mn = -rho*g_mn  =>  rho = Lam/(8*pi*G)",
+  "entropy_D": "S = Omega_{D-2}*ell**(D-2)/(4*G)",
+  "jt": "SVVV 2203.00700 Eq. (26); S: Eq. (29); T: Eq. (16)"
+ },
+ "general_D": {
+  "a_of_D": "D/(D - 2)",
+  "c_of_D": "(D-1)*(D-2)/(16*pi) * (Omega_{D-2}/4)**(2/(D-2))",
+  "identity": "rho*G**(D/(D-2)) == c_D * S**(-2/(D-2))",
+  "c_table": {
+   "3": {
+    "exact": "pi/32",
+    "float": 0.09817477042468103
+   },
+   "4": {
+    "exact": "3/8",
+    "float": 0.375
+   },
+   "5": {
+    "exact": "3*2**(1/3)*pi**(1/3)/8",
+    "float": 0.6919763057415107
+   },
+   "6": {
+    "exact": "5*sqrt(6)/12",
+    "float": 1.0206207261596576
+   },
+   "7": {
+    "exact": "15*2**(1/5)*pi**(1/5)/16",
+    "float": 1.3539644141714482
+   },
+   "8": {
+    "exact": "7*30**(2/3)/40",
+    "float": 1.689606423059852
+   }
+  },
+  "checks": {
+   "exponent_is_D_over_Dm2": true,
+   "exponent_at_4_is_2": true,
+   "lambda_from_einstein_symbolic_D": true,
+   "ricci_dS4_explicit": true,
+   "einstein_dS4": true,
+   "ricci_dS3_explicit": true,
+   "einstein_dS3": true,
+   "identity_symbolic_D": true,
+   "identity_substitution_D3_to_8": true,
+   "c4_equals_3_over_8": true,
+   "c3_equals_pi_over_32": true,
+   "paper_D4_pair_reproduced": true
+  }
+ },
+ "d2_degeneration": {
+  "statement": "The D >= 3 derivation has NO direct D = 2 continuation: (i) no dimensionless rho*G**a exists ([G]=L**0, [rho]=L**-2); (ii) G_mn == 0 identically, so rho = Lam/8piG has no Einstein ancestor and the EH term is topological; (iii) Lam(D,ell) -> 0 and c_D -> 0 at fixed ell, while JT's 2/ell**2 lives in the dilaton potential; (iv) S = Omega_0/4G is ell-independent, so the elimination cannot run, and the real 2d entropy S0 + phi_h/4G is dilaton data.",
+  "checks": {
+   "no_dimensionless_exponent": true,
+   "einstein_tensor_2d_identically_zero": true,
+   "eh_action_topological_gauss_bonnet": true,
+   "lambda_continuation_vanishes": true,
+   "c_D_limit_vanishes": true,
+   "entropy_ell_independent_at_D2": true,
+   "elimination_step_has_no_solution": true
+  }
+ },
+ "jt_first_law": {
+  "convention": "SVVV 2203.00700 Eq. (26): I = (1/16 pi G2) int sqrt(-g) [(phi0+phi) R - 2 phi/ell**2] + bdy; S = phi0/4G2 + phi_h/4G2 (Eq. 29); T = 1/2pi ell (Eq. 16); vacuum phi = phi_r r/ell (after Eq. 15)",
+  "sourced_dilaton": "-8*pi*G_2*ell**2*rho + phi_r*r/ell",
+  "delta_S": "-2*pi*ell**2*rho",
+  "killing_energy": "ell*rho",
+  "T_dS": "1/(2*pi*ell)",
+  "first_law": "delta_S = -delta_E/T_dS  (= SVVV Eq. (9) sign)",
+  "eps_JT": "rho*ell**2",
+  "delta_S_in_eps_JT": "-2*pi*eps_JT",
+  "checks": {
+   "vacuum_solution": true,
+   "constant_is_not_homogeneous": true,
+   "sourced_solution": true,
+   "geometry_rigid_R_2_over_ell2": true,
+   "temperature_1_over_2pi_ell": true,
+   "redshifts_cancel": true,
+   "killing_energy_rho_ell": true,
+   "delta_S_minus_2pi_ell2_rho": true,
+   "first_law_delta_S_eq_minus_dE_over_T": true,
+   "delta_S_eq_minus_2pi_epsJT": true
+  }
+ },
+ "reduction_3d": {
+  "identity": "R_3 == R_2 - 2*Box_2(Phi)/Phi   (exact, no kinetic term)",
+  "mapping": {
+   "phi": "Phi (= r on the dS3 static patch)",
+   "G_2": "G_3/(2*pi)",
+   "ell_2": "ell_3",
+   "phi_0": 0,
+   "S_JT": "S_3 exactly"
+  },
+  "inherited": "rho_3*G_3**3 == (pi/32)*S**(-2)",
+  "rho3_meaning": "rho_3 = Lam_3/(8*pi*G_3) is the PARENT vacuum energy; in JT variables it is the dilaton-potential coefficient, not 2d matter",
+  "d4_route": "[T] near-Nariai SdS4 only: MTY 1904.01911 Eqs. (3.37) ds^2 = rho_e^2 ds^2_dS2 + rho_e^2 (1+delta)^2 dOmega_2^2 and (3.39) phi_0 = R_dS4^2 rho_e^2/4G_N, phi = 2 phi_0 delta; inherits the D = 4 exponent -1 with the parent's S; the empty-dS4 sphere reduction is NOT JT (it generates dilaton kinetic terms)",
+  "checks": {
+   "reduction_identity_R3": true,
+   "dilaton_is_r_on_solution": true,
+   "measure_factor_Phi": true,
+   "action_lands_on_svvv_26": true,
+   "entropies_match_exactly": true,
+   "inherited_eps3_pi_over_32_S2": true
+  }
+ },
+ "nonuniqueness": {
+  "statement": "'the JT-dS analog' is (a) the intrinsic first law delta_S = -2*pi*rho*ell**2 PLUS (b) the reduction-inherited family eps_D = c_D * S**(-2/(D-2)) whose exponent the intrinsic JT data (phi_0, phi_r, ell) cannot choose: S**-2 from dS3, S**-1 from near-Nariai dS4.  The parent choice is a dictionary input.",
+  "alternatives": [
+   "[C] parent D = 3: eps_3 = rho_3*G_3**3 = (pi/32)/S**2, machine-checked end to end",
+   "[C] parent D = 4: exponent -1 with the parent's S, via near-Nariai only (MTY Eqs. 3.37, 3.39)",
+   "[C] G_eff = G_2/phi_h so S = 1/(4*G_eff) mimics area/4G: relabels which symbol carries dimension, changes nothing",
+   "[C] phi, G_2 dimensionless (SVVV) vs length-dimension (reduction): normalization only"
+  ]
+ },
+ "literature": {
+  "fetch_method": "ar5iv HTML, 2026-08-27, two independent extractions per paper, agreeing; equation numbers cited only where both returned the equation verbatim",
+  "svvv_2203_00700": {
+   "title": "Quasi-local energy and microcanonical entropy in two-dimensional nearly de Sitter gravity",
+   "verified": [
+    "Eq. (9): -delta H_xi = T_GH delta S_GH (minus-sign patch first law)",
+    "Eq. (16): T_GH = 1/(2*pi*L)",
+    "Eq. (26): the JT action used here",
+    "Eq. (29): S = phi_0/4G_2 + phi_h/4G_2",
+    "after Eq. (15): Phi = Phi_r r/L solves the EOM"
+   ]
+  },
+  "mty_1904_01911": {
+   "title": "Two dimensional Nearly de Sitter gravity",
+   "verified": [
+    "Eq. (2.1): action, ell = 1, 1/4G absorbed",
+    "Eq. (3.37): near-Nariai reduction ansatz",
+    "Eq. (3.39): phi_0 = R_dS4^2 rho_e^2/4G_N, phi = 2 phi_0 delta",
+    "around Eq. (2.13): S_{0,dS} = 8*pi*phi_0 (both extractions place it at/just after (2.13))"
+   ]
+  },
+  "background_only": [
+   "none: every citation above was fetched"
+  ]
+ },
+ "condensate_link": {
+  "eps0_measured_Nc_g2": -0.04072406671895725,
+  "prediction": "delta_S = -2*pi*ell**2*rho = +2*pi*|eps0|*Nc*(g*ell)**2 > 0; finite, first-order, divergence-free",
+  "hedges": [
+   "conditional on JT-dS being the bulk (the paper's assumption 1, unproved)",
+   "conditional on minimal coupling to g only (matter blind to phi)",
+   "(g*ell)**2 is a dictionary knob, currently unfixed; under the paper's flat-space limit it vanishes per mode",
+   "the zero point E_vac(-1) is a subtraction convention"
+  ],
+  "not_conditional": "the shift is finite and first-order: nothing for Holographic Tuning to cancel, on either side of the first law"
+ },
+ "runtime_s": 4.1
+}

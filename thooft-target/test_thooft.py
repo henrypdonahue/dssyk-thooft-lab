@@ -362,3 +362,67 @@ def test_double_precision_csv_matches_reference():
     assert all(b > a for a, b in zip(vals, vals[1:]))
     # the asymptote 2 lambda_n -> n + 3/4
     assert vals[-1] - (len(vals) - 1) == pytest.approx(0.75, abs=0.01)
+
+
+# --------------------------------------------------------------------------
+# FLZ spectral-determinant constants d+- (external_anchors.json, FLZ Eq. 5.1)
+# --------------------------------------------------------------------------
+def test_flz_d_constants_anchor(sectors):
+    """CONSUMES the flz_d_constants_alpha0 anchor.  d+- are the constants in
+    the large-(-lambda) asymptotics of FLZ's spectral determinants (their
+    Eq. 4.16), computable from the eigenvalues alone through the convergent
+    products of their Eq. (4.21) -- see flz_dconstants.py.  FLZ have no
+    analytic expression for them individually; their Eq. (5.1) numbers are
+    12-digit numerics, so the anchor's own rounding floor is +-5e-13.
+    Measured here (K = 300, n_cut = 80, Eq. 1.6 tail + residual fit):
+    d+ dev -4.3e-13, d- dev -1.7e-13.  The exact-ratio check
+    d-/d+ = sqrt(2)/pi (their Eq. 4.20) is convention-free end to end;
+    measured -4.2e-14.  Tolerances carry ~20-100x margin for platform
+    wiggle at the eigenvalues' 12th digit."""
+    from flz_dconstants import d_constant_sector
+    ev_sym, ev_anti = sectors
+    dp = d_constant_sector(ev_sym, 0)
+    dm = d_constant_sector(ev_anti, 1)
+    ref = ANCHORS["flz_d_constants_alpha0"]
+    dp_flz, dm_flz = float(ref["d+"]), float(ref["d-"])
+    # the transcribed pair itself must satisfy the exact Eq. (4.20) ratio
+    assert ref["ratio_exact"] == "sqrt(2)/pi"
+    assert abs(dm_flz / dp_flz - np.sqrt(2.0) / PI) < 2e-13
+    # normalization-free: our ratio against the exact sqrt(2)/pi
+    assert abs(dm / dp - np.sqrt(2.0) / PI) < 1e-12
+    # absolute: both constants at the anchor's own published precision
+    assert abs(dp - dp_flz) < 1e-11, f"d+ dev {dp - dp_flz:+.2e}"
+    assert abs(dm - dm_flz) < 1e-11, f"d- dev {dm - dm_flz:+.2e}"
+
+
+def test_flz_d_constants_tail_ladder(sectors):
+    """The Eq. (4.21) product truncated at n_cut = 80 is ~7e-7 off (that IS
+    the size of the discarded tail, ~1/(pi^4 nu_cut^2)); appending the
+    transcribed Eq. (1.6) tail recovers ~1e-10 (its own O(log^2 n/n^4)
+    error); the measured-residual fit recovers the last digits.  Each rung
+    must beat the previous by well over an order of magnitude."""
+    from flz_dconstants import d_constant_sector
+    ev_sym, _ = sectors
+    dp_flz = float(ANCHORS["flz_d_constants_alpha0"]["d+"])
+    bare = abs(d_constant_sector(ev_sym, 0, tail=False, resid_fit=False)
+               - dp_flz)
+    tail = abs(d_constant_sector(ev_sym, 0, resid_fit=False) - dp_flz)
+    fit = abs(d_constant_sector(ev_sym, 0) - dp_flz)
+    assert 1e-7 < bare < 1e-5          # measured 7.3e-7
+    assert tail < 1e-9                 # measured 1.5e-10
+    assert fit < 1e-11                 # measured 4.3e-13
+    assert bare > 30 * tail > 30 * fit
+
+
+def test_flz_d_constants_cross_solver_jacobi():
+    """The same products from the Jacobi solver at alpha = 0: identical
+    trial space, independent Gagliardo-quadrature assembly, so agreement is
+    limited only by its documented quadrature floor.  Measured at K = 60:
+    d+ dev -1.5e-8, d- dev -6.6e-9, ratio dev 2.1e-10."""
+    from flz_dconstants import d_constants
+    dp, dm = d_constants(num_basis=60, n_cut=50, fit_window=(30, 60),
+                         solver="jacobi")
+    ref = ANCHORS["flz_d_constants_alpha0"]
+    assert abs(dp - float(ref["d+"])) < 2e-7
+    assert abs(dm - float(ref["d-"])) < 2e-7
+    assert abs(dm / dp - np.sqrt(2.0) / PI) < 5e-9

@@ -43,6 +43,8 @@ reproduce:
 	cd duality && $(PY) chord_moments.py --run
 	cd duality && $(PY) chord_charges.py
 	cd duality && $(PY) dirac_chord.py
+	cd duality && $(PY) jt_ds_vacuum.py
+	cd thooft-target && $(PY) flz_dconstants.py
 	cd duality && $(PY) plot_chord.py
 	cd duality && $(PY) plot_signflip.py
 
@@ -72,6 +74,8 @@ reproduce-slow:
 	cd duality && $(PY) antipodal_modes.py
 	cd duality && $(PY) diagonal_chord.py --run
 	cd duality && $(PY) boost_forward.py
+	cd duality && $(PY) boost_inverse.py
+	cd duality && $(PY) largeq_kernel.py
 	cd thooft-target && $(PY) generate_reference.py
 	cd thooft-target && $(PY) jacobi_solver.py
 	cd thooft-target && $(PY) thooft_spectrum.py --csv
