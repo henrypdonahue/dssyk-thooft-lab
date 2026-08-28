@@ -80,7 +80,8 @@ coefficient. Residuals are about 1e-15.
 **Thermality at NV's temperature, exact in λ.** `detailed_balance`
 re-derives β_fake_c = β_c/v and β_eff = β_c(1 + 1/v) from the bridge. The
 per-line law holds at float precision, and the independent
-contour-engine check holds at ≤ 8e-15. At the hologram point
+contour-engine check holds at ≤ 2e-13 on every stored row (≤ 8e-15 on
+the λ = 2 rows). At the hologram point
 (βJ = 0.02) the gap between β_eff and β_fake is exactly v ≈ 0.006. The
 dressed frame is thermal at the tomperature. That is NV's Eq. 69 with
 β_dS ↔ β_fake.

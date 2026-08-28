@@ -174,8 +174,17 @@ def mu_exact(N: int, p: int, n: int, k: int) -> Fraction:
     return out
 
 
+def _mu_sample(args) -> Fraction:
+    """Top-level picklable wrapper of mu_exact, so a multiprocessing pool
+    can farm the interpolation grid out (args = (N, p, n, k)).  The
+    (N, p)-independent signature caches persist inside each worker
+    across tasks; the per-N caches are cleared by mu_exact."""
+    N, p, n, k = args
+    return mu_exact(N, p, n, k)
+
+
 def law(p: int, n: int, k: int = 2, orders: int = 2,
-        progress: bool = False) -> dict:
+        progress: bool = False, mapper=None) -> dict:
     """The exact closed form of mu_k(N) at fixed p: interpolate
     P(N) = 2 mu_k C(N,p)^m through m p + 2 integer points (one more than
     the degree bound, so the top Newton difference vanishing certifies
@@ -184,23 +193,36 @@ def law(p: int, n: int, k: int = 2, orders: int = 2,
     Returns dict with the integer polynomial P (as strings for JSON
     safety), the deficit d, and the exact leading coefficients:
     mu_k = A/N^d + B/N^(d+1) + ...  A check evaluation at an
-    out-of-sample N is included."""
+    out-of-sample N is included.
+
+    `mapper` (optional) is a map-like callable, e.g. Pool.map: the
+    interpolation grid and the out-of-sample check are farmed through
+    it.  Results are exact Fractions either way; only wall-clock
+    changes."""
     m = (k + 2 * n) // 2
     deg_bound = m * p
     n0 = 2 * p + 2
     Ns = list(range(n0, n0 + deg_bound + 2))
     t0 = time.time()
+    if mapper is None:
+        mus = []
+        for N in Ns:
+            mus.append(mu_exact(N, p, n, k))
+            if progress:
+                print(f"    sampled N={N} ({time.time() - t0:.1f} s)",
+                      flush=True)
+    else:
+        mus = list(mapper(_mu_sample, [(N, p, n, k) for N in Ns]))
+        if progress:
+            print(f"    sampled {len(Ns)} points via mapper "
+                  f"({time.time() - t0:.1f} s)", flush=True)
     vals = []
-    for N in Ns:
-        mu = mu_exact(N, p, n, k)
+    for N, mu in zip(Ns, mus):
         P_val = 2 * mu * Fraction(comb(N, p)) ** m
         if P_val.denominator != 1:
             raise RuntimeError(f"P({N}) not an integer at (p,n,k)="
                                f"({p},{n},{k}): {P_val}")
         vals.append(P_val.numerator)
-        if progress:
-            print(f"    sampled N={N} ({time.time() - t0:.1f} s)",
-                  flush=True)
     P = _newton_to_monomial(vals, n0)
     if len(P) - 1 > deg_bound:
         raise RuntimeError(f"degree {len(P) - 1} exceeds the bound "
@@ -210,7 +232,10 @@ def law(p: int, n: int, k: int = 2, orders: int = 2,
     # out-of-sample certification: the closed form must reproduce a direct
     # exact evaluation at an N the interpolation never saw
     N_chk = n0 + deg_bound + 5
-    direct = mu_exact(N_chk, p, n, k)
+    if mapper is None:
+        direct = mu_exact(N_chk, p, n, k)
+    else:
+        direct = list(mapper(_mu_sample, [(N_chk, p, n, k)]))[0]
     interp = _poly_eval(P, Fraction(N_chk)) / _poly_eval(D, Fraction(N_chk))
     if direct != interp:
         raise RuntimeError(f"closed form fails out-of-sample at N={N_chk}, "
@@ -258,7 +283,7 @@ def _lagrange_in_p(pts: list) -> list:
 
 
 def a_closed_form(n: int, laws_rows: list, p_check: int = None,
-                  k: int = 2) -> dict:
+                  k: int = 2, mapper=None) -> dict:
     """Candidate closed form of the leading coefficient A(p) at fixed n:
     exact minimum-degree polynomial interpolation over the sampled p
     grid, then an OUT-OF-SAMPLE certification at p_check -- a fresh law()
@@ -276,7 +301,7 @@ def a_closed_form(n: int, laws_rows: list, p_check: int = None,
                degree=len(poly) - 1)
     if p_check is not None:
         predicted = _poly_eval(poly, Fraction(p_check))
-        fresh = Fraction(law(p_check, n, k)["A"])
+        fresh = Fraction(law(p_check, n, k, mapper=mapper)["A"])
         out["p_check"] = p_check
         out["identified"] = bool(predicted == fresh)
         if not out["identified"]:

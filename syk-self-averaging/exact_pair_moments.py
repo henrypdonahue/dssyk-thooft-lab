@@ -45,8 +45,12 @@ zero.
 
 SCOPE
 -----
-n <= 3, and moments mu_0, mu_2, mu_4.  Words up to K = 10 H-nodes, so 5
-subsets.
+Words up to K = 10 H-nodes (5 subsets) on the float assembly path, and
+K = 12 (6 subsets) with exact=True -- that covers mu_k of A_n for
+k + 2n <= 12, i.e. mu_2 through n = 5, mu_4 through n = 4, and mu_6
+through n = 3.  The committed float campaign below runs n <= 3 with
+mu_0/mu_2/mu_4; the exact-Fractions K = 12 frontier is
+pair_moment_ladder.py's.
 
 Every signature goes through an exact element-wise DP whose state is the
 per-subset fill counts, with integers handled by CRT residue tables.  Its
@@ -210,24 +214,54 @@ def signature_expectation(N: int, p: int, m: int, S: frozenset,
 
 
 _CANON_CACHE: dict = {}
+_S_PERM_CACHE: dict = {}
+
+
+def _canonical_perm_coset(m: int, S_key: tuple):
+    """(S_star, coset): the lexicographically smallest relabeling of the
+    crossing set, and EVERY permutation that achieves it (a coset of the
+    crossing graph's automorphism group).  Cached per crossing set, so
+    the m! sweep runs once per crossing-set class, not once per
+    signature."""
+    key = (m, S_key)
+    if key in _S_PERM_CACHE:
+        return _S_PERM_CACHE[key]
+    from itertools import permutations
+    best, coset = None, []
+    for perm in permutations(range(m)):
+        cand = tuple(sorted(tuple(sorted((perm[a], perm[b])))
+                            for (a, b) in S_key))
+        if best is None or cand < best:
+            best, coset = cand, [perm]
+        elif cand == best:
+            coset.append(perm)
+    out = (best, tuple(coset))
+    _S_PERM_CACHE[key] = out
+    return out
 
 
 def _canonical(m: int, S: frozenset, marks_bits: tuple):
-    """Canonical relabeling of the chords (m! permutations; m <= 5 in
-    scope).  Pure in its arguments, and called once per word per signature,
-    so it is memoized."""
+    """Canonical relabeling of the chords: the minimum over the m!
+    permutations of the key (sorted crossing set, sorted bits).  The
+    first component dominates the lexicographic order, so the minimum is
+    reached on the cached coset that minimizes the crossing set alone,
+    and only |coset| candidates remain for the bits.  Identical output
+    to the brute-force sweep (asserted in the tests), at a cost that
+    makes m = 6 words affordable."""
     ck = (m, S, marks_bits)
     if ck in _CANON_CACHE:
         return _CANON_CACHE[ck]
-    from itertools import permutations
-    best = None
-    for perm in permutations(range(m)):
-        S2 = frozenset(tuple(sorted((perm[a], perm[b]))) for (a, b) in S)
-        b2 = tuple(sorted(tuple(bits[perm.index(k)] for k in range(m))
+    S_star, coset = _canonical_perm_coset(m, tuple(sorted(S)))
+    best_bits = None
+    for perm in coset:
+        inv = [0] * m
+        for old, new in enumerate(perm):
+            inv[new] = old
+        b2 = tuple(sorted(tuple(bits[inv[k]] for k in range(m))
                           for bits in marks_bits))
-        key = (tuple(sorted(S2)), b2)
-        if best is None or key < best:
-            best = key
+        if best_bits is None or b2 < best_bits:
+            best_bits = b2
+    best = (S_star, best_bits)
     _CANON_CACHE[ck] = best
     return best
 
@@ -270,7 +304,11 @@ def _first_primes_below(bound: int, count: int) -> list:
     return out
 
 
-_PRIMES = _first_primes_below(1 << 25, 16)
+# 64 primes cover a CRT modulus of ~1600 bits: enough for the m = 3
+# double-scaling points out to N ~ 1000, where the signed-count bound
+# needs ~21 of them (the loop stops as soon as the modulus clears the
+# bound, so small words still touch only a handful).
+_PRIMES = _first_primes_below(1 << 25, 64)
 _DP_CACHE: dict = {}
 
 
@@ -378,7 +416,10 @@ def _expectation_core(N: int, p: int, m: int, S: frozenset,
     n_dist = len(marks_bits)
     S_key = tuple(sorted(S))
     n_generic = N - n_dist
-    total = 0
+    # aggregate the 2^(m n_dist) membership patterns onto their DP
+    # targets first: many patterns share a target, and the per-target
+    # CRT reconstruction is the expensive step
+    weights: dict = {}
     for patterns in product(*[list(product((0, 1), repeat=m))
                               for _ in range(n_dist)]):
         base_parity = 0
@@ -392,8 +433,11 @@ def _expectation_core(N: int, p: int, m: int, S: frozenset,
         target = tuple(p - sum(I[al] for I in patterns) for al in range(m))
         if any(t < 0 for t in target):
             continue
-        cnt = _dp_count(n_generic, p, m, S_key, target)
-        total += -cnt if base_parity else cnt
+        weights[target] = weights.get(target, 0) + (-1 if base_parity else 1)
+    total = 0
+    for target, w in weights.items():
+        if w:
+            total += w * _dp_count(n_generic, p, m, S_key, target)
     out = Fraction(total, comb(N, p) ** m)
     _EXP_CACHE[key] = out
     return out
@@ -473,6 +517,44 @@ def _psi_psi_sign(symbols) -> int:
                      "count, at most two labels")
 
 
+_WORD_SIG_CACHE: dict = {}
+
+
+def _word_multiset(a: int, b: int, c: int, d: int, marks: tuple):
+    """(psi_sign, groups) for the word: groups is a tuple of
+    (count, (m, S, bits)) pairs, one representative signature per
+    canonical class with the number of matchings landing in it.  This is
+    the whole (N, p)-independent part of t4bar.  A law() extraction
+    evaluates the same word at ~m p + 2 sample points, and a p scan at
+    every p, so hoisting the (K-1)!! matching enumeration out of the
+    (N, p) evaluation is what makes the K = 12 grids affordable.
+
+    Grouping by the canonical class is sound because
+    signature_expectation is invariant under chord relabeling: it
+    factorizes over crossing components, each component's value is a
+    subset-assignment sum symmetric in the chord labels, and the label
+    multiset of `bits` is exchangeable (the distinguished elements are
+    i.i.d. uniform).  The same invariance already backs _EXP_CACHE."""
+    key = (a, b, c, d, marks)
+    if key in _WORD_SIG_CACHE:
+        return _WORD_SIG_CACHE[key]
+    symbols = _word_symbols(a, b, c, d, marks)
+    psi_sign = _psi_psi_sign(symbols)
+    hpos = [k for k, s in enumerate(symbols) if s == 'H']
+    groups: dict = {}
+    for matching in _matchings(hpos):
+        m, S, bits = _signature(symbols, matching)
+        ck = (m, _canonical(m, S, bits))
+        entry = groups.get(ck)
+        if entry is None:
+            groups[ck] = [1, (m, S, bits)]
+        else:
+            entry[0] += 1
+    out = (psi_sign, tuple((cnt, rep) for cnt, rep in groups.values()))
+    _WORD_SIG_CACHE[key] = out
+    return out
+
+
 def t4bar(N: int, p: int, a: int, b: int, c: int, d: int,
           marks=('i', 'i', 'j', 'j'), exact: bool = False):
     """E<Tr[H^a psi H^b psi H^c psi H^d psi]>/dim / sigma_H^(a+b+c+d),
@@ -483,13 +565,10 @@ def t4bar(N: int, p: int, a: int, b: int, c: int, d: int,
     K = a + b + c + d
     if K % 2:
         return Fraction(0) if exact else 0.0
-    symbols = _word_symbols(a, b, c, d, marks)
-    psi_sign = _psi_psi_sign(symbols)
-    hpos = [k for k, s in enumerate(symbols) if s == 'H']
+    psi_sign, groups = _word_multiset(a, b, c, d, marks)
     tot = Fraction(0)
-    for matching in _matchings(hpos):
-        m, S, bits = _signature(symbols, matching)
-        tot += signature_expectation(N, p, m, S, bits)
+    for cnt, (m, S, bits) in groups:
+        tot += cnt * signature_expectation(N, p, m, S, bits)
     return psi_sign * tot if exact else psi_sign * float(tot)
 
 
