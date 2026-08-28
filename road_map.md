@@ -43,7 +43,11 @@ dictionary, and every proposed test presupposes it, including the
 authors' own.
 
 `duality/BOOST.md` calibrates that on the exactly solvable case. A single
-mass produces a continuum with mass-encoding *nodes*, not a peak.
+mass produces a continuum with mass-encoding *nodes*, not a peak. And
+`duality/boost_inverse.py` prices the gap: on that kernel, moment
+invariants carry regulator leverage ≈ 1, so until the state map fixes
+the regulator they carry no mass digits at all. The authors' best test
+is not merely hard to run without that map. It cannot be run.
 
 **Does the toy even have the disease?** QCD₂ is super-renormalizable. Its
 only mass renormalization, m_q² = m_bare² − g²/π, is finite. So the 4d
