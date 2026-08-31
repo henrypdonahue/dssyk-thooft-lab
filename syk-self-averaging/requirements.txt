@@ -1,9 +1,0 @@
-# Exact pins for reproducibility of the saved results (Python 3.9).
-numpy==2.0.2
-scipy==1.13.1
-
-# Figures
-matplotlib==3.9.4
-
-# Tests
-pytest==6.2.5

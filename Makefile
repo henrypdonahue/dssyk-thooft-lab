@@ -1,7 +1,7 @@
 # Reproduction entry points for the DSSYK <-> 't Hooft stress-test repo.
 #
-#   make test            fast test suites of all three modules   (~40 s)
-#   make test-all        full suites including slow ED sweeps    (~2 min)
+#   make test            fast test suites of all three modules   (~1.5 min)
+#   make test-all        full suites including slow ED sweeps    (~4 min)
 #   make reproduce       fast deterministic checks + figures     (~50 s)
 #   make reproduce-slow  ED sweeps behind the saved JSON         (~hours)
 #
@@ -77,6 +77,8 @@ reproduce-slow:
 	cd duality && $(PY) boost_inverse.py
 	cd duality && $(PY) largeq_kernel.py
 	cd syk-self-averaging && $(PY) pair_moment_ladder.py
+	cd syk-self-averaging && $(PY) pair_moment_ladder.py --refit 1,6:2,4,6,8,10,12,14,16:18
+	cd syk-self-averaging && $(PY) pair_moment_ladder.py --refit 2,4:2,4,6,8,10,12,14,16:18
 	cd syk-self-averaging && $(PY) pair_moment_ladder.py --ds-extend 32,36,40,44,48
 	cd thooft-target && $(PY) generate_reference.py
 	cd thooft-target && $(PY) jacobi_solver.py

@@ -20,12 +20,16 @@ dependencies = [
     "numpy==2.0.2",
     "scipy==1.13.1",
     "mpmath==1.3.0",
+    # duality/jt_ds_vacuum.py re-derives its [D]-labelled identities in
+    # exact sympy at import time (and its test re-runs them), so sympy is
+    # a runtime dependency, not a dev extra
+    "sympy==1.14.0",
 ]
 
 [project.optional-dependencies]
 # pytest 6.2.5 (the original pin) breaks on python 3.12: its assertion
 # rewriter uses ast.Str/ast.Num, removed in 3.12.  7.4.4 is the newest pin
-# that still supports 3.9; all 408 fast tests verified green under it.
+# that still supports 3.9; all 528 fast tests verified green under it.
 dev = ["pytest==7.4.4", "matplotlib==3.9.4"]
 
 [tool.setuptools]

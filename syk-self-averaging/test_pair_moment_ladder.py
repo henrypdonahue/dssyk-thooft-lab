@@ -65,7 +65,11 @@ def test_deficit_rule_K_half_plus_1_everywhere():
     """deficit = K/2 + 1 with K = k + 2n, at every law in both artifacts:
     n + 2 for k = 2, n + 3 for k = 4, n + 4 for k = 6, ... through the
     K = 12 frontier where every deficit is 7."""
-    assert len(ALL) >= 45
+    assert len(ALL) == 55            # 25 committed + 30 new, no overlap
+    # no duplicate (n, k, p) rows inside either artifact, none across them
+    assert len(DATA["laws"]) == len(LAWS) == 30
+    assert len(COMMITTED["laws"]) == len(OLD) == 25
+    assert not (set(LAWS) & set(OLD))
     for (n, k, p), r in ALL.items():
         K = k + 2 * n
         assert r["deficit"] == K // 2 + 1, (n, k, p)
@@ -75,9 +79,9 @@ def test_deficit_rule_K_half_plus_1_everywhere():
 
 
 def test_mu6_laws_present():
-    """mu_6 (k = 6): n = 1 over p = 2..12, n = 2 at p = 2, 4, n = 3 at
+    """mu_6 (k = 6): n = 1 over p = 2..18, n = 2 at p = 2, 4, n = 3 at
     p = 2 -- the extension road_map.md Part III named as unlocked."""
-    assert {p for (n, k, p) in LAWS if (n, k) == (1, 6)} >= {2, 4, 6, 8, 10, 12}
+    assert {p for (n, k, p) in LAWS if (n, k) == (1, 6)} == set(range(2, 20, 2))
     assert {p for (n, k, p) in LAWS if (n, k) == (2, 6)} >= {2, 4}
     assert (3, 6, 2) in LAWS
 
@@ -91,7 +95,7 @@ def test_n1_to_n2_step_exact_at_every_rung():
             assert Fraction(r["A"]) == Fraction(ALL[(2, k - 2, p)]["A"]), (k, p)
             assert r["deficit"] == ALL[(2, k - 2, p)]["deficit"]
             pairs += 1
-    assert pairs >= 12          # k=4: p=2,4,6; k=6: p=2..12(+14); k=8,10
+    assert pairs >= 15          # k=4: p=2,4,6; k=6: p=2..18; k=8,10
     # the rung table records the same verdict
     for chk in DATA["ladder"]["adjacent_step_checks"]:
         if chk["lhs"].startswith("A(n=1,"):
@@ -154,9 +158,12 @@ def test_p14_and_p16_n3_laws_match_committed_cross_check():
 
 
 def test_out_of_sample_certification_recorded():
-    for key, r in LAWS.items():
-        assert r["out_of_sample_N"] > 0, key
-        assert len(r["P_coeffs"]) - 1 == r["deg_P"], key
+    """Every law records its certification point, which law() places at
+    N_chk = (2p + 2) + m p + 5 -- three beyond the interpolation grid --
+    and its P of the recorded degree, at most the m p bound."""
+    for (n, k, p), r in LAWS.items():
+        assert r["out_of_sample_N"] == 2 * p + 2 + r["m"] * p + 5, (n, k, p)
+        assert len(r["P_coeffs"]) - 1 == r["deg_P"] <= r["m"] * p, (n, k, p)
 
 
 def _form(n, k):
@@ -225,9 +232,9 @@ def test_c2_limit_is_an_estimate_with_a_spread():
 
 def test_K8_family_closed_form():
     """The other K = 8 family, A(1,6) = A(2,4): the campaign's six-sample
-    fit failed at degree 5 (recorded for A(2,4), whose entry is left as
-    the campaign wrote it); the --refit over eight samples is degree 7
-    and certifies out of sample at p = 18:
+    fit failed at degree 5; the --refit over eight samples (p = 2..16)
+    is degree 7 for BOTH families, each certified by its own fresh law
+    at p = 18:
 
         A(1,6; p) = A(2,4; p) = -256 p^4 (p-1) (34 p^2 - 93 p + 64),
 
@@ -243,7 +250,11 @@ def test_K8_family_closed_form():
             assert Fraction(r["A"]) == want, (n, k, p)
             assert _poly_eval(coeffs, Fraction(p)) == want, (n, k, p)
             checked += 1
-    assert checked >= 15
-    old = _form(2, 4)
-    assert old["p_check"] == 14 and not old["identified"] and old["degree"] == 5
-    assert LAWS[(1, 6, 14)]["A"] == LAWS[(2, 4, 14)]["A"]
+    assert checked == 18       # nine p values per family, both families
+    # the (2,4) family carries its own certificate, same polynomial
+    cf24 = _form(2, 4)
+    assert cf24["identified"] and cf24["degree"] == 7 and cf24["p_check"] == 18
+    assert cf24["A_poly_coeffs"] == cf["A_poly_coeffs"]
+    assert cf24["p_samples"] == cf["p_samples"] == [2, 4, 6, 8, 10, 12, 14, 16]
+    for p in (14, 16, 18):
+        assert LAWS[(1, 6, p)]["A"] == LAWS[(2, 4, p)]["A"], p

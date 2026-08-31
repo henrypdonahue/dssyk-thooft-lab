@@ -437,7 +437,6 @@ def piece3_first_law() -> dict:
     f = 1 - r**2 / ell**2
     g = sp.diag(-f, 1 / f)
     coords = [t, r]
-    ginv = g.inv()
 
     def eom_residual(phi, Tmn):
         # -grad grad phi + g Box phi + (phi/ell^2) g = 8 pi G2 T_mn
@@ -534,7 +533,6 @@ def piece3_reduction() -> dict:
 
     # on the dS3 static patch the base is the dS2 static patch and Phi = r,
     # i.e. the JT vacuum solution with phi_r = ell
-    f = 1 - r**2 / ell**2
     check_dilaton_is_r = sp.simplify(
         (sp.Symbol('phi_r', real=True) * r / ell).subs(
             sp.Symbol('phi_r', real=True), ell) - r) == 0

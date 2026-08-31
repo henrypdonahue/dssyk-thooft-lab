@@ -204,5 +204,22 @@ def test_json_reproducible_at_one_v():
     assert np.allclose(d_o, row["derived_o"], rtol=0, atol=1e-10)
 
 
+def test_derived_matches_transcribed_at_producer_precision():
+    """The producer's K = 400 gate, re-derived live at three v: the
+    derived sets match the transcribed CMS roots to 1e-11 relative (the
+    stored full-scan number is 3e-12), so the headline digits are not a
+    stored scalar the suite merely reads back."""
+    for v in (0.2, 0.5, 0.8):
+        row = compare_at_v(v, K=400)
+        assert row["max_rel_dev_e"] < 1e-11, (v, row["max_rel_dev_e"])
+        assert row["max_rel_dev_o"] < 1e-11, (v, row["max_rel_dev_o"])
+
+
+def test_v_outside_open_interval_is_rejected():
+    for v in (0.0, 1.0, -0.2, 1.5):
+        with pytest.raises(ValueError):
+            derived_quantization_sets(v)
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))

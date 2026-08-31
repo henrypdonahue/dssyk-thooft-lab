@@ -57,20 +57,26 @@ NEGATIVE in the expected direction):
 
 * The singular values fall super-geometrically:
   log10(sigma_1/sigma_j) ~= a(eps) (j-1) + b(eps) (j-1)^2 with
-  (a, b) = (1.06, 0.049) at a*eps = 0.2, (0.78, 0.057) at 0.4
-  (rms 0.08), (0.44, 0.050) at 1.6.  Recovering level j costs 0.8
-  digits of moment precision more than level j-1 at the start and 2.0
-  by level 12 (a*eps = 0.4): the cost per level GROWS.  At a*eps = 0.1
-  the decay is steeper still (a = 1.54) and the last singular values
-  floor near 1e-17, so the quadratic fit degrades (rms 0.68).
-* "How many moments does a 12-level trajectory need": 12.  The
-  double-precision level count saturates at K = 12 at every eps on the
-  grid (fine K-scan at a*eps = 0.4; a one-count threshold flicker at
-  a*eps = 0.2).  Beyond K = L the singular values themselves move by
-  < 0.5 decades at a*eps <= 0.4, 1.0 at 0.8, and 4.0 at 1.6: high
-  moments stay informative only while k/eps is inside the mass window,
-  and no number of further moments buys back the levels that precision
-  has already lost.
+  (a, b) = (1.18, 0.070) at a*eps = 0.1, (0.97, 0.064) at 0.2,
+  (0.78, 0.057) at 0.4, (0.60, 0.052) at 0.8, (0.44, 0.050) at 1.6
+  (rms <= 0.08 everywhere).  Recovering level j costs 0.8 digits of
+  moment precision more than level j-1 at the start and 2.0 by level
+  12 (a*eps = 0.4): the cost per level GROWS, and smaller eps is
+  steeper.  (An earlier artifact assembled the certified moments at
+  ambient double precision, which floored the a*eps <= 0.2 tails near
+  1e-17 and broke the fit there; the entries are now assembled at the
+  certified dps, and test_boost_inverse.py pins that.)
+* "How many moments does a 12-level trajectory need": at least 12,
+  and 12 suffice at a*eps >= 0.4.  The count of double-precision
+  levels is bounded by min(K, L) (rank), so "saturation at K = L" is
+  linear algebra; the measured content is that at a*eps >= 0.4 all 12
+  levels are resolvable in double precision from 12 moments (fine
+  K-scan at a*eps = 0.4), while at a*eps = 0.1, 0.2 only 9, 10 are,
+  however many moments are added.  Beyond K = L the singular values
+  themselves move by 0.15-0.25 decades at a*eps <= 0.4, 1.0 at 0.8,
+  and 4.0 at 1.6: high moments stay informative only while k/eps is
+  inside the mass window, and no number of further moments buys back
+  the levels that precision has already lost.
 * With 16-digit moment data: 9 recoverable weight directions at
   a*eps = 0.1, 10 at 0.2, 12 at 0.4 (the last marginal, amplification
   10^15.5), 12 at 1.6.  With 8-digit data: 6 / 6 / 7 / 10.  Smaller
@@ -119,8 +125,13 @@ mass per digit of data.
   a*eps = 0.2 .. 0.8: an unknown relative error u in the smearing scale
   costs the mass ~u, one for one, at ANY data precision.  So nodes win
   whenever u > ~0.46 sqrt(eta), and with the map entirely unfixed
-  (u = O(1), the current situation) moments carry ZERO digits of mass
-  while nodes carry half the data digits.
+  (u = O(1), the current situation) a single moment invariant carries
+  ZERO digits of mass while nodes carry half the data digits.  Trading
+  a second invariant for eps would presuppose the regulator's
+  functional form -- which is exactly what the map must supply -- and
+  the nodes' zero leverage likewise presupposes a multiplicative
+  regulator (a convolution-type smearing would move zeros); both halves
+  of the comparison are conditional on the same e^{-eps omega} form.
 * For the coupling-weighted tower the ground node fills in
   (S_tower > 0 where S_ground = 0): the filled-node depth, 5.7e-2 of
   the local maximum, is a background-free, eps-independent measure of
@@ -132,8 +143,9 @@ mass per digit of data.
 VERDICT.  The moments -> spectrum inversion on the solvable kernel is
 exponentially ill-conditioned with a measured, accelerating exponent
 (0.8 digits per level at the start, 2.0 by level 12, at the reference
-regulator a*eps = 0.4; steeper at smaller eps), saturates at K = L
-moments, and -- decisive for the roadmap question -- inherits a
+regulator a*eps = 0.4; steeper at smaller eps), needs at least L
+moments for L levels (L sufficing only at a*eps >= 0.4), and --
+decisive for the roadmap question -- inherits a
 one-for-one mass error from any uncertainty in the regulator scale that
 the missing state map is supposed to fix.  Node-level data is free of
 exactly that error.  This answers "how many moments a Regge trajectory
@@ -242,8 +254,13 @@ def regulated_moments(m, eps, a=1.0, kmax=K_MAX, rel_tol=1e-30):
     k = 0..kmax, as mpmath scalars, with the gate certificate.
     Returns (mus, certified_rel_err, dps_used)."""
     ws, err, dps = w_series_k(eps, m, a, kmax, rel_tol)
-    mus = [2 * mp.pi * (-1) ** k * factorial(k) * ws[k]
-           for k in range(kmax + 1)]
+    # assemble at the certified precision: the coefficients carry dps
+    # digits, and a product taken at the caller's ambient precision would
+    # round them to that (double, for the conditioning study) before the
+    # SVD ever saw them
+    with mp.workdps(dps):
+        mus = [2 * mp.pi * (-1) ** k * factorial(k) * ws[k]
+               for k in range(kmax + 1)]
     return mus, err, dps
 
 
@@ -259,7 +276,10 @@ def regulated_moments_float(m, eps, a=1.0, kmax=K_MAX):
 def tower_masses(num_levels=L_LEVELS):
     """The first num_levels certified 't Hooft masses, BOTH CP sectors
     (the full tower the dictionary must extract), as mpmath scalars in
-    sqrt(pi g^2) = 1 units."""
+    sqrt(pi g^2) = 1 units.  The reference stores two_lambda as doubles,
+    so the conditioning matrix is that of the double-rounded masses; its
+    entries are then certified to 1e-60 FOR THOSE masses, which is what
+    the singular spectrum is a property of."""
     rows = dictionary.load_reference()
     return [mp.sqrt(mp.mpf(repr(r["two_lambda"])))
             for r in rows[:num_levels]]
@@ -560,11 +580,11 @@ def run(out_path=None) -> dict:
         column_lognorms_eps_ref=column_lognorms(rows_ref, 24),
         statement=(
             "Super-geometric ill-conditioning: log10(sv1/svj) ~= "
-            "a(eps)(j-1) + b(eps)(j-1)^2 with the fitted (a, b) above "
-            "(at a*eps = 0.1 the mid-range is steeper than the fit and "
-            "the last singular values floor near 1e-17, hence the rms); "
-            "the cost per level grows, smaller eps is worse, the level "
-            "count saturates at K = L moments, and further moments help "
+            "a(eps)(j-1) + b(eps)(j-1)^2 with the fitted (a, b) above; "
+            "the cost per level grows, smaller eps is worse, the "
+            "double-precision level count is min(K, n_resolvable(eps)) "
+            "(all 12 resolvable from 12 moments at a*eps >= 0.4, 9-10 "
+            "at a*eps <= 0.2), and further moments move the spectrum "
             "only at large eps (sv_move_K12_to_K24).  All conditional "
             "on the e^{-eps omega} regulator convention."))
 
@@ -657,8 +677,10 @@ def run(out_path=None) -> dict:
             eps=EPS_REF, first=ref_fit["a"] + ref_fit["b"],
             last=ref_fit["a"] + ref_fit["b"] * (2 * (L_LEVELS - 1) - 1)),
         moments_needed=(
-            f"the double-precision level count saturates at K = {k_sat} "
-            f"moments for {L_LEVELS} levels at every eps on the grid; "
+            f"the double-precision level count is bounded by min(K, "
+            f"{L_LEVELS}) and reaches {L_LEVELS} at K = {k_sat} for "
+            f"a*eps = {EPS_REF} (fine scan); at a*eps <= 0.2 it stops "
+            f"at 9-10 however many moments are added; "
             f"beyond K = L the singular values themselves move by "
             f"{sv_move[f'{EPS_GRID[0]}']:.1f} decades (a*eps = "
             f"{EPS_GRID[0]}) up to {sv_move[f'{EPS_GRID[-1]}']:.1f} "
@@ -680,10 +702,12 @@ def run(out_path=None) -> dict:
         statement=(
             "On the solvable kernel the moments -> spectrum inversion is "
             "super-geometrically ill-conditioned (measured exponents "
-            "above), needs exactly as many moments as levels, and every "
+            "above), needs at least as many moments as levels (with "
+            "as many sufficing only at a*eps >= 0.4), and every "
             "moment-side mass digit is hostage to the regulator scale "
             "the missing tomperature/state map must fix.  Node-level "
-            "data has zero regulator leverage.  The roadmap's 'the "
+            "data has zero regulator leverage under any multiplicative "
+            "regulator.  The roadmap's 'the "
             "inversion needs node-level data' verdict stands, "
             "quantified.  All numbers are conditional on the "
             "e^{-eps omega} regulator convention; composite-operator "

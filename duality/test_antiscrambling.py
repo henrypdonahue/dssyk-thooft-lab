@@ -368,3 +368,34 @@ def test_scan_verdict_N_obstruction_not_lambda(scan):
     r6, e6 = _fold_ratio(anchor6)
     r4, e4 = _fold_ratio(anchor4)
     assert abs(r6) - abs(r4) > 4 * np.hypot(e6, e4)                  # (d)
+
+
+def test_chord_engine_converges_onto_invariant_form():
+    """ANTISCRAMBLING.md's third piece of evidence for the invariant form,
+    recomputed from the committed chord_fold.json rather than quoted: the
+    exact N = infinity chord engine's crossed 4-pt over the closed form
+    runs 0.964 -> 0.979 over lambda = 2 -> 0.5 (0.973 at lambda = 4), and
+    the time-ordered control 0.683 -> 0.945 over the same leg -- both
+    heading to 1 as lambda -> 0, where the double-scaled theory is the
+    large-q limit."""
+    with open(Path(__file__).resolve().parent / "chord_fold.json") as fh:
+        d = json.load(fh)
+    cc, ct = d["config_crossed"], d["config_toc"]
+    ratios = {}
+    for pt in d["points"]:
+        v = pt["v"]
+        ot = pt["otoc"]["re"] if isinstance(pt["otoc"], dict) else pt["otoc"]
+        tc = pt["toc"]["re"] if isinstance(pt["toc"], dict) else pt["toc"]
+        ratios[round(pt["lam"], 6)] = (
+            ot / complex(otoc_ratio(*cc, v)).real,
+            tc / complex(toc_ratio(*ct, v)).real)
+    assert ratios[4.0][0] == pytest.approx(0.973, abs=1e-3)
+    assert ratios[2.0][0] == pytest.approx(0.964, abs=1e-3)
+    assert ratios[0.5][0] == pytest.approx(0.979, abs=1e-3)
+    assert ratios[2.0][1] == pytest.approx(0.683, abs=1e-3)
+    assert ratios[0.5][1] == pytest.approx(0.945, abs=1e-3)
+    # every point within 4% of 1 for the crossed ratio; the TOC control
+    # rises monotonically along lambda = 2 -> 0.5
+    assert all(0.96 < r[0] < 1.0 for r in ratios.values())
+    leg = [ratios[l][1] for l in sorted(ratios, reverse=True) if l <= 2.0]
+    assert all(b > a for a, b in zip(leg, leg[1:]))

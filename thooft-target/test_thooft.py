@@ -375,10 +375,17 @@ def test_flz_d_constants_anchor(sectors):
     analytic expression for them individually; their Eq. (5.1) numbers are
     12-digit numerics, so the anchor's own rounding floor is +-5e-13.
     Measured here (K = 300, n_cut = 80, Eq. 1.6 tail + residual fit):
-    d+ dev -4.3e-13, d- dev -1.7e-13.  The exact-ratio check
-    d-/d+ = sqrt(2)/pi (their Eq. 4.20) is convention-free end to end;
-    measured -4.2e-14.  Tolerances carry ~20-100x margin for platform
-    wiggle at the eigenvalues' 12th digit."""
+    d+ dev ~ -1.1e-12 on this fixture (eigh WITH vectors, dstemr) and
+    ~ -(4..9)e-13 on the eigvals-only path (dsterf); d- dev
+    ~ -(2..7)e-13 -- the double-precision eigh floor at K = 300, which
+    moves with the LAPACK path and the BLAS thread count.  The
+    exact-ratio check d-/d+ = sqrt(2)/pi (their Eq. 4.20) is
+    convention-free end to end; measured ~3e-13 for the same reason.
+    Tolerances carry ~10x margin over that floor; a 1-2e-11 relative
+    error in one low head level trips the d+ check, d- is gated at
+    ~2.3e-11 relative (1e-11 absolute on 0.43), and inside the 30..90
+    fit window the residual fit absorbs up to about half of a
+    perturbation."""
     from flz_dconstants import d_constant_sector
     ev_sym, ev_anti = sectors
     dp = d_constant_sector(ev_sym, 0)
@@ -389,7 +396,7 @@ def test_flz_d_constants_anchor(sectors):
     assert ref["ratio_exact"] == "sqrt(2)/pi"
     assert abs(dm_flz / dp_flz - np.sqrt(2.0) / PI) < 2e-13
     # normalization-free: our ratio against the exact sqrt(2)/pi
-    assert abs(dm / dp - np.sqrt(2.0) / PI) < 1e-12
+    assert abs(dm / dp - np.sqrt(2.0) / PI) < 5e-12
     # absolute: both constants at the anchor's own published precision
     assert abs(dp - dp_flz) < 1e-11, f"d+ dev {dp - dp_flz:+.2e}"
     assert abs(dm - dm_flz) < 1e-11, f"d- dev {dm - dm_flz:+.2e}"
@@ -410,7 +417,7 @@ def test_flz_d_constants_tail_ladder(sectors):
     fit = abs(d_constant_sector(ev_sym, 0) - dp_flz)
     assert 1e-7 < bare < 1e-5          # measured 7.3e-7
     assert tail < 1e-9                 # measured 1.5e-10
-    assert fit < 1e-11                 # measured 4.3e-13
+    assert fit < 1e-11                 # measured ~1e-12 (floor)
     assert bare > 30 * tail > 30 * fit
 
 

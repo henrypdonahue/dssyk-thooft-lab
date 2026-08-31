@@ -88,11 +88,13 @@ mass at the invariant level. So the tower discriminant is the nodes, not
 the moments.
 
 `boost_inverse.py`. The inverse direction, measured at certified
-precision. The weights-from-moments map saturates at one moment per
-level and is super-geometrically ill-conditioned (each level costs
-~1–2 more digits). Moment invariants carry regulator leverage ≈ 1, so
-they carry no mass digits until the state map fixes ε; node positions
-carry leverage exactly zero. The node verdict, with its price list.
+precision. The weights-from-moments map needs at least one moment per
+level (with one per level sufficing only at aε ≥ 0.4) and is
+super-geometrically ill-conditioned (each level costs ~1–2 more
+digits). Moment invariants carry regulator leverage ≈ 1, so a single
+invariant carries no mass digits until the state map fixes ε; node
+positions carry leverage exactly zero under any multiplicative
+regulator. The node verdict, with its price list.
 
 **[LARGEQ.md](LARGEQ.md)** and `largeq_anchor.py`. The large-q, λ → 0
 anchor, with the conventions bridge 𝒥 = √2 p locked against ED. The
@@ -128,7 +130,7 @@ python3 chord_fold.py            # the fold at N = inf            (~10 s)
 python3 signflip_probe.py        # the antipodal map              (~15 s)
 python3 signflip_probe.py --deep # its deep campaign              (~15 s)
 python3 jt_ds_vacuum.py          # the JT-dS vacuum-energy note    (~5 s)
-python3 largeq_kernel.py         # the derived large-q skeleton    (~5 min)
+python3 largeq_kernel.py         # the derived large-q skeleton    (~20 s unloaded)
 python3 boost_inverse.py         # moments -> spectrum conditioning (~3 min)
-pytest -q                        # 284 tests
+pytest -q                        # 288 tests
 ```

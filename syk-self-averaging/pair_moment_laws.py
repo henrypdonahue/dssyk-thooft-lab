@@ -128,7 +128,6 @@ def _newton_to_monomial(vals: list, n0: int) -> list:
         diffs.append(row[0])
         row = [row[i + 1] - row[i] for i in range(len(row) - 1)]
         if row and all(x == 0 for x in row):
-            diffs.extend([Fraction(0)] * 0)
             break
     poly = [Fraction(0)]
     basis = [Fraction(1)]                     # C(N - n0, 0)
@@ -174,13 +173,24 @@ def mu_exact(N: int, p: int, n: int, k: int) -> Fraction:
     return out
 
 
-def _mu_sample(args) -> Fraction:
+def _mu_sample(args):
     """Top-level picklable wrapper of mu_exact, so a multiprocessing pool
-    can farm the interpolation grid out (args = (N, p, n, k)).  The
-    (N, p)-independent signature caches persist inside each worker
+    can farm the interpolation grid out (args = (N, p, n, k)).  Returns
+    (args, mu) so the caller can re-key by N and never depends on the
+    mapper preserving order (Pool.map does, imap_unordered does not).
+    The (N, p)-independent signature caches persist inside each worker
     across tasks; the per-N caches are cleared by mu_exact."""
     N, p, n, k = args
-    return mu_exact(N, p, n, k)
+    return args, mu_exact(N, p, n, k)
+
+
+def _mu_map(mapper, tasks: list) -> list:
+    """mu_exact over the (N, p, n, k) tasks, in task order, through an
+    optional map-like callable (any order of completion)."""
+    if mapper is None:
+        return [mu_exact(*t) for t in tasks]
+    got = dict(mapper(_mu_sample, tasks))
+    return [got[t] for t in tasks]
 
 
 def law(p: int, n: int, k: int = 2, orders: int = 2,
@@ -190,32 +200,31 @@ def law(p: int, n: int, k: int = 2, orders: int = 2,
     the degree bound, so the top Newton difference vanishing certifies
     the bound), and expand at N = infinity.
 
-    Returns dict with the integer polynomial P (as strings for JSON
-    safety), the deficit d, and the exact leading coefficients:
+    Returns dict with the integer-valued polynomial P (rational monomial
+    coefficients, as strings for JSON safety), the deficit d, and the
+    exact leading coefficients:
     mu_k = A/N^d + B/N^(d+1) + ...  A check evaluation at an
     out-of-sample N is included.
 
-    `mapper` (optional) is a map-like callable, e.g. Pool.map: the
-    interpolation grid and the out-of-sample check are farmed through
-    it.  Results are exact Fractions either way; only wall-clock
-    changes."""
+    `mapper` (optional) is a map-like callable, e.g. Pool.map (or
+    imap_unordered -- results are re-keyed by N): the interpolation grid
+    and the out-of-sample check are farmed through it.  Results are
+    exact Fractions either way; only wall-clock changes."""
     m = (k + 2 * n) // 2
     deg_bound = m * p
     n0 = 2 * p + 2
     Ns = list(range(n0, n0 + deg_bound + 2))
+    # out-of-sample certification point: the closed form must reproduce a
+    # direct exact evaluation at an N the interpolation never saw.  It is
+    # the most expensive single point, so it goes into the same mapper
+    # call as the grid instead of running alone after the pool has idled.
+    N_chk = n0 + deg_bound + 5
     t0 = time.time()
-    if mapper is None:
-        mus = []
-        for N in Ns:
-            mus.append(mu_exact(N, p, n, k))
-            if progress:
-                print(f"    sampled N={N} ({time.time() - t0:.1f} s)",
-                      flush=True)
-    else:
-        mus = list(mapper(_mu_sample, [(N, p, n, k) for N in Ns]))
-        if progress:
-            print(f"    sampled {len(Ns)} points via mapper "
-                  f"({time.time() - t0:.1f} s)", flush=True)
+    mus = _mu_map(mapper, [(N, p, n, k) for N in Ns + [N_chk]])
+    if progress:
+        print(f"    sampled {len(Ns)} + 1 points ({time.time() - t0:.1f} s)",
+              flush=True)
+    direct = mus.pop()
     vals = []
     for N, mu in zip(Ns, mus):
         P_val = 2 * mu * Fraction(comb(N, p)) ** m
@@ -229,13 +238,6 @@ def law(p: int, n: int, k: int = 2, orders: int = 2,
                            f"{deg_bound} at (p,n,k)=({p},{n},{k})")
     D = [2 * c for c in _poly_pow(_binom_poly(p), m)]
     d, coeffs = _series_at_infinity(P, D, orders)
-    # out-of-sample certification: the closed form must reproduce a direct
-    # exact evaluation at an N the interpolation never saw
-    N_chk = n0 + deg_bound + 5
-    if mapper is None:
-        direct = mu_exact(N_chk, p, n, k)
-    else:
-        direct = list(mapper(_mu_sample, [(N_chk, p, n, k)]))[0]
     interp = _poly_eval(P, Fraction(N_chk)) / _poly_eval(D, Fraction(N_chk))
     if direct != interp:
         raise RuntimeError(f"closed form fails out-of-sample at N={N_chk}, "

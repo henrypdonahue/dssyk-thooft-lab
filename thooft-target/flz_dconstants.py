@@ -46,11 +46,14 @@ numerical spectrum.  We do the same on ours.
 
 So consuming this anchor certifies the SPECTRUM through a new
 functional -- an infinite product with Gamma-function grading, sensitive
-to every level and in particular to the m + 3/8 vs m + 7/8 offset
-between the towers -- fully independent of the power-sum rules G^(s)
-already tested.  It does NOT certify the eigenfunctions; the
-eigenfunction-level checks remain the internal ones in
-eigenfunctions.py (Parseval, weak-form Rayleigh, cross-solver overlap).
+to every computed level that enters the head (n <= n_cut = 80) or the
+residual fit window (n <= 90), and in particular to the m + 3/8 vs
+m + 7/8 offset between the towers -- fully independent of the power-sum
+rules G^(s) already tested.  (Levels above n = 90 enter only through
+the asymptotic tail; the G^(s) sum rules cover them.)  It does NOT
+certify the eigenfunctions; the eigenfunction-level checks remain the
+internal ones in eigenfunctions.py (Parseval, weak-form Rayleigh,
+cross-solver overlap).
 
 THE TAIL (transcribed FLZ Eq. 1.6)
 ----------------------------------
@@ -99,15 +102,26 @@ FLZ 12-digit values (d+ / d-):
     K = 100:  -1.5e-09 / -6.6e-10
     K = 150:  -1.3e-10 / -6.0e-11
     K = 200:  -2.4e-11 / -1.0e-11
-    K = 300:  -4.3e-13 / -1.7e-13   <- anchor's own rounding is +-5e-13
+    K = 300:  ~ -(4..9)e-13 / -(2..7)e-13   (eigvals-only path; the
+              test fixture's with-vectors path lands d+ at ~ -1.1e-12)
 
-and the computed ratio at K = 300 obeys d-/d+ - sqrt(2)/pi = -4.2e-14
-(FLZ's printed values themselves satisfy it to -7.0e-14).  Ladder of
-the tail treatment at K = 300, n_cut = 80, d+ deviation:
+The K = 300 row sits on the double-precision eigenvalue floor, not on
+the product: the LAPACK eigh roundoff at K = 300 is ~4e-13 relative per
+level (measured against the mpmath solver at the same K), it moves with
+the BLAS thread count at that size, and larger K makes it worse (d+
+deviation -5e-12 at K = 400, -1e-11 at K = 500): the K = 100..200 rows
+converge, the K = 300 row is floor-limited rather than a further rung,
+and S-conditioning growth takes over beyond it.  The
+anchor's own 12-digit rounding is +-5e-13; the reproduction is at
+~1e-12, i.e. at the floor of both.  The computed ratio obeys
+d-/d+ - sqrt(2)/pi to ~4e-13 (a -4e-14 value seen on one thread
+setting is a chance cancellation of two ~5e-13 noises; FLZ's printed
+values themselves satisfy the ratio to -7.0e-14).  Ladder of the tail
+treatment at K = 300, n_cut = 80, d+ deviation:
 
     bare truncation      -7.3e-07
     + Eq. (1.6) tail     -1.5e-10
-    + residual fit       -4.3e-13
+    + residual fit       ~ -(4..9)e-13
 
 Jacobi cross-solver at alpha = 0 (same trial space, independent
 Gagliardo-quadrature assembly): K = 60 lands at -1.5e-08, K = 100 at
@@ -155,7 +169,6 @@ def _tail_log_sum(parity: int, m_start: int,
     Each factor is -log(1 + delta_n/(2(m+a))) since
     lambda_n = (nu + delta_n)/2 and 2(m+a) = nu.  Chunked so the peak
     footprint stays small."""
-    a = _OFFSET[parity]
     total = 0.0
     chunk = 250_000
     for lo in range(m_start, _M_TAIL, chunk):
@@ -269,8 +282,16 @@ if __name__ == "__main__":
           f"{dm_flz / dp_flz - ratio_exact:+.1e}\n")
 
     print("Chebyshev solver, n_cut = 80, Eq. (1.6) tail + residual fit:")
+    print("  (the K = 300 row is at the double-precision eigenvalue floor,"
+          " ~1e-12, and moves with the BLAS thread count)")
+    ev300 = {}
     for K in (100, 150, 200, 300):
-        dp, dm = d_constants(num_basis=K)
+        evs = {par: solve_sector(K, parity=par, eigvals_only=True)[0]
+               for par in (0, 1)}
+        if K == 300:
+            ev300 = evs        # reused by the ladder below: one solve
+        dp = d_constant_sector(evs[0], 0)
+        dm = d_constant_sector(evs[1], 1)
         print(f"  K = {K:3d}:  d+ dev = {dp - dp_flz:+.2e}   "
               f"d- dev = {dm - dm_flz:+.2e}   "
               f"ratio - sqrt(2)/pi = {dm / dp - ratio_exact:+.2e}")
@@ -279,7 +300,7 @@ if __name__ == "__main__":
     for tail, fit, label in ((False, False, "bare truncation  "),
                              (True, False, "+ Eq. (1.6) tail "),
                              (True, True, "+ residual fit   ")):
-        dp, dm = d_constants(num_basis=300, tail=tail, resid_fit=fit)
+        dp = d_constant_sector(ev300[0], 0, tail=tail, resid_fit=fit)
         print(f"  {label}: {dp - dp_flz:+.2e}")
 
     print("\nJacobi cross-solver (alpha = 0, quadrature-independent):")

@@ -9,10 +9,11 @@ re-finding the zeros; and the verdict numbers, recomputed from the stored
 arrays.
 
 The headline is negative and quantitative: super-geometric singular-value
-decay with measured, eps-dependent exponents, saturation at K = L
-moments, and a ~1 regulator leverage that node positions are exactly free
-of.  Everything is conditional on the e^{-eps omega} regulator
-convention, and the artifact records the eps-dependence."""
+decay with measured, eps-dependent exponents, a level count bounded by
+min(K, L) that reaches L only at a*eps >= 0.4, and a ~1 regulator
+leverage that node positions are exactly free of.  Everything is
+conditional on the e^{-eps omega} regulator convention, and the artifact
+records the eps-dependence."""
 
 import json
 import math
@@ -124,16 +125,16 @@ def test_conditioning_headline_numbers(data):
     a_vals = [r["a"] for r in fits]
     assert all(x > y for x, y in zip(a_vals, a_vals[1:]))  # small eps worse
     for r in fits:
-        if r["eps"] >= 0.2:
-            assert 0.04 < r["b"] < 0.07, r  # accelerating decay, measured
-            assert r["rms"] < 0.3
-    # at a*eps = 0.1 the last singular values floor near 1e-17, the
-    # quadratic law fails (recorded, not hidden)
-    fit01 = next(r for r in fits if r["eps"] == 0.1)
-    assert fit01["rms"] > 0.5
+        assert 0.04 < r["b"] < 0.075, r  # accelerating decay, measured
+        assert r["rms"] < 0.1, r         # the law holds at every eps
+    # no double-precision floor anywhere: the certified entries are
+    # assembled at their certified dps, so the a*eps = 0.1 tail keeps
+    # falling (an earlier artifact floored near 1e-17 -- a rounding
+    # artifact of assembling the moments at ambient precision)
     c01 = next(c for c in data["conditioning"]["cells"]
                if c["eps"] == 0.1 and c["K"] == 24)
-    assert c01["lg_sv_raw"][-3] - c01["lg_sv_raw"][-1] < 1.0  # the floor
+    assert c01["lg_sv_raw"][-3] - c01["lg_sv_raw"][-1] > 4.0
+    assert c01["lg_sv_raw"][-1] < -20.0
     counts = {c["eps"]: c["n_above"]["1e-16"]
               for c in data["conditioning"]["cells"] if c["K"] == 24}
     assert counts == {0.1: 9, 0.2: 10, 0.4: 12, 0.8: 12, 1.6: 12}
@@ -150,12 +151,13 @@ def test_conditioning_headline_numbers(data):
             assert abs(x - y) < bound, (c["eps"], c["K"])
 
 
-def test_moments_beyond_L_saturate(data):
+def test_moments_beyond_L_level_count(data):
     """The answer to 'how many moments': the double-precision level count
-    saturates at K = L = 12 at every eps (one-count flicker at 0.2), the
-    fine K-scan at the reference eps is monotone to saturation, and the
+    is bounded by min(K, L) and reaches L = 12 at K = 12 for the
+    reference eps (fine K-scan, monotone to saturation); at every eps
+    the count at K = 12 and at K = 24 agree to within one, and the
     residual singular-value motion from K = 12 to 24 is eps-graded --
-    < 0.5 decades at a*eps <= 0.4, ~4 at a*eps = 1.6, where high moments
+    < 0.3 decades at a*eps <= 0.4, ~4 at a*eps = 1.6, where high moments
     still probe the mass window."""
     fine = data["conditioning"]["fine_scan_eps_ref"]
     counts = [r["n_double"] for r in fine["rows"]]
@@ -174,7 +176,7 @@ def test_moments_beyond_L_saturate(data):
             for x, y in zip(c12["lg_sv_raw"], c24["lg_sv_raw"]))
     assert moves == pytest.approx(
         data["conditioning"]["sv_move_K12_to_K24"], abs=1e-9)
-    assert moves["0.1"] < 0.5 and moves["0.4"] < 0.5
+    assert moves["0.1"] < 0.3 and moves["0.4"] < 0.3
     assert moves["1.6"] > 2.0
 
 
@@ -331,3 +333,21 @@ def test_verdict_consistency(data):
         2 * v["digits_per_level_ref"]["first"]
     assert "e^{-eps omega}" in v["statement"]
     assert "node-level" in v["statement"]
+
+
+def test_regulated_moments_keep_certified_precision():
+    """The certified coefficients must survive assembly: regulated_moments
+    is called from moment_matrix at the caller's ambient precision (15
+    dps in run()), and the entries it returns have to carry the gate's
+    dps, not double.  Regression for the rounding that floored the
+    small-eps singular values near 1e-17 in an earlier artifact."""
+    with mp.workdps(15):
+        mus, err, dps = bi.regulated_moments(1.0, 0.1, kmax=6,
+                                             rel_tol=1e-40)
+    assert dps >= 60 and err < 1e-40
+    with mp.workdps(dps):
+        ref, _, _ = bi.regulated_moments(1.0, 0.1, kmax=6, rel_tol=1e-40)
+        for x, y in zip(mus, ref):
+            assert abs((x - y) / y) < mp.mpf(10) ** (-(dps - 5)), (x, y)
+        # and a double-rounded copy is visibly worse than that
+        assert abs((mp.mpf(float(mus[3])) - ref[3]) / ref[3]) > 1e-18

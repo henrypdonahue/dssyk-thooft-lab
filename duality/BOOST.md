@@ -75,19 +75,23 @@ is the nodes.
 at certified precision (orders ≤ 23, a dps-doubling gate, errors below
 1e-140). The weights-from-moments map for the first 12 levels is
 super-geometrically ill-conditioned: log₁₀(σ₁/σⱼ) ≈ a(j−1) + b(j−1)²
-with a = 1.54 → 0.44 over aε = 0.1 → 1.6 and b ≈ 0.05, so each level
-costs about one to two digits more than the last. Double-precision
-moments resolve 9–12 levels, and the count saturates at K = L moments.
+with a = 1.18 → 0.44 over aε = 0.1 → 1.6 and b ≈ 0.05–0.07, so each
+level costs about one to two digits more than the last. Double-precision
+moments resolve 9–12 levels; the count is bounded by min(K, L), and L
+moments suffice for all L levels only at aε ≥ 0.4.
 Two masses split by δ need a third moment known to ~0.05 δ², and an
 unresolved pair drags the fitted single mass down by 0.21 δ².
 
 The decisive number for fact 4 above: moment invariants carry regulator
 leverage 0.93–1.02 (a digit of ε costs a digit of mass), while node
 positions have leverage exactly zero and transfer as dm/m ≈ 0.46√η
-despite the double zeros of S ~ K². Until the state map fixes ε,
-moments carry no mass digits at all; conditional on a fixed map, they
-beat nodes only below the 0.46√η crossover. The node route wins, and
-now with its price list.
+despite the double zeros of S ~ K². Until the state map fixes ε, a
+single moment invariant carries no mass digits at all (trading a second
+invariant for ε presupposes the regulator's form, which is what the map
+must supply; the nodes' zero leverage likewise presupposes a
+multiplicative regulator); conditional on a fixed map, moments beat
+nodes only below the 0.46√η crossover. The node route wins, and now
+with its price list.
 
 *Scope: free scalar, 1+1 dimensions, single particle, sharp worldline.
 Composite operators smear the kernel. Interactions dress it. This

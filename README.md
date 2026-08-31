@@ -30,12 +30,12 @@ paper and of the open problems is in [road_map.md](road_map.md).
 | module | role | tests |
 |---|---|---|
 | [thooft-target/](thooft-target) | the yardstick: the 't Hooft meson spectrum to 12+ digits, the FLZ anchors, the condensate, the vacuum energy | 48 |
-| [syk-self-averaging/](syk-self-averaging) | the SYK-side claims: self-averaging, the Mₙ/CP sector, QED and baryon campaigns, freeness, the exact 1/N laws and their K = 12 ladder | 205 |
-| [duality/](duality) | the dictionary, the N = ∞ chord engines, the conserved-channel theorem (Majorana and Dirac), the OTOC laboratory, the KMS discriminator, the boost inverse problem, the JT-dS vacuum-energy note, the derived large-q skeleton | 284 |
+| [syk-self-averaging/](syk-self-averaging) | the SYK-side claims: self-averaging, the Mₙ/CP sector, QED and baryon campaigns, freeness, the exact 1/N laws and their K = 12 ladder | 206 |
+| [duality/](duality) | the dictionary, the N = ∞ chord engines, the conserved-channel theorem (Majorana and Dirac), the OTOC laboratory, the KMS discriminator, the boost inverse problem, the JT-dS vacuum-energy note, the derived large-q skeleton | 288 |
 
-Install once with `pip install -e ".[dev]"`. Then `make test` runs the 523
-fast tests in about five minutes. `make test-all` adds the slow ED sweeps,
-537 in total.
+Install once with `pip install -e ".[dev]"`. Then `make test` runs the 528
+fast tests in about a minute and a half. `make test-all` adds the slow ED sweeps,
+542 in total.
 
 ## Main results
 
@@ -58,7 +58,7 @@ engine measures the same zeros to n = 5 and μ₆.
 The finite-N approach to that zero is now an exact law, not a fit
 (`syk-self-averaging/pair_moment_laws.py`, `pair_moment_ladder.py`),
 out to the K = 12 word frontier. Every moment μ_k of every Aₙ pair
-channel dies as N^−(K/2+1) with K = k + 2n, at all 45 computed laws.
+channel dies as N^−(K/2+1) with K = k + 2n, at all 55 computed laws.
 The leading coefficient is shared across the n = 1 → 2 step exactly,
 at every rung, and across no other step. The certified closed forms
 are A(n=1) = −16p²(p−1), A(n=2) = −64p³(p−1)(4p−5) and
@@ -139,9 +139,10 @@ solver stays accurate at nonzero quark mass.
 **Extract the tower.** The exact 1/N laws, the K = 12 ladder and the
 diagonal chord law are in hand. The chord-side derivation is not. The
 step from moments to a spectrum now has its price list
-(`duality/boost_inverse.py`): one moment per level, each level costing
-one to two more digits, and no mass digits at all until the state map
-fixes the regulator — so node-level data it is. The Dirac pair channel
+(`duality/boost_inverse.py`): at least one moment per level, each
+level costing one to two more digits, and no mass digits from a moment
+invariant until the state map fixes the regulator — so node-level data
+it is. The Dirac pair channel
 is frozen too (`duality/dirac_chord.py`); its diagonal half and CP
 resolution are open. This is a live race with the authors.
 

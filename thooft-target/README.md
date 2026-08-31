@@ -55,7 +55,7 @@ point, where the Chebyshev basis is only algebraic.
 | independent solver (`sine_solver.py`) | a different basis, no shared code; it checks the quark-mass machinery |
 | Jacobi solver at α ≠ 0 | β = ½ anchor to ~5e-13; α = ±0.5 ground state below 1e-11 by K = 32; LM sum rules s = 2 to ~3e-8, s ≥ 4 to ~4e-12 |
 | asymptotics | 2λn → n + 3/4; matrix elements against quadrature to machine precision |
-| FLZ d± constants (`flz_dconstants.py`, their Eq. 4.21 products) | d₊, d₋ to ~4e-13 at K = 300, the anchor's own 12-digit floor; d₋/d₊ = √2/π to 4e-14; Jacobi cross-solver to its 1.5e-8 quadrature floor |
+| FLZ d± constants (`flz_dconstants.py`, their Eq. 4.21 products) | d₊, d₋ to ~1e-12 at K = 300 (the double-precision eigenvalue floor; the anchor's own 12-digit rounding is 5e-13); d₋/d₊ = √2/π to ~4e-13; Jacobi cross-solver to its 1.5e-8 quadrature floor |
 
 **The decay constants are new data.** No published wavefunction tables
 exist. In the φ(0⁺) > 0 convention every fn is positive and decreasing,
@@ -91,7 +91,7 @@ point it has the wrong endpoint exponent. Use the Jacobi solver there.
 | `reference_spectrum.json`, `spectrum_double_precision.csv`, `plot_spectrum.py`, `regge_trajectory.png` | outputs |
 
 ```bash
-pip install -r requirements.txt
+pip install -e ".[dev]"   # from the repo root, once
 python3 thooft_spectrum.py   # print the spectrum
 python3 validate.py          # the validation report (exit code = pass/fail)
 python3 eigenfunctions.py    # wavefunction checks and decay constants

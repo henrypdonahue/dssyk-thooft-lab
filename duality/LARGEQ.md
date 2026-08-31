@@ -32,8 +32,11 @@ takes the Maldacena–Stanford finite-T ladder-kernel eigenproblem (their
 3.112–3.118) at k = 1, in the antipodal variable a Schrödinger problem
 [−d²/dz² + 1/(2cos²(z/2))]ψ = (m/2v)²ψ on (−vπ, vπ) with Dirichlet
 walls, and solves it by parity-split sine-Galerkin. The derived sets
-match the transcribed CMS 3.3 roots to 3e-12 across v = 0.05..0.95, the
-grid-doubling shift is 4e-11, and m = 0 and m = ±v come out as the
+match the transcribed CMS 3.3 roots to 3e-12 across v = 0.05..0.95 (the
+producer's full-scan numbers, stored in `largeq_kernel.json`; the fast
+tests re-derive the match at 1e-8 with K = 160 across the scan and at
+1e-11 with the producer's K = 400 at three v), the grid-doubling shift
+is 4e-11, and m = 0 and m = ±v come out as the
 exact solutions that fail the Dirichlet condition while their
 eigenfunctions degenerate — CMS's Regge-pole slots, derived. That is the
 perturbable object the O(1/q) computation has to be built on.

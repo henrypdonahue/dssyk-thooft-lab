@@ -432,11 +432,11 @@ def test_census_bare_fermion_lone_crossing():
     uncrossed word when it is not.  (2) The sampled ratio is the
     avoidance probability 1 - p/Nc within binomial noise (asserted at
     5 sigma; measured < 0.6 sigma).  (3) The approach to
-    q_dirac^{1/p} = e^{-p/Nc} is at the census rate p^2/(2 Nc^2): the
-    exact gap sits in [0.35, 0.55] p^2/Nc^2 at all three sizes, and the
-    measured deviations shrink monotonically, +3.3e-2 -> +5.3e-3 ->
-    +2.2e-3 (seeded, so deterministic).  The c^dag_i ... c_i ordering
-    (the other end of a pair word) obeys the same census."""
+    q_dirac^{1/p} = e^{-p/Nc} is at the census rate p^2/(2 Nc^2)
+    (arithmetic: e^{-x} - (1 - x) = x^2/2 + ...), so the measured
+    deviations shrink monotonically, +3.3e-2 -> +5.3e-3 -> +2.2e-3
+    (seeded, so deterministic).  The c^dag_i ... c_i ordering (the
+    other end of a pair word) obeys the same census."""
     k = P // 2
     devs = {}
     for Nc, n_samp in [(16, 2500), (32, 2500), (64, 4000)]:
@@ -446,8 +446,6 @@ def test_census_bare_fermion_lone_crossing():
         sigma = math.sqrt(exact * (1.0 - exact) / n_samp)
         assert abs(r - exact) < 5.0 * sigma, (Nc, r, exact)
         devs[Nc] = abs(math.exp(-P / Nc) - r)
-        gap = abs(math.exp(-P / Nc) - exact)
-        assert 0.35 * P * P / Nc ** 2 < gap < 0.55 * P * P / Nc ** 2, Nc
     assert devs[16] > devs[32] > devs[64]
     r_dag, dev_dag = _matter_crossing_average(32, k, 2000, seed=7,
                                               dagger_first=True)
@@ -458,37 +456,55 @@ def test_census_bare_fermion_lone_crossing():
 
 @pytest.mark.slow
 def test_census_two_crossings_factorize_slow():
-    """Factorization consistency beyond the lone crossing: a bare c-chord
-    crossed by TWO mutually uncrossed (nested) H-chords,
+    """Factorization beyond the lone crossing: a bare c-chord crossed by
+    TWO mutually uncrossed (nested) H-chords,
 
         E[tr(c_i h_u h_v c^dag_i h_v h_u)]
-        / E[tr(c_i c^dag_i h_u h_u h_v h_v)]  ->  q_dirac^{2/p}.
+        / E[tr(c_i c^dag_i h_u h_u h_v h_v)].
 
-    Unlike the lone crossing there is no exact finite-Nc census here:
-    u-v support coincidences contribute O(k^2/Nc) corrections.  Measured
-    (seed 7, 1200 samples): 0.7657 vs q^{2/p} = 0.7788 at Nc = 32, and
-    0.8707 vs 0.8825 at Nc = 64 -- consistent within the O(1/Nc)
-    systematic plus sampling noise (~1e-2)."""
+    The census is exact per sample here too: the crossed word vanishes
+    identically when i lies in the union of the two H-chord supports and
+    equals the uncrossed word when it does not (asserted at 1e-14 on
+    every sample; an earlier version of this test compared the ratio to
+    q^{2/p} with 3x headroom and called the census inexact -- it is
+    exact, the u-v support overlap only reweights the uncrossed word).
+    So the ratio is the joint avoidance probability, (1 - p/Nc)^2 up
+    to that reweighting, asserted at 5 sigma; q_dirac^{2/p} = e^{-2p/Nc}
+    is its Nc -> infinity limit, the gap being ~p^2/Nc^2 (0.013 at
+    Nc = 32; coefficient 1 here, 1/2 for the lone crossing -- the same
+    order, the census rate of a double crossing).  Measured
+    (seed 7, 1200 samples): 0.7657 at Nc = 32 [(1 - p/Nc)^2 = 0.7656],
+    0.8707 at Nc = 64 [0.8789]."""
     k = P // 2
-    for Nc, tol in [(32, 0.045), (64, 0.035)]:
+    for Nc in (32, 64):
         rng = np.random.default_rng(7)
         num = den = 0.0
+        max_dev = 0.0
         for _ in range(1200):
             A1, B1 = _sample_hchord(Nc, k, rng)
             A2, B2 = _sample_hchord(Nc, k, rng)
             i = int(rng.integers(Nc))
             modes = sorted(set(A1) | set(B1) | set(A2) | set(B2) | {i})
             lo, hi = ((), (i,)), ((i,), ())
+            cn = cd = 0.0
             for t1 in _hu_terms(A1, B1):
                 for t1b in _hu_terms(A1, B1):
                     for t2 in _hu_terms(A2, B2):
                         for t2b in _hu_terms(A2, B2):
-                            num += _word_trace([lo, t1, t2, hi, t2b, t1b],
-                                               modes)
-                            den += _word_trace([lo, hi, t1, t1b, t2, t2b],
-                                               modes)
+                            cn += _word_trace([lo, t1, t2, hi, t2b, t1b],
+                                              modes)
+                            cd += _word_trace([lo, hi, t1, t1b, t2, t2b],
+                                              modes)
+            want = 0.0 if i in set(A1) | set(B1) | set(A2) | set(B2) else cd
+            max_dev = max(max_dev, abs(cn - want))
+            num += cn
+            den += cd
+        assert max_dev < 1e-14, (Nc, max_dev)
+        avoid2 = (1.0 - P / Nc) ** 2
+        sigma = math.sqrt(avoid2 * (1.0 - avoid2) / 1200)
+        assert abs(num / den - avoid2) < 5.0 * sigma, (Nc, num / den, avoid2)
         q2p = q_dirac(Nc, P) ** (2.0 / P)
-        assert abs(num / den - q2p) < tol, (Nc, num / den, q2p)
+        assert 0.5 * P * P / Nc ** 2 < q2p - avoid2 < 1.5 * P * P / Nc ** 2
 
 
 # the chord side is a pure (q, Delta) statement, so a p = 6 point is

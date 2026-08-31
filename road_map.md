@@ -46,8 +46,9 @@ authors' own.
 mass produces a continuum with mass-encoding *nodes*, not a peak. And
 `duality/boost_inverse.py` prices the gap: on that kernel, moment
 invariants carry regulator leverage ≈ 1, so with the state map unfixed
-they carry no mass digits at all, while node positions are exactly
-regulator-independent and still transfer half the data digits. So the
+a single invariant carries no mass digits at all, while node positions
+are exactly regulator-independent (under any multiplicative regulator)
+and still transfer half the data digits. So the
 moment route — the one the Mₙ correlators naturally supply — is blocked
 outright until the authors supply that map, and the test survives only
 through node-level data. (Free scalar, 1+1, single particle, sharp
@@ -99,8 +100,9 @@ K = 32, and the LM sum rules come out to about 1e-12.
 Eigenfunctions are checked (Parseval 3e-6, weak-form Rayleigh ~1e-6,
 cross-solver overlap > 0.9999). FLZ's spectral-determinant constants d±
 are consumed too (`flz_dconstants.py`): their Eq. 4.21 products
-reproduce both 12-digit values at the anchor's own rounding floor, and
-the exact ratio √2/π to 4e-14. Pinning their definition corrected a
+reproduce both 12-digit values to ~1e-12 — the double-precision
+eigenvalue floor at K = 300, against the anchor's own 5e-13 rounding —
+and the exact ratio √2/π to ~4e-13. Pinning their definition corrected a
 mischaracterization — d± are spectrum functionals, not wavefunction
 data — so the external eigenfunction-anchor slot is genuinely empty.
 The decay constants are new data. No published wavefunction tables
@@ -193,7 +195,7 @@ plus a CRT residue-table dynamic program, with no ED.
 `pair_moment_laws.py` turns those float regularities into certified
 closed forms, and `pair_moment_ladder.py` extends them to K = 12 words.
 The organizing structure is the word length K = k + 2n. Every computed
-law — 45 of them, k = 2..10, K = 4..12 — has deficit exactly K/2 + 1,
+law — 55 of them, k = 2..10, K = 4..12 — has deficit exactly K/2 + 1,
 so μ₂ ~ N^−(n+2) is certified through n = 5, μ₄ ~ N^−(n+3) through
 n = 4, and μ₆ ~ N^−(n+4) through n = 3. The leading coefficient obeys
 A(n=1, k) = A(n=2, k−2) *exactly*, at every rung and every p, while
@@ -271,7 +273,7 @@ weight, is a strict-N = ∞ chord computation.
 (`pair_moment_laws.py`, `pair_moment_ladder.py`). P(N) = 2μ_k C(N,p)^m
 is a polynomial in N, so interpolation gives the closed forms, certified
 out of sample. The deficit is K/2 + 1 with K = k + 2n at every one of
-the 45 computed laws, through the K = 12 frontier. The leading
+the 55 computed laws, through the K = 12 frontier. The leading
 coefficient is shared across the n = 1 → 2 step exactly and across no
 other step: μ₄(n=1) shares with μ₂(n=2), μ₆(n=1) with μ₄(n=2), and so
 on up the ladder, while A(2,4) ≠ A(3,2) already in the committed data.
@@ -313,16 +315,22 @@ the invariant level. The ε* consistency table in `boost_forward.json` is
 the recorded spec.
 
 **"How many moments" is now answered on the solvable kernel**
-(`duality/boost_inverse.py`). Exactly as many as there are levels — the
-singular spectrum of the weights→moments map saturates at K = L — and
-each level costs 0.8–2.4 digits of moment precision more than the last
-(log₁₀(σ₁/σⱼ) ≈ a(j−1) + b(j−1)², a = 1.54 → 0.44 over aε = 0.1 → 1.6,
-b ≈ 0.05). Double precision buys 9–12 of 12 levels; 8 digits buy 6–10.
-Resolving a δ-split pair takes a third moment known to ~0.05 δ².
-Decisively: moment invariants carry regulator leverage ≈ 1.0, so with
-the state map unfixed they carry zero mass digits, while node positions
-carry exactly zero leverage. The "needs node-level data" verdict is now
-quantitative, conditional on the e^(−εω) regulator and the free kernel.
+(`duality/boost_inverse.py`). At least as many as there are levels
+(the double-precision level count is bounded by min(K, L)), with L
+moments sufficing only at aε ≥ 0.4 — at aε ≤ 0.2 the count stops at
+9–10 however many moments are added — and each level costs 0.8–2.0
+digits of moment precision more than the last (log₁₀(σ₁/σⱼ) ≈ a(j−1) +
+b(j−1)², a = 1.18 → 0.44 over aε = 0.1 → 1.6, b ≈ 0.05–0.07). Double
+precision buys 9–12 of 12 levels; 8 digits buy 6–10. Resolving a
+δ-split pair takes a third moment known to ~0.05 δ². The decisive
+asymmetry of assumptions: moment invariants carry regulator leverage
+≈ 1.0, so with the state map
+unfixed a single invariant carries zero mass digits (a second invariant
+could trade for ε only under an assumed regulator form — the very thing
+the map must supply), while node positions carry exactly zero leverage
+under any multiplicative regulator. The "needs node-level data" verdict
+is now quantitative, conditional on the e^(−εω) regulator and the free
+kernel.
 Which finite-N object carries the tower remains open.
 
 **The Dirac/complex-SYK chord machinery** has its H-sector built

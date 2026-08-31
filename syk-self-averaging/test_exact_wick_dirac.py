@@ -282,3 +282,16 @@ def test_mu2_pairing_algebra_fast_nc5():
             sem = arr.std(ddof=1) / np.sqrt(n_inst)
             z = (arr.mean() - ex) / sem
             assert abs(z) < 3.5, f"mu{k_mom}[{ch}]: z = {z:.2f}"
+
+
+def test_monomial_structure_cache_guard():
+    """dirac._monomial_structure memoizes the (rows, cols, signs) of a
+    monomial over the FULL basis; feeding it a sub-basis would silently
+    return full-basis indices, so it must refuse.  Pins the guard."""
+    import dirac
+    Nc = 4
+    states = np.arange(1 << Nc, dtype=np.int64)
+    rows, cols, signs = dirac._monomial_structure(Nc, (0,), (1,), states)
+    assert len(rows) == len(cols) == len(signs) > 0
+    with pytest.raises(ValueError):
+        dirac._monomial_structure(Nc, (0,), (1,), states[:10])

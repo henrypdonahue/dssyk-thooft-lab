@@ -7,8 +7,10 @@ largeq_anchor.py TRANSCRIBES the quantization sets M^e/M^o from
 Choi-Mezei-Sarosi (CMS) Eq. (3.3).  This module DERIVES them in-repo,
 from the Maldacena-Stanford (MS, 1604.07818) finite-temperature large-q
 ladder-kernel eigenproblem, with no root-finding on the CMS conditions
-anywhere in the pipeline.  The derived and transcribed sets are then
-cross-checked against each other (largeq_kernel.json, test_largeq_kernel).
+in the derivation (the cross-check row calls largeq_anchor's
+root-finder, which is the point of the comparison).  The derived and
+transcribed sets are cross-checked against each other
+(largeq_kernel.json, test_largeq_kernel).
 
 WHY.  road_map.md Part III names the O(1/q) residues on the
 exact-in-temperature skeleton as the open task of the lambda -> 0 corner.
@@ -146,7 +148,11 @@ def _parity_blocks(v: float, K: int):
     """Sine-Galerkin blocks of -d^2/dz^2 + W(z) on z in (-L, L), L = v pi,
     Dirichlet ends.  Basis e_k = sin(k pi (z+L)/2L)/sqrt(L); odd k are even
     about z = 0, even k are odd (W is even, so the blocks are exact).
-    Returns dict parity -> (H, ks)."""
+    Returns dict parity -> (H, ks).  v must lie strictly inside (0, 1)
+    (the guard lives here so every consumer -- the sets, the modes, the
+    eigenfunction check -- inherits it)."""
+    if not 0.0 < v < 1.0:
+        raise ValueError(f"v must lie strictly inside (0, 1), got {v}")
     L = v * np.pi
     nq = 2 * K + 96
     t, w = _gauss(nq)                      # z = L t, all L factors cancel
@@ -170,7 +176,13 @@ def derived_quantization_sets(v: float, m_max: float = M_MAX,
     """The DERIVED M^e/M^o: Dirichlet spectrum of the k = 1 large-q kernel
     eigenproblem, m = 2 v sqrt(eigenvalue), split by parity.  Same
     signature contract as largeq_anchor.quantization_sets, which this must
-    (and does) reproduce -- but derived, not transcribed."""
+    (and does) reproduce -- but derived, not transcribed.
+
+    v must lie strictly inside (0, 1): at v = 1 the 1/cos^2(z/2) wall
+    sits on the Dirichlet boundary and the Gauss nodes merely miss the
+    pole, at v = 0 the interval is empty.  Accuracy is certified on the
+    v = 0.05..0.95 scan; beyond it the doubling shift grows (2.7e-8 at
+    v = 0.99 with K = 400), so raise K there."""
     blocks = _parity_blocks(v, K)
     sets = {}
     for name, (H, _) in blocks.items():

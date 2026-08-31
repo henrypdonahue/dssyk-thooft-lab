@@ -41,8 +41,8 @@ FINDINGS (all exact unless labeled as an estimate; the artifact is
 pair_moment_ladder.json, pinned by test_pair_moment_ladder.py)
 
 * THE DEFICIT RULE HOLDS EVERYWHERE.  Every law computed here and in
-  the committed campaign -- k = 2..10, K = 4..12, 45 laws -- has
-  deficit exactly K/2 + 1.  The mu_6 laws (n = 1 at p = 2..12(14),
+  the committed campaign -- k = 2..10, K = 4..12, 55 laws -- has
+  deficit exactly K/2 + 1.  The mu_6 laws (n = 1 at p = 2..18,
   n = 2 at p = 2, 4, n = 3 at p = 2) have deficits 5, 6, 7; the whole
   K = 12 frontier at p = 2 -- (n,k) = (5,2), (4,4), (3,6), (2,8),
   (1,10) -- has deficit 7.  So mu_2 ~ N^-(n+2) is certified through
@@ -50,7 +50,7 @@ pair_moment_ladder.json, pinned by test_pair_moment_ladder.py)
 
 * THE n = 1 -> 2 STEP IS EXACT; EVERY DEEPER STEP IS BROKEN.
   A(n=1, k) = A(n=2, k-2) at every rung and every shared p:
-  K = 8 (p = 2..14), K = 10 (p = 2, 4), K = 12 (p = 2; both equal
+  K = 8 (p = 2..18), K = 10 (p = 2, 4), K = 12 (p = 2; both equal
   -155713536).  Every step with n >= 2 on the left differs, at every
   rung and every p.  At K = 10, p = 2 the coefficients over n = 1..4
   are 21 : 21 : 14 : 9 times -2^17; at K = 12, p = 2 they are
@@ -70,8 +70,9 @@ pair_moment_ladder.json, pinned by test_pair_moment_ladder.py)
   With A(1) = -16 p^2 (p-1) and A(2) = -64 p^3 (p-1)(4p-5) the k = 2
   family reads A(n) = -2^(2n+2) p^(n+1) (p-1) Q_n(p), deg Q_n = n-1,
   and the rung degrees run 3, 5, 7 for K = 4, 6, 8.  The other K = 8
-  family exceeded degree 5 too (recorded as such at p = 14); --refit
-  over eight samples identifies it, certified at p = 18:
+  family exceeded degree 5 too at the campaign's six samples; --refit
+  over eight samples (p = 2..16) identifies it, for A(1,6) and A(2,4)
+  separately, each certified by its own fresh law at p = 18:
 
       A(n=1, k=6; p) = A(n=2, k=4; p) = -256 p^4 (p-1) (34 p^2 - 93 p + 64),
 
@@ -95,10 +96,13 @@ pair_moment_ladder.json, pinned by test_pair_moment_ladder.py)
   (N-1) mu_10^pair(n=1) + mu_10^diag(n=1) = 0, exactly, in Fractions
   (pair = -9656064/117649, diag = 9656064/16807 at N = 8, p = 2).
 
-Cost: the full campaign is a few hours on 8 cores (--workers).  The
-default run covers everything above; --deep adds the p = 4 K = 12 laws.
+Cost: the default campaign took 7.4 h on 7 workers (--workers), of
+which the single (5,2,2) law is 3.7 h; the two --refit passes add ~1 h
+each and --ds-extend to p = 48 a few hours more.  --deep adds the p = 4
+K = 12 laws.  --resume seeds the campaign from an existing artifact and
+skips the laws it already holds.
 
-Output: pair_moment_ladder.json.
+Output: pair_moment_ladder.json, written atomically at every checkpoint.
 """
 
 from __future__ import annotations
@@ -106,16 +110,40 @@ from __future__ import annotations
 import argparse
 import json
 import multiprocessing as mp
+import os
 import time
 from fractions import Fraction
-from math import comb
 from pathlib import Path
 
 from exact_pair_moments import channel_pair_moments
-from pair_moment_laws import (_lagrange_in_p, _mu_sample, _poly_eval, law,
-                              mu_exact)
+from pair_moment_laws import _lagrange_in_p, _mu_map, _poly_eval, law
 
 HERE = Path(__file__).resolve().parent
+
+
+def _append_law(laws: list, row: dict) -> None:
+    """Append a freshly computed law unless the same (n, k, p) is already
+    held, in which case the fresh one must agree exactly (same A, same
+    P) -- a resumed campaign or a re-run refit recomputes check laws and
+    must neither duplicate nor silently contradict the stored ones."""
+    key = (row["n"], row["k"], row["p"])
+    for r in laws:
+        if (r["n"], r["k"], r["p"]) == key:
+            if r["A"] != row["A"] or r["P_coeffs"] != row["P_coeffs"]:
+                raise RuntimeError(f"fresh law {key} disagrees with the "
+                                   "stored one")
+            return
+    laws.append(row)
+
+
+def _write_json(path: Path, payload: dict) -> None:
+    """Atomic rewrite: dump to a sibling temp file, then os.replace, so a
+    kill mid-dump can never leave a truncated artifact (the campaign is
+    hours long and the read-modify-write paths would otherwise lose it)."""
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    with open(tmp, "w") as fh:
+        json.dump(payload, fh, indent=1)
+    os.replace(tmp, path)
 
 
 # ---------------------------------------------------------------------------
@@ -196,8 +224,12 @@ def a_closed_form_pooled(n: int, k: int, rows: list, p_check: int,
     extraction at an out-of-sample p.  Mirrors
     pair_moment_laws.a_closed_form, with the (n, k) channel explicit;
     the fresh check law is returned too, since it is real data."""
-    pts = sorted(((r["p"], Fraction(r["A"])) for r in rows
-                  if r["n"] == n and r["k"] == k), key=lambda t: t[0])
+    # one node per p (a later row wins, i.e. the ladder artifact over the
+    # committed one if both ever hold the same law): Lagrange interpolation
+    # through a repeated node would divide by zero
+    by_p = {r["p"]: Fraction(r["A"]) for r in rows
+            if r["n"] == n and r["k"] == k and r["p"] != p_check}
+    pts = sorted(by_p.items())        # p_check never enters the fit
     if len(pts) < 4:
         return dict(n=n, k=k, identified=False,
                     reason="fewer than 4 p samples"), None
@@ -205,7 +237,13 @@ def a_closed_form_pooled(n: int, k: int, rows: list, p_check: int,
     out = dict(n=n, k=k, p_samples=[int(x) for x, _ in pts],
                A_poly_coeffs=[str(c) for c in poly],
                degree=len(poly) - 1, p_check=p_check)
-    fresh = law(p_check, n, k, mapper=mapper)
+    # the check law: reuse a stored one (a resumed campaign, a re-run
+    # refit) rather than spend an hour recomputing it; it is a law()
+    # output either way, certified out of sample at its own N_chk
+    fresh = next((r for r in rows if (r["n"], r["k"], r["p"]) ==
+                  (n, k, p_check)), None)
+    if fresh is None:
+        fresh = law(p_check, n, k, mapper=mapper)
     predicted = _poly_eval(poly, Fraction(p_check))
     out["identified"] = bool(predicted == Fraction(fresh["A"]))
     out["A_at_p_check"] = fresh["A"]
@@ -220,11 +258,7 @@ def a_closed_form_pooled(n: int, k: int, rows: list, p_check: int,
 # ---------------------------------------------------------------------------
 def ds_extension(n: int, ps, mapper=None) -> list:
     """Exact mu_2 on lambda_chord = 2 (N = p^2), c(p) = |mu_2| p N."""
-    args = [(p * p, p, n, 2) for p in ps]
-    if mapper is None:
-        mus = [mu_exact(*a) for a in args]
-    else:
-        mus = list(mapper(_mu_sample, args))
+    mus = _mu_map(mapper, [(p * p, p, n, 2) for p in ps])
     rows = []
     for p, mu in zip(ps, mus):
         rows.append(dict(p=p, N=p * p, mu2=float(mu),
@@ -282,13 +316,23 @@ def c_limit_estimate(rows: list) -> dict:
 # ---------------------------------------------------------------------------
 # campaign
 # ---------------------------------------------------------------------------
-def run(deep: bool = False, workers: int = None, out_path=None) -> dict:
+def run(deep: bool = False, workers: int = None, out_path=None,
+        resume: bool = False) -> dict:
     t0 = time.time()
     workers = workers or max(1, mp.cpu_count() - 1)
     ctx = mp.get_context("spawn")
     pool = ctx.Pool(processes=workers)
     mapper = pool.map
     out = Path(out_path) if out_path else HERE / "pair_moment_ladder.json"
+    prior: dict = {}
+    if resume and out.exists():
+        with open(out) as fh:
+            prior = json.load(fh)
+        print(f"[resume] seeded from {out.name}: "
+              f"{len(prior.get('laws', []))} laws, "
+              f"{len(prior.get('A_closed_forms', []))} closed forms, "
+              f"{len(prior.get('double_scaling', {}).get('n2', []))} "
+              "n=2 double-scaling points", flush=True)
     payload = dict(provenance=(
         "pair_moment_ladder.py -- the mu_6 / K = 12 extension of the "
         "exact 1/N pair-moment laws, the word-length-ladder structure "
@@ -299,11 +343,10 @@ def run(deep: bool = False, workers: int = None, out_path=None) -> dict:
 
     def checkpoint():
         payload["runtime_s"] = round(time.time() - t0, 1)
-        with open(out, "w") as fh:
-            json.dump(payload, fh, indent=1)
+        _write_json(out, payload)
 
     try:
-        print(f"[gate] A_1 flavor-sum identity at k=10 (K=12 words) ...",
+        print("[gate] A_1 flavor-sum identity at k=10 (K=12 words) ...",
               flush=True)
         payload["a1_gate_k10"] = a1_identity_k10()
         if not payload["a1_gate_k10"]["exact_zero"]:
@@ -312,12 +355,16 @@ def run(deep: bool = False, workers: int = None, out_path=None) -> dict:
         print("  exact zero: True", flush=True)
         checkpoint()
 
-        laws = []
+        laws = list(prior.get("laws", []))
+        payload["laws"] = laws          # present even if nothing is recomputed
+        done = {(r["n"], r["k"], r["p"]) for r in laws}
         phases = [("K=8", PLAN_K8), ("K=10", PLAN_K10), ("K=12", PLAN_K12)]
         if deep:
             phases.append(("K=12 deep", PLAN_K12_DEEP))
         for phase, plan in phases:
             for (n, k, p) in plan:
+                if (n, k, p) in done:
+                    continue
                 print(f"[{phase}] law n={n} k={k} p={p} ...", flush=True)
                 row = law(p, n, k, mapper=mapper)
                 laws.append(row)
@@ -334,13 +381,24 @@ def run(deep: bool = False, workers: int = None, out_path=None) -> dict:
         # A(2,4) over committed + new, checked at p = 14; A(3,2) over
         # committed + new (p up to 16), checked at p = 18.
         forms = []
+        prior_forms = {(f["n"], f["k"]): f
+                       for f in prior.get("A_closed_forms", [])}
         for (n, k, p_chk) in ((1, 6, 14), (2, 4, 14), (3, 2, 18)):
+            kept = prior_forms.get((n, k))
+            if kept is not None and kept.get("identified"):
+                # a certified form (possibly from a --refit pass) stays
+                print(f"[closed form] A(n={n},k={k}) kept: identified at "
+                      f"degree {kept.get('degree')}, p = {kept.get('p_check')}",
+                      flush=True)
+                forms.append(kept)
+                payload["A_closed_forms"] = forms
+                continue
             print(f"[closed form] A(n={n},k={k}), out-of-sample p={p_chk} "
                   f"...", flush=True)
             form, fresh = a_closed_form_pooled(n, k, committed + laws,
                                                p_chk, mapper=mapper)
             if fresh is not None:       # the fresh check law is real data
-                laws.append(fresh)
+                _append_law(laws, fresh)
             payload["laws"] = laws
             forms.append(form)
             payload["A_closed_forms"] = forms
@@ -351,15 +409,20 @@ def run(deep: bool = False, workers: int = None, out_path=None) -> dict:
         # refresh the rung table with the check laws included
         payload["ladder"] = rung_table(committed + laws)
 
-        print("[double scaling] n=2 extension ...", flush=True)
-        ds2 = ds_extension(2, DS_N2_PS, mapper=mapper)
-        payload["double_scaling"] = dict(n2=ds2)
-        payload["double_scaling"]["c2_limit"] = c_limit_estimate(ds2)
-        checkpoint()
-        print("[double scaling] n=3 extension ...", flush=True)
-        ds3 = ds_extension(3, DS_N3_PS, mapper=mapper)
-        payload["double_scaling"]["n3"] = ds3
-        checkpoint()
+        prior_ds = prior.get("double_scaling", {})
+        payload["double_scaling"] = {}
+        for label, n_ch, ps in (("n2", 2, DS_N2_PS), ("n3", 3, DS_N3_PS)):
+            have = list(prior_ds.get(label, []))
+            todo = tuple(p for p in ps if p not in {r["p"] for r in have})
+            print(f"[double scaling] n={n_ch} extension "
+                  f"({len(have)} kept, {len(todo)} to compute) ...",
+                  flush=True)
+            rows = have + ds_extension(n_ch, todo, mapper=mapper)
+            rows.sort(key=lambda r: r["p"])
+            payload["double_scaling"][label] = rows
+            if label == "n2":
+                payload["double_scaling"]["c2_limit"] = c_limit_estimate(rows)
+            checkpoint()
     finally:
         pool.close()
         pool.join()
@@ -387,8 +450,7 @@ def ds_extend(ps, workers: int = None, out_path=None) -> dict:
     payload["double_scaling"]["n2"].sort(key=lambda r: r["p"])
     payload["double_scaling"]["c2_limit"] = c_limit_estimate(
         payload["double_scaling"]["n2"])
-    with open(out, "w") as fh:
-        json.dump(payload, fh, indent=1)
+    _write_json(out, payload)
     print(f"extended n2 double scaling to p={max(have | set(ps))}; "
           f"c_inf estimate: {payload['double_scaling']['c2_limit']}")
     return payload
@@ -401,10 +463,21 @@ def refit_closed_form(n: int, k: int, sample_ps, p_check: int,
     interpolant through all of them, certify by a fresh law at p_check,
     replace the family's A_closed_forms entry, and rewrite.  Used when a
     family's degree exceeds the campaign grid (the K = 8 rung needs eight
-    samples)."""
+    samples).
+
+    Guarded: fewer than four samples, or a refit that fails to identify
+    where the artifact already holds an identified form, aborts before
+    the artifact is touched; a re-run does not duplicate the fresh check
+    law but asserts it against the stored one."""
     out = Path(out_path) if out_path else HERE / "pair_moment_ladder.json"
     with open(out) as fh:
         payload = json.load(fh)
+    if len(set(sample_ps)) < 4:
+        raise ValueError("a closed-form refit needs at least four sample p "
+                         f"values, got {sorted(set(sample_ps))}")
+    if p_check in set(sample_ps):
+        raise ValueError(f"p_check = {p_check} is among the samples; the "
+                         "certificate must be out of sample")
     laws = payload["laws"]
     have = {(r["n"], r["k"], r["p"]) for r in laws} | {
         (r["n"], r["k"], r["p"]) for r in _committed_laws()}
@@ -424,16 +497,35 @@ def refit_closed_form(n: int, k: int, sample_ps, p_check: int,
               f", out-of-sample p={p_check} ...", flush=True)
         form, fresh = a_closed_form_pooled(n, k, rows, p_check,
                                            mapper=pool.map)
-    if fresh is not None:
-        laws.append(fresh)
-    forms = [f for f in payload.get("A_closed_forms", [])
-             if not (f["n"] == n and f["k"] == k)]
-    forms.append(form)
+    if fresh is None:
+        raise RuntimeError(f"refit of A(n={n},k={k}) produced no check law: "
+                           f"{form.get('reason')}; artifact left untouched")
+    committed_hit = next((r for r in _committed_laws() if
+                          (r["n"], r["k"], r["p"]) == (n, k, p_check)), None)
+    if committed_hit is not None:
+        if committed_hit["A"] != fresh["A"]:
+            raise RuntimeError(f"check law ({n},{k},{p_check}) disagrees "
+                               "with pair_moment_laws.json; untouched")
+    else:
+        _append_law(laws, fresh)        # raises on disagreement, untouched
+    previous = [f for f in payload.get("A_closed_forms", [])
+                if f["n"] == n and f["k"] == k]
+    if previous and previous[0].get("identified") and \
+            not form["identified"]:
+        raise RuntimeError(f"refit of A(n={n},k={k}) failed to identify "
+                           f"({form.get('reason')}) while the artifact holds "
+                           "an identified form; artifact left untouched")
+    forms = list(payload.get("A_closed_forms", []))
+    slot = next((i for i, f in enumerate(forms)
+                 if f["n"] == n and f["k"] == k), None)
+    if slot is None:
+        forms.append(form)
+    else:
+        forms[slot] = form              # in place: entry order is stable
     payload["A_closed_forms"] = forms
     payload["laws"] = laws
     payload["ladder"] = rung_table(_committed_laws() + laws)
-    with open(out, "w") as fh:
-        json.dump(payload, fh, indent=1)
+    _write_json(out, payload)
     print(f"  identified={form['identified']} degree={form.get('degree')}",
           flush=True)
     return form
@@ -445,6 +537,9 @@ if __name__ == "__main__":
                     help="add the p = 4 K = 12 laws (hours)")
     ap.add_argument("--workers", type=int, default=None,
                     help="pool size (default: cpu_count - 1)")
+    ap.add_argument("--resume", action="store_true",
+                    help="seed the campaign from the existing artifact and "
+                         "skip the laws it already holds")
     ap.add_argument("--ds-extend", type=str, default=None,
                     help="comma-separated extra p values for the n = 2 "
                          "double-scaling line, merged into the existing "
@@ -454,13 +549,20 @@ if __name__ == "__main__":
                          "sample grid and re-certify (e.g. "
                          "1,6:2,4,6,8,10,12,14,16:18)")
     args = ap.parse_args()
+    if args.workers is not None and args.workers < 1:
+        ap.error("--workers must be >= 1")
     if args.ds_extend:
         ds_extend(tuple(int(x) for x in args.ds_extend.split(",")),
                   workers=args.workers)
     elif args.refit:
-        nk, ps, pc = args.refit.split(":")
-        n_, k_ = (int(x) for x in nk.split(","))
-        refit_closed_form(n_, k_, tuple(int(x) for x in ps.split(",")),
-                          int(pc), workers=args.workers)
+        try:
+            nk, ps, pc = args.refit.split(":")
+            n_, k_ = (int(x) for x in nk.split(","))
+            sample_ps = tuple(int(x) for x in ps.split(","))
+            p_check = int(pc)
+        except ValueError:
+            ap.error("--refit expects n,k:p1,p2,...:p_check, e.g. "
+                     "1,6:2,4,6,8,10,12,14,16:18")
+        refit_closed_form(n_, k_, sample_ps, p_check, workers=args.workers)
     else:
-        run(deep=args.deep, workers=args.workers)
+        run(deep=args.deep, workers=args.workers, resume=args.resume)
