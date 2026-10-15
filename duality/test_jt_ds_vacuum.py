@@ -144,8 +144,8 @@ def test_paper_statement_at_recorded_lines(data):
 def test_condensate_cross_link(data):
     """The recorded eps(0) is live thooft-target data, not a stale copy."""
     src = HERE.parent / "thooft-target" / "condensate.json"
-    if not src.exists():
-        pytest.skip("thooft-target/condensate.json not present")
+    # committed artifact: a missing file is a broken checkout, not a skip
+    assert src.exists(), src
     with open(src) as fh:
         eps0 = json.load(fh)["eps_duality_point"]
     assert data["condensate_link"]["eps0_measured_Nc_g2"] == pytest.approx(

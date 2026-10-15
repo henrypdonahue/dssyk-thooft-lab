@@ -1,7 +1,7 @@
 {
  "provenance": "diagonal_chord.py -- exact N=infinity flavor-DIAGONAL A_n channel moments by the parity-law flux walker (derived from the finite-N sign law of exact_pair_moments.py; assembly shared with chord_moments.py); gates: A_1 identity shadow, finite-N convergence on and off the lambda_chord = 2 line, and the Delta_psi -> 0 diagonal width",
  "p": 4,
- "runtime_s": 9.5,
+ "runtime_s": 16.9,
  "points": [
   {
    "lam": 4.0,
@@ -855,7 +855,10 @@
     ]
    ],
    "w2_delta0": 4.666436871953096,
-   "extrap_spread": 0.08892218945172914
+   "extrap_spread": 0.08892218945172914,
+   "w2_delta0_closed": 4.674382516860572,
+   "closed_form": "P_{2n+2}(q)/P_{2n}(q) = (1-q)(5+3q) at n = 2",
+   "richardson_minus_closed": -0.007945644907475291
   },
   "full_channel_finiteN": [
    [
@@ -881,6 +884,7 @@
    1.3121056471901644
   ],
   "full_channel_w2_inf_estimate": 1.3121056471901644,
-  "full_channel_estimate_spread": 0.048248696002569424
+  "full_channel_estimate_spread": 0.048248696002569424,
+  "full_channel_w2_inf_closed_form": 1.3169064074428336
  }
 }

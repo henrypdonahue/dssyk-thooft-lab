@@ -117,10 +117,15 @@ lambda_chord = 2.  w2_diag(Delta = 1/p) for p = 4..10 tracks the rising
 finite-N FULL-channel series 1.044 -> 1.194, and its Delta -> 0 limit is
 the number this module pins.
 
-Scope, stated plainly.  The N = infinity FULL-channel width also needs
-the pair channel's 1/N coefficient.  Both pieces are O(1/p) on the line,
-and neither dominates in the strict limit.  This module supplies the
-diagonal half exactly.
+Scope, stated plainly.  This module supplies the diagonal half exactly.
+Its Delta -> 0 slopes are closed forms (delta_slope_closed): they are
+also the pair channel's double-scaling constants, because the O(Delta)
+parts of the two halves cancel identically on every double-scaling line
+(syk-self-averaging/double_scaling_law.py).  The FULL channel's
+N = infinity width is therefore the ratio of two O(Delta^2) remainders,
+and it has its own exact chord law -- full_channel_chord.py, w2 =
+1.316906 at lambda_chord = 2 -- which supersedes the Richardson estimate
+this module's G3 block used to carry.
 
 Output: diagonal_chord.json -- the campaign over the chord_moments lambda
 grid, plus the three gate tables.
@@ -260,13 +265,16 @@ def channel_moments_diag(q: float, delta_psi: float, n: int,
         v2, g2 = _mu_ordered_swapped(tab, n, k)
         mu[k] = 0.5 * (v1 + v2)
         gross[k] = 0.5 * (g1 + g2)
-    trX = _trace_part(tab, n)
-    mu[0] = mu[0] - trX * trX
+    if 0 in mu:
+        trX = _trace_part(tab, n)
+        mu[0] = mu[0] - trX * trX
     out = {f"mu{k}": mu[k] for k in ks}
     out.update({f"gross{k}": gross[k] for k in ks if k})
-    out["w2"] = (mu[2] / mu[0]) if mu.get(0) else float("nan")
-    if 4 in mu:
-        out["kurt"] = (mu[4] * mu[0] / mu[2] ** 2) if mu.get(2) else float("nan")
+    # the invariants need mu_0 (and mu_2, mu_4): only when they were asked for
+    if 0 in mu and 2 in mu:
+        out["w2"] = (mu[2] / mu[0]) if mu[0] else float("nan")
+        if 4 in mu:
+            out["kurt"] = (mu[4] * mu[0] / mu[2] ** 2) if mu[2] else float("nan")
     return out
 
 
@@ -293,15 +301,37 @@ def finite_n_pair(N: int, p: int, n: int, ks=(0, 2)) -> dict:
 # ---------------------------------------------------------------------------
 # campaign
 # ---------------------------------------------------------------------------
+def delta_slope_closed(K: int, q: float) -> float:
+    """The exact Delta -> 0 slope of the diagonal moments per unit lambda,
+    mu_k^diag = lambda P_K(q) Delta + O(Delta^2), K = k + 2n (depends on K
+    only): P_2 = 2, P_4 = 4(1-q), P_6 = 4(1-q)^2(5+3q),
+    P_8 = 4(1-q)^3(35+56q+35q^2+10q^3).  From the walker run symbolically
+    (syk-self-averaging/double_scaling_law.py, sympy-certified).  These
+    slopes are also the pair channel's double-scaling constants: the
+    O(Delta) parts of the two halves cancel identically."""
+    R = {2: [1], 4: [1], 6: [5, 3], 8: [35, 56, 35, 10],
+         10: [294, 840, 1134, 951, 525, 189, 35]}[K]
+    if K == 2:
+        return 2.0
+    return 4 * (1 - q) ** (K // 2 - 1) * sum(c * q ** j for j, c in enumerate(R))
+
+
+def w2_delta0_closed(lam: float, n: int = 2) -> float:
+    """w2^diag(Delta -> 0) = P_{2n+2} / P_{2n}: (1-q)(5+3q) at n = 2."""
+    q = math.exp(-lam)
+    return delta_slope_closed(2 * n + 2, q) / delta_slope_closed(2 * n, q)
+
+
 def w2_delta0(lam: float,
               deltas=(1.0 / 8, 1.0 / 12, 1.0 / 16, 1.0 / 24, 1.0 / 32,
                       1.0 / 48),
               n: int = 2) -> dict:
     """The Delta_psi -> 0 limit of the diagonal width w2 = mu2/mu0 at
     fixed lambda.  mu0 and mu2 are both O(Delta), so the ratio has a
-    finite limit; w2(Delta) is fit linearly in Delta from the two
-    smallest points (Richardson), with the fit spread over the point set
-    recorded as the honest error."""
+    finite limit.  The limit is now a closed form, w2_delta0_closed
+    ((1-q)(5+3q) = 4.674383 at lambda = 2); the linear-in-Delta Richardson
+    of the walker values is kept as the numerical cross-check, with its
+    spread over the point set."""
     q = math.exp(-lam)
     vals = [(d, channel_moments_diag(q, d, n, ks=(0, 2))["w2"])
             for d in sorted(deltas, reverse=True)]
@@ -310,8 +340,18 @@ def w2_delta0(lam: float,
     pairs = list(zip(vals[:-1], vals[1:]))
     spread = max(abs((wb + (wb - wa) * db / (da - db)) - extrap)
                  for (da, wa), (db, wb) in pairs)
+    closed = w2_delta0_closed(lam, n)
     return dict(lam=lam, q=q, n=n, w2_of_delta=[[d, w] for d, w in vals],
-                w2_delta0=extrap, extrap_spread=spread)
+                w2_delta0=extrap, extrap_spread=spread,
+                w2_delta0_closed=closed,
+                closed_form="P_{2n+2}(q)/P_{2n}(q) = (1-q)(5+3q) at n = 2",
+                richardson_minus_closed=extrap - closed)
+
+
+def _full_channel_closed(lam: float) -> float:
+    """The exact N = infinity full-channel width (full_channel_chord.py)."""
+    from full_channel_chord import channel
+    return channel(lam)["w2"]
 
 
 def run(p: int = 4,
@@ -387,11 +427,11 @@ def run(p: int = 4,
     # G3: the diagonal width at lambda_chord = 2 and its Delta -> 0 limit,
     # next to the FULL-channel context.  The full width is a large
     # diagonal-vs-pair cancellation (N mu_k^diag + N(N-1) mu_k^pair with
-    # opposite signs), so the diagonal alone does NOT approximate it; the
-    # full-channel N = infinity value quoted here is a Richardson
-    # extrapolation in 1/p of the exact finite-N series -- data, not a
-    # chord computation.  The missing chord-side piece is the pair
-    # channel's 1/N coefficient (pair_moment_laws.py territory).
+    # opposite signs), so the diagonal alone does NOT approximate it.  The
+    # full channel's exact N = infinity value is now a closed form of its
+    # own (full_channel_chord.py: w2 = 1.316906 at lambda_chord = 2); the
+    # short exact finite-N series and its Richardson estimate are kept here
+    # as the historical gate that the closed form supersedes.
     full = []
     for (pp, N) in [(4, 16), (6, 36), (8, 64), (10, 100)]:
         pr = finite_n_pair(N, pp, 2, ks=(0, 2))
@@ -407,7 +447,8 @@ def run(p: int = 4,
         full_channel_finiteN=full,
         full_channel_richardson=rich,
         full_channel_w2_inf_estimate=rich[-1],
-        full_channel_estimate_spread=max(rich) - min(rich))
+        full_channel_estimate_spread=max(rich) - min(rich),
+        full_channel_w2_inf_closed_form=_full_channel_closed(2.0))
 
     payload = dict(
         provenance="diagonal_chord.py -- exact N=infinity flavor-DIAGONAL "

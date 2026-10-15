@@ -17,12 +17,15 @@ independent ways.
    lambda_chord = 2 at the O(1/p) rate.  At fixed p, at the word level,
    that sharpens to about 1/N^2.
 
-4. THE G3 NUMBERS.  The diagonal width w2(Delta -> 0, lambda = 2) = 4.67,
-   and the FULL-channel Richardson estimate of about 1.31.  They are kept
-   clearly apart.  The full width is a large diagonal-against-pair
-   cancellation, and its exact chord-side completion needs the pair
-   channel's 1/N coefficient.  That is pair_moment_laws.py territory, not
-   this module's.
+4. THE G3 NUMBERS.  The diagonal width w2(Delta -> 0, lambda = 2) is the
+   closed form (1-q)(5+3q) = 4.674383, which the Richardson of the walker
+   values (4.67 +- 0.09) brackets.  The FULL-channel width is a large
+   diagonal-against-pair cancellation: its exact N = infinity value is
+   full_channel_chord.py's closed form, 1.316906, which the short
+   finite-N Richardson estimate kept here (~1.31) brackets.
+
+5. THE ARTIFACT.  diagonal_chord.json is consumed: slices of every block
+   are recomputed and compared.
 """
 
 import math
@@ -34,9 +37,9 @@ import pytest
 
 from chord_moments import MomentTable
 from diagonal_chord import (DiagonalMomentTable, bruteforce_parity_word,
-                            channel_moments_diag, diag_word_amplitude,
-                            finite_n_diag, finite_n_pair, w2_delta0,
-                            word_diag)
+                            channel_moments_diag, delta_slope_closed,
+                            diag_word_amplitude, finite_n_diag, finite_n_pair,
+                            w2_delta0, w2_delta0_closed, word_diag)
 
 HERE = Path(__file__).resolve().parent
 Q, DP = math.exp(-1.0), 0.3
@@ -209,6 +212,10 @@ def test_g3_diagonal_width_and_full_channel_context():
     d0 = w2_delta0(2.0)
     assert d0["w2_delta0"] == pytest.approx(4.67, abs=0.15)
     assert d0["extrap_spread"] < 0.15
+    # the exact limit, and the Richardson brackets it within its spread
+    q = math.exp(-2.0)
+    assert d0["w2_delta0_closed"] == pytest.approx((1 - q) * (5 + 3 * q), rel=1e-14)
+    assert abs(d0["w2_delta0"] - d0["w2_delta0_closed"]) < d0["extrap_spread"]
 
     full = []
     for (pp, N) in [(4, 16), (6, 36), (8, 64), (10, 100)]:
@@ -222,3 +229,72 @@ def test_g3_diagonal_width_and_full_channel_context():
     rich = [w2 + (w2 - w1) * (1.0 / pb) / (1.0 / pa - 1.0 / pb)
             for (pa, w1), (pb, w2) in zip(full, full[1:])]
     assert 1.25 < rich[-1] < 1.40, rich
+    # and the exact N = infinity value it was estimating (full_channel_chord)
+    from full_channel_chord import channel
+    assert abs(rich[-1] - channel(2.0)["w2"]) < max(rich) - min(rich) + 0.01
+
+
+def test_delta_slopes_are_closed_forms():
+    """mu_k^diag = lambda P_K(q) Delta + O(Delta^2) with P_K depending on
+    K = k + 2n only: the walker's finite-difference slopes at two lambdas
+    match delta_slope_closed for K = 4, 6, 8 across three (n, k) each."""
+    for lam in (1.0, 2.0):
+        q = math.exp(-lam)
+        d0 = 1.0 / 2048
+        for (n, k) in [(1, 2), (2, 0), (2, 2), (1, 4), (3, 0), (3, 2), (2, 4),
+                       (1, 6)]:
+            K = k + 2 * n
+            ks = tuple(sorted({0, 2, k}))
+            r1 = channel_moments_diag(q, 2 * d0, n, ks=ks)
+            r2 = channel_moments_diag(q, d0, n, ks=ks)
+            slope = 2 * (r2[f"mu{k}"] / d0) - r1[f"mu{k}"] / (2 * d0)
+            want = lam * delta_slope_closed(K, q)
+            assert abs(slope - want) < 5e-5 * abs(want), (n, k, slope, want)
+    assert w2_delta0_closed(2.0) == pytest.approx(
+        delta_slope_closed(6, math.exp(-2.0)) / delta_slope_closed(4, math.exp(-2.0)))
+
+
+def test_channel_moments_diag_accepts_any_ks():
+    """Regression: asking for a single k used to raise KeyError."""
+    r = channel_moments_diag(math.exp(-2.0), 0.1, 2, ks=(4,))
+    assert set(r) == {"mu4", "gross4"}
+    r = channel_moments_diag(math.exp(-2.0), 0.1, 2, ks=(0, 2))
+    assert "w2" in r and "kurt" not in r
+
+
+@pytest.fixture(scope="module")
+def art():
+    import json
+    with open(HERE / "diagonal_chord.json") as fh:
+        return json.load(fh)
+
+
+def test_artifact_points_recompute(art):
+    """diagonal_chord.json: the campaign points at two lambdas, the line
+    rows, the G1 residuals and the G3 numbers are recomputed exactly."""
+    for pt in art["points"]:
+        if pt["lam"] not in (2.0, 0.5):
+            continue
+        for n in (1, 2, 3):
+            live = channel_moments_diag(pt["q"], pt["delta_psi"], n,
+                                        ks=(0, 2, 4, 6))
+            for key, val in pt["channels"][f"n={n}"].items():
+                if isinstance(val, float) and math.isfinite(val):
+                    assert live[key] == pytest.approx(val, rel=1e-12, abs=1e-14), \
+                        (pt["lam"], n, key)
+    row = art["line_lambda2"][0]
+    assert row["p"] == 4 and row["N"] == 16
+    dg = finite_n_diag(16, 4, 2, ks=(0, 2))
+    assert dg["mu2"] == pytest.approx(row["finiteN_mu2"], rel=1e-12)
+    ch = channel_moments_diag(math.exp(-2.0), 0.25, 2, ks=(0, 2))
+    assert ch["mu2"] == pytest.approx(row["chord_mu2"], rel=1e-12)
+    g3 = art["g3"]
+    assert g3["delta0"]["w2_delta0_closed"] == pytest.approx(
+        w2_delta0_closed(2.0), rel=1e-14)
+    assert abs(g3["delta0"]["w2_delta0"] - g3["delta0"]["w2_delta0_closed"]) \
+        < g3["delta0"]["extrap_spread"]
+    from full_channel_chord import channel
+    assert g3["full_channel_w2_inf_closed_form"] == pytest.approx(
+        channel(2.0)["w2"], rel=1e-14)
+    assert abs(g3["full_channel_w2_inf_estimate"]
+               - g3["full_channel_w2_inf_closed_form"]) < 0.01
