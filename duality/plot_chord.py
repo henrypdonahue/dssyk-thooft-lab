@@ -3,7 +3,8 @@
 
 Reads chord_spectra.json, chord_fold.json and
 ../syk-self-averaging/mn_majorana_bench.json.  Nothing is recomputed and
-nothing is hardcoded.
+nothing is hardcoded; the one curve not read from JSON is the closed form
+of full_channel_chord.channel in (d).
 
 (a) The verdict.  Exact N = infinity spectral functions S_Delta, with a
     fine window at the semiclassical scale, against the sech^{2 Delta}
@@ -13,9 +14,12 @@ nothing is hardcoded.
     <n(t)> against -(2/lambda) log sech(Jc t).
 (c) The decider.  Folded against unfolded connected fractions, against
     lambda.  The fold breaks the 1/N (~lambda) hierarchy at N = infinity.
-(d) The bench.  Raw w2 rising toward the 't Hooft corner along fixed p,
-    plus the matched-lambda pair.  This is the honest negative; the chord
-    prediction for the pair channel is 0.
+(d) The bench.  Raw ED w2 of the full A_2 channel along fixed p, plus
+    the matched-lambda pair, against the exact N = infinity full channel
+    (full_channel_chord.py) and its pair part, which is 0.  The rise along
+    fixed p is conserved H^2 weight leaving mu_0, not a channel turning
+    on (ERRATA E4; with it removed the width falls monotonically,
+    syk-self-averaging/full_channel_laws.py).
 """
 import json
 import sys
@@ -25,6 +29,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+
+from full_channel_chord import channel
 
 _HERE = Path(__file__).resolve().parent
 
@@ -109,12 +115,15 @@ pair = [next(r for r in bench["points"]
 ax.plot([r["lambda_chord"] for r in pair], [r["w2"] for r in pair],
         "k:", marker="*", ms=11, lw=1,
         label="matched-$\\lambda$ pair ($N{=}10\\to22$)")
+lam_grid = np.linspace(1.0, max(r["lambda_chord"] for r in bench["points"]
+                               if r["n"] == 2 and r["p"] in (4, 6)), 200)
+ax.plot(lam_grid, [channel(x)["w2"] for x in lam_grid], "C3-", lw=1.5,
+        label="$N=\\infty$ full channel (closed form)")
 ax.axhline(0.0, color="k", lw=1,
-           label="chord $N=\\infty$ pair amplitude: 0")
+           label="$N=\\infty$ pair part (theorem): 0")
 ax.set_xlabel(r"$\lambda_{\rm chord}$")
-ax.set_ylabel(r"$w_2$ ($n=2$ channel)")
-ax.set_title("(d) the tower channel turns on toward fixed $p$, "
-             "$\\lambda\\to0$")
+ax.set_ylabel(r"raw $w_2$ ($n=2$ channel)")
+ax.set_title("(d) finite-$N$ ED against the exact $N=\\infty$ channel")
 ax.legend(fontsize=7)
 
 fig.tight_layout()

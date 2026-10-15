@@ -19,10 +19,12 @@ test_chord.py.
 
 SCOPE, and CHORD.md carries the full statement.  This is a FLAVOR
 statement, not an invisibility statement.  The full singlet channel also
-has a flavor-diagonal part of the same order, and that part does
-propagate for n >= 2.  The full A_2 width rises to w_2 ~ 1.19 along
-lambda_chord = 2.  So at N = infinity the tower's weight is carried
-entirely by the diagonal channel.
+has a flavor-diagonal part of the same order, and the full channel
+propagates for n >= 2.  On a double-scaling line the diagonal and pair
+halves cancel at O(sqrt N), and the physical channel is the O(1)
+remainder, belonging to neither half: for A_2 a conserved H^2 piece plus
+a Delta = 2 matter chord, raw width 1.316906 at lambda_chord = 2
+(full_channel_chord.py, singlet_tower.py; ERRATA E2, E3).
 """
 
 import json

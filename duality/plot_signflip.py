@@ -7,7 +7,9 @@ signflip_deep.json).  Reads the JSONs only.  Nothing is recomputed.
 (b) The exact-theory onset.  re_move of the antipodal trend against
     lambda, where up means anti-scrambling, with the unshifted control.
 (c) The hologram point.  The transient anti-scrambling window against
-    lambda, in Jc units, with its ~half ln(1/lambda) growth.
+    lambda, in Jc units (interpolated maxima, ERRATA E12), against a
+    half ln(1/lambda) reference: the growth is monotone in ln(1/lambda)
+    but not that law (DISCRIMINATOR.md).
 (d) The frame's thermality at beta_eff = beta + beta_fake: the residuals.
     The per-line law is exact by construction, so the panel shows what is
     actually measured.  That is the independent contour-engine check and
@@ -68,7 +70,7 @@ ax.plot(lams_h, wins, "o-", color="darkgreen", label="measured window")
 lam_fit = np.linspace(lams_h.min(), lams_h.max(), 50)
 ax.plot(lam_fit, 0.5 * np.log(1.0 / lam_fit) + wins[-1]
         - 0.5 * np.log(1.0 / lams_h[-1]), "k--", lw=1,
-        label=r"$\frac{1}{2}\ln(1/\lambda)$ + const")
+        label=r"reference: $\frac{1}{2}\ln(1/\lambda)$ + const")
 ax.set_xlabel(r"$\lambda$")
 ax.set_ylabel(r"anti-scrambling window  $t^*\,J_c$")
 ax.set_title("(c) hologram point: a semiclassical dS epoch")
