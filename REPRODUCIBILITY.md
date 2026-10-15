@@ -30,10 +30,22 @@ Failures do not prevent later commands from running; any failure makes the
 runner exit nonzero. Keep the complete manifest and logs with a release.
 Interruptions are recorded; a partially completed run is not a pass.
 
-Generated files stay in the snapshot. Review differences before copying
-selected outputs back. Runtime fields, platform rounding and plot metadata
-need not be identical. Compare exact rational strings exactly; compare
-floating-point results with the producer's justified tolerances. A passing
+Generated files stay in the snapshot. At the end of a run the runner
+compares every committed artifact the run rewrote with the working-tree
+copy it started from, and records the result in the manifest under
+`artifact_comparison`. JSON and CSV files are compared value by value.
+Numbers are compared by relative difference; a numeric array is measured
+against its largest entry, and a value below 1e-14 of the largest
+magnitude in its own record counts as a roundoff zero. Runtime fields are
+ignored. Text and structural changes are listed. Images are flagged as
+changed bytes and not compared.
+
+Review those differences before copying selected outputs back. Runtime
+fields, platform rounding and plot metadata need not be identical.
+Compare exact rational strings exactly; compare floating-point results
+with the producer's justified tolerances. On 2026-10-14 (macOS, Python
+3.9) the fast `reproduce` target regenerated every committed artifact to
+within 1e-11 relative. A passing
 script exit code is not sufficient if the script merely prints a failed
 condition: inspect the log and run the corresponding asserting tests after
 regeneration.

@@ -1,8 +1,8 @@
 # Reproduction entry points for the DSSYK <-> 't Hooft stress-test repo.
 #
-#   make test            fast test suites of all three modules   (~2 min)
+#   make test            fast test suites of the three modules   (~2 min)
 #   make test-all        full suites including slow ED sweeps    (~5 min)
-#   make reproduce       fast deterministic checks + figures     (~3 min)
+#   make reproduce       fast deterministic checks + figures     (~1-3 min)
 #   make reproduce-slow  the campaigns behind the saved JSON     (minutes to hours each; ~10 h total)
 #
 # Run the scripts from inside their module directory (module READMEs assume
@@ -17,11 +17,13 @@ test:
 	cd thooft-target && $(PY) -m pytest -q -m 'not slow'
 	cd syk-self-averaging && $(PY) -m pytest -q -m 'not slow'
 	cd duality && $(PY) -m pytest -q -m 'not slow'
+	cd scripts && $(PY) -m pytest -q
 
 test-all:
 	cd thooft-target && $(PY) -m pytest -q
 	cd syk-self-averaging && $(PY) -m pytest -q
 	cd duality && $(PY) -m pytest -q
+	cd scripts && $(PY) -m pytest -q
 
 # Fast, deterministic: the physics gate, the closed-form/identity printouts,
 # the single-realization spectroscopy (Nc = 10), and figures from saved JSON.

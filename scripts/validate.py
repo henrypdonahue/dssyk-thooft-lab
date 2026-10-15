@@ -47,6 +47,105 @@ def git(root, *args):
     return p.stdout.strip() if p.returncode == 0 else None
 
 
+# Fields that record wall-clock cost rather than results.
+RUNTIME_KEYS = ('runtime_s', 'runtime', 'elapsed_s', 'seconds')
+
+# A value below this fraction of the largest magnitude in its own record
+# (the nearest enclosing JSON object) is a roundoff zero and is not
+# compared: e.g. the dynamical histogram of an exactly conserved channel,
+# 1e-22 against a total weight of 1.
+ROUNDOFF_FLOOR = 1e-14
+
+
+def _is_number(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool)
+
+
+def _magnitudes(value):
+    if _is_number(value):
+        return [abs(value)] if value == value else []   # skip NaN
+    if isinstance(value, dict):
+        value = list(value.values())
+    if isinstance(value, list):
+        return [m for v in value for m in _magnitudes(v)]
+    return []
+
+
+def _record(out, rel, path):
+    if rel > out['max_rel']:
+        out['max_rel'], out['max_rel_at'] = rel, path
+
+
+def _walk(old, new, path, out, floor):
+    """Collect the numeric relative differences and every non-numeric
+    change between two parsed JSON values."""
+    if isinstance(old, dict) and isinstance(new, dict):
+        floor = ROUNDOFF_FLOOR * max(_magnitudes(old) + _magnitudes(new) + [0.0])
+        for key in sorted(set(old) | set(new)):
+            if key in RUNTIME_KEYS:
+                continue
+            if key not in old or key not in new:
+                out['structure'].append(f'{path}/{key}')
+            else:
+                _walk(old[key], new[key], f'{path}/{key}', out, floor)
+    elif isinstance(old, list) and isinstance(new, list):
+        if len(old) != len(new):
+            out['structure'].append(f'{path} (length {len(old)} -> {len(new)})')
+            return
+        if old and all(_is_number(v) for v in old + new):
+            # a numeric array (a spectrum, a histogram, a series): measure each
+            # difference against the array's largest entry
+            scale = max(abs(v) for v in old + new)
+            if scale > floor:
+                for i, (a, b) in enumerate(zip(old, new)):
+                    _record(out, abs(a - b) / scale, f'{path}[{i}]')
+            return
+        for i, (a, b) in enumerate(zip(old, new)):
+            _walk(a, b, f'{path}[{i}]', out, floor)
+    elif _is_number(old) and _is_number(new):
+        scale = max(abs(old), abs(new))
+        if old != new and scale > floor:
+            _record(out, abs(old - new) / scale, path)
+    elif old != new:
+        out['text'].append(path)
+
+
+def _parse_csv(text):
+    rows = []
+    for line in text.splitlines():
+        cells = []
+        for cell in line.split(','):
+            try:
+                cells.append(float(cell))
+            except ValueError:
+                cells.append(cell)
+        rows.append(cells)
+    return rows
+
+
+def compare_artifact(old_path, new_path):
+    """Compare one committed artifact with its regenerated copy.  JSON and
+    CSV are compared value by value: numbers by relative difference
+    (arrays against their largest entry, roundoff zeros skipped), runtime
+    fields ignored.  Anything else is reported as changed bytes."""
+    suffix = old_path.suffix.lower()
+    if suffix not in ('.json', '.csv'):
+        return dict(kind='binary', changed=True)
+    try:
+        if suffix == '.json':
+            old, new = json.loads(old_path.read_text()), json.loads(new_path.read_text())
+        else:
+            old, new = _parse_csv(old_path.read_text()), _parse_csv(new_path.read_text())
+    except (ValueError, UnicodeDecodeError) as exc:
+        return dict(kind=suffix[1:], error=f'unparseable: {exc}')
+    out = dict(max_rel=0.0, max_rel_at=None, structure=[], text=[])
+    top_floor = ROUNDOFF_FLOOR * max(_magnitudes(old) + _magnitudes(new) + [0.0])
+    _walk(old, new, '', out, top_floor)
+    return dict(kind=suffix[1:], max_rel=out['max_rel'], max_rel_at=out['max_rel_at'],
+                structure_changes=out['structure'][:20], text_changes=out['text'][:20],
+                n_structure_changes=len(out['structure']), n_text_changes=len(out['text']))
+
+
 def write_json(path, value):
     temp = path.with_suffix('.tmp')
     temp.write_text(json.dumps(value, indent=2, allow_nan=False) + '\n')
@@ -125,7 +224,33 @@ def main():
         if path.is_file() and name not in hashes and '__pycache__' not in path.parts and '.pytest_cache' not in path.parts:
             generated[name] = hashlib.sha256(path.read_bytes()).hexdigest()
     meta['changed_or_new_snapshot_files_sha256'] = generated
+    # Value-level comparison of every committed artifact the run rewrote.
+    # The baseline is the working-tree file, valid only if it is still the
+    # content the snapshot started from.
+    comparison = {}
+    for name in sorted(generated):
+        if name not in hashes:
+            continue
+        src = root / name
+        if not src.is_file() or hashlib.sha256(src.read_bytes()).hexdigest() != hashes[name]:
+            comparison[name] = dict(kind='skipped', error='source changed during the run')
+        else:
+            comparison[name] = compare_artifact(src, snapshot / name)
+    meta['artifact_comparison'] = comparison
     write_json(out / 'manifest.json', meta)
+    if comparison:
+        print('regenerated committed artifacts (runtime fields ignored):')
+        for name, c in comparison.items():
+            if c['kind'] == 'binary':
+                note = 'bytes differ (not compared)'
+            elif 'error' in c:
+                note = c['error']
+            else:
+                note = f"max rel diff {c['max_rel']:.1e}"
+                if c['n_structure_changes'] or c['n_text_changes']:
+                    note += (f", {c['n_structure_changes']} structural and "
+                             f"{c['n_text_changes']} text changes")
+            print(f'  {name}: {note}')
     print(f'{meta["status"]}: {out / "manifest.json"}')
     return int(meta['status'] != 'passed')
 
