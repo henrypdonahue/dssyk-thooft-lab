@@ -12,7 +12,7 @@ order in the vector error), on a three-rung basis ladder whose measured
 K^-6 truncation law is extrapolated away.  Written to
 reference_spectrum_polished.json: 40 levels, each with its measured
 rate, its extrapolation correction and that correction's magnitude as
-the error bar.  About fifteen minutes.
+the error bar.  About seven minutes (395 s recorded in the artifact).
 """
 from mpmath import mp, nstr, fabs
 from thooft_highprec import solve_sector_mp

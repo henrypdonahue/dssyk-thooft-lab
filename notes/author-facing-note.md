@@ -1,7 +1,7 @@
 # Full-channel moments and normalization checks for the DSSYK–'t Hooft proposal
 
 Henry Donahue — working technical note, 16 September 2026; §2 and the
-priorities revised 4 October 2026.
+priorities revised 4 and 14 October 2026.
 
 **Purpose.** Provide specific calculations relevant to the singlet-spectrum
 question in Miyashita–Sekino–Susskind, [2607.05678v1, §4.3](https://arxiv.org/abs/2607.05678v1),
@@ -52,9 +52,10 @@ positive chord coupling and admissible matter weight.
 This is not a proof that the flavor-summed Aₙ is conserved. For Xᵢ =
 ψᵢ(ad_H)ⁿψᵢ, the full correlator has both N diagonal terms and N(N−1)
 pair terms. Subleading per-flavor terms can survive their multiplicities.
-The pair cross-correlator is not a positive spectral measure on its own.
-The claim that the physical tower is invisible to all orders of double
-scaling is therefore withdrawn.
+The pair cross-correlator is not a positive spectral measure on its own,
+and its negative moments are compatible with positivity of the full
+autocorrelator. So the physical tower is not invisible at any order of
+double scaling (an earlier claim to the contrary is ERRATA E1).
 
 A direct calculation avoids this order-of-limits issue by summing flavors
 first. In A₂, each pair of Hamiltonian monomials is weighted by its
@@ -161,8 +162,10 @@ not a demonstration of a complete observer state or all-correlator KMS.
 
 Priorities before a stronger claim:
 
-1. Release the full test and reproduction manifests, and reconcile generated
-   artifacts against the exact source commit.
+1. Record a `reproduce-slow` run against the release commit. As of
+   2026-10-14 all work is committed, the fast suites pass and the fast
+   `reproduce` target regenerates every committed artifact to within
+   1e-11 relative; the hours-long campaigns have not been re-run.
 2. Prove the matter-chord decomposition for general n (done for n = 2;
    verified, not proved, for n = 3..6), explain the λ^(2⌊n/2⌋) scaling of
    the new chord's norm, and derive the small-λ survival of the odd
@@ -177,6 +180,10 @@ Priorities before a stronger claim:
    them explicitly limited to the tested p values.
 5. Obtain the state/time/operator dictionary needed to compare boost data
    with invariant masses. No amount of numerical precision alone supplies it.
+   A concrete first step: the orthogonalized tower of
+   [singlet-tower-note.md](singlet-tower-note.md) §8 gives one matter chord
+   of dimension n per level, so each candidate dual's Δ ↔ m relation can
+   be tested against the parameter-free 't Hooft mass ratios.
 
 ## Reproduction and literature scope
 

@@ -11,14 +11,16 @@ This was built before the DSSYK side of the comparison existed.  So when
 a number finally appears, an index offset, a factor of 2, or a
 normalization has exactly one place to be wrong.
 
-THE FOUR LOAD-BEARING CORRECTIONS, AS CODE
+FOUR LOAD-BEARING CONVENTIONS AND CORRECTIONS, AS CODE
 
 1. INDEX OFFSET.  n_paper = n_FLZ + 2.  The paper adds the non-dynamical
    photon (n = 0) and graviton (n = 1) below the dynamical tower.
 
-2. WHERE THE MATCH LIVES.  Fixed p, lambda -> 0, which is 't Hooft
-   scaling with alpha_bar = p^2 fixed.  It is NOT the lambda-fixed
-   double-scaling line.
+2. WHERE THE PAPER PUTS THE MATCH.  Fixed p, lambda -> 0, which is
+   't Hooft scaling with alpha_bar = p^2 fixed.  It is NOT the
+   lambda-fixed double-scaling line.  (This is the paper's placement, not
+   a result here; at fixed lambda the N = infinity channels are solved in
+   singlet_tower.py.)
 
 3. NORMALIZATION.  M_0 = Q exactly.  M_1 = -(p/2) i H, not the paper's
    M_1 = H.  See m1_coefficient below.

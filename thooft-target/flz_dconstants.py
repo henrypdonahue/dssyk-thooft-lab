@@ -110,10 +110,8 @@ from the FLZ 12-digit values (d+ / d-):
 The ladder CONVERGES.  thooft_spectrum.solve_sector solves the
 reciprocal problem at alpha = 0, so the low levels no longer sit on a
 roundoff floor that grows with K, and the K = 300 row is basis
-truncation of the levels near n = 90, not a floor.  (An earlier version
-of this note, written for the direct solve, read K = 300 as the floor
-and reported the deviation growing beyond it; that was the solver, and
-it is gone.)
+truncation of the levels near n = 90, not a floor.  (The direct solve
+did have a floor there that grew with K; ERRATA E16.)
 
 What limits the default configuration is the tail model: with the head
 cut at n = 80 the exact ratio d-/d+ = sqrt(2)/pi is met to 1.8e-13.

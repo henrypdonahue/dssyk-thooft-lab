@@ -16,7 +16,7 @@ curl -sL https://arxiv.org/e-print/2607.05678v1 -o src.tar.gz     # the target p
 mkdir -p arXiv-2607.05678v1 && tar -xzf src.tar.gz -C arXiv-2607.05678v1 && rm src.tar.gz
 ```
 
-Versions as of 2026-10-04: 2607.05678 is still v1; 2607.14215 has a v2
+Versions as of 2026-10-04 (2607.05678 re-checked 2026-10-14): 2607.05678 is still v1; 2607.14215 has a v2
 (minor corrections; the technical note cites v2 §6); the companion paper
 2506.18054 is at v3, which corrects its Section 5 statements about the
 't Hooft and flat-space limits.

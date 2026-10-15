@@ -14,7 +14,7 @@ one place to hide.
 | CP = (−1)^(n+1), consistent with FLZ parity through the offset | paper §4.2–4.3 |
 | M₁ = −(p/2) iH (`m1_coefficient`) | correction #3, tested in `syk-self-averaging` |
 | paper λ = p²/N, chord λ = 2p²/N, q = exp(−λ_chord) | the factor-2 landmine |
-| ᾱ = ḡ²N = p², ḡ² = λ, τ = p² mq² | paper §4.1–4.2 |
+| ᾱ = ḡ²N = p², ḡ² = λ_paper, τ = p² mq² | paper §4.1–4.2 |
 
 ## What a DSSYK tower would have to reproduce
 

@@ -12,7 +12,7 @@ half-fake-period shift.  Odd harmonics flip, even ones do not.  So the
 window would end when the unflippable n = 2 harmonic, at rate exactly
 2 kappa_1, overtakes.
 
-Two instruments, one verdict.
+Two instruments.
 
 1. SHIFT-CIRCLE HARMONIC ANALYSIS (primary, and it needs no exponential
    fitting in thL).  Sample the curve at shifts Delta along the PHYSICAL
@@ -24,21 +24,19 @@ Two instruments, one verdict.
 
    MEASURED (two- and three-harmonic models both recorded, because the
    answer depends on the model at the 10% level and the residuals are
-   5-9% of the range -- the response is not a clean sum of a few
+   5-10% of the range -- the response is not a clean sum of a few
    v-harmonics): the second harmonic is subdominant, |A_2/A_1| ~
    0.3-0.6, and grows faster than the first, kappa_2/kappa_1 ~ 1.2-1.5
-   at lambda = 1 and 0.6.  That sits between the harmonic tower's 2 and
-   the ratio ~1 an earlier version of this instrument reported.
+   at lambda = 1.5, 1 and 0.6.  So the even-harmonic mechanism is
+   neither refuted nor established: a subdominant, faster-growing second
+   harmonic is there, but not at rate 2 kappa_1 and without the weight a
+   clean tower would need.
 
-   That earlier instrument sampled the FULL fake circle and took a DFT.
-   Its samples past the 2-pt pole (Delta > pi/2 + pi/v) are two orders
-   of magnitude larger than the physical ones, so every DFT bin was the
-   transform of that spike: the "|c_2/c_1| ~ 1, kappa_2/kappa_1 ~ 1"
-   refutation was an artifact and is withdrawn.  The corrected verdict
-   is weaker in both directions: the even-harmonic mechanism is neither
-   refuted nor established.  A subdominant, faster-growing second
-   harmonic is there; it is not at rate 2 kappa_1 and it does not carry
-   the weight a clean tower would need.
+   Why the half circle.  Samples past the 2-pt pole (Delta > pi/2 + pi/v)
+   are two orders of magnitude larger than the physical ones, so a DFT
+   over the FULL fake circle transforms that spike in every bin.  An
+   earlier full-circle version of this instrument reported a refutation
+   for that reason (ERRATA E9).
 
 2. TWO-MODE VARIABLE-PROJECTION FIT (secondary).  It establishes the
    SIGNS robustly: A1 > 0, the flipped mode, with a smaller A2 < 0,
@@ -49,11 +47,13 @@ Two instruments, one verdict.
    failure.  Rate extraction from these curves is unreliable, and the
    band's continuous content is why.
 
-NET.  The anti-scrambling epoch ends because an unflipped growing
-component overtakes.  But that component is NOT the semiclassical second
-harmonic.  The flipped mode's dS-rate question stays open, and it needs a
-method that resolves the band's continuous content -- working directly
-with Lehmann data, for example.
+NET.  The anti-scrambling epoch ends as an unflipped, growing component
+overtakes the flipped one (instrument 2's signs).  Whether that component
+is the semiclassical second harmonic is not settled: it is subdominant and
+grows faster than the first harmonic, but not at 2 kappa_1, and the
+response is not a clean harmonic sum (instrument 1).  The flipped mode's
+dS-rate question stays open; it needs a method that resolves the band's
+continuous content, working directly with Lehmann data, for example.
 
 Output: antipodal_modes.json.  Asserted in test_antipodal_modes.py.
 """

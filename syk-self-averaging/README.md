@@ -35,10 +35,11 @@ every a, scanned to N = 1600. The paper's bound is right, and
 conservative.
 
 **But at fixed p, emergence is only polynomial.** The violation amplitude
-is N^(−(p−1)/2) and the per-element violation is N^(−(p+1)/2). Reaching
-10⁻⁶ needs N ≈ 826 at p = 4. Fixed p is where the spectrum match lives,
-so the emergent symmetry is weakest exactly where the spectra have to be
-compared.
+rms(Bⱼₖ) falls as N^(−(p−1)/2), and the per-element violation
+rms(Bⱼₖ)/E[Bⱼⱼ] as N^(−(p+1)/2). A per-element violation of 10⁻⁶ needs
+N ≈ 826 at p = 4 (exactly 1.01 × 10⁻⁶ there). The paper places the
+spectrum match at fixed p, so the emergent symmetry is weakest exactly
+where the spectra are to be compared.
 
 E[B_jj] = 0 at p = N/2. That is what produces the ratio artifact noted
 below.
@@ -81,9 +82,9 @@ spec(E + F(t)) is the arcsine law.
 
 Measured at N = 12–24, the spectrum lands on the arcsine law, the W₁
 plateau falls like dim^(−0.9), and every alternating word goes to zero.
-The plateau is a rigid-spectrum floor, far below sampling noise. This is
-the first exhibition of the free-product transition in a microscopic
-dS-candidate model.
+The plateau is a rigid-spectrum floor, far below sampling noise. To our
+knowledge this is the first exhibition of the free-product transition in
+a microscopic dS-candidate model.
 
 The caveat is real. The crossover sits at the *dissipation* time
 (t𝒥 ≈ 1.2, nearly N-independent), so ED cannot resolve the ln N
@@ -139,8 +140,8 @@ certified out of sample. Results:
   A(n=1) = −16p²(p−1) and A(n=2) = −64p³(p−1)(4p−5).
 - μ₄ dies one power faster, and at n = 1 shares its leading coefficient
   with μ₂(n=2).
-- The exact double-scaling constants run c₂ = 28.92 → 30.53 over
-  p = 4..16, still rising.
+- The exact double-scaling constants c₂(p) rise over p = 4..16; the
+  ladder below carries them to p = 48 and identifies the limit.
 
 **The ladder** (`pair_moment_ladder.py`) carries this to the K = 12 word
 frontier, with K = k + 2n the word length:
@@ -183,7 +184,8 @@ cancellation above all.
 **The full channel at fixed p** (`full_channel_laws.py`). Summing the
 two halves exactly, the full A₂ width along fixed p peaks at
 λ_chord ≈ 4/3 (N = 24 at p = 4) and then dies as w₂ = 8p(p−2)/N in
-bandwidth units, a closed form certified at p = 2..12 (the two leading
+bandwidth units, with the coefficient 8p(p−2) fit on p = 2, 4, 6 and
+confirmed out of sample at p = 8, 10, 12 (the two leading
 coefficients are 64p²(p−1)²/N² and 512p³(p−1)²(p−2)/N³). In physical
 units (J = 1) that is an N-independent mean-square frequency 8p(p−2):
 the channel keeps a finite O(J) width into the λ → 0 corner. At fixed
@@ -209,8 +211,8 @@ at the Krawtchouk N⁻² rate. Figure: `pair_moments.png`.
 of `duality/chord_moments.py`. The raw width w₂ rises along fixed p
 inside the bench's window, N ≤ 20. The exact engine shows that window
 ends before the peak (N = 24 at p = 4), after which the width dies as
-8p(p−2)/N; "the tower channel turning on" was the rising side of that
-peak, and it is withdrawn.
+8p(p−2)/N. The rise inside the window is the near side of that peak,
+not the tower turning on (ERRATA E4).
 
 Scope, stated plainly. The chord result is an i ≠ j pair amplitude. At
 dense-ED sizes the measured channel is diagonal-dominated, so the bench
@@ -303,7 +305,7 @@ pytest -q -m 'not slow'         # 254 fast tests                  (~45 s)
 This settles §3.5, both equations, one of them exactly. It also settles
 the operator-level prerequisites of the U(N) story.
 
-The headline spectrum match itself lives at fixed p, λ → 0. See
+The paper places the spectrum match at fixed p, λ → 0. See
 `exact_wick.py` for why the emergent gauge symmetry is only polynomially
 accurate there, and `duality/CHORD.md` for where the N = ∞ weight
 actually sits. The CP-resolved spectroscopy is the pipeline for it.

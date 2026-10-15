@@ -90,7 +90,7 @@ Quantitative, not merely sign-level.
 |---|---|
 | ED / closed, unfolded crossed, βJ = 2, N = 12 → 16 | 1.084 → 1.048 |
 | ED / closed across the p = 4 scan, N = 8 → 20 | 1.063 → 1.083 (spread < 0.03) |
-| N = ∞ chord / closed, λ = 4 → 0.5 | 0.973 → 0.979 |
+| N = ∞ chord / closed, λ = 4, 2, 0.5 | 0.973, 0.964, 0.979 |
 
 So crossed-OTOC comparisons here are good to 5–8% against ED, and 2–4%
 against the exact chord engine.

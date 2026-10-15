@@ -145,8 +145,11 @@ size of the operator. It is whether the operator's couplings are
 correlated with H's. Probes built out of the metric are not particles.
 
 Those closed forms are tested. `test_chord_charges.py` asserts every step
-of the proof. This is the exact-in-λ version of the known large-q
-cancellation ([LARGEQ.md](LARGEQ.md)), now with its algebraic origin.
+of the proof. It parallels the known large-q cancellation of the bilinear
+tower at leading order ([LARGEQ.md](LARGEQ.md)). The parallel is
+qualitative: the theorem holds at fixed λ for the pair amplitude, and how
+the λ → 0 limit relates to the large-p expansion at fixed p is not
+established.
 
 ## The finite-N approach to the zero
 
@@ -361,23 +364,17 @@ So the sharp statement is:
 > plus matter chords of dimension 2..n. The split of its weight into
 > "diagonal" and "pair" is bookkeeping that cancels at leading order.
 
-The tower propagates. It is not invisible. An earlier version of this
-note read the diagonal half as "all of the tower's N = ∞ weight", and
-put the coherence question to the authors on that basis; the full-channel
-law withdraws that reading. What stands is the spec. A dictionary has to
+The tower propagates. It is not invisible, and its weight is not
+"all diagonal" (ERRATA E1, E2). What stands is the spec. A dictionary has to
 produce, from the bulk side, a conserved H² admixture of the stated
 size, a dimension-2 continuum with the stated norm, and above it chords
 of dimension 3, 4, 5 with norms that are closed forms in λ. None of that
 is a free parameter, and none of it is a discrete line: each sector is
 the smooth matter-chord continuum of the spectral scan above.
 
-**A withdrawn reading.** An earlier version of this note concluded that
-the tower is a 1/N effect, invisible at every order of the double-scaled
-expansion, and that the spectrum match must therefore be made at fixed p,
-λ → 0. That does not follow from this theorem, and it is withdrawn. The
-fixed-p argument still stands on its own footing:
-`syk-self-averaging/exact_wick.py` finds the emergent gauge symmetry only
-polynomially accurate there, whatever the tower does.
+The fixed-p question stands on its own footing, separate from this
+theorem: `syk-self-averaging/exact_wick.py` finds the emergent gauge
+symmetry only polynomially accurate there, whatever the tower does.
 
 ## Scope and loose ends
 
@@ -394,11 +391,11 @@ What the bench does find: along fixed p with λ falling, the raw width w₂
 rises from 0.30 to 1.20 over N = 10 → 20 at p = 4, n = 2. That window
 ends before the peak. The exact engine continues the same channel
 (`../syk-self-averaging/full_channel_laws.py`): the full width tops out
-at N = 24 (λ_chord = 4/3) and then dies as 8p(p−2)/N, a certified
-closed form (p = 2..12). In physical units that is an N-independent
+at N = 24 (λ_chord = 4/3) and then dies as 8p(p−2)/N (the coefficient
+fit on p = 2, 4, 6 and confirmed out of sample at p = 8, 10, 12). In physical units that is an N-independent
 mean-square frequency 8p(p−2)·J², a finite O(J) width all the way into
-the corner. "The tower channel turns on toward the corner" was the
-rising side of that peak, and it is withdrawn. The peak itself is the
+the corner. The bench's rising width was the near side of that peak
+(ERRATA E4). The peak itself is the
 conserved H² weight draining out of the denominator (85% of μ₀ at
 N = 10, 19% at N = 24, 0.01% at N = 1024): with that component removed
 the width has no maximum. It falls from about 2 once N ≥ 12, tracking

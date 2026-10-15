@@ -3,12 +3,11 @@ r"""
 The FULL A_n channel at fixed p, exactly: the corner where the match lives.
 ==========================================================================
 
-road_map.md names fixed p, lambda -> 0 as the regime where the meson
-spectrum match has to be made, and lists the order-of-limits corner as
-open.  The ED bench (mn_majorana_bench.py) reaches N <= 20 there and
+The paper places the 't Hooft limit at fixed p, lambda -> 0, and
+road_map.md lists that order-of-limits corner as open.  The ED bench (mn_majorana_bench.py) reaches N <= 20 there and
 finds the raw A_2 width w2 = mu_2/mu_0 RISING along fixed p = 4 as
 lambda_chord = 2p^2/N falls, 0.30 -> 1.20 over N = 10 -> 20.  That was
-read as "the tower channel turns on toward the corner".
+once read as "the tower channel turns on toward the corner" (ERRATA E4).
 
 The exact engine (exact_pair_moments.py) evaluates BOTH halves of the
 channel at any N, with no ED:

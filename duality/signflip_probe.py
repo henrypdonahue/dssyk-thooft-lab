@@ -255,9 +255,7 @@ def calibrated_scan(lam: float, betaJ: float, p: int = 4,
     effective rate, recorded next to its closed-form calibration
     (kappa_closed_same_window) and their ratio.  The exact-chord values
     (0.83-0.88) sit BELOW the closed form's own early-window value; they
-    are not evidence that the magnitude rate exceeds v.  An earlier
-    version of this docstring read kappa > v as "phase and magnitude
-    rates decouple at finite lambda"; that reading is withdrawn.
+    are not evidence that the magnitude rate exceeds v (ERRATA E10).
 
     Two findings survive.  (1) At strong coupling both shifts fail: the
     flip is genuinely semiclassical, not a rate-calibration artifact.
@@ -461,11 +459,9 @@ def thermal_shape(lam: float, p: int = 4, nmax: int = 140) -> dict:
     fails, worse toward semiclassics: the tomperature thermality is the
     detailed-balance identity of the shifted sector, not a Gibbs state.
 
-    An earlier version of this function continued the real-time form with
-    the roles of t and tau_s swapped, cosh(Jc(tau_s + i t)), and tested
-    'periodicity' in real time; both instruments were miscalibrated, and
-    the 'shapes fail worse toward semiclassics' negative they produced is
-    withdrawn (the historical numbers stay in the git history)."""
+    The target is 1/cos(Jc (tau_s + i t)); the form with t and tau_s
+    swapped, 1/cosh(Jc (tau_s + i t)), is a different function and
+    miscalibrates the test (ERRATA E11)."""
     Jc = math.sqrt(lam) * math.exp(lam / 8.0)
     beta_f = math.pi / Jc
     tau_s = 0.5 * beta_f

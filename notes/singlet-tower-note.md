@@ -1,14 +1,15 @@
 # The singlet tower of double-scaled SYK at N = ∞: a conserved piece plus matter chords
 
-Henry Donahue — working technical note, 4 October 2026.
+Henry Donahue — working technical note, 4 October 2026; revised 14 October 2026.
 
 **Purpose.** State, with its proof and its checks, what the Majorana
 singlet channels Aₙ = Σᵢ ψᵢ (ad_H)ⁿ ψᵢ are at strict double scaling. This
 is the Majorana form of the operators Mₙ of Miyashita–Sekino–Susskind
-[2607.05678v1, §4.3](https://arxiv.org/abs/2607.05678v1). The note
-supersedes the "normalization caveat" of
-[author-facing-note.md](author-facing-note.md) §2 at N = ∞. It does not
-extract a mass spectrum, and it does not cover the Dirac tower. Novelty
+[2607.05678v1, §4.3](https://arxiv.org/abs/2607.05678v1). The n = 2
+theorem and its proof also appear in the LaTeX manuscript
+[conserved-channel-note](conserved-channel-note/main.tex) §4. This note
+does not extract a mass spectrum, and it does not cover the Dirac
+tower. Novelty
 has not been established by an exhaustive literature review.
 
 Code: `duality/singlet_tower.py`. Tests: `duality/test_singlet_tower.py`.
@@ -239,6 +240,9 @@ sensitivity estimates, not confidence intervals.
 
 ## 6. What changes in the earlier notes
 
+(The full list of corrections is in [ERRATA.md](../ERRATA.md); E2–E4
+are the ones this note settles.)
+
 - "μ₂/μ₀ = 1.316906 at λ = 2" stands as a ratio of identity-subtracted
   moments. As a width it is superseded by 2(1 − q²) = 1.963369.
 - The maximum of that ratio near λ ≈ 1 at N = ∞, and its maximum at
@@ -265,7 +269,34 @@ For a dictionary the content is a specification: a conserved H²
 admixture of stated size, a dimension-2 continuum of stated norm, and
 chords of dimension 3, 4, … whose norms are closed forms in λ and scale
 as λ^(2⌊m/2⌋), with the even ones dropping out of the higher levels as
-λ → 0. In the paper's dictionary λ = ḡ².
+λ → 0. In the paper's dictionary ḡ² = p²/N, so ḡ² = λ/2 in this note's
+chord convention.
+
+## 8. What this implies for labelling the tower
+
+The paper pairs the n-th operator Mₙ with the n-th meson. The small-λ
+shares of §4 bear on that labelling, in the Majorana channels and at
+fixed λ.
+
+As λ → 0, A₃, A₄, A₅ and A₆ each put at least 99% of their dynamical
+weight in one sector, the dimension-3 chord O₃, with dressings that
+differ from level to level. So in that limit the raw Aₙ with n ≥ 3 do
+not each open a new propagating sector. A one-to-one map from raw
+operators to new states cannot hold there.
+
+The decomposition also says what can be labelled. It is triangular: Oₙ
+first appears in Aₙ, and its dressing there has degree n − n = 0. So
+removing from Aₙ its overlap with the commutant of H and with every
+dressed lower chord f(H) Oₘ g(H), m < n, leaves a multiple of Oₙ at
+N = ∞: a matter chord of dimension n whose spectral density is the
+standard Δ = n continuum. The natural candidate for "the n-th member of the
+tower" is therefore the dimension-n chord, not the raw Aₙ. Both start
+at 2: the paper's dynamical tower begins at n = 2, and so do the matter
+chords.
+
+Whether a dimension-n chord carries a meson's quantum numbers, and at
+what mass, is the dictionary question. It is not answered here. These
+statements are about the Majorana Aₙ; the Dirac Mₙ are not covered.
 
 ## Reproduce
 

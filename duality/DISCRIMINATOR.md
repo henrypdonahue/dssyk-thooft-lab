@@ -122,9 +122,8 @@ exponent κ_eff ≈ 0.83–0.88 for the exact chord OTOC. The same estimator
 on the large-q closed form itself gives 0.94 on that window, and reaches
 v ≈ 0.47 only for θ_L ≳ 6, because the cosh(vθ_L) growing/decaying pair
 contaminates early differences. So κ_eff > v is an early-window artifact,
-not a rate decoupling (the exact values sit below the closed form's own
-early-window value, ratio 0.88–0.93), and an earlier version of this
-note that read it as "phase and magnitude rates decouple" is corrected.
+not a rate decoupling: the exact values sit below the closed form's own
+early-window value, ratio 0.88–0.93 (ERRATA E10).
 What stands: the flip works with Δ = π/v and fails with Δ = π/κ_eff
 everywhere, and π/κ_eff ≈ 3.8 lands near π/(2v) = 3.3, where the
 rotation law puts Re a = 0. No rate recalibration rescues strong
@@ -145,8 +144,8 @@ probes run at the actual hologram point, β = 0.*
 **A semiclassical dS epoch, not eternal dS.** The antipodal frame
 anti-scrambles in a transient window. The window grows as λ falls:
 t·Jc ≈ 0.52 → 1.10 over λ = 1.0 → 0.3 (the maximum of the antipodal
-curve, located by interpolation on a grid that now runs past every
-window; the earlier 0.57 → 1.14 were grid points, one of them censored).
+curve, located by interpolation on a grid that runs past every window;
+ERRATA E12).
 The growth is monotone in ln(1/λ) but not a fixed ½ ln(1/λ): the
 pairwise slopes are 0.66, 0.38, 0.34, falling as λ falls, against a
 quantization of ±0.07–0.14. Scrambling comes back afterward. The
@@ -171,10 +170,8 @@ spectrum cuts off the sec(π/2) singularity, an edge effect, not a fold
 pathology. The naive Gibbs guess, the observer thermal at β𝒥 = π in the
 ordinary finite-temperature form, fails and fails worse toward
 semiclassics (0.42 → 1.03). So the tomperature thermality is the exact
-detailed-balance identity of the shifted sector, not a Gibbs state. An
-earlier version of this note continued the real-time form with t and
-τ_s swapped and read the resulting mismatch as "shapes fail worse toward
-semiclassics"; that instrument was wrong, and the negative is withdrawn.
+detailed-balance identity of the shifted sector, not a Gibbs state
+(ERRATA E11 records the earlier, miscalibrated shape test).
 
 **The end of the epoch, and `antipodal_modes.py`.** The natural
 mechanism is the unflippable *even* scramblon harmonic, at rate 2κ,
@@ -186,12 +183,10 @@ is subdominant, |A₂/A₁| ≈ 0.3–0.6, and grows faster than the first,
 residuals: the response is not a clean sum of a few v-harmonics. So the
 mechanism is neither refuted nor established; a faster-growing
 unflippable component is there, at a rate between 1 and 2 times the
-first harmonic's. An earlier version of this note reported the
-mechanism refuted (κ₂/κ₁ ≈ 1, comparable weights) from a DFT over the
-full fake circle; the samples past the 2-pt pole at Δ = π/2 + π/v were
-two orders of magnitude larger than the physical ones and dominated
-every DFT bin, so that instrument measured a spike, and the refutation
-is withdrawn. What survives the two-mode fit is a flipped positive
+first harmonic's. The fits stay on the physical half circle because
+samples past the 2-pt pole at Δ = π/2 + π/v are two orders of magnitude
+larger and would dominate any full-circle transform (ERRATA E9). What
+survives the two-mode fit is a flipped positive
 component plus a smaller unflipped negative one, wherever the flip
 operates. The dS-rate question stays open.
 
