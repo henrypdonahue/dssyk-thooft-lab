@@ -201,6 +201,29 @@ and falls monotonically to the same 8p(p−2)/N. The peak at N = 24 is
 conserved weight leaving the denominator (85% of μ₀ at N = 10, 19% at
 N = 24 for p = 4).
 
+**The 't Hooft limit, by shape** (`thooft_limit.py`). The paper does its
+'t Hooft-model comparison at fixed p, N → ∞; the N = ∞ results in
+`duality/` are at fixed λ. The leading 1/N coefficients of the exact laws
+give the fixed-p channels' physical moments (J = 1). As p grows they
+approach the λ → 0 quasinormal ladders of `duality/HORIZON.md`:
+
+| | fixed p, N → ∞ (exact) | ladder limit |
+|---|---|---|
+| A₂ ⟨ω²⟩ | 8p(p − 2) | 8p² (Δ = 2) |
+| A₂ ⟨ω⁴⟩ | 32p²(p − 2)(7p − 15) | 224p⁴ |
+| A₂ kurtosis | 7/2 − 1/(2(p − 2)) | 7/2 = 3 + 1/Δ |
+| A₂ μ₆/μ₂³ | 47/2 − 37/(4(p − 2)) + 5/(4(p − 2)²) | 47/2 (imposed in the fit) |
+| A₃ ⟨ω⁴⟩/⟨ω²⟩ | 4p(10p − 21) | 40p² (Δ = 3; Δ = 2 would give 28p²) |
+
+Each form is fit on the first values of p and checked on the rest; the
+kurtosis at p = 8, 10, 12 (`thooft_limit.LAWS`). Since both limits sit at
+p → ∞ with p²/N → 0, approaching the ladders is the expected
+large-p ↔ small-λ correspondence, so the table is a consistency check.
+The new content is the size of the finite-p corrections, which is large:
+⟨ω²⟩ is (1 − 2/p) of its ladder value, and A₃'s ratio at the p computed
+still lies between the Δ = 2 and Δ = 3 values. Moments do not decide
+whether the finite-p spectrum is gapped.
+
 **Gates.** A₁ = −2pH forces (N−1)μ_k^pair + μ_k^diag = 0 at k = 2 and 4,
 and that holds at machine precision. The computation is checked against
 the closed m ≤ 3 Venn-profile sums (kept in-tree as the reference),
@@ -264,6 +287,7 @@ Read `rms_off`, not the ratio, which is artifacted at p = N/2.
 | `pair_moment_ladder.py` | the μ₆ / K = 12 extension and the word-length ladder: deficit K/2+1 at all 55 laws, the exact n = 1 → 2 coefficient step, the K = 12 frontier, A(n=3)(p) certified at p = 18, c₂(p) exact to p = 48 (multiprocessing; `--refit`, `--ds-extend [--n 3]`) |
 | `double_scaling_law.py` | the closed forms of the double-scaling constants, c_{n,2}(λ) = λP_{2n+2}(e^(−λ)), the exact sequences on three lines, the finite-N diagonal–pair cancellation, the B(2,2;p) closed form (multiprocessing; `--resume`) |
 | `full_channel_laws.py` | the FULL A_n channel at fixed p, exact: the peak at λ_chord ≈ 4/3 and the certified law N w₂ → 8p(p−2) |
+| `thooft_limit.py` | the 't Hooft limit by shape: exact fixed-p, N → ∞ moments of A₂ (⟨ω²⟩, ⟨ω⁴⟩, kurtosis, μ₆/μ₂³) and A₃ (⟨ω⁴⟩/⟨ω²⟩) against the λ → 0 ladders (`--run` ~3 h; `--from-cache`) |
 | `conserved_points.py` | the (8, 4) per-instance conservation explained (spin-trace map, Cl₈ grades), the identities A₁ = −2ΣHᵢ, A₂ = 4ΣHᵢ², and the general mixed-word identity for every Aₙ |
 | `projected_channel.py` | finite-N ED split of a channel into stationary and dynamical weight (the whole commutant of H removed, degeneracies included) |
 | `mn_spectroscopy.py` | CP-resolved Mₙ spectral functions |
@@ -278,7 +302,7 @@ Read `rms_off`, not the ratio, which is artifacted at p = N/2.
 | `mn_majorana_bench.py` | Majorana singlet-channel moments (the ED side of the chord computation) |
 | `validate_syk.py`, `self_averaging.py` | RMT validation; the §3.5 measurement |
 | `plot_self_averaging.py`, `plot_freeness.py`, `plot_pair_moments.py` | figures (they read the JSONs) |
-| `test_*.py` | the asserting suites (265 tests, 254 fast) |
+| `test_*.py` | the asserting suites (274 tests, 261 fast) |
 
 ## Usage
 
@@ -297,7 +321,7 @@ python3 qed_campaign.py         # the QED campaign
 python3 baryons.py              # the baryon campaign
 python3 freeness.py             # the freeness campaign           (hours)
 python3 mn_majorana_bench.py    # the singlet-moment bench        (~1 h)
-pytest -q -m 'not slow'         # 254 fast tests                  (~45 s)
+pytest -q -m 'not slow'         # 261 fast tests                  (~45 s)
 ```
 
 ## Scope

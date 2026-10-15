@@ -27,13 +27,13 @@ cancel at that order. The physical channel is the O(1) remainder, which
 belongs to neither half (`duality/full_channel_chord.py`).
 
 **E3. "The full A₂ width at N = ∞ is ≈ 1.19 (or a Richardson estimate of
-the finite-N series)."** Superseded 2026-10-14. The exact value is the
+the finite-N series)."** Superseded 2026-10-14 (`aa66ab8`). The exact value is the
 closed form μ₂/μ₀ = 1.316906 at λ_chord = 2. As a *width* of the moving
 part, that ratio is itself superseded by 2(1 − q²) = 1.963369: about a
 third of μ₀ is the conserved H² admixture (`duality/singlet_tower.py`).
 
 **E4. "The tower channel turns on toward the λ → 0 corner"** (the raw
-ED width rising along fixed p over N ≤ 20). Withdrawn 2026-10-14. That
+ED width rising along fixed p over N ≤ 20). Withdrawn 2026-10-14 (`9dfa598`). That
 window is the rising side of a peak at N = 24 (p = 4), and the peak is
 conserved H² weight leaving the denominator. With the H² component
 removed the width falls monotonically along fixed p, to 8p(p−2)/N
@@ -44,10 +44,28 @@ step of the ladder."** Refuted 2026-08-28 (`501bd34`). It holds exactly
 at the n = 1 → 2 step and at no deeper one: at K = 10, p = 2 the
 coefficients run 21 : 21 : 14 : 9 over n = 1..4.
 
-**E6. "The double-scaling constant c₂ has no identified closed form"
-and "A(n=3, p) has degree above 5 in p."** Superseded 2026-10-14 and
-2026-08-28. c₂(λ) = 4λ(1−q)²(5+3q), and
-A(n=3, p) = −256p⁴(p−1)(34p² − 108p + 91), certified at p = 18.
+**E6. "The double-scaling constant c₂ has no identified closed form."**
+Superseded 2026-10-14 (`9dfa598`): c₂(λ) = 4λ(1−q)²(5+3q). (The related
+note that the k = 2, n = 3 coefficient has degree above 5 in p was true;
+its closed form, −256p⁴(p−1)(34p² − 108p + 91), has degree 7 and was
+identified on 2026-08-28, `501bd34`.)
+
+**E20. The stretched-horizon note (`621f0b3`) stated its conclusion for
+"the Sₙ".** Scoped 2026-10-14 (`0a3035a`): the computation is for their
+Majorana form Aₙ; the Dirac full channel is not computed.
+
+**E21. "The N = ∞ singlet channels carry no massive component," with "the
+decay rates show it directly" and a frequency fit "200 times below the
+best massive floor"** (`621f0b3`). Corrected 2026-10-15. A quasinormal
+ladder is itself a superposition of massive responses, with Rindler mass
+density ∝ M^(2Δ−1), so the defensible statement is that the channels'
+mass spectrum is gapless, with no gap and no discrete masses. That
+follows from the exact decomposition and the invertibility of the mass
+transform, not from the decay-rate plateau, which a faster-decaying gapped
+admixture could hide under. The fit basis is rank-deficient, and a
+massive density reaches a floor of about 5e-4 on it (≈ 50× above A₃ at
+λ = 0.05, not 200×). The (Δ/4)λ deviation is mostly a scale shift; at the
+best-fit scale the shape deviates by about 0.045λ.
 
 ## The dS / OTOC axis
 
@@ -83,7 +101,7 @@ large-q form |1/cos(𝒥z)|^(2Δ), with a deviation shrinking toward
 semiclassics (0.46 → 0.18 over λ = 2 → 0.25).
 
 **E12. "The anti-scrambling window grows 0.57 → 1.14 (t·J_c)."**
-Corrected 2026-10-14. Those were grid points, one of them censored. The
+Corrected 2026-10-14 (`127b50f`). Those were grid points, one of them censored. The
 interpolated maxima are 0.52 → 1.10 over λ = 1.0 → 0.3.
 
 ## The boost-to-mass calibration

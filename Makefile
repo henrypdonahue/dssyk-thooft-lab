@@ -1,9 +1,9 @@
 # Reproduction entry points for the DSSYK <-> 't Hooft stress-test repo.
 #
-#   make test            fast test suites of the three modules   (~2 min)
-#   make test-all        full suites including slow ED sweeps    (~5 min)
-#   make reproduce       fast deterministic checks + figures     (~1-3 min)
-#   make reproduce-slow  the campaigns behind the saved JSON     (minutes to hours each; ~10 h total)
+#   make test            fast suites: the three modules and scripts/ (~3 min)
+#   make test-all        full suites including slow ED sweeps    (~6 min)
+#   make reproduce       fast deterministic checks + figures     (~3-5 min)
+#   make reproduce-slow  the campaigns behind the saved JSON     (minutes to hours each; ~15 h total)
 #
 # Run the scripts from inside their module directory (module READMEs assume
 # this).  Dependencies: pip install -e ".[dev]"  (pinned; python 3.9-3.12,
@@ -55,6 +55,7 @@ reproduce:
 	cd duality && $(PY) singlet_tower.py
 	cd duality && $(PY) diagonal_chord.py --run
 	cd duality && $(PY) horizon_tower.py
+	cd syk-self-averaging && $(PY) thooft_limit.py
 	cd duality && $(PY) plot_chord.py
 	cd duality && $(PY) plot_signflip.py
 	cd duality && $(PY) plot_singlet_tower.py
@@ -96,6 +97,7 @@ reproduce-slow:
 	cd syk-self-averaging && $(PY) pair_moment_ladder.py --ds-extend 32,36,40,44,48
 	cd syk-self-averaging && $(PY) full_channel_laws.py --run
 	cd syk-self-averaging && $(PY) double_scaling_law.py --run
+	cd syk-self-averaging && $(PY) thooft_limit.py --run
 	cd duality && $(PY) full_channel_chord.py --run
 	cd duality && $(PY) singlet_tower.py --run
 	cd thooft-target && $(PY) generate_reference.py

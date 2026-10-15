@@ -1,133 +1,111 @@
 #!/usr/bin/env python3
 r"""
-The singlet tower at the stretched horizon: quasinormal ladders, not mesons.
-===========================================================================
+The singlet tower at the stretched horizon: a gapless, scale-invariant spectrum.
+==============================================================================
 
 singlet_tower.py writes every Majorana singlet channel
 A_n = sum_i psi_i (ad_H)^n psi_i (n <= 6) at N = infinity as a conserved
 polynomial in H plus matter chords of dimension 2..n.  This module asks
 what that content looks like in the frame where the proposal says the
-mesons live, and whether a massive meson could be hiding in it.
+mesons live, and what mass spectrum it corresponds to there.
 
 THE ORTHOGONALIZED TOWER
 ------------------------
 The decomposition is triangular, and the chord that is new at level n
-enters A_n with a constant dressing, coefficient exactly 4 (the a = 1,
-b = n term of kappa_ab, see singlet_tower.py).  So projecting A_n off the
+enters A_n with a constant dressing, coefficient exactly 4 (the T = {1, n}
+term (-2)^2 C(n-1, n-1) of the A_n identity).  So projecting A_n off the
 commutant of H and off every dressed lower chord f(H) O_m g(H), m < n,
-leaves
-
-    O~_n = 4 O^_n ,     <O~_n O~_n> = 16 norm_n ,
-
-a pure matter chord of dimension Delta = n.  orthogonal_tower() checks
-the coefficient and the weight against sector_moment.
+leaves O~_n = 4 O^_n, of weight 16 norm_n: a pure matter chord of
+dimension Delta = n (orthogonal_tower()).
 
 THE SEMICLASSICAL FORM: A QUASINORMAL LADDER
 --------------------------------------------
 As lambda -> 0 the T = infinity two-point function of a matter chord of
-dimension Delta tends to sech^(2 Delta)(Jc t) (Jc the chord-units scale
-of chord.py), whose spectral density is
+dimension Delta tends to sech^(2 Delta)(Jc t), Jc = sqrt(lambda) e^(lambda/8)
+in chord units, with spectral density
 
     rho_Delta(omega) = 2^(2 Delta - 1) |Gamma(Delta + i omega/(2 Jc))|^2
-                       / (2 pi Jc Gamma(2 Delta)) .
+                       / (2 pi Jc Gamma(2 Delta)) ,
 
-It is meromorphic, with poles at omega = -2 i Jc (Delta + k), k = 0, 1, ...:
-a quasinormal ladder with spacing a = 2 Jc and lowest decay rate
-Delta * a.  Measured on the exact N = infinity density (chord.py,
-s_omega_smooth) for Delta = 2..6, the maximum deviation is (Delta/4)
-lambda + O(lambda^2) (convergence()).  In the time domain the effective
-decay rate -d ln G/dt plateaus at Delta * a (decay_rates()).
+poles at omega = -2 i Jc (Delta + k): a quasinormal ladder with spacing
+a = 2 Jc.  Against the exact N = infinity density (chord.s_omega_smooth),
+Delta = 2..6, the deviation at the fixed scale Jc is (Delta/4) lambda +
+O(lambda^2) (convergence()).  Almost all of it is a scale shift: at the
+best-fit scale J_eff = Jc (1 - (Delta/4) lambda + ...) the shape deviates
+by about 0.045 lambda for every Delta (scale_fit()).  So one common
+spacing a for all channels holds at leading order only.  In time, the
+exact decay rate -d ln G/dt plateaus at Delta * a (decay_rates()).
 
-Every dressed sector of a full channel inherits the same poles: at small
-lambda the dressing contributes a polynomial in omega.  full_channel_fit()
-fits the exact A_3 and A_4 densities to span{omega^(2j) rho_m}; the
-residual falls steeply with lambda (about lambda^3).  That fit is a
-consistency check, not a discriminator on its own: a massive-field
-density also fits the same basis to a few 1e-3 on a finite window
-(massive_fit_control), but at a fixed floor with nothing to send to zero.
-The sharp discriminator is the time domain.
+A full channel's density is a sum of polynomial multiples of its sectors'
+ladders, since a dressing is a polynomial in omega at small lambda.
+full_channel_fit() checks that; it is a consistency check only, because
+|Gamma(m + 1 + ix)|^2 = (m^2 + x^2) |Gamma(m + ix)|^2 makes the basis
+rank-deficient (an even polynomial times rho_2), and a massive-field
+density also fits it on a finite window to ~5e-4 (massive_fit_control).
 
-UNITS: THE LADDER IS STRING-SCALE
----------------------------------
-Miyashita-Sekino-Susskind 2506.18054 (Sec. 2) measure energies in string
-units, J_MSS = p J with this repo's coupling Var(J) = p!/N^(p-1) J^2,
-J_MSS the inverse string length; the flat-space limit keeps energies
-fixed in those units as N -> infinity at fixed lambda.  With
-<H^2> = C(N,p) p!/N^(p-1) J^2 -> J_MSS^2 e^(-lambda/4) / lambda_paper,
+UNITS
+-----
+2506.18054 measures energies in string units, J_MSS = p J, and keeps them
+fixed in the flat-space limit at fixed lambda.  In the Majorana
+translation used here (Var(J) = p! J^2 / N^(p-1), lambda_chord =
+2 lambda_paper), <H^2> -> J_MSS^2 e^(-lambda/4)/lambda_paper and
+scriptJ = Jc sqrt(<H^2>) = sqrt(2) J_MSS (units_mss(); exact because the
+e^(lambda/8) in Jc cancels the e^(-lambda/4)).  The O(1) factor is
+convention-dependent: the paper's complex model (q = e^(-4 lambda) in
+2006.13983's convention) changes it.  Either way the ladder sits at the
+string scale, the scale of the meson masses and of the stretched horizon
+of 2506.18054 Sec. 6.
 
-    scriptJ = Jc sqrt(<H^2>) = sqrt(2) J_MSS ,   a = 2 scriptJ = 2 sqrt(2) J_MSS,
+THE CALIBRATION: MASS SPECTRA AT A RINDLER HORIZON
+--------------------------------------------------
+The T = infinity correlator Tr(O(t) O)/dim is real, even and regular at
+t = 0, the structure of a two-sided correlator (sech^(2 Delta)(scriptJ t)
+first becomes singular at t = i beta_R/2, beta_R = 2 pi/a).  For a probe
+at Rindler radius 1/a, a free field of mass M gives
 
-exactly at the semiclassical bridge (units_mss()).  So the ladder of the
-singlet tower sits at the string scale: the scale of the meson masses,
-and of the stretched horizon of 2506.18054 Sec. 6, which sits at a string
-distance from the Rindler horizon with a string-scale local Unruh
-temperature.  (The fundamental fermion, Delta = 1/p, decays at
-2 scriptJ/p, the cosmic scale of Rahman-Susskind 2401.08555.)
+    K_0((2M/a) cosh(a tau/2))  <->  S_M(omega) = K_(i omega/a)(M/a)^2 / (pi a)
 
-THE CALIBRATION: WHAT A MASS LOOKS LIKE AT A RINDLER HORIZON
-------------------------------------------------------------
-The T = infinity correlator Tr(O(t) O)/dim is regular and real at t = 0:
-it is a two-sided (thermofield-double) correlator, and so is
-sech^(2 Delta).  For a probe at Rindler radius 1/a, two-sided free-field
-correlators are:
+(DLMF 10.32.17; bessel_identity()), entire in omega, with nodes, and a
+decay rate (M/a) sinh(a tau/2) + 1/4 tanh(a tau/2) that grows without
+bound.  A field theory with Kallen-Lehmann mass density rho(M) gives
+S(omega) = int rho(M) S_M(omega) dM, and the ladder is such a
+superposition:
 
-  * a scale-invariant operator of dimension Delta:
-        cosh^(-2 Delta)(a tau/2)        <->  |Gamma(Delta + i omega/a)|^2 ,
-    the quasinormal ladder -i a (Delta + k);
-  * a free field of mass M:
-        K_0((2M/a) cosh(a tau/2))       <->  K_(i omega/a)(M/a)^2 ,
-    by DLMF 10.32.17, K_mu K_nu = 2 int K_(mu+nu)(2z cosh t)
-    cosh((mu-nu)t) dt.  That is ENTIRE in omega: no quasinormal poles.
-    Its effective decay rate grows like M sinh(a tau/2), without bound,
-    and the density has real zeros (nodes) at large omega.
+    int_0^inf z^(2 Delta - 1) K_(ix)(z)^2 dz
+        = 2^(2 Delta - 3) Gamma(Delta)^2 |Gamma(Delta + ix)|^2 / Gamma(2 Delta)
 
-The one-sided (same-wedge) responses differ by the KMS factor e^(pi omega/a):
-e^(pi omega/a) |Gamma(Delta + i omega/a)|^2 against e^(pi omega/a)
-K_(i omega/a)(M/a)^2 (duality/BOOST.md).  The factor is entire, so the
-dichotomy, poles against no poles, does not depend on that choice; the
-two-sided form is used because the hologram correlator is omega-symmetric.
+(the Mellin transform of K_nu^2 at nu = ix; mass_spectrum_identity()
+checks it).  So a dimension-Delta ladder
+is the response of the GAPLESS, scale-invariant mass density
+rho(M) ~ M^(2 Delta - 1), down to M = 0; its poles come from the M -> 0
+end.  A gapped spectrum (support M >= M_0 > 0), like the discrete 't Hooft
+tower at m_q^2 = 0 (FLZ), gives an entire S(omega): no poles.  The
+transform is invertible (the cosine representation turns S into the
+K_0-transform of rho, which is injective), so the exact channel densities,
+sums of |Gamma(m + i omega/a)|^2 with polynomial dressings, fix rho(M) as
+a power-law density M^(2m-1)(c_0 + c_1 M^2 + ...) with no gap and no
+discrete masses.
 
-A gapped tower of mesons coupled with positive weights, like the 't Hooft
-model at m_q^2 = 0 (gapped, FLZ 0905.2280), is a positive sum of the
-second kind: entire, super-exponentially decaying (thooft_tower_rates(),
-with the repo's own masses and decay constants).
-
-With a = 2 Jc the N = infinity singlet channels are, as lambda -> 0,
-exactly the scale-invariant responses with Delta = 2, 3, 5.  The argument
-is the exact decomposition (every A_n is a polynomial in H plus matter
-chords, nothing else) plus the measured convergence of every chord's
-density to |Gamma(m + i omega/a)|^2; so the channel densities are sums of
-polynomial multiples of those ladders, with no entire K^2 component for
-any M > 0.  The time domain shows it directly: the exact decay rates
-plateau at Delta * a, while any massive field, and the 't Hooft tower,
-has a rate that grows without bound.  In de Sitter
-language the same statement reads: a real Delta > 1 corresponds to
-M^2 l^2 = Delta (1 - Delta) < 0 in dS_2 (4 Delta(1 - Delta) in the dS_3
-convention of Narovlansky-Verlinde 2310.16994, Eq. 3), while a massive
-particle with M l > 1/2 has complex Delta = 1/2 + i sqrt(M^2 l^2 - 1/4)
-and quasinormal modes with nonzero real part (ds_reading()).
+The decay rates illustrate the same thing but do not prove it: the
+plateau at Delta * a is the slowest, M -> 0 part, and a gapped admixture
+would decay faster and hide underneath it (thooft_tower_rates() and
+massive_rates() show the gapped rates).
 
 WHAT THIS DOES AND DOES NOT SAY
 -------------------------------
-It says that at N = infinity and small lambda the singlet channels carry
-the analytic structure of scale-invariant operators of dimension 2, 3, 5
-at the string-scale ladder spacing, and no massive component at all.
-That is consistent with the picture of 2506.18054 Sec. 6, in which the
-stretched horizon is the deconfined, effectively conformal region and
-mesons are what escapes it; it means the mesons, if the duality holds,
-are not visible in these channels at N = infinity.
+At N = infinity and small lambda, the Majorana singlet channels have a
+gapless, scale-invariant Rindler mass spectrum, dimensions 2, 3, 5, with
+no gap and no discrete masses: the spectrum of a conformal near-horizon
+region, consistent with the deconfined stretched horizon of 2506.18054
+Sec. 6, and unlike the gapped, discrete 't Hooft tower.  It does not
+exclude mesons at finite N or finite lambda (at finite lambda the
+spectrum is bounded and correlators end in a t^-3 power law,
+late_time_tail()).  The calibration is for free fields probed at a fixed
+distance 1/a from the horizon; a = 2 Jc is the natural identification,
+not one the proposal supplies.  The Dirac channels are not computed.
 
-It does not exclude mesons at finite N or finite lambda (at finite lambda
-the spectrum is bounded and every correlator eventually decays as a power
-law).  The calibration is for free fields probed at a fixed distance
-1/a from the horizon; a dictionary that smears operators down to the
-horizon (radius << 1/M) sees a conformal window up to a tau ~
-(2/a) ln(1/(M rho)).  The identification a = 2 Jc (ladder spacing =
-acceleration) is the natural one but is not supplied by the proposal.
-Majorana A_n only.
-
-Output: horizon_tower.json.  `python horizon_tower.py` prints the
-headline numbers and writes the artifact (about two minutes).
+Output: horizon_tower.json.  `python horizon_tower.py` prints the tables
+and writes the artifact (a few minutes).
 """
 
 from __future__ import annotations
@@ -215,6 +193,46 @@ def convergence(delta: int, lams=(0.4, 0.2, 0.1, 0.05), n_omega: int = 160) -> d
     return dict(delta=delta, rows=rows)
 
 
+def scale_fit(delta: int, lam: float, n_omega: int = 160) -> dict:
+    """The exact chord density against the ladder at the best-fit scale:
+    most of the (Delta/4) lambda deviation at the fixed scale Jc is a
+    shift of the effective scale, J_eff/Jc - 1 = -(Delta/4) lambda + ...;
+    what is left is the shape deviation, about 0.045 lambda for every
+    Delta."""
+    from scipy.optimize import minimize_scalar
+    from chord import q_of_lambda, s_omega_smooth
+    q = q_of_lambda(lam)
+    Jc = jc_bridge(lam)
+    om = np.linspace(0.0, 6.0 * Jc * math.sqrt(delta), n_omega)
+    S = s_omega_smooth(om, q, float(delta), int(min(4000, max(800, 60.0 / lam))))
+
+    def dev(J):
+        return float(np.max(np.abs(S - ladder_density(om, J, delta))) / S.max())
+    best = minimize_scalar(dev, bounds=(0.7 * Jc, 1.1 * Jc), method="bounded")
+    return dict(delta=delta, lam=lam, dev_at_Jc=dev(Jc), J_best_over_Jc=float(best.x / Jc),
+                scale_shift_over_lam=float((best.x / Jc - 1.0) / lam),
+                dev_at_best=float(best.fun), dev_at_best_over_lam=float(best.fun / lam))
+
+
+def mass_spectrum_identity(points=((2, 0.0), (2, 0.7), (3, 2.5), (5, 1.0))) -> list:
+    """The ladder is a gapless superposition of massive responses:
+    int_0^inf z^(2D-1) K_(ix)(z)^2 dz = 2^(2D-3) Gamma(D)^2 |Gamma(D+ix)|^2 / Gamma(2D)
+    (the Mellin transform of K_nu^2 at nu = ix), i.e. a Rindler
+    Kallen-Lehmann mass density
+    rho(M) ~ M^(2 Delta - 1) reaching down to M = 0."""
+    import mpmath as mp
+    out = []
+    with mp.workdps(20):
+        for d, x in points:
+            lhs = mp.quad(lambda z: z ** (2 * d - 1) * mp.re(mp.besselk(1j * x, z)) ** 2,
+                          [0, 1, 5, 20, mp.inf])
+            rhs = (2 ** (2 * d - 3) * mp.gamma(d) ** 2 * abs(mp.gamma(d + 1j * x)) ** 2
+                   / mp.gamma(2 * d))
+            out.append(dict(delta=d, x=x, lhs=float(lhs), rhs=float(rhs),
+                            rel=float(abs(lhs - rhs) / abs(rhs))))
+    return out
+
+
 # ---------------------------------------------------------------------------
 # time domain: the decay-rate plateau
 # ---------------------------------------------------------------------------
@@ -230,6 +248,36 @@ def decay_rates(delta: int, lam: float, a_taus=(2, 4, 6, 8), n_t: int = 321) -> 
     rate = -np.gradient(np.log(np.abs(G)), ts) / a
     return dict(delta=delta, lam=lam, nmax=nmax,
                 rate_over_a={str(x): float(np.interp(x / a, ts, rate)) for x in a_taus})
+
+
+def late_time_tail(delta: int, lam: float, nmaxes=(1500, 3000), n_t: int = 500) -> dict:
+    """Where the ladder regime ends at finite lambda.  The exact correlator
+    (g2_engine) on a log grid up to t = 0.4 nmax/band, for two
+    truncations: the time and height of the decay-rate peak (rate/a), and
+    the exponent of the late power-law tail (fit over the last decade of
+    t).  The density of states has square-root band edges; pairs of
+    states near the SAME edge make the spectral density non-analytic at
+    omega = 0 (an omega^2 ln|omega| term), which gives a monotone t^-3
+    tail.  Pairs at opposite edges add a smaller part oscillating at
+    2 E_max."""
+    from chord import g2_engine, q_of_lambda
+    q = q_of_lambda(lam)
+    a = 2.0 * jc_bridge(lam)
+    band = 2.0 / math.sqrt(1.0 - q)
+    rows = []
+    for nmax in nmaxes:
+        tmax = 0.4 * nmax / band
+        ts = np.geomspace(0.05 / a, tmax, n_t)
+        G = np.abs(g2_engine(ts, q, float(delta), nmax).real)
+        lg = np.log(G)
+        rate = -np.gradient(lg, ts) / a
+        i = int(np.argmax(rate))
+        sel = ts > tmax / 10.0
+        slope = float(np.polyfit(np.log(ts[sel]), lg[sel], 1)[0])
+        rows.append(dict(nmax=nmax, a_t_peak=float(a * ts[i]), peak_rate_over_a=float(rate[i]),
+                         tail_exponent=slope, min_G=float(G.min())))
+    return dict(delta=delta, lam=lam, truncations=rows,
+                tail_exponent_drift=abs(rows[0]["tail_exponent"] - rows[-1]["tail_exponent"]))
 
 
 def massive_rates(m_over_a: float, a_taus=(2, 4, 6, 8)) -> dict:
@@ -277,7 +325,7 @@ def bessel_identity(points=((1.0, 0.7), (2.5, 3.0), (0.3, 1.5))) -> list:
         for z, nu in points:
             lhs = mp.re(mp.besselk(1j * nu, z) ** 2)
             rhs = 2 * mp.quad(lambda t: mp.besselk(0, 2 * z * mp.cosh(t))
-                              * mp.cos(2 * nu * t), [0, 1, 2, 4])
+                              * mp.cos(2 * nu * t), [0, 1, 2, 4, 6, 8])
             out.append(dict(z=z, nu=nu, lhs=float(lhs), rhs=float(rhs),
                             rel=float(abs(lhs - rhs) / abs(lhs))))
     return out
@@ -371,13 +419,16 @@ def run(out_path=None) -> dict:
         orthogonal_tower={str(lam): orthogonal_tower(lam) for lam in (2.0, 0.5)},
         convergence=[convergence(d) for d in (2, 3, 4, 5, 6)],
         decay_rates=[decay_rates(d, lam) for d in (2, 3) for lam in (0.5, 0.1, 0.03)],
+        late_time_tail=[late_time_tail(d, lam) for d in (2, 3) for lam in (1.0, 0.5, 0.3)],
         massive_rates=[massive_rates(m) for m in (0.1, 0.5, 1.0)],
         thooft_tower_rates=[thooft_tower_rates(m) for m in (0.1, 0.5, 1.0)],
         bessel_identity=bessel_identity(),
         full_channel_fit=[full_channel_fit(n, lam) for n in (3, 4)
                           for lam in (0.4, 0.2, 0.1, 0.05)],
-        massive_fit_control=[massive_fit_control(m, s) for m in (0.1, 0.5, 1.0)
+        massive_fit_control=[massive_fit_control(m, s) for m in (0.1, 0.5, 1.0, 2.0, 3.5, 6.0)
                              for s in ((2, 3), (2, 3, 4))],
+        scale_fit=[scale_fit(d, lam) for d in (2, 3, 5) for lam in (0.1, 0.05)],
+        mass_spectrum_identity=mass_spectrum_identity(),
         units_mss=[units_mss(lp) for lp in (1.0, 0.25, 0.05)],
         ds_reading=ds_reading())
     om = np.linspace(0.0, 12.0, 241)
@@ -413,6 +464,12 @@ if __name__ == "__main__":
     for r in p["thooft_tower_rates"]:
         print(f"  't Hooft tower M0/a={r['m0_over_a']}:  "
               + " ".join(f"{v:5.2f}" for v in r["rate_over_a"].values()))
+    print("\nFinite lambda: decay-rate peak and the late power-law tail:")
+    for r in p["late_time_tail"]:
+        t = r["truncations"][-1]
+        print(f"  Delta={r['delta']} lambda={r['lam']}: peak rate/a {t['peak_rate_over_a']:.3f} "
+              f"at a*t={t['a_t_peak']:.2f}; tail exponent {t['tail_exponent']:.2f} "
+              f"(truncation drift {r['tail_exponent_drift']:.2f})")
     print("\nFull channels as polynomial x ladder (relative residual):")
     for r in p["full_channel_fit"]:
         print(f"  A_{r['n']} lambda={r['lam']}: sectors {r['sectors']}  residual {r['rel_residual']:.2e}")

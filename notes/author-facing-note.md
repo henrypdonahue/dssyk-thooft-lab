@@ -183,10 +183,11 @@ Priorities before a stronger claim:
    What is now known at N = ∞ (`duality/HORIZON.md`): in the paper's
    string units each singlet chord is, as λ → 0, the quasinormal ladder
    of a scale-invariant operator of dimension 2, 3 or 5 at a string-scale
-   Rindler acceleration, with no component of the pole-free form a
-   massive field (or the 't Hooft tower) produces. A dictionary therefore
-   has to say where the mesons enter: finite-N corrections, other
-   operators, or a non-local probe.
+   Rindler acceleration. Its Rindler mass spectrum is gapless (density
+   ∝ M^(2Δ−1)), with no gap and no discrete masses, unlike the 't Hooft
+   tower. A dictionary therefore has to say where the mesons enter:
+   finite-N corrections, the Dirac channels, other operators, or a
+   non-local probe.
 
 ## Reproduction and literature scope
 

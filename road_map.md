@@ -292,14 +292,25 @@ results above describe the singlets in exactly that limit. In those units
 scale, the scale of the meson masses and of the stretched horizon of
 their §6. As λ → 0 each chord of dimension Δ is the quasinormal ladder
 |Γ(Δ + iω/a)|², reached with deviation (Δ/4)λ (measured Δ = 2..6), and
-the exact decay rates plateau at Δa. A field of mass M at a Rindler
-horizon gives the pole-free K_{iω/a}(M/a)², whose decay rate grows
-without bound; so does the 't Hooft tower, built from the repo's masses
-and decay constants. The singlet channels are scale-invariant content
-with Δ = 2, 3, 5 and no massive component: consistent with their §6
-picture of a deconfined stretched horizon, and a sign that the mesons are
-not visible in the N = ∞ two-point functions of the Sₙ, in their
-Majorana form (the Dirac full channel is still open).
+the exact decay rates plateau at Δa. At a Rindler horizon a field of
+mass M gives the entire density K_{iω/a}(M/a)², and a ladder is exactly
+the superposition of those with mass density ∝ M^(2Δ−1): gapless and
+scale-invariant. With the exact decomposition (and the invertibility of
+the mass transform), the channels' Rindler mass spectrum is gapless power
+laws with Δ = 2, 3, 5, with no gap and no discrete masses. The gapped,
+discrete 't Hooft tower gives an entire density instead. That is
+consistent with their §6 picture of a deconfined stretched horizon, and a
+sign that the meson tower is not visible in the N = ∞ two-point functions
+of the Sₙ in their Majorana form (the Dirac full channel is still open).
+
+At fixed p, N → ∞, the paper's calculational regime
+(`syk-self-averaging/thooft_limit.py`), the exact leading 1/N
+coefficients give the channels' physical moments. A₂ has
+⟨ω²⟩ = 8p(p − 2), ⟨ω⁴⟩ = 32p²(p − 2)(7p − 15) and kurtosis
+7/2 − 1/(2(p − 2)), approaching the Δ = 2 ladder as p grows. That is the
+expected large-p ↔ small-λ correspondence. What is new is the size of the
+finite-p corrections, ⟨ω²⟩ at (1 − 2/p) of the ladder value, which is
+large at the p where comparisons are made.
 
 ### The dS axis
 
@@ -354,26 +365,21 @@ condensate and gives first α → −1 GMOR data.
 
 ### Next work items, in priority order
 
-1. **Where are the mesons?** Done at N = ∞
+1. **Where are the mesons?** Done at N = ∞ for the Majorana channels
    ([duality/HORIZON.md](duality/HORIZON.md)): the orthogonalized tower is
    a pure chord, Õₙ = 4Ôₙ, and as λ → 0 every singlet channel is a sum of
-   quasinormal ladders |Γ(Δ + iω/a)|², Δ = 2, 3, 5, at the string-scale
-   spacing a = 2√2 J_MSS. Against Rindler-frame fields that is
-   scale-invariant content with no massive component: a field of mass M,
-   and the 't Hooft tower, give pole-free K_{iω/a}(M/a)² and decay rates
-   that grow without bound. So the paper's small-λ prediction cannot be
-   met by the N = ∞ two-point functions of the (Majorana) Sₙ. Next: test whether the
-   1/N corrections can carry a massive component. The exact finite-N
-   engine already gives the O(1/p) corrections to the full A₂ moments on
-   double-scaling lines; compare them with what an admixed K² term
-   predicts for the moment ratios against a deformed ladder.
-2. **Scaling with the 't Hooft coupling.** At fixed p the A₂ channel's
-   mean-square frequency tends to 8p(p−2)J² = 8(ᾱ − 2√ᾱ)J² with ᾱ = p²:
-   linear in ᾱ at large p, the way the 't Hooft mass scale is linear in
-   g²N (noted in `syk-self-averaging/full_channel_laws.py`). Make it a
-   tested consistency check, with the boost-against-mass caveat, and
-   extend it to A₃ and to the H²-projected width with the exact finite-N
-   engine.
+   quasinormal ladders |Γ(Δ + iω/a)|², Δ = 2, 3, 5, whose Rindler mass
+   spectrum is gapless (density ∝ M^(2Δ−1)), with no gap and no discrete
+   masses. So the paper's small-λ prediction cannot be met by the N = ∞
+   two-point functions of the Majorana Sₙ. Next, theory-gated: whether
+   1/N corrections open a gap or produce discrete masses. Moments cannot
+   decide that (they do not fix analytic structure); it needs the 1/N
+   correction to the chord density itself.
+2. **The 't Hooft limit, by shape.** Done for A₂, with the A₃ ratio
+   (`syk-self-averaging/thooft_limit.py`): at fixed p the channels'
+   moments approach the λ → 0 ladders as p grows, with exact closed-form
+   finite-p corrections that are large at small p. Open: A₄ and beyond
+   (the K = 12 word frontier limits the moments available).
 3. **Test the 2, 3, 5 coincidence.** At T = ∞ each chord is already the
    ladder of a dimension-Δ scale-invariant operator (item 1); at small λ
    and low temperature it should give conformal τ^(−2Δ) correlators.

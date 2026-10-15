@@ -270,7 +270,9 @@ admixture of stated size, a dimension-2 continuum of stated norm, and
 chords of dimension 3, 4, … whose norms are closed forms in λ and scale
 as λ^(2⌊m/2⌋), with the even ones dropping out of the higher levels as
 λ → 0. In the paper's dictionary ḡ² = p²/N, so ḡ² = λ/2 in this note's
-chord convention.
+Majorana chord convention. The paper's complex model has its own chord
+convention (q = e^(−4p²/N) with p creators per term, 2006.13983), so the
+factor is convention-dependent.
 
 ## 8. What this implies for labelling the tower
 
@@ -298,8 +300,8 @@ Whether a dimension-n chord carries a meson's quantum numbers, and at
 what mass, is the dictionary question. It is not answered here. What a
 chord looks like in a Rindler frame is: as λ → 0 its density is the
 quasinormal ladder |Γ(n + iω/2𝒥)|² of a scale-invariant operator of
-dimension n, with no component of the form a massive field produces
-(`duality/HORIZON.md`). These
+dimension n, whose Rindler mass spectrum is gapless (density ∝ M^(2n−1)),
+with no gap and no discrete masses (`duality/HORIZON.md`). These
 statements are about the Majorana Aₙ; the Dirac Mₙ are not covered.
 
 ## Reproduce

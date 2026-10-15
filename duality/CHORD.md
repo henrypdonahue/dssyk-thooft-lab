@@ -351,8 +351,8 @@ derivation.
 
 What these continua look like in a Rindler frame is in
 [HORIZON.md](HORIZON.md): as λ → 0 each chord of dimension Δ becomes the
-quasinormal ladder |Γ(Δ + iω/2𝒥)|² of a scale-invariant operator, with no
-massive component.
+quasinormal ladder |Γ(Δ + iω/2𝒥)|² of a scale-invariant operator, whose
+Rindler mass spectrum is gapless (Rindler mass density ∝ M^(2Δ−1), no gap, no discrete masses).
 
 n = 2 is proven. n = 3..6 are exact identities verified in computer
 algebra: each kernel is solved linearly from cross-correlators and every

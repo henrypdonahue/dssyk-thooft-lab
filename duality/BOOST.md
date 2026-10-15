@@ -100,9 +100,11 @@ it compares most directly with two-sided correlators. There a mass gives
 K₀((2M/a) cosh(aτ/2)), whose density K_{iω/a}(M/a)²/(πa) is entire in ω
 (no quasinormal poles) and whose decay rate grows without bound. A
 scale-invariant operator of dimension Δ gives cosh^(−2Δ)(aτ/2), the ladder
-|Γ(Δ + iω/a)|². [HORIZON.md](HORIZON.md) shows that every N = ∞ singlet
-channel is, as λ → 0, a sum of such ladders with Δ = 2, 3, 5 at a = 2𝒥,
-and contains no massive component.
+|Γ(Δ + iω/a)|², which is exactly the superposition of massive responses
+with mass density ∝ M^(2Δ−1): a gapless spectrum. [HORIZON.md](HORIZON.md)
+shows that every N = ∞ singlet channel is, as λ → 0, a sum of such
+ladders with Δ = 2, 3, 5 at a = 2𝒥, so its Rindler mass spectrum has no
+gap and no discrete masses.
 
 *Scope: free scalar, 1+1 dimensions, single particle, sharp worldline.
 Composite operators smear the kernel. Interactions dress it. This

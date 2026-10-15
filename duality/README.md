@@ -78,13 +78,14 @@ Figure: `plot_singlet_tower.py`.
 **[HORIZON.md](HORIZON.md)** and `horizon_tower.py`. The tower in the
 frame where the mesons should be. The orthogonalized tower is a pure chord,
 Õₙ = 4Ôₙ. As λ → 0 each chord of dimension Δ is the quasinormal ladder
-|Γ(Δ + iω/a)|², a = 2𝒥 = 2√2 J_MSS in the paper's string units, reached
-with deviation (Δ/4)λ. Calibrated against Rindler-frame fields, that is a
-scale-invariant operator of dimension Δ; a field of mass M gives the
-pole-free K_{iω/a}(M/a)², with a decay rate that grows without bound,
-and so does the 't Hooft tower. So the N = ∞ singlet channels carry no
-massive component: the mesons, if the duality holds, are not visible in
-them.
+|Γ(Δ + iω/a)|² at a string-scale spacing (a = 2√2 J_MSS in the Majorana
+translation of the paper's units). At a Rindler horizon a field of mass M
+gives the entire K_{iω/a}(M/a)², and the ladder is exactly their
+superposition with mass density ∝ M^(2Δ−1). So the Majorana singlet
+channels' Rindler mass spectrum at N = ∞ is gapless, with no gap and no
+discrete masses, unlike the 't Hooft tower: the mesons, if the duality
+holds, are not visible in them. At finite λ the ladders end in a t⁻³
+tail.
 
 **[ANTISCRAMBLING.md](ANTISCRAMBLING.md)** and `antiscrambling.py`. The
 OTOC sign test, and the fold. DSSYK∞ scrambles at every temperature,
@@ -173,6 +174,6 @@ python3 diagonal_chord.py --run  # the diagonal channel + gates     (~20 s)
 python3 full_channel_chord.py --run  # the full channel + gates    (~10 min, finite-N series)
 python3 singlet_tower.py         # the resolved channel, A_2..A_5  (~20 s)
 python3 singlet_tower.py --run   # its artifact and finite-N gates (~3 CPU-hours; --resume)
-python3 horizon_tower.py         # the tower at the stretched horizon (~30 s)
-pytest -q                        # 355 tests (351 fast, ~1 min)
+python3 horizon_tower.py         # the tower at the stretched horizon (~4 min)
+pytest -q                        # 360 tests (355 fast, ~1 min)
 ```

@@ -127,12 +127,16 @@ def test_massive_densities_have_nodes_ladders_do_not(art):
 
 
 def test_full_channel_fit_falls_below_every_massive_floor(art):
+    """A consistency check only (the basis is rank-deficient): the
+    residual falls with lambda and ends at least 10x below the best floor
+    a massive-field density reaches on the same basis."""
     fits = {(r["n"], r["lam"]): r["rel_residual"] for r in art["full_channel_fit"]}
     floor = min(r["rel_residual"] for r in art["massive_fit_control"])
+    assert 1e-4 < floor < 2e-3
     for n in (3, 4):
         series = [fits[(n, lam)] for lam in (0.4, 0.2, 0.1, 0.05)]
         assert series == sorted(series, reverse=True)
-        assert fits[(n, 0.05)] < floor / 20
+        assert fits[(n, 0.05)] < floor / 10
 
 
 # -- units and the de Sitter reading -----------------------------------------------
@@ -147,3 +151,45 @@ def test_real_dimensions_above_one_are_tachyonic_in_ds():
     for r in h.ds_reading((2, 3, 5)):
         assert r["dS2_M2l2"] < 0 and r["NV_dS3_m2"] < 0
     assert h.ds_reading((2,))[0]["dS2_M2l2"] == -2
+
+
+# -- finite lambda: where the ladder ends ---------------------------------------
+def test_finite_lambda_tail_is_t_minus_three(art):
+    """Where the tail is resolved (lambda >= 0.5, truncation drift <= 0.15)
+    it falls as t^-3, the two-square-root-edge law."""
+    resolved = [r for r in art["late_time_tail"] if r["lam"] >= 0.5]
+    assert len(resolved) == 4
+    for r in resolved:
+        assert r["tail_exponent_drift"] <= 0.15
+        assert r["truncations"][-1]["tail_exponent"] == pytest.approx(-3.0, abs=0.08)
+
+
+def test_peak_rate_approaches_the_ladder_as_lambda_falls(art):
+    rows = sorted((r for r in art["late_time_tail"] if r["delta"] == 2),
+                  key=lambda r: -r["lam"])
+    peaks = [r["truncations"][-1]["peak_rate_over_a"] for r in rows]
+    assert peaks == sorted(peaks) and peaks[-1] < 2.0 and peaks[-1] > 1.9
+
+
+def test_deviation_is_mostly_a_scale_shift(art):
+    """At the best-fit scale J_eff = Jc (1 - (Delta/4) lambda + ...) the
+    shape deviation is ~0.045 lambda for every Delta."""
+    for r in art["scale_fit"]:
+        assert r["scale_shift_over_lam"] == pytest.approx(-r["delta"] / 4, rel=0.1)
+        assert 0.03 < r["dev_at_best_over_lam"] < 0.06
+        assert r["dev_at_best"] < r["dev_at_Jc"] / 8
+
+
+def test_ladder_is_a_gapless_superposition_of_massive_responses(art):
+    """int z^(2D-1) K_(ix)(z)^2 dz = 2^(2D-3) Gamma(D)^2 |Gamma(D+ix)|^2 / Gamma(2D)."""
+    for r in art["mass_spectrum_identity"]:
+        assert r["rel"] < 1e-12
+    live = h.mass_spectrum_identity(((2, 0.7),))
+    assert live[0]["rel"] < 1e-12
+
+
+@pytest.mark.slow
+def test_late_time_tail_live():
+    r = h.late_time_tail(2, 1.0, nmaxes=(1000, 1500), n_t=300)
+    assert r["tail_exponent_drift"] < 0.1
+    assert r["truncations"][-1]["tail_exponent"] == pytest.approx(-3.0, abs=0.08)

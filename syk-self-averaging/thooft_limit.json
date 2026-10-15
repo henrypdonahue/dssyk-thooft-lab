@@ -1,0 +1,270 @@
+{
+ "provenance": "thooft_limit.py -- exact fixed-p, N -> infinity moments of the full singlet channels (leading 1/N coefficients of full_channel_laws.full_law, each certified out of sample in N) against the lambda -> 0 ladders of the N = infinity decomposition",
+ "coefficients": {
+  "4,2,0": {
+   "deficit": 2,
+   "A": "9216"
+  },
+  "6,2,0": {
+   "deficit": 2,
+   "A": "57600"
+  },
+  "8,2,0": {
+   "deficit": 2,
+   "A": "200704"
+  },
+  "10,2,0": {
+   "deficit": 2,
+   "A": "518400"
+  },
+  "12,2,0": {
+   "deficit": 2,
+   "A": "1115136"
+  },
+  "4,2,2": {
+   "deficit": 3,
+   "A": "589824"
+  },
+  "6,2,2": {
+   "deficit": 3,
+   "A": "11059200"
+  },
+  "8,2,2": {
+   "deficit": 3,
+   "A": "77070336"
+  },
+  "10,2,2": {
+   "deficit": 3,
+   "A": "331776000"
+  },
+  "12,2,2": {
+   "deficit": 3,
+   "A": "1070530560"
+  },
+  "4,2,4": {
+   "deficit": 4,
+   "A": "122683392"
+  },
+  "6,2,4": {
+   "deficit": 4,
+   "A": "7166361600"
+  },
+  "8,2,4": {
+   "deficit": 4,
+   "A": "101116280832"
+  },
+  "10,2,4": {
+   "deficit": 4,
+   "A": "729907200000"
+  },
+  "12,2,4": {
+   "deficit": 4,
+   "A": "3545597214720"
+  },
+  "4,2,6": {
+   "deficit": 5,
+   "A": "46355447808"
+  },
+  "6,2,6": {
+   "deficit": 5,
+   "A": "8669705011200"
+  },
+  "8,2,6": {
+   "deficit": 5,
+   "A": "249939716210688"
+  },
+  "10,2,6": {
+   "deficit": 5,
+   "A": "3039068160000000"
+  },
+  "4,3,2": {
+   "deficit": 3,
+   "A": "2359296"
+  },
+  "6,3,2": {
+   "deficit": 3,
+   "A": "39813120"
+  },
+  "8,3,2": {
+   "deficit": 3,
+   "A": "264241152"
+  },
+  "10,3,2": {
+   "deficit": 3,
+   "A": "1105920000"
+  },
+  "4,3,4": {
+   "deficit": 4,
+   "A": "717225984"
+  },
+  "6,3,4": {
+   "deficit": 4,
+   "A": "37265080320"
+  },
+  "8,3,4": {
+   "deficit": 4,
+   "A": "498887294976"
+  },
+  "10,3,4": {
+   "deficit": 4,
+   "A": "3494707200000"
+  }
+ },
+ "laws": {
+  "omega2": {
+   "form": "8 p (p-2)",
+   "fit_on": [
+    2,
+    4,
+    6
+   ],
+   "checked_on": [
+    8,
+    10,
+    12
+   ],
+   "source": "full_channel_laws.py"
+  },
+  "kurtosis": {
+   "form": "7/2 - 1/(2 (p-2))",
+   "fit_on": [
+    4,
+    6
+   ],
+   "checked_on": [
+    8,
+    10,
+    12
+   ]
+  },
+  "hyper": {
+   "form": "47/2 - 37/(4 (p-2)) + 5/(4 (p-2)^2)",
+   "fit_on": [
+    4,
+    6
+   ],
+   "checked_on": [
+    8,
+    10
+   ],
+   "note": "two parameters fit with the ladder limit 47/2 imposed"
+  },
+  "a3_ratio": {
+   "form": "4 p (10 p - 21)",
+   "fit_on": [
+    4,
+    6,
+    8
+   ],
+   "checked_on": [
+    10
+   ],
+   "note": "a quadratic through three points; p = 10 is the check"
+  }
+ },
+ "a2": [
+  {
+   "p": 4,
+   "omega2": "64",
+   "omega4": "13312",
+   "kurtosis": "13/4",
+   "kurtosis_float": 3.25,
+   "omega2_closed_ok": true,
+   "omega4_closed_ok": true,
+   "kurtosis_closed_ok": true,
+   "omega2_over_ladder": 0.5,
+   "omega4_over_ladder": 0.23214285714285715,
+   "hyper": "307/16",
+   "hyper_float": 19.1875,
+   "hyper_closed_ok": true
+  },
+  {
+   "p": 6,
+   "omega2": "192",
+   "omega4": "124416",
+   "kurtosis": "27/8",
+   "kurtosis_float": 3.375,
+   "omega2_closed_ok": true,
+   "omega4_closed_ok": true,
+   "kurtosis_closed_ok": true,
+   "omega2_over_ladder": 0.6666666666666666,
+   "omega4_over_ladder": 0.42857142857142855,
+   "hyper": "1361/64",
+   "hyper_float": 21.265625,
+   "hyper_closed_ok": true
+  },
+  {
+   "p": 8,
+   "omega2": "384",
+   "omega4": "503808",
+   "kurtosis": "41/12",
+   "kurtosis_float": 3.4166666666666665,
+   "omega2_closed_ok": true,
+   "omega4_closed_ok": true,
+   "kurtosis_closed_ok": true,
+   "omega2_over_ladder": 0.75,
+   "omega4_over_ladder": 0.5491071428571429,
+   "hyper": "3167/144",
+   "hyper_float": 21.993055555555557,
+   "hyper_closed_ok": true
+  },
+  {
+   "p": 10,
+   "omega2": "640",
+   "omega4": "1408000",
+   "kurtosis": "55/16",
+   "kurtosis_float": 3.4375,
+   "omega2_closed_ok": true,
+   "omega4_closed_ok": true,
+   "kurtosis_closed_ok": true,
+   "omega2_over_ladder": 0.8,
+   "omega4_over_ladder": 0.6285714285714286,
+   "hyper": "5725/256",
+   "hyper_float": 22.36328125,
+   "hyper_closed_ok": true
+  },
+  {
+   "p": 12,
+   "omega2": "960",
+   "omega4": "3179520",
+   "kurtosis": "69/20",
+   "kurtosis_float": 3.45,
+   "omega2_closed_ok": true,
+   "omega4_closed_ok": true,
+   "kurtosis_closed_ok": true,
+   "omega2_over_ladder": 0.8333333333333334,
+   "omega4_over_ladder": 0.6845238095238095
+  }
+ ],
+ "a3": [
+  {
+   "p": 4,
+   "ratio": "304",
+   "ratio_closed_ok": true,
+   "ratio_over_ladder3": 0.475,
+   "ratio_over_ladder2": 0.6785714285714286
+  },
+  {
+   "p": 6,
+   "ratio": "936",
+   "ratio_closed_ok": true,
+   "ratio_over_ladder3": 0.65,
+   "ratio_over_ladder2": 0.9285714285714286
+  },
+  {
+   "p": 8,
+   "ratio": "1888",
+   "ratio_closed_ok": true,
+   "ratio_over_ladder3": 0.7375,
+   "ratio_over_ladder2": 1.0535714285714286
+  },
+  {
+   "p": 10,
+   "ratio": "3160",
+   "ratio_closed_ok": true,
+   "ratio_over_ladder3": 0.79,
+   "ratio_over_ladder2": 1.1285714285714286
+  }
+ ],
+ "runtime_s": 0.0
+}
