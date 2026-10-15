@@ -14,12 +14,21 @@ PAPERS=(
 for id in "${PAPERS[@]}"; do
   [ -f "$id.pdf" ] && continue
   echo "fetching $id"
-  curl -sfL -o "$id.pdf" "https://arxiv.org/pdf/$id"
+  # download to a temporary name, so an interrupted run leaves nothing to skip
+  curl -sfL -o "$id.pdf.part" "https://arxiv.org/pdf/$id"
+  if head -c 5 "$id.pdf.part" | grep -q '%PDF'; then
+    mv "$id.pdf.part" "$id.pdf"
+  else
+    echo "  not a PDF, discarded: $id" >&2
+    rm -f "$id.pdf.part"
+  fi
   sleep 2   # arXiv rate limit
 done
 # The target paper's LaTeX source (line-number citations in the code use it)
-if [ ! -d arXiv-2607.05678v1 ]; then
+if [ ! -f arXiv-2607.05678v1/HologramsSM.tex ]; then
   curl -sfL https://arxiv.org/e-print/2607.05678v1 -o src.tar.gz
-  mkdir -p arXiv-2607.05678v1 && tar -xzf src.tar.gz -C arXiv-2607.05678v1
+  rm -rf arXiv-2607.05678v1.part && mkdir arXiv-2607.05678v1.part
+  tar -xzf src.tar.gz -C arXiv-2607.05678v1.part
+  rm -rf arXiv-2607.05678v1 && mv arXiv-2607.05678v1.part arXiv-2607.05678v1
   rm src.tar.gz
 fi

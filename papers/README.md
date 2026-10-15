@@ -1,6 +1,7 @@
 # papers/ — local reference copies, not tracked
 
-This directory holds every paper the repository cites. The PDFs are
+This directory holds every paper the repository cites, plus two
+DSSYK–de Sitter background papers (2206.01083, 2303.00792). The PDFs are
 gitignored, because the arXiv default license does not permit
 redistributing third-party papers, so a clone gets this README and
 `fetch.sh` only. To rebuild the folder:
