@@ -3,7 +3,7 @@
 #   make test            fast suites: the three modules and scripts/ (~3 min)
 #   make test-all        full suites including slow ED sweeps    (~6 min)
 #   make reproduce       fast deterministic checks + figures     (~3-5 min)
-#   make reproduce-slow  the campaigns behind the saved JSON     (minutes to hours each; ~15 h total)
+#   make reproduce-slow  the campaigns behind the saved JSON     (minutes to hours each; about a day total)
 #
 # Run the scripts from inside their module directory (module READMEs assume
 # this).  Dependencies: pip install -e ".[dev]"  (pinned; python 3.9-3.12,

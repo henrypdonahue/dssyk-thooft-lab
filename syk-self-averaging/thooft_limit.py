@@ -41,9 +41,11 @@ checked on):
           kurtosis  = 7/2 - 1/(2 (p - 2))          (ladder 7/2)
           mu6/mu2^3 = 47/2 - 37/(4(p-2)) + 5/(4(p-2)^2)   (the limit 47/2 is
                       imposed in the fit, not found)
-    A_3:  <omega^4>/<omega^2> = 4 p (10 p - 21)    (a quadratic through the
-                      computed p, checked at p = 10; at those p the value is
-                      still between the Delta = 2 and Delta = 3 ladders)
+    A_3:  <omega^4>/<omega^2> = 4 p (10 p - 21)    (a quadratic fit on
+                      p = 4, 6, 8, checked at p = 10 and 12; its p^2
+                      coefficient is the Delta = 3 ladder's 40, but it
+                      passes the Delta = 2 value 28 p^2 only at p > 7, and
+                      at p = 12 it is 0.82 of the Delta = 3 value)
 
 HOW TO READ IT.  Both limits sit at p -> infinity with p^2/N -> 0, so
 agreement at leading order in 1/p is the expected large-p <-> small-lambda
@@ -58,9 +60,10 @@ spectrum is gapped.
 
 Output: thooft_limit.json, which stores every exact leading coefficient.
 `python thooft_limit.py` prints the tables from it; `--run` recomputes all
-laws from scratch (several hours: the A_3 fourth moments and the A_2
-sixth moments at p = 8 and 10 dominate); `--from-cache FILE` assembles the
-artifact from coefficients full_law already produced.
+laws from scratch (about ten hours on one core: the A_3 fourth moment at
+p = 12 takes six, and the p = 10 fourth and sixth moments two each);
+`--from-cache FILE` assembles the artifact from coefficients full_law
+already produced.
 """
 
 from __future__ import annotations
@@ -153,11 +156,11 @@ LAWS = dict(
     hyper=dict(form="47/2 - 37/(4 (p-2)) + 5/(4 (p-2)^2)",
                fit_on=[4, 6], checked_on=[8, 10],
                note="two parameters fit with the ladder limit 47/2 imposed"),
-    a3_ratio=dict(form="4 p (10 p - 21)", fit_on=[4, 6, 8], checked_on=[10],
-                  note="a quadratic through three points; p = 10 is the check"))
+    a3_ratio=dict(form="4 p (10 p - 21)", fit_on=[4, 6, 8], checked_on=[10, 12],
+                  note="a quadratic through three points; p = 10 and 12 are the checks"))
 
 GRID = {(2, 0): (4, 6, 8, 10, 12), (2, 2): (4, 6, 8, 10, 12), (2, 4): (4, 6, 8, 10, 12),
-        (2, 6): (4, 6, 8, 10), (3, 2): (4, 6, 8, 10), (3, 4): (4, 6, 8, 10)}
+        (2, 6): (4, 6, 8, 10), (3, 2): (4, 6, 8, 10, 12), (3, 4): (4, 6, 8, 10, 12)}
 
 
 def compute_coefficients(cache=None) -> dict:

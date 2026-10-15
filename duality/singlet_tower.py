@@ -6,8 +6,8 @@ The singlet tower at N = infinity: every A_n is a stack of matter chords.
 full_channel_chord.py gives the exact moments of the FULL A_2 channel at
 N = infinity, and leaves two things open: the conserved H^2 admixture
 that mean subtraction does not remove, and every n >= 3.  This module
-closes both.  The answer has one shape at every level computed
-(n = 2..6):
+settles the first, and the second through n = 6 (a general-n proof is
+open).  The answer has one shape at every level computed (n = 2..6):
 
     A_n  =  (a polynomial in H)  +  sum_{m=2..n}  F_{n,m}(H_L, H_R) . O_m ,
 

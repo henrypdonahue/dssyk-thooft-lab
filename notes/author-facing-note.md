@@ -1,7 +1,7 @@
 # Full-channel moments and normalization checks for the DSSYK–'t Hooft proposal
 
 Henry Donahue — working technical note, 16 September 2026; §2 and the
-priorities revised 4 and 14 October 2026.
+priorities revised 4, 14 and 15 October 2026.
 
 **Purpose.** Provide specific calculations relevant to the singlet-spectrum
 question in Miyashita–Sekino–Susskind, [2607.05678v1, §4.3](https://arxiv.org/abs/2607.05678v1),
@@ -113,7 +113,7 @@ not proved. The chord new at level n is small (14.9%, 1.6%, 0.18%,
 dressings carry powers of the frequency: as λ → 0 the even chords fade
 out of A₃..A₆ linearly in λ while the odd ones stay (A₃, A₄ → O₃;
 A₅ → 99.5% O₃ + 0.53% O₅). The surviving dimensions, 2, 3, 5, match the
-pattern of the large-q SYK bilinear spectrum; that is an observation on
+pattern of the large-p SYK bilinear spectrum; that is an observation on
 four levels, not a derivation.
 
 The same engine computes fixed-p finite-N moments without ED. For the
@@ -126,6 +126,13 @@ subtracted ratio along fixed p (N = 24 at p = 4), and the N ≤ 20 ED rise
 before it, reflect the conserved share of μ₀ falling from 85% to 19% to
 zero: with the H² component removed the width has no maximum beyond the
 smallest sizes and its physical value rises monotonically to 8p(p−2)J².
+The shape follows in the same way (`syk-self-averaging/thooft_limit.py`).
+At fixed p, N → ∞, A₂ has kurtosis 7/2 − 1/(2(p−2)) (fit on p = 4, 6,
+checked on p = 8, 10, 12), tending to the value 7/2 of the λ → 0 Δ = 2
+ladder. A₃ has ⟨ω⁴⟩/⟨ω²⟩ = 4p(10p−21) (fit on p = 4, 6, 8, checked at
+p = 10 and 12), with the Δ = 3 ladder's leading coefficient 40p². That
+agreement is the expected large-p ↔ small-λ consistency. The finite-p
+corrections are large at the p where a comparison would be made.
 
 ## 3. A separate exact self-averaging check
 
@@ -180,10 +187,10 @@ Priorities before a stronger claim:
    them explicitly limited to the tested p values.
 5. Obtain the state/time/operator dictionary needed to compare boost data
    with invariant masses. No amount of numerical precision alone supplies it.
-   What is now known at N = ∞ (`duality/HORIZON.md`): in the paper's
-   string units each singlet chord is, as λ → 0, the quasinormal ladder
-   of a scale-invariant operator of dimension 2, 3 or 5 at a string-scale
-   Rindler acceleration. Its Rindler mass spectrum is gapless (density
+   What is now known at N = ∞ for the Majorana form (`duality/HORIZON.md`):
+   in the paper's string units each singlet chord is, as λ → 0, the
+   quasinormal ladder of a scale-invariant operator of dimension 2, 3 or
+   5 at a string-scale Rindler acceleration. Its Rindler mass spectrum is gapless (density
    ∝ M^(2Δ−1)), with no gap and no discrete masses, unlike the 't Hooft
    tower. A dictionary therefore has to say where the mesons enter:
    finite-N corrections, the Dirac channels, other operators, or a

@@ -97,6 +97,18 @@ def test_massive_and_thooft_rates_grow_without_bound(art):
         assert max(r["rate_over_a"].values()) < r["delta"] + 0.05
 
 
+def test_massive_rate_is_the_exact_bessel_ratio():
+    """-d/dtau ln K_0(z) = (M/a) sinh(a tau/2) K_1(z)/K_0(z), z = (2M/a)
+    cosh(a tau/2), at every reported time, the last one included."""
+    from scipy.special import k0e, k1e
+    for m in (0.1, 0.5, 1.0):
+        r = h.massive_rates(m)["rate_over_a"]
+        for t, v in r.items():
+            z = 2 * m * math.cosh(float(t) / 2)
+            exact = m * math.sinh(float(t) / 2) * k1e(z) / k0e(z)
+            assert v == pytest.approx(exact, rel=1e-4), (m, t)
+
+
 def test_thooft_tower_is_led_by_its_lightest_meson():
     t = h.thooft_tower_rates(0.5, n_levels=8)["rate_over_a"]
     m = h.massive_rates(0.5)["rate_over_a"]

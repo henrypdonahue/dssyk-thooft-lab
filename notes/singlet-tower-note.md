@@ -1,6 +1,6 @@
 # The singlet tower of double-scaled SYK at N = ∞: a conserved piece plus matter chords
 
-Henry Donahue — working technical note, 4 October 2026; revised 14 October 2026.
+Henry Donahue — working technical note, 4 October 2026; revised 14 and 15 October 2026.
 
 **Purpose.** State, with its proof and its checks, what the Majorana
 singlet channels Aₙ = Σᵢ ψᵢ (ad_H)ⁿ ψᵢ are at strict double scaling. This
@@ -8,7 +8,7 @@ is the Majorana form of the operators Mₙ of Miyashita–Sekino–Susskind
 [2607.05678v1, §4.3](https://arxiv.org/abs/2607.05678v1). The n = 2
 theorem and its proof also appear in the LaTeX manuscript
 [conserved-channel-note](conserved-channel-note/main.tex) §4. This note
-does not extract a mass spectrum, and it does not cover the Dirac
+does not extract a meson mass spectrum, and it does not cover the Dirac
 tower. Novelty
 has not been established by an exhaustive literature review.
 
@@ -202,7 +202,7 @@ arithmetic down to λ = 1/1280:
 
 A₂ is O₂ at every λ. So the dimensions that survive the semiclassical
 limit are 2, 3 and 5. That is the pattern of the bilinear spectrum of
-large-q SYK, h = 2, 3, 5, 7, …
+large-p SYK (large q in the usual notation), h = 2, 3, 5, 7, …
 ([1604.07818](https://arxiv.org/abs/1604.07818)). It is recorded here as
 an observation on four levels. It is not derived, and the map between a
 matter-chord dimension at infinite temperature and a conformal dimension
@@ -291,10 +291,10 @@ first appears in Aₙ, with constant dressing and coefficient exactly 4. So
 removing from Aₙ its overlap with the commutant of H and with every
 dressed lower chord f(H) Oₘ g(H), m < n, leaves Õₙ = 4Ôₙ at N = ∞, of
 weight 16 Nₙ: a matter chord of dimension n whose spectral density is the
-standard Δ = n continuum (`duality/horizon_tower.py`, checked n = 2..5). The natural candidate for "the n-th member of the
-tower" is therefore the dimension-n chord, not the raw Aₙ. Both start
-at 2: the paper's dynamical tower begins at n = 2, and so do the matter
-chords.
+standard Δ = n continuum (`duality/horizon_tower.py`, checked
+n = 2..5). The natural candidate for "the n-th member of the tower" is
+therefore the dimension-n chord, not the raw Aₙ. Both start at 2: the
+paper's dynamical tower begins at n = 2, and so do the matter chords.
 
 Whether a dimension-n chord carries a meson's quantum numbers, and at
 what mass, is the dictionary question. It is not answered here. What a

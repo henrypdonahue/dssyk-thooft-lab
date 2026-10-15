@@ -66,8 +66,9 @@ at Rindler radius 1/a, a free field of mass M gives
     K_0((2M/a) cosh(a tau/2))  <->  S_M(omega) = K_(i omega/a)(M/a)^2 / (pi a)
 
 (DLMF 10.32.17; bessel_identity()), entire in omega, with nodes, and a
-decay rate (M/a) sinh(a tau/2) + 1/4 tanh(a tau/2) that grows without
-bound.  A field theory with Kallen-Lehmann mass density rho(M) gives
+decay rate (M/a) sinh(a tau/2) K_1(z)/K_0(z), z = (2M/a) cosh(a tau/2),
+that grows without bound (-> (M/a) sinh(a tau/2) + 1/4 tanh(a tau/2) at
+large z).  A field theory with Kallen-Lehmann mass density rho(M) gives
 S(omega) = int rho(M) S_M(omega) dM, and the ladder is such a
 superposition:
 
@@ -236,6 +237,14 @@ def mass_spectrum_identity(points=((2, 0.0), (2, 0.7), (3, 2.5), (5, 1.0))) -> l
 # ---------------------------------------------------------------------------
 # time domain: the decay-rate plateau
 # ---------------------------------------------------------------------------
+def _rate_grid(xmax: float, n: int) -> np.ndarray:
+    """n equally spaced points on [0, xmax] plus two beyond it, so that
+    np.gradient is a central difference at every reported time (at its
+    last point it falls back to a first-order one-sided difference)."""
+    step = xmax / (n - 1)
+    return np.linspace(0.0, xmax + 2 * step, n + 2)
+
+
 def decay_rates(delta: int, lam: float, a_taus=(2, 4, 6, 8), n_t: int = 321) -> dict:
     """Effective decay rate -d ln G/dt of the exact chord correlator
     (chord.g2_engine), in units of a = 2 Jc, at the given a*t."""
@@ -243,7 +252,7 @@ def decay_rates(delta: int, lam: float, a_taus=(2, 4, 6, 8), n_t: int = 321) -> 
     q = q_of_lambda(lam)
     a = 2.0 * jc_bridge(lam)
     nmax = int(min(2500, 40.0 / lam + 100))
-    ts = np.linspace(0.0, max(a_taus) / a, n_t)
+    ts = _rate_grid(max(a_taus) / a, n_t)
     G = g2_engine(ts, q, float(delta), nmax).real
     rate = -np.gradient(np.log(np.abs(G)), ts) / a
     return dict(delta=delta, lam=lam, nmax=nmax,
@@ -283,7 +292,7 @@ def late_time_tail(delta: int, lam: float, nmaxes=(1500, 3000), n_t: int = 500) 
 def massive_rates(m_over_a: float, a_taus=(2, 4, 6, 8)) -> dict:
     """Effective decay rate of the two-sided massive correlator
     K_0((2M/a) cosh(a tau/2)), in units of a."""
-    x = np.linspace(0.0, max(a_taus), 801)
+    x = _rate_grid(max(a_taus), 801)
     z = 2.0 * m_over_a * np.cosh(x / 2.0)
     lg = np.log(k0e(z)) - z
     rate = -np.gradient(lg, x)
@@ -301,7 +310,7 @@ def thooft_tower_rates(m0_over_a: float, n_levels: int = 12, a_taus=(2, 4, 6, 8)
     from eigenfunctions import decay_constants
     f, ev = decay_constants(200, n_levels)
     masses = m0_over_a * np.sqrt(np.asarray(ev[:n_levels]) / ev[0])
-    x = np.linspace(0.0, max(a_taus), 801)
+    x = _rate_grid(max(a_taus), 801)
     ch = np.cosh(x / 2.0)
     # sum f^2 K0(2 m cosh) in log form, relative to the lightest exponent
     z0 = 2.0 * masses[0] * ch

@@ -215,14 +215,16 @@ approach the λ → 0 quasinormal ladders of `duality/HORIZON.md`:
 | A₂ μ₆/μ₂³ | 47/2 − 37/(4(p − 2)) + 5/(4(p − 2)²) | 47/2 (imposed in the fit) |
 | A₃ ⟨ω⁴⟩/⟨ω²⟩ | 4p(10p − 21) | 40p² (Δ = 3; Δ = 2 would give 28p²) |
 
-Each form is fit on the first values of p and checked on the rest; the
-kurtosis at p = 8, 10, 12 (`thooft_limit.LAWS`). Since both limits sit at
-p → ∞ with p²/N → 0, approaching the ladders is the expected
-large-p ↔ small-λ correspondence, so the table is a consistency check.
-The new content is the size of the finite-p corrections, which is large:
-⟨ω²⟩ is (1 − 2/p) of its ladder value, and A₃'s ratio at the p computed
-still lies between the Δ = 2 and Δ = 3 values. Moments do not decide
-whether the finite-p spectrum is gapped.
+Each form is fit on the first values of p and checked on the rest
+(`thooft_limit.LAWS`): ⟨ω²⟩ and the kurtosis at p = 8, 10, 12, μ₆/μ₂³ at
+p = 8, 10, and A₃'s ratio, fit on p = 4, 6, 8, at p = 10 and 12 (3160
+and 4752). Since both limits sit at p → ∞ with p²/N → 0, approaching the
+ladders is the expected large-p ↔ small-λ correspondence, so the table
+is a consistency check. The new content is the size of the finite-p
+corrections, which is large: ⟨ω²⟩ is (1 − 2/p) of its ladder value, and
+A₃'s ratio has the Δ = 3 leading coefficient but lies below even the
+Δ = 2 value 28p² until p > 7 (0.82 of the Δ = 3 value at p = 12).
+Moments do not decide whether the finite-p spectrum is gapped.
 
 **Gates.** A₁ = −2pH forces (N−1)μ_k^pair + μ_k^diag = 0 at k = 2 and 4,
 and that holds at machine precision. The computation is checked against
@@ -287,7 +289,7 @@ Read `rms_off`, not the ratio, which is artifacted at p = N/2.
 | `pair_moment_ladder.py` | the μ₆ / K = 12 extension and the word-length ladder: deficit K/2+1 at all 55 laws, the exact n = 1 → 2 coefficient step, the K = 12 frontier, A(n=3)(p) certified at p = 18, c₂(p) exact to p = 48 (multiprocessing; `--refit`, `--ds-extend [--n 3]`) |
 | `double_scaling_law.py` | the closed forms of the double-scaling constants, c_{n,2}(λ) = λP_{2n+2}(e^(−λ)), the exact sequences on three lines, the finite-N diagonal–pair cancellation, the B(2,2;p) closed form (multiprocessing; `--resume`) |
 | `full_channel_laws.py` | the FULL A_n channel at fixed p, exact: the peak at λ_chord ≈ 4/3 and the certified law N w₂ → 8p(p−2) |
-| `thooft_limit.py` | the 't Hooft limit by shape: exact fixed-p, N → ∞ moments of A₂ (⟨ω²⟩, ⟨ω⁴⟩, kurtosis, μ₆/μ₂³) and A₃ (⟨ω⁴⟩/⟨ω²⟩) against the λ → 0 ladders (`--run` ~3 h; `--from-cache`) |
+| `thooft_limit.py` | the 't Hooft limit by shape: exact fixed-p, N → ∞ moments of A₂ (⟨ω²⟩, ⟨ω⁴⟩, kurtosis, μ₆/μ₂³) and A₃ (⟨ω⁴⟩/⟨ω²⟩) against the λ → 0 ladders (`--run` ~10 h on one core; `--from-cache`) |
 | `conserved_points.py` | the (8, 4) per-instance conservation explained (spin-trace map, Cl₈ grades), the identities A₁ = −2ΣHᵢ, A₂ = 4ΣHᵢ², and the general mixed-word identity for every Aₙ |
 | `projected_channel.py` | finite-N ED split of a channel into stationary and dynamical weight (the whole commutant of H removed, degeneracies included) |
 | `mn_spectroscopy.py` | CP-resolved Mₙ spectral functions |

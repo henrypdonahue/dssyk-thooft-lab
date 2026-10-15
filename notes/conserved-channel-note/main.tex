@@ -160,7 +160,9 @@ c_j=[n_1{+}1]-q^{\,j}\,[n_1{-}j{+}1]
 \end{equation}
 independent of $n_1$. Lowering sector ($|G-j-1\rangle$): the left side
 receives the two close terms of \eqref{eq:TM},
-$[n_1]^{(j+1)}q^{\Delta(n_1-1-j)}+q^{\Delta+n_1}[n_0][n_1]^{(j)}q^{\Delta(n_1-j)}$;
+\[
+[n_1]^{(j+1)}q^{\Delta(n_1-1-j)}+q^{\Delta+n_1}[n_0][n_1]^{(j)}q^{\Delta(n_1-j)};
+\]
 on the right, $T\,\cl_j$ contributes
 $q^{\Delta+j}[n_1]^{(j)}\big([n_1{-}j]+q^{\,n_1-j}[n_0]\big)q^{\Delta(n_1-j)}$
 (using $[G-j]=[n_1{-}j]+q^{\,n_1-j}[n_0]$) and $\cl_{j+1}$ contributes
@@ -401,13 +403,23 @@ $\langle H^2\rangle=1$, a limiting mean-square frequency $8p(p-2)J^2$ in
 the coupling normalization $\langle J^2\rangle=p!J^2/N^{p-1}$. The
 identity-subtracted ratio has a maximum along fixed $p$ (at $N=24$ for
 $p=4$); it is the conserved $H^2$ share of $\mu_0$ changing, and with
-that component removed the width is monotone.
+that component removed the width is monotone. The shape follows in the
+same way: the limiting kurtosis is $7/2-1/(2(p-2))$ (fit on $p=4,6$,
+checked on $p=8,10,12$), which tends as $p\to\infty$ to $7/2$, the value
+for a $\mathrm{sech}^4$ correlator, the $\lambda\to0$ form of a
+dimension-two chord. The finite-$p$ corrections are large: the
+mean-square frequency is $1-2/p$ of its $p\to\infty$ form.
 
 \emph{Boost frequency is not mass.} The spectral densities above are in
 the frequency conjugate to $H$, which in the proposal generates boosts.
 A particle of fixed mass has a continuous boost spectrum, so relating
 these continua to meson masses requires the state and time dictionary,
-which is not supplied here.
+which is not supplied here. With a probe at a fixed distance from a
+Rindler horizon as the calibration, the $\lambda\to0$ density of a
+dimension-$\Delta$ chord, $|\Gamma(\Delta+i\omega/a)|^2$, is the response
+of a gapless mass density $\propto M^{2\Delta-1}$, with no gap and no
+discrete masses (repository \texttt{duality/HORIZON.md}). That
+calibration is a natural identification, not a dictionary.
 
 \emph{Moments.} Theorem~1 states $\mu_k=0$ for $k\ge1$ in the connected
 pair correlator; its weight $\mu_0$ is nonzero.

@@ -93,6 +93,10 @@
    "deficit": 3,
    "A": "1105920000"
   },
+  "12,3,2": {
+   "deficit": 3,
+   "A": "3503554560"
+  },
   "4,3,4": {
    "deficit": 4,
    "A": "717225984"
@@ -108,6 +112,10 @@
   "10,3,4": {
    "deficit": 4,
    "A": "3494707200000"
+  },
+  "12,3,4": {
+   "deficit": 4,
+   "A": "16648891269120"
   }
  },
  "laws": {
@@ -157,9 +165,10 @@
     8
    ],
    "checked_on": [
-    10
+    10,
+    12
    ],
-   "note": "a quadratic through three points; p = 10 is the check"
+   "note": "a quadratic through three points; p = 10 and 12 are the checks"
   }
  },
  "a2": [
@@ -264,6 +273,13 @@
    "ratio_closed_ok": true,
    "ratio_over_ladder3": 0.79,
    "ratio_over_ladder2": 1.1285714285714286
+  },
+  {
+   "p": 12,
+   "ratio": "4752",
+   "ratio_closed_ok": true,
+   "ratio_over_ladder3": 0.825,
+   "ratio_over_ladder2": 1.1785714285714286
   }
  ],
  "runtime_s": 0.0

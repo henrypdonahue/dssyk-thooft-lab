@@ -231,7 +231,7 @@ at n = 2. One new chord enters per level, and it is faint: 14.9%, 1.6%,
 0.18%, 0.02% of the dynamical weight at λ_chord = 2 for n = 3..6, with
 norm ∝ λ^(2⌊n/2⌋). Toward small λ the even chords fade out of A₃..A₆
 linearly in λ and the odd ones stay (A₅ → 99.5% O₃ + 0.53% O₅): the
-dimensions that survive are 2, 3, 5, the pattern of the large-q SYK
+dimensions that survive are 2, 3, 5, the pattern of the large-p SYK
 bilinear spectrum. That last is an observation, not a derivation.
 
 So the tower does propagate at N = ∞. The per-flavor split of its weight
@@ -288,11 +288,13 @@ the fixed-p polynomials Q_n(p).
 [`duality/HORIZON.md`](duality/HORIZON.md). The flat-space limit of
 2506.18054 is λ fixed, energies fixed in string units, so the N = ∞
 results above describe the singlets in exactly that limit. In those units
-(J_MSS = pJ) the chords' ladder spacing is a = 2𝒥 = 2√2 J_MSS: string
-scale, the scale of the meson masses and of the stretched horizon of
+(J_MSS = pJ) the chords' ladder spacing is a = 2𝒥 = 2√2 J_MSS in this
+repo's Majorana translation (the O(1) factor is convention-dependent):
+string scale, the scale of the meson masses and of the stretched horizon of
 their §6. As λ → 0 each chord of dimension Δ is the quasinormal ladder
-|Γ(Δ + iω/a)|², reached with deviation (Δ/4)λ (measured Δ = 2..6), and
-the exact decay rates plateau at Δa. At a Rindler horizon a field of
+|Γ(Δ + iω/a)|², reached with deviation (Δ/4)λ (measured Δ = 2..6), most
+of it a shift of the scale (the shape deviates by about 0.045λ), and the
+exact decay rates plateau at Δa. At a Rindler horizon a field of
 mass M gives the entire density K_{iω/a}(M/a)², and a ladder is exactly
 the superposition of those with mass density ∝ M^(2Δ−1): gapless and
 scale-invariant. With the exact decomposition (and the invertibility of
@@ -307,10 +309,13 @@ At fixed p, N → ∞, the paper's calculational regime
 (`syk-self-averaging/thooft_limit.py`), the exact leading 1/N
 coefficients give the channels' physical moments. A₂ has
 ⟨ω²⟩ = 8p(p − 2), ⟨ω⁴⟩ = 32p²(p − 2)(7p − 15) and kurtosis
-7/2 − 1/(2(p − 2)), approaching the Δ = 2 ladder as p grows. That is the
-expected large-p ↔ small-λ correspondence. What is new is the size of the
-finite-p corrections, ⟨ω²⟩ at (1 − 2/p) of the ladder value, which is
-large at the p where comparisons are made.
+7/2 − 1/(2(p − 2)), approaching the Δ = 2 ladder as p grows (μ₆/μ₂³ too,
+with its limit imposed in the fit). A₃'s ⟨ω⁴⟩/⟨ω²⟩ = 4p(10p − 21) has
+the Δ = 3 leading coefficient 40p² (fit on p = 4, 6, 8; p = 10 and 12
+check it). That is the expected large-p ↔ small-λ correspondence. What
+is new is the size of the finite-p corrections, which is large at the p
+where comparisons are made: ⟨ω²⟩ is (1 − 2/p) of the ladder value, and A₃'s
+ratio lies below even the Δ = 2 value until p > 7.
 
 ### The dS axis
 

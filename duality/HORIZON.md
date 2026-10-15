@@ -44,8 +44,9 @@ leading order only. In time, the exact decay rate −d ln G/dt plateaus at
 **3. Full channels are sums of ladders.** A dressing is a polynomial in ω
 at small λ, so a channel's density is a sum of polynomial multiples of
 its sectors' ladders. Fitting the exact A₃ and A₄ densities to that form
-leaves a residual that falls about tenfold per halving of λ (1.7e-2 →
-1.0e-5 for A₃ over λ = 0.4 → 0.05). This is a consistency check only.
+leaves a residual that falls by roughly an order of magnitude per halving
+of λ (8× to 16×: 1.7e-2 → 1.0e-5 for A₃ over λ = 0.4 → 0.05,
+3.0e-2 → 4.1e-5 for A₄). This is a consistency check only.
 Since |Γ(m + 1 + ix)|² = (m² + x²)|Γ(m + ix)|², the basis is just an even
 polynomial times ρ₂, and a massive-field density also fits it on a finite
 window, at a floor of about 5e-4 at best.
@@ -85,8 +86,9 @@ radius 1/a:
 | ρ(M) ∝ M^(2Δ−1), gapless | ∝ cosh^(−2Δ)(aτ/2) | ∝ \|Γ(Δ + iω/a)\|² | ladder −ia(Δ + k) |
 
 The first row is DLMF 10.32.17. Its density has real zeros (the nodes of
-BOOST.md), and its decay rate grows without bound,
-(M/a) sinh(aτ/2) + ¼ tanh(aτ/2) in units of a. The last row is the
+BOOST.md), and its decay rate, (M/a) sinh(aτ/2) K₁(z)/K₀(z) in units of a
+with z = (2M/a) cosh(aτ/2), grows without bound, approaching
+(M/a) sinh(aτ/2) + ¼ tanh(aτ/2) once z is large. The last row is the
 Mellin transform of K_ν²:
 ∫₀^∞ z^(2Δ−1) K_{ix}(z)² dz = 2^(2Δ−3) Γ(Δ)² |Γ(Δ + ix)|² / Γ(2Δ),
 checked numerically. So a ladder is the response of a gapless,
@@ -116,18 +118,22 @@ convention of Narovlansky–Verlinde
 with Mℓ > ½ has complex Δ = ½ + i√(M²ℓ² − ¼), with quasinormal modes
 whose real part is ≈ ±M. The tower has none.
 
-## In the paper's calculational regime
+## At fixed p: the paper's 't Hooft limit
 
-MSS do the 't Hooft comparison at fixed p, N → ∞, not at fixed λ.
-`syk-self-averaging/thooft_limit.py` takes the exact fixed-p laws to that
-limit. The channels' physical moments approach the ladders as p grows,
+MSS identify ᾱ = p² ([2506.18054v3](https://arxiv.org/abs/2506.18054)
+Eq. 5.17), so their 't Hooft limit is fixed p, N → ∞, not fixed λ, and
+they compare with the 't Hooft model there "since that's where the
+calculations are done" ([2607.05678](https://arxiv.org/abs/2607.05678)
+§4.1). `syk-self-averaging/thooft_limit.py` takes the exact fixed-p laws
+to that limit. The channels' physical moments approach the ladders as p grows,
 which is the expected large-p ↔ small-λ correspondence and a consistency
 check of it. The new content is the exact size of the finite-p
 corrections, and they are large:
 - A₂'s ⟨ω²⟩ is (1 − 2/p) times its ladder value, half of it at p = 4.
 - A₂'s kurtosis is 7/2 − 1/(2(p − 2)).
-- A₃'s ⟨ω⁴⟩/⟨ω²⟩ grows toward the Δ = 3 value 40p², but at the p
-  computed it is still between the Δ = 2 and Δ = 3 values.
+- A₃'s ⟨ω⁴⟩/⟨ω²⟩ = 4p(10p − 21) has the Δ = 3 leading coefficient 40p²,
+  but it lies below even the Δ = 2 value 28p² until p > 7, and at p = 12
+  it is 0.82 of the Δ = 3 value.
 
 So at finite ᾱ = p² the 't Hooft-limit channels are the ladders only
 roughly. The moments do not decide whether the finite-p spectrum is gapped.

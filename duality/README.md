@@ -175,5 +175,5 @@ python3 full_channel_chord.py --run  # the full channel + gates    (~10 min, fin
 python3 singlet_tower.py         # the resolved channel, A_2..A_5  (~20 s)
 python3 singlet_tower.py --run   # its artifact and finite-N gates (~3 CPU-hours; --resume)
 python3 horizon_tower.py         # the tower at the stretched horizon (~4 min)
-pytest -q                        # 360 tests (355 fast, ~1 min)
+pytest -q                        # 361 tests (356 fast, ~1 min)
 ```

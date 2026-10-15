@@ -4,8 +4,10 @@
 (singlet moments), `chord_charges.py` (the conserved-channel theorem),
 `diagonal_chord.py` (the diagonal law), `full_channel_chord.py` (the
 full A₂ moments), `singlet_tower.py` (the full channel resolved into
-matter chords, every n), `chord_fold.py` (the fold at N = ∞). The ED side is `syk-self-averaging/mn_majorana_bench.py`. Every
-verdict below is asserted from a committed JSON in `test_chord*.py`.*
+matter chords, n ≤ 6), `horizon_tower.py` (the tower in a Rindler frame),
+`chord_fold.py` (the fold at N = ∞). The ED side is
+`syk-self-averaging/mn_majorana_bench.py`. Every verdict below is
+asserted from a committed JSON in `test_chord*.py`.*
 
 ## What the bulk is
 
@@ -352,7 +354,8 @@ derivation.
 What these continua look like in a Rindler frame is in
 [HORIZON.md](HORIZON.md): as λ → 0 each chord of dimension Δ becomes the
 quasinormal ladder |Γ(Δ + iω/2𝒥)|² of a scale-invariant operator, whose
-Rindler mass spectrum is gapless (Rindler mass density ∝ M^(2Δ−1), no gap, no discrete masses).
+Rindler mass spectrum is gapless (density ∝ M^(2Δ−1), no gap, no discrete
+masses).
 
 n = 2 is proven. n = 3..6 are exact identities verified in computer
 algebra: each kernel is solved linearly from cross-correlators and every
