@@ -17,7 +17,7 @@ theorems.
 The two fit together. The flavor-diagonal and pair halves are each
 O(√N) on a double-scaling line and cancel at that order, so the
 physical channel is the O(1) remainder that Theorem 2 describes. The
-note also records, as verified but not proved, the n = 3..6 levels: a
+note also records, as verified but not proved, the n = 3..8 levels: a
 polynomial in H plus matter chords of dimension 2..n.
 
 `notes/singlet-tower-note.md` is the longer companion, with the block

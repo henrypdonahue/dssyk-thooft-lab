@@ -100,7 +100,7 @@ says each Aₙ is a polynomial in H plus matter chords, nothing else. Each
 chord's density converges to its ladder. The map ρ(M) ↦ S(ω) is
 invertible: the cosine representation turns S into the K₀-transform of
 ρ, which is injective. So, as λ → 0, the channels' Rindler mass spectrum
-is fixed: a power-law density M^(2m−1)(c₀ + c₁M² + …) with Δ = 2, 3, 5,
+is fixed: a power-law density M^(2m−1)(c₀ + c₁M² + …) with Δ = 2, 3, 5, 7,
 with no gap and no discrete masses. The 't Hooft model at m_q² = 0 is
 gapped and discrete (FLZ). Its tower, built with the repo's masses and
 decay constants, gives an entire density, and a decay rate that grows
@@ -112,7 +112,7 @@ decay faster and hide underneath it. The exclusion comes from the
 decomposition and the invertibility, not from the plateau.
 
 In de Sitter language: real Δ > 1 means M²ℓ² = Δ(1 − Δ) < 0 in dS₂
-(−2, −6, −20 for Δ = 2, 3, 5), or m² = 4Δ(1 − Δ) < 0 in the dS₃
+(−2, −6, −20, −42 for Δ = 2, 3, 5, 7), or m² = 4Δ(1 − Δ) < 0 in the dS₃
 convention of Narovlansky–Verlinde
 [2310.16994](https://arxiv.org/abs/2310.16994) Eq. 3. A massive particle
 with Mℓ > ½ has complex Δ = ½ + i√(M²ℓ² − ¼), with quasinormal modes
@@ -141,7 +141,7 @@ roughly. The moments do not decide whether the finite-p spectrum is gapped.
 ## What it means for the proposal
 
 At N = ∞ and small λ, the Majorana singlet channels of DSSYK∞ have a
-gapless, scale-invariant Rindler mass spectrum, dimensions 2, 3, 5 at the
+gapless, scale-invariant Rindler mass spectrum, dimensions 2, 3, 5, 7 at the
 string-scale ladder spacing, with no gap and no discrete masses. That
 fits the picture of [2506.18054](https://arxiv.org/abs/2506.18054) §6,
 in which the stretched horizon is the hot, deconfined, effectively
@@ -159,8 +159,9 @@ dictionary's job.
 
 - N = ∞ at fixed λ, then λ → 0; at finite λ the spectrum is bounded and
   correlators end in a t⁻³ tail (result 5).
-- Majorana Aₙ, n ≤ 6 (the decomposition is a theorem at n = 2 and
-  verified in computer algebra for n = 3..6).
+- Majorana Aₙ, n ≤ 8 (the decomposition is a theorem at n = 2 and
+  verified in computer algebra for n = 3..8; Δ = 7 enters only at
+  n = 7, 8, with 0.006% and 0.014% of the weight as λ → 0).
 - Free-field calibration with a probe at a fixed distance 1/a from the
   horizon. A probe smeared down to the horizon, radius ρ ≪ 1/M, sees a
   conformal window up to τ ≈ (2/a) ln(1/(Mρ)) before the mass shows.

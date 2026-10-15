@@ -4,7 +4,7 @@
 (singlet moments), `chord_charges.py` (the conserved-channel theorem),
 `diagonal_chord.py` (the diagonal law), `full_channel_chord.py` (the
 full A₂ moments), `singlet_tower.py` (the full channel resolved into
-matter chords, n ≤ 6), `horizon_tower.py` (the tower in a Rindler frame),
+matter chords, n ≤ 8), `horizon_tower.py` (the tower in a Rindler frame),
 `chord_fold.py` (the fold at N = ∞). The ED side is
 `syk-self-averaging/mn_majorana_bench.py`. Every verdict below is
 asserted from a committed JSON in `test_chord*.py`.*
@@ -327,7 +327,7 @@ blocks Ωₖ = Σᵢ Hᵢ Hᵏ Hᵢ. Each block is solved (`singlet_tower.py`):
 modulo polynomials in H, with Oₘ an un-normalized matter chord of
 dimension m. So
 
-> at N = ∞ every Aₙ computed (n ≤ 6) is a polynomial in H plus matter
+> at N = ∞ every Aₙ computed (n ≤ 8) is a polynomial in H plus matter
 > chords of dimension 2 through n, each dressed by a polynomial in H
 > acting from the left and the right. One new chord, of dimension n,
 > enters at level n.
@@ -335,9 +335,10 @@ dimension m. So
 Read the weights before reading that as a tower of independent
 particles. The new chords are faint. At λ_chord = 2 the dynamical weight
 of A₃ is 85% O₂ and 15% O₃; A₄ is 83%, 15% and 1.6% O₄; A₅ carries 0.2%
-in O₅ and A₆ 0.02% in O₆. Across λ_chord from 0.05 to 4 the weight of
-A₄, A₅, A₆ outside O₂ and O₃ stays between 0.9% and 5.4%. The norm of Oₘ
-goes as λ^(2⌊m/2⌋): λ², 2λ², (52/5)λ⁴, about 12.5λ⁴, then λ⁶.
+in O₅, A₆ 0.02% in O₆, A₇ 0.002% in O₇ and A₈ 0.0002% in O₈. Across
+λ_chord from 0.05 to 4 the weight of A₄, A₅, A₆ outside O₂ and O₃ stays
+between 0.9% and 5.4%. The norm of Oₘ goes as λ^(2⌊m/2⌋): λ², 2λ²,
+(52/5)λ⁴, about 12.5λ⁴, then λ⁶ for m = 6, 7 and λ⁸ for m = 8.
 
 Norms are not shares, though, because the dressings carry powers of the
 frequency. The dressing of O₂ inside A₃ is (3/2)[H, A₂], a total
@@ -345,11 +346,13 @@ derivative, plus an anticommutator admixture −(1−q)²/(3(1+q²)) of it.
 A derivative costs a factor of the width, which is O(λ). So toward small
 λ the even chords fade out of every level above the second, linearly in
 λ, and the odd ones stay: A₃ and A₄ tend to O₃ alone, A₅ to 99.5% O₃
-plus 0.53% O₅, A₆ to 99.2% O₃ plus 0.80% O₅ (exact arithmetic down to
-λ = 1/1280). A₂ is O₂ at every λ. The dimensions that survive the
-semiclassical limit are 2, 3, 5: the pattern of the large-q SYK bilinear
-spectrum h = 2, 3, 5, 7, … That is an observation on four levels, not a
-derivation.
+plus 0.53% O₅, A₆ to 99.2% O₃ plus 0.80% O₅, A₇ to 98.4% O₃ + 1.4% O₅ +
+0.006% O₇, A₈ to 97.8% O₃ + 2.0% O₅ + 0.014% O₇ (exact arithmetic down
+to λ = 1/1280). A₂ is O₂ at every λ. The dimensions that survive the
+semiclassical limit are 2, 3, 5, 7: the pattern of the large-q SYK
+bilinear spectrum h = 2, 3, 5, 7, … Levels 7 and 8 were the test of that
+pattern (O₇ should survive, O₈ fade), and it held. It is still an
+observation on six levels, not a derivation.
 
 What these continua look like in a Rindler frame is in
 [HORIZON.md](HORIZON.md): as λ → 0 each chord of dimension Δ becomes the
@@ -357,10 +360,11 @@ quasinormal ladder |Γ(Δ + iω/2𝒥)|² of a scale-invariant operator, whose
 Rindler mass spectrum is gapless (density ∝ M^(2Δ−1), no gap, no discrete
 masses).
 
-n = 2 is proven. n = 3..6 are exact identities verified in computer
+n = 2 is proven. n = 3..8 are exact identities verified in computer
 algebra: each kernel is solved linearly from cross-correlators and every
 remaining two-point word then has zero residual, symbolically for
-k ≤ 2 and in exact rational arithmetic for k = 3, 4. The closed forms
+k ≤ 2 and in exact rational arithmetic for k = 3..6 (k = 5, 6 in
+`singlet_tower_deep.json`). The closed forms
 for μ₂ of A₃ and A₄ are gated by the exact finite-N engine, to 1.5e-5
 and 2e-3; the cross moment ⟨ad²(A₄)A₂†⟩ to 7e-6. A proof for general n
 is open. Figure: `singlet_tower.png`.

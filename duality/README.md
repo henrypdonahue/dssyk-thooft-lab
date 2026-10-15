@@ -66,14 +66,16 @@ exactly a conserved H² piece plus a matter chord of dimension 2
 moves has width 2(1 − q²) at every λ, 1.963369 at λ_chord = 2; the
 1.316906 above is that number diluted by the 32.9% of μ₀ that is
 conserved. Above n = 2, an exact operator identity writes Aₙ through the
-blocks Ωₖ = ΣᵢHᵢHᵏHᵢ, and each block computed (k ≤ 4) is a polynomial in
-H plus matter chords of dimension 2..k+2 with polynomial dressings:
-zero residual in computer algebra on every checked word. The new chord
-at each level is faint (1.6% of A₄, 0.2% of A₅ at λ_chord = 2), with
-norm ∝ λ^(2⌊m/2⌋). Toward small λ the even chords fade out of A₃..A₆
-and the odd ones stay: dimensions 2, 3, 5 survive. Gated by the exact
-finite-N engine and by dense ED with the commutant of H projected out.
-Figure: `plot_singlet_tower.py`.
+blocks Ωₖ = ΣᵢHᵢHᵏHᵢ, and each block computed (k ≤ 6, so n ≤ 8) is a
+polynomial in H plus matter chords of dimension 2..k+2 with polynomial
+dressings: zero residual in computer algebra on every checked word. The
+new chord at each level is faint (1.6% of A₄, 0.2% of A₅, 0.0002% of A₈
+at λ_chord = 2), with norm ∝ λ^(2⌊m/2⌋). Toward small λ the even chords
+fade out of A₃..A₈ and the odd ones stay: dimensions 2, 3, 5, 7 survive.
+Gated by the exact finite-N engine and by dense ED with the commutant of
+H projected out. Levels 7 and 8 (`--deep 5 6`, `singlet_tower_deep.json`)
+use a parallel builder for the 16- and 18-node word tables, tested equal
+to the serial ones. Figure: `plot_singlet_tower.py`.
 
 **[HORIZON.md](HORIZON.md)** and `horizon_tower.py`. The tower in the
 frame where the mesons should be. The orthogonalized tower is a pure chord,
@@ -174,6 +176,7 @@ python3 diagonal_chord.py --run  # the diagonal channel + gates     (~20 s)
 python3 full_channel_chord.py --run  # the full channel + gates    (~10 min, finite-N series)
 python3 singlet_tower.py         # the resolved channel, A_2..A_5  (~20 s)
 python3 singlet_tower.py --run   # its artifact and finite-N gates (~3 CPU-hours; --resume)
+python3 singlet_tower.py --deep 5 6  # levels n = 7, 8 (~25 min on 6 cores)
 python3 horizon_tower.py         # the tower at the stretched horizon (~4 min)
-pytest -q                        # 361 tests (356 fast, ~1 min)
+pytest -q                        # 368 tests (363 fast, ~1 min)
 ```

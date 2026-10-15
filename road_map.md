@@ -225,14 +225,17 @@ the spectral density rebuilt from the closed-form matter vertex.
 
 The levels above follow the same pattern. An exact operator identity
 writes every Aₙ through the blocks Ωₖ = ΣᵢHᵢHᵏHᵢ, and each Aₙ computed
-(n ≤ 6) is a polynomial in H plus matter chords of dimension 2..n with
+(n ≤ 8) is a polynomial in H plus matter chords of dimension 2..n with
 polynomial dressings — zero residual in computer algebra, a proof only
 at n = 2. One new chord enters per level, and it is faint: 14.9%, 1.6%,
-0.18%, 0.02% of the dynamical weight at λ_chord = 2 for n = 3..6, with
-norm ∝ λ^(2⌊n/2⌋). Toward small λ the even chords fade out of A₃..A₆
-linearly in λ and the odd ones stay (A₅ → 99.5% O₃ + 0.53% O₅): the
-dimensions that survive are 2, 3, 5, the pattern of the large-p SYK
-bilinear spectrum. That last is an observation, not a derivation.
+0.18%, 0.02%, 0.002%, 0.0002% of the dynamical weight at λ_chord = 2
+for n = 3..8, with norm ∝ λ^(2⌊n/2⌋). Toward small λ the even chords fade
+out of A₃..A₈ linearly in λ and the odd ones stay (A₅ → 99.5% O₃ +
+0.53% O₅; A₈ → 97.8% O₃ + 2.0% O₅ + 0.014% O₇): the dimensions that
+survive are 2, 3, 5, 7, the pattern of the large-p SYK bilinear
+spectrum. Levels 7 and 8 were computed after the pattern was stated, and
+the norm law, the subleading coefficient and the odd survival all held
+there. That is still an observation, not a derivation.
 
 So the tower does propagate at N = ∞. The per-flavor split of its weight
 into "diagonal" and "pair" is bookkeeping: on a double-scaling line the
@@ -299,7 +302,7 @@ mass M gives the entire density K_{iω/a}(M/a)², and a ladder is exactly
 the superposition of those with mass density ∝ M^(2Δ−1): gapless and
 scale-invariant. With the exact decomposition (and the invertibility of
 the mass transform), the channels' Rindler mass spectrum is gapless power
-laws with Δ = 2, 3, 5, with no gap and no discrete masses. The gapped,
+laws with Δ = 2, 3, 5, 7, with no gap and no discrete masses. The gapped,
 discrete 't Hooft tower gives an entire density instead. That is
 consistent with their §6 picture of a deconfined stretched horizon, and a
 sign that the meson tower is not visible in the N = ∞ two-point functions
@@ -373,7 +376,7 @@ condensate and gives first α → −1 GMOR data.
 1. **Where are the mesons?** Done at N = ∞ for the Majorana channels
    ([duality/HORIZON.md](duality/HORIZON.md)): the orthogonalized tower is
    a pure chord, Õₙ = 4Ôₙ, and as λ → 0 every singlet channel is a sum of
-   quasinormal ladders |Γ(Δ + iω/a)|², Δ = 2, 3, 5, whose Rindler mass
+   quasinormal ladders |Γ(Δ + iω/a)|², Δ = 2, 3, 5, 7, whose Rindler mass
    spectrum is gapless (density ∝ M^(2Δ−1)), with no gap and no discrete
    masses. So the paper's small-λ prediction cannot be met by the N = ∞
    two-point functions of the Majorana Sₙ. Next, theory-gated: whether
@@ -385,19 +388,23 @@ condensate and gives first α → −1 GMOR data.
    moments approach the λ → 0 ladders as p grows, with exact closed-form
    finite-p corrections that are large at small p. Open: A₄ and beyond
    (the K = 12 word frontier limits the moments available).
-3. **Test the 2, 3, 5 coincidence.** At T = ∞ each chord is already the
+3. **Test the 2, 3, 5, 7 coincidence.** At T = ∞ each chord is already the
    ladder of a dimension-Δ scale-invariant operator (item 1); at small λ
    and low temperature it should give conformal τ^(−2Δ) correlators.
    Check whether O₃ inside A₃ behaves as the large-p h = 3 bilinear, and
-   whether the O₅/O₃ weight in A₅ (0.53% / 99.5%) matches the ratio of
-   large-p OPE coefficients (Gross–Rosenhaus). Either outcome turns an
+   whether the O₅/O₃ weight in A₅ (0.53% / 99.5%), and the O₇ weight in
+   A₇ and A₈ (0.006%, 0.014%), match the ratios of large-p OPE
+   coefficients (Gross–Rosenhaus). Either outcome turns an
    observation into a result.
 4. **The Dirac full channel and its CP resolution** (below). This is what
    the paper's own CP assignment waits on.
 5. **A proof of the decomposition for general n**, the λ^(2⌊n/2⌋) norm law,
-   and which dimensions survive λ → 0. At every level computed, the first
+   and which dimensions survive λ → 0. At every level computed (now
+   through n = 8, where all three patterns held as predicted), the first
    sub-leading coefficient is (q + … + q^k)/(1 + q^(k+1)), which suggests
-   extending the n = 2 involution bundle by bundle.
+   extending the n = 2 involution bundle by bundle. More levels by
+   computation add little: n = 9 needs 20-node diagrams, about 20× the
+   n = 8 cost.
 6. **A chord-side derivation of the finite-N pair laws** (below).
 7. The O(1/q) residues, the NV constrained-sector step and the bulk-side
    items, as below.
@@ -406,7 +413,7 @@ condensate and gives first α → −1 GMOR data.
 
 Part II has what is settled: the pair theorem, the exact finite-N pair
 laws and double-scaling constants, the full A₂ channel at N = ∞ with its
-split into a conserved piece and a Δ = 2 chord, and the n = 3..6
+split into a conserved piece and a Δ = 2 chord, and the n = 3..8
 decomposition. What remains is below.
 
 **A derivation of the finite-N pair laws.** At fixed p the 1/N laws are
@@ -426,8 +433,8 @@ past ten hours on seven workers); they would add two checks to a rule
 that already holds at 55 of 55.
 
 **A proof of the decomposition for general n.** The n = 2 split is a
-theorem. n = 3..6 are exact identities verified in computer algebra on
-finite word sets. Open: a proof for general n, the reason the new
+theorem. n = 3..8 are exact identities verified in computer algebra on
+finite word sets (n = 7, 8 in `duality/singlet_tower_deep.json`). Open: a proof for general n, the reason the new
 chord's norm scales as λ^(2⌊n/2⌋), and a derivation of which dimensions
 survive λ → 0.
 

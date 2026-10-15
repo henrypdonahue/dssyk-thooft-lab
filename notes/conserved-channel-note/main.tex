@@ -38,7 +38,7 @@ flavor-summed $A_2$ is exactly a conserved multiple of $H^2-1$ plus a
 matter chord of dimension two:
 $A_2-\langle A_2\rangle=\tfrac{2\lambda(1-q)}{1+q}(H^2-1)+\nu\,O_2$, so
 the propagating part has width $2(1-q^2)$ at every $\lambda$. The proof
-is a sign-reversing involution on chord diagrams. For $3\le n\le6$ the
+is a sign-reversing involution on chord diagrams. For $3\le n\le8$ the
 same construction gives a polynomial in $H$ plus matter chords of
 dimension $2,\dots,n$, verified in exact computer algebra but not
 proved. Each statement is checked against exact finite-$N$ arithmetic
@@ -364,26 +364,29 @@ against dense matrices for $n\le5$. In the double-scaled limit triple
 intersections are $O(1/p)$, so $A_n$ is assembled from the blocks
 $\Omega_k=\sum_iH_iH^kH_i$, up to exactly conserved operators.
 
-Each block computed ($k\le4$, hence $n\le6$) decomposes, modulo
+Each block computed ($k\le6$, hence $n\le8$) decomposes, modulo
 polynomials in $H$, into matter chords of dimension $2,\dots,k+2$ with
 polynomial dressings; for example
 $\Omega_1=\frac{q}{1+q^2}\{H,\hat O_2\}+\hat O_3$. So every $A_n$ with
-$n\le6$ is a polynomial in $H$ plus matter chords of dimension
+$n\le8$ is a polynomial in $H$ plus matter chords of dimension
 $2,\dots,n$, one new chord entering at each level. This is verified,
 not proved: each kernel is solved linearly from cross-correlators and
 every remaining two-point word then has zero residual, symbolically in
 $(\lambda,q)$ for $k\le2$ and in exact rational arithmetic at generic
-points for $k=3,4$. A proof for general $n$ is open.
+points for $k=3,\dots,6$. A proof for general $n$ is open.
 
-The new chord at each level is faint: $14.9\%$, $1.6\%$, $0.18\%$ and
-$0.02\%$ of the dynamical weight of $A_3,\dots,A_6$ at $\lambda=2$, with
-norm $\propto\lambda^{2\lfloor m/2\rfloor}$ at small $\lambda$. As
-$\lambda\to0$ the even chords fade out of $A_3,\dots,A_6$ linearly in
-$\lambda$ while the odd ones remain: $A_3$ and $A_4$ tend to $O_3$ alone
-and $A_5$ to $99.5\%\,O_3+0.53\%\,O_5$. The dimensions that survive,
-$2,3,5$, follow the pattern of the large-$p$ SYK bilinear spectrum
-$h=2,3,5,7,\dots$ \cite{MS}. We record that as an observation on four
-levels. In particular we do not identify powers of $\lambda$ in these
+The new chord at each level is faint: $14.9\%$, $1.6\%$, $0.18\%$,
+$0.02\%$, $0.002\%$ and $0.0002\%$ of the dynamical weight of
+$A_3,\dots,A_8$ at $\lambda=2$, with norm
+$\propto\lambda^{2\lfloor m/2\rfloor}$ at small $\lambda$. As
+$\lambda\to0$ the even chords fade out of $A_3,\dots,A_8$ linearly in
+$\lambda$ while the odd ones remain: $A_3$ and $A_4$ tend to $O_3$ alone,
+$A_5$ to $99.5\%\,O_3+0.53\%\,O_5$, and $A_8$ to
+$97.8\%\,O_3+2.0\%\,O_5+0.014\%\,O_7$. The dimensions that survive,
+$2,3,5,7$, follow the pattern of the large-$p$ SYK bilinear spectrum
+$h=2,3,5,7,\dots$ \cite{MS}. The levels $n=7,8$ were computed after the
+pattern was noticed on $n\le6$, and it held there. We still record it
+as an observation, on six levels. In particular we do not identify powers of $\lambda$ in these
 norms with powers of $1/p$ in the large-$p$ expansion \cite{GR}: how the
 $\lambda\to0$ limit of the double-scaled theory relates to the
 large-$p$ expansion at fixed $p$ is not established here.

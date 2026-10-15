@@ -6,8 +6,8 @@ The singlet tower at N = infinity: every A_n is a stack of matter chords.
 full_channel_chord.py gives the exact moments of the FULL A_2 channel at
 N = infinity, and leaves two things open: the conserved H^2 admixture
 that mean subtraction does not remove, and every n >= 3.  This module
-settles the first, and the second through n = 6 (a general-n proof is
-open).  The answer has one shape at every level computed (n = 2..6):
+settles the first, and the second through n = 8 (a general-n proof is
+open).  The answer has one shape at every level computed (n = 2..8):
 
     A_n  =  (a polynomial in H)  +  sum_{m=2..n}  F_{n,m}(H_L, H_R) . O_m ,
 
@@ -91,7 +91,7 @@ Modulo polynomials in H, and writing O^_m for the un-normalized chord
     Omega_1 = [q / (1+q^2)] {H, O^_2}  +  O^_3
     Omega_2 = a (H^2 O^_2 + O^_2 H^2) + b H O^_2 H + c O^_2
               + [q / (1-q+q^2)] {H, O^_3}  +  O^_4
-    Omega_3, Omega_4: computed by decompose(); new chords O^_5, O^_6
+    Omega_3 .. Omega_6: computed by decompose(); new chords O^_5 .. O^_8
 
 with [5]_q = 1+q+q^2+q^3+q^4 and
 
@@ -112,7 +112,7 @@ m strands crosses only the strands on its way out.  q/(1+q^2) solves
 none or both for a chord end placed to the left or right of a pointlike
 O_2.  In general the O_(k+1) sector of Omega_k is
 
-    [ (q + q^2 + ... + q^k) / (1 + q^(k+1)) ] {H, O^_(k+1)} ,   k = 1, 2, 3, 4.
+    [ (q + q^2 + ... + q^k) / (1 + q^(k+1)) ] {H, O^_(k+1)} ,   k = 1, ..., 6.
 
 WHAT IS PROVEN AND WHAT IS VERIFIED
 -----------------------------------
@@ -149,14 +149,15 @@ That is the matter-chord law mu_2 = 2(1 - q^Delta) at Delta = 2.  The
 raw width full_channel_chord.py quotes, 1.316906 at lambda_chord = 2, is
 this 1.963369 diluted by the conserved H^2 weight (32.9 % of mu_0 there).
 
-k = 1..4 are exact identities verified by computer algebra, not proofs.
+k = 1..6 are exact identities verified by computer algebra, not proofs.
 decompose() solves each sector's kernel LINEARLY from the
 cross-correlators with the lower blocks and then checks every remaining
 two-point word.  The residuals are identically zero: symbolically in
 (lambda, q) for k <= 2, and in exact rational arithmetic at generic
-points for k = 3 and 4 (test_singlet_tower.py; lambda and q are
-independent there, as the identities are polynomial in both).  A proof
-for general k is open.
+points for k = 3..6 (test_singlet_tower.py; lambda and q are
+independent there, as the identities are polynomial in both; k = 5 and 6,
+the levels n = 7 and 8, are singlet_tower_deep.json, 176 and 257 checked
+words per point).  A proof for general k is open.
 
 WHAT IT SAYS ABOUT THE TOWER
 ----------------------------
@@ -167,28 +168,35 @@ WHAT IT SAYS ABOUT THE TOWER
     single broad maximum of a derivative kernel and no nodes.
   * The new chord at each level is faint.  At lambda_chord = 2 the
     dynamical weight of A_3 is 85 % O_2 and 15 % O_3; O_4 is 1.6 % of
-    A_4, O_5 0.2 % of A_5, O_6 0.02 % of A_6.  Over lambda_chord in
-    [0.05, 4] the weight of A_4..A_6 outside O_2 and O_3 stays between
-    0.9 % and 5.4 %.
+    A_4, O_5 0.2 % of A_5, O_6 0.02 % of A_6, O_7 0.002 % of A_7, O_8
+    0.0002 % of A_8.  Over lambda_chord in [0.05, 4] the weight of
+    A_4..A_6 outside O_2 and O_3 stays between 0.9 % and 5.4 % (at
+    lambda_chord = 2 it is 6.9 % for A_7 and 9.1 % for A_8).
   * The norms are graded: norm_m scales as lambda^(2 floor(m/2)),
 
         norm_2 -> lambda^2,  norm_3 -> 2 lambda^2,  norm_4 -> (52/5) lambda^4,
-        norm_5 ~ 12.5 lambda^4,  norm_6 ~ 6e2 lambda^6
+        norm_5 ~ 12.5 lambda^4,  norm_6 ~ 6e2 lambda^6,
+        norm_7 ~ 7e2 lambda^6,   norm_8 ~ 1e5 lambda^8
 
-    (the first three from the closed forms, the last two measured).
+    (the first three from the closed forms, the rest measured; m = 7, 8
+    were predicted by the law before they were computed).
   * Norms are not shares, because the dressings carry powers of the
     frequency.  Toward small lambda (share_scaling, exact arithmetic
     down to lambda = 1/1280) the EVEN chords fade out of every level
     above the second, linearly in lambda, and the odd ones stay:
 
         A_3 -> O_3 alone;   A_4 -> O_3 alone;
-        A_5 -> 99.5 % O_3 + 0.53 % O_5;   A_6 -> 99.2 % O_3 + 0.80 % O_5.
+        A_5 -> 99.5 % O_3 + 0.53 % O_5;   A_6 -> 99.2 % O_3 + 0.80 % O_5;
+        A_7 -> 98.4 % O_3 + 1.4 % O_5 + 0.006 % O_7;
+        A_8 -> 97.8 % O_3 + 2.0 % O_5 + 0.014 % O_7
 
-    A_2 is O_2 at every lambda.  So the dimensions that survive the
-    semiclassical limit are 2, 3, 5 -- the pattern of the large-q SYK
-    bilinear spectrum h = 2, 3, 5, 7, ... (Maldacena-Stanford
-    1604.07818).  That is an observation on four levels, not a
-    derivation.
+    (values at lambda = 1/1280; O_8 fades linearly like the other even
+    chords).  A_2 is O_2 at every lambda.  So the dimensions that survive
+    the semiclassical limit are 2, 3, 5, 7 -- the pattern of the large-q
+    SYK bilinear spectrum h = 2, 3, 5, 7, ... (Maldacena-Stanford
+    1604.07818).  O_7 surviving and O_8 fading was the pattern's
+    prediction for n = 7, 8 before they were computed.  It is still an
+    observation on six levels, not a derivation.
   * The O_2 kernel of A_3 is (3/2)(E - E') plus an anticommutator
     admixture -(1-q)^2 / (3 (1+q^2)) of it: A_3 = (3/2) [H, A_2] + 4 O^_3
     + ..., a total derivative plus one new chord.  (A_3 - A_3^dag =
@@ -233,6 +241,10 @@ Output: singlet_tower.json.  `python singlet_tower.py` prints the
 headline numbers in seconds; `--run` regenerates the artifact (the
 finite-N gates dominate: about three CPU-hours, most of it in the five
 K = 10 points; `--resume` keeps the points already computed).
+`--deep 5 6` writes singlet_tower_deep.json, the levels n = 7 and 8: the
+K = 16 and 18 word tables are built in parallel (build_word_tables, about
+15 minutes on 6 cores, nearly all of it K = 18), then the same exact
+checks and scalings (about 10 more minutes).
 """
 
 from __future__ import annotations
@@ -264,10 +276,17 @@ def _matchings(items):
             yield [(a, items[k])] + rem
 
 
-def _diagrams(K: int):
+def _diagrams(K: int, first: int = None):
     """Every perfect matching of K nodes on a line, as (of, cross): the
-    chord index of each node, and the set of crossing chord-index pairs."""
-    for m in _matchings(list(range(K))):
+    chord index of each node, and the set of crossing chord-index pairs.
+    With `first`, only the matchings that pair node 0 with node `first`
+    (the unit of work of build_word_tables)."""
+    if first is None:
+        gen = _matchings(list(range(K)))
+    else:
+        gen = ([(0, first)] + rem for rem in
+               _matchings([x for x in range(1, K) if x != first]))
+    for m in gen:
         of = [0] * K
         for ci, (x, y) in enumerate(m):
             of[x] = ci
@@ -317,30 +336,113 @@ def omega_word_table(k1: int, k2: int, A: int, B: int) -> tuple:
          1 = same pair, crossed
          2 = two different pairs, an even number of them crossed
          3 = two different pairs, an odd number crossed."""
+    key = (k1, k2, A, B)
+    if key in _PRELOADED:
+        return _PRELOADED[key]
+    if (A + B + k1 + k2) % 2:
+        return ()
+    acc: dict = {}
+    spec = _word_slots(key)
+    for of, cross in _diagrams(spec[0]):
+        _count_word(acc, of, cross, spec)
+    return tuple(sorted(acc.items()))
+
+
+# Tables computed ahead of time by build_word_tables (identical to what
+# omega_word_table would compute; the deep levels need them in bulk).
+_PRELOADED: dict = {}
+
+
+def _word_slots(key) -> tuple:
+    """(K, slots of the first insertion, slots of the second)."""
+    k1, k2, A, B = key
     n1, n2 = k1 + 2, k2 + 2
     K = A + B + n1 + n2
-    if K % 2:
-        return ()
-    s1 = range(A, A + n1)
-    s2 = range(A + n1 + B, K)
-    acc: dict = {}
-    for of, cross in _diagrams(K):
-        t1 = _omega_terms([of[s] for s in s1])
-        if not t1:
+    return K, range(A, A + n1), range(A + n1 + B, K)
+
+
+def _count_word(acc: dict, of, cross, spec) -> None:
+    """Add one diagram's terms to the count table of one word."""
+    _, s1, s2 = spec
+    t1 = _omega_terms([of[s] for s in s1])
+    if not t1:
+        return
+    t2 = _omega_terms([of[s] for s in s2])
+    if not t2:
+        return
+    nx = len(cross)
+    for r1, e in t1:
+        ce = e in cross
+        for r2, f in t2:
+            if e == f:
+                key = (1 if ce else 0, nx, r1 + r2)
+            else:
+                key = (3 if ce != (f in cross) else 2, nx, r1 + r2)
+            acc[key] = acc.get(key, 0) + 1
+
+
+def _branch_tables(task) -> list:
+    """Worker: the partial tables of several words of one size K from
+    the diagrams that pair node 0 with node `first`."""
+    K, first, keys = task
+    specs = [_word_slots(k) for k in keys]
+    accs = [dict() for _ in keys]
+    for of, cross in _diagrams(K, first):
+        for acc, spec in zip(accs, specs):
+            _count_word(acc, of, cross, spec)
+    return accs
+
+
+def needed_word_keys(kmax: int, check_len: int) -> dict:
+    """Every omega_word_table key that decompose(kmax, check_len) asks
+    for (its loops, mirrored), grouped by diagram size K."""
+    words = TowerChord._words
+    keys = set()
+    for k in range(kmax + 1):
+        for m in range(2, k + 2):
+            k1 = m - 2
+            for (A, B) in words((k1 + k) % 2, max(check_len, k + 4 - m)):
+                keys.add((k1, k, A, B))
+        for (A, B) in words(0, check_len):
+            keys.add((k, k, A, B))
+        for k1 in range(k):
+            for (A, B) in words((k1 + k) % 2, check_len):
+                keys.add((k1, k, A, B))
+    by_K: dict = {}
+    for key in keys:
+        by_K.setdefault(_word_slots(key)[0], []).append(key)
+    return {K: sorted(v) for K, v in sorted(by_K.items())}
+
+
+def build_word_tables(keys_by_K: dict, workers: int = None,
+                      progress: bool = True) -> dict:
+    """Compute omega_word_table for many keys at once: one enumeration of
+    the K-node diagrams per size, split over node 0's partner and run in
+    parallel.  The result is installed in _PRELOADED and returned; it is
+    identical to the one-at-a-time tables (test_singlet_tower.py)."""
+    import multiprocessing as mp
+    workers = workers or max(1, mp.cpu_count() - 1)
+    out = {}
+    ctx = mp.get_context("spawn")
+    for K, keys in sorted(keys_by_K.items()):
+        keys = [k for k in keys if k not in _PRELOADED]
+        if not keys:
             continue
-        t2 = _omega_terms([of[s] for s in s2])
-        if not t2:
-            continue
-        nx = len(cross)
-        for r1, e in t1:
-            ce = e in cross
-            for r2, f in t2:
-                if e == f:
-                    key = (1 if ce else 0, nx, r1 + r2)
-                else:
-                    key = (3 if ce != (f in cross) else 2, nx, r1 + r2)
-                acc[key] = acc.get(key, 0) + 1
-    return tuple(sorted(acc.items()))
+        t0 = time.time()
+        tasks = [(K, first, keys) for first in range(1, K)]
+        with ctx.Pool(processes=min(workers, len(tasks))) as pool:
+            parts = pool.map(_branch_tables, tasks)
+        for i, key in enumerate(keys):
+            acc: dict = {}
+            for part in parts:
+                for kk, v in part[i].items():
+                    acc[kk] = acc.get(kk, 0) + v
+            out[key] = tuple(sorted(acc.items()))
+        _PRELOADED.update(out)
+        if progress:
+            print(f"  K = {K}: {len(keys)} word tables in "
+                  f"{time.time() - t0:.1f} s", flush=True)
+    return out
 
 
 @lru_cache(maxsize=None)
@@ -1206,6 +1308,63 @@ def share_scaling(lams=(Fraction(1, 5), Fraction(1, 10), Fraction(1, 20),
     return rows
 
 
+EXACT_POINTS = [(Fraction(2), Fraction(1, 7)), (Fraction(1, 3), Fraction(3, 5)),
+                (Fraction(5, 2), Fraction(2, 9))]
+
+
+def deep_level(kmax: int, workers: int = None) -> dict:
+    """Levels n = kmax + 2 beyond the committed n <= 6: the same exact
+    checks, the lambda = 2 shares, and the small-lambda norm and share
+    scalings, with the word tables built in parallel first."""
+    t0 = time.time()
+    build_word_tables(needed_word_keys(kmax, 2), workers)
+    tables_s = round(time.time() - t0, 1)
+    exact = []
+    for lam, q in EXACT_POINTS:
+        T = TowerChord(lam, q)
+        d = T.decompose(kmax, check_len=2)
+        sub = {}
+        for k in range(1, kmax + 1):
+            qk = sum(q ** j for j in range(1, k + 1)) / (1 + q ** (k + 1))
+            sub[str(k)] = d["kernels"][k][k + 1] == {(1, 0): qk, (0, 1): qk}
+        exact.append(dict(
+            lam=str(lam), q=str(q), max_residual=str(d["max_residual"]),
+            n_checked=d["n_checked"],
+            norms_positive=all(v > 0 for v in d["norm"].values()),
+            subleading_closed_form=sub,
+            kernels_symmetric=all(
+                f[(j, i)] == c for k in range(kmax + 1)
+                for f in d["kernels"][k].values() for (i, j), c in f.items())))
+        print(f"  exact ({lam}, {q}): residual {d['max_residual']} on "
+              f"{d['n_checked']} words", flush=True)
+    return dict(kmax=kmax, level=kmax + 2, exact_checks=exact,
+                scan_lam2=scan_row(2.0, kmax),
+                norm_scaling=norm_scaling(kmax=kmax),
+                share_scaling=share_scaling(kmax=kmax),
+                tables_s=tables_s, runtime_s=round(time.time() - t0, 1))
+
+
+def run_deep(kmaxes, out_path=None, workers: int = None) -> dict:
+    """singlet_tower_deep.json: the levels past n = 6 (kmax = 5 is n = 7,
+    kmax = 6 is n = 8).  Rows already in the file are kept."""
+    out = Path(out_path) if out_path else HERE / "singlet_tower_deep.json"
+    payload = {"levels": {}}
+    if out.exists():
+        with open(out) as fh:
+            payload = json.load(fh)
+    for kmax in kmaxes:
+        print(f"level n = {kmax + 2}", flush=True)
+        payload["levels"][str(kmax + 2)] = deep_level(kmax, workers)
+        payload["provenance"] = (
+            "singlet_tower.py --deep -- the matter-chord decomposition past "
+            "n = 6: exact rational checks at three generic (lambda, q), the "
+            "subleading coefficient q[k]_q/(1+q^(k+1)), sector shares at "
+            "lambda = 2 and the small-lambda norm and share scalings")
+        _write_json(out, payload)
+    print(f"wrote {out}")
+    return payload
+
+
 def _exact_report(kmax: int, points) -> list:
     out = []
     for lam, q in points:
@@ -1264,8 +1423,7 @@ def run(out_path=None, workers: int = None, resume: bool = False,
     prior_runtime = float(payload.get("runtime_s", 0.0))
 
     print("exact decomposition checks", flush=True)
-    pts = [(Fraction(2), Fraction(1, 7)), (Fraction(1, 3), Fraction(3, 5)),
-           (Fraction(5, 2), Fraction(2, 9))]
+    pts = EXACT_POINTS
     payload["exact_checks"] = _exact_report(4, pts)
     # one point pushed to longer words for the blocks with closed forms
     T = TowerChord(*pts[0])
@@ -1394,8 +1552,12 @@ if __name__ == "__main__":
     ap.add_argument("--run", action="store_true")
     ap.add_argument("--resume", action="store_true")
     ap.add_argument("--workers", type=int, default=None)
+    ap.add_argument("--deep", type=int, nargs="+", metavar="KMAX",
+                    help="levels past n = 6: KMAX = n - 2 (5 and 6)")
     args = ap.parse_args()
-    if args.run or args.resume:
+    if args.deep:
+        run_deep(args.deep, workers=args.workers)
+    elif args.run or args.resume:
         run(workers=args.workers, resume=args.resume)
     else:
         for lam in (2.0, 1.0, 0.5, 0.1):

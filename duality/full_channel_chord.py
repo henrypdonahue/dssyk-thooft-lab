@@ -95,7 +95,7 @@ O(1/p) (hypergeometric against Poisson), so at fixed p the exact Wick
 engine remains the tool (syk-self-averaging/full_channel_laws.py: the
 fixed-p width dies as 8p(p-2)/N).  For n >= 3 the same construction
 works once the conserved admixtures of H, H^2, ... are projected out;
-that is singlet_tower.py, which finds every A_n computed (n <= 6) to be
+that is singlet_tower.py, which finds every A_n computed (n <= 8) to be
 a polynomial in H plus matter chords of dimension 2..n.
 
 Output: full_channel_chord.json (the closed forms, a lambda scan, the

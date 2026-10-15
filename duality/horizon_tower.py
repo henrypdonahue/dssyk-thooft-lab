@@ -4,7 +4,7 @@ The singlet tower at the stretched horizon: a gapless, scale-invariant spectrum.
 ==============================================================================
 
 singlet_tower.py writes every Majorana singlet channel
-A_n = sum_i psi_i (ad_H)^n psi_i (n <= 6) at N = infinity as a conserved
+A_n = sum_i psi_i (ad_H)^n psi_i (n <= 8) at N = infinity as a conserved
 polynomial in H plus matter chords of dimension 2..n.  This module asks
 what that content looks like in the frame where the proposal says the
 mesons live, and what mass spectrum it corresponds to there.

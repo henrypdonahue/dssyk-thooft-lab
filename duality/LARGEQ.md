@@ -30,9 +30,9 @@ task. That is where the quantitative content of the λ → 0 corner lives.
 **Relation to the N = ∞ chord results.** At fixed λ the full singlet
 channels are not small: A₂ is a conserved piece plus a dimension-2 matter
 chord at every λ, and toward λ → 0 the higher Aₙ concentrate on the odd
-chords O₃ and O₅ (`singlet_tower.py`, `notes/singlet-tower-note.md`).
+chords O₃, O₅ and O₇ (`singlet_tower.py`, `notes/singlet-tower-note.md`).
 That is consistent in pattern with the large-q bilinear dimensions
-h = 2, 3, 5, … but it is not yet a quantitative match. Semiclassical
+h = 2, 3, 5, 7, … but it is not yet a quantitative match. Semiclassical
 correlators of the two limits agree (`ANTISCRAMBLING.md` checks the OTOC:
 chord/closed → 1 as λ → 0). The chord norms, however, scale as powers of
 λ = 2p²/N, and the large-q tower couplings as powers of 1/q; this repo has not

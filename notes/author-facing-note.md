@@ -104,17 +104,20 @@ H² component removed extrapolate to 1.96336; dense ED with the full
 commutant of H projected out per realization (`projected_channel.py`)
 gives 2.03, 2.03, 2.01 at p = 6, N = 16–20 against 2.00.
 
-For n = 3..6 the same construction gives Aₙ as a polynomial in H plus
+For n = 3..8 the same construction gives Aₙ as a polynomial in H plus
 matter chords of dimension 2..n with polynomial dressings. Those are
 exact identities verified in computer algebra on finite sets of words,
 not proved. The chord new at level n is small (14.9%, 1.6%, 0.18%,
-0.02% of the dynamical weight at λ = 2) and its norm scales as
-λ^(2⌊n/2⌋) at small λ. Shares behave differently from norms, because the
-dressings carry powers of the frequency: as λ → 0 the even chords fade
-out of A₃..A₆ linearly in λ while the odd ones stay (A₃, A₄ → O₃;
-A₅ → 99.5% O₃ + 0.53% O₅). The surviving dimensions, 2, 3, 5, match the
-pattern of the large-p SYK bilinear spectrum; that is an observation on
-four levels, not a derivation.
+0.02%, 0.002%, 0.0002% of the dynamical weight at λ = 2) and its norm
+scales as λ^(2⌊n/2⌋) at small λ. Shares behave differently from norms,
+because the dressings carry powers of the frequency: as λ → 0 the even
+chords fade out of A₃..A₈ linearly in λ while the odd ones stay (A₃,
+A₄ → O₃; A₅ → 99.5% O₃ + 0.53% O₅; A₈ → 97.8% O₃ + 2.0% O₅ + 0.014% O₇).
+The surviving dimensions, 2, 3, 5, 7, match the pattern of the large-p
+SYK bilinear spectrum. Levels 7 and 8 were computed as a test after the
+pattern was noticed, and the norm law, the subleading coefficient and
+the odd survival all held; it is still an observation on six levels,
+not a derivation.
 
 The same engine computes fixed-p finite-N moments without ED. For the
 tested even p = 2,…,12, the coefficients support
@@ -170,11 +173,12 @@ not a demonstration of a complete observer state or all-correlator KMS.
 Priorities before a stronger claim:
 
 1. Record a `reproduce-slow` run against the release commit. As of
-   2026-10-14 all work is committed, the fast suites pass and the fast
+   2026-10-15 all work is committed, the fast suites pass and the fast
    `reproduce` target regenerates every committed artifact to within
-   1e-11 relative; the hours-long campaigns have not been re-run.
+   1e-11 relative; the hours-long campaigns have not been re-run (a full
+   run takes about a day of dedicated compute).
 2. Prove the matter-chord decomposition for general n (done for n = 2;
-   verified, not proved, for n = 3..6), explain the λ^(2⌊n/2⌋) scaling of
+   verified, not proved, for n = 3..8), explain the λ^(2⌊n/2⌋) scaling of
    the new chord's norm, and derive the small-λ survival of the odd
    dimensions.
 3. Compute the complete Dirac CP-resolved counterpart, with its ensemble
@@ -189,10 +193,10 @@ Priorities before a stronger claim:
    with invariant masses. No amount of numerical precision alone supplies it.
    What is now known at N = ∞ for the Majorana form (`duality/HORIZON.md`):
    in the paper's string units each singlet chord is, as λ → 0, the
-   quasinormal ladder of a scale-invariant operator of dimension 2, 3 or
-   5 at a string-scale Rindler acceleration. Its Rindler mass spectrum is gapless (density
-   ∝ M^(2Δ−1)), with no gap and no discrete masses, unlike the 't Hooft
-   tower. A dictionary therefore has to say where the mesons enter:
+   quasinormal ladder of a scale-invariant operator of dimension 2, 3, 5
+   or 7 at a string-scale Rindler acceleration. Its Rindler mass spectrum
+   is gapless (density ∝ M^(2Δ−1)), with no gap and no discrete masses,
+   unlike the 't Hooft tower. A dictionary therefore has to say where the mesons enter:
    finite-N corrections, the Dirac channels, other operators, or a
    non-local probe.
 

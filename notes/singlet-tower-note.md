@@ -164,28 +164,37 @@ proofs. Each sector's kernel is solved linearly from the cross-correlator
 with a lower block; every remaining two-point word is then a check. The
 residual is identically zero: symbolically in (λ, q) for k ≤ 2 (words
 through four H's; through six at one rational point), and in exact
-rational arithmetic at three generic points for k = 3 and 4. λ and q are
-treated as independent, because the identities are polynomial in both. A
-proof for general k is open.
+rational arithmetic at three generic points for k = 3..6 (k = 5, 6, the
+levels n = 7, 8, check 176 and 257 words per point and are in
+`duality/singlet_tower_deep.json`). λ and q are treated as independent,
+because the identities are polynomial in both. The subleading
+coefficient q[k]_q/(1 + q^(k+1)) holds exactly through k = 6. A proof for
+general k is open.
 
-**What the levels contain.** Every Aₙ computed (n ≤ 6) is a polynomial in
+**What the levels contain.** Every Aₙ computed (n ≤ 8) is a polynomial in
 H plus matter chords of dimension 2 through n, each dressed by a
 polynomial of degree n − m in H acting from the left and right. One new
 chord, of dimension n, enters at level n. Its weight is small:
 
-| channel | O₂ | O₃ | O₄ | O₅ | O₆ |
-|---|---|---|---|---|---|
-| A₂ | 100% | | | | |
-| A₃ | 85.1% | 14.9% | | | |
-| A₄ | 83.0% | 15.3% | 1.6% | | |
-| A₅ | 76.9% | 20.3% | 2.5% | 0.18% | |
-| A₆ | 72.5% | 22.7% | 4.4% | 0.39% | 0.02% |
+| channel | O₂ | O₃ | O₄ | O₅ | O₆ | O₇ | O₈ |
+|---|---|---|---|---|---|---|---|
+| A₂ | 100% | | | | | | |
+| A₃ | 85.1% | 14.9% | | | | | |
+| A₄ | 83.0% | 15.3% | 1.6% | | | | |
+| A₅ | 76.9% | 20.3% | 2.5% | 0.18% | | | |
+| A₆ | 72.5% | 22.7% | 4.4% | 0.39% | 0.02% | | |
+| A₇ | 68.5% | 24.6% | 6.0% | 0.84% | 0.05% | 0.002% | |
+| A₈ | 65.1% | 25.8% | 7.5% | 1.4% | 0.14% | 0.006% | 0.0002% |
 
 (shares of the dynamical weight at λ = 2). Over λ from 0.05 to 4 the
-weight of A₄, A₅, A₆ outside O₂ and O₃ stays between 0.9% and 5.4%.
+weight of A₄, A₅, A₆ outside O₂ and O₃ stays between 0.9% and 5.4%
+(A₇ and A₈ were computed at λ = 2 and small λ only; there it is 6.9% and
+9.1%).
 
 The norms are graded: Nₘ scales as λ^(2⌊m/2⌋), with N₂ → λ², N₃ → 2λ²,
-N₄ → (52/5)λ⁴ from the closed forms and N₅ ≈ 12.5λ⁴, N₆ ∝ λ⁶ measured.
+N₄ → (52/5)λ⁴ from the closed forms and N₅ ≈ 12.5λ⁴, N₆ ∝ λ⁶, N₇ ∝ λ⁶,
+N₈ ∝ λ⁸ measured (N₇ and N₈ were the law's predictions before they were
+computed).
 
 Shares do not follow norms, because the dressings carry powers of the
 frequency. The O₂ dressing in A₃ is (3/2)[H, A₂], a total derivative,
@@ -193,20 +202,25 @@ plus an anticommutator admixture −(1−q)²/(3(1+q²)) of it, and a
 derivative costs a factor of the width, O(λ). Measured in exact
 arithmetic down to λ = 1/1280:
 
-| λ → 0 | O₂ | O₃ | O₄ | O₅ | O₆ |
-|---|---|---|---|---|---|
-| A₃ | ∝ λ | → 100% | | | |
-| A₄ | ∝ λ | → 100% | ∝ λ | | |
-| A₅ | ∝ λ | → 99.5% | ∝ λ | → 0.53% | |
-| A₆ | ∝ λ | → 99.2% | ∝ λ | → 0.80% | → 0 |
+| λ → 0 | O₂ | O₃ | O₄ | O₅ | O₆ | O₇ | O₈ |
+|---|---|---|---|---|---|---|---|
+| A₃ | ∝ λ | → 100% | | | | | |
+| A₄ | ∝ λ | → 100% | ∝ λ | | | | |
+| A₅ | ∝ λ | → 99.5% | ∝ λ | → 0.53% | | | |
+| A₆ | ∝ λ | → 99.2% | ∝ λ | → 0.80% | ∝ λ | | |
+| A₇ | ∝ λ | → 98.4% | ∝ λ | → 1.4% | ∝ λ | → 0.006% | |
+| A₈ | ∝ λ | → 97.8% | ∝ λ | → 2.0% | ∝ λ | → 0.014% | ∝ λ |
 
-A₂ is O₂ at every λ. So the dimensions that survive the semiclassical
-limit are 2, 3 and 5. That is the pattern of the bilinear spectrum of
-large-p SYK (large q in the usual notation), h = 2, 3, 5, 7, …
-([1604.07818](https://arxiv.org/abs/1604.07818)). It is recorded here as
-an observation on four levels. It is not derived, and the map between a
-matter-chord dimension at infinite temperature and a conformal dimension
-has not been checked beyond this coincidence.
+(the arrows give the values at λ = 1/1280, where the odd shares have
+settled to about 1%). A₂ is O₂ at every λ. So the dimensions that
+survive the semiclassical limit are 2, 3, 5 and 7. That is the pattern of
+the bilinear spectrum of large-p SYK (large q in the usual notation),
+h = 2, 3, 5, 7, … ([1604.07818](https://arxiv.org/abs/1604.07818)).
+Levels 7 and 8 were computed to test it after it was noticed on
+levels 3–6: the pattern predicted that O₇ survives and O₈ fades, and both
+held. It is still an observation, on six levels. It is not derived, and
+the map between a matter-chord dimension at infinite temperature and a
+conformal dimension has not been checked beyond this coincidence.
 
 Closed forms for the moments follow, for example
 
@@ -252,7 +266,7 @@ are the ones this note settles.)
   8p(p−2)J² are unaffected.
 - "A complete projected large-N spectral density is still open" is
   closed for the Majorana A₂ channel and, with the verification status
-  of §4, for A₃ through A₆.
+  of §4, for A₃ through A₈.
 
 ## 7. What is not claimed
 
@@ -280,7 +294,7 @@ The paper pairs the n-th operator Mₙ with the n-th meson. The small-λ
 shares of §4 bear on that labelling, in the Majorana channels and at
 fixed λ.
 
-As λ → 0, A₃, A₄, A₅ and A₆ each put at least 99% of their dynamical
+As λ → 0, A₃ through A₈ each put at least 97% of their dynamical
 weight in one sector, the dimension-3 chord O₃, with dressings that
 differ from level to level. So in that limit the raw Aₙ with n ≥ 3 do
 not each open a new propagating sector. A one-to-one map from raw

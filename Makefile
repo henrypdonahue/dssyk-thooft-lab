@@ -100,6 +100,7 @@ reproduce-slow:
 	cd syk-self-averaging && $(PY) thooft_limit.py --run
 	cd duality && $(PY) full_channel_chord.py --run
 	cd duality && $(PY) singlet_tower.py --run
+	cd duality && $(PY) singlet_tower.py --deep 5 6
 	cd thooft-target && $(PY) generate_reference.py
 	cd thooft-target && $(PY) generate_reference.py --polish
 	cd thooft-target && $(PY) jacobi_solver.py

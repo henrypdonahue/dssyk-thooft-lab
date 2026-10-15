@@ -605,3 +605,131 @@ def test_fixed_p_dynamical_width(art):
     for r in live:
         assert r["w2_dynamic"] == pytest.approx(stored[r["N"]]["w2_dynamic"],
                                                 rel=1e-13)
+
+
+# --------------------------------------------------------------------------
+# the levels past n = 6 (singlet_tower_deep.json, `--deep 5 6`)
+# --------------------------------------------------------------------------
+def test_word_table_keys_are_what_decompose_asks_for():
+    """needed_word_keys mirrors decompose's loops exactly: the keys it
+    lists are the keys a decomposition requests, no more and no fewer."""
+    seen = set()
+    orig = st.omega_word_table
+
+    def record(*key):
+        seen.add(key)
+        return orig(*key)
+    st.omega_word_table = record
+    try:
+        st.TowerChord(*POINTS[0]).decompose(3, check_len=2)
+    finally:
+        st.omega_word_table = orig
+    listed = {k for v in st.needed_word_keys(3, 2).values() for k in v}
+    assert seen == listed
+
+
+def test_parallel_word_tables_equal_the_serial_ones():
+    """build_word_tables (one enumeration per size, split over node 0's
+    partner) reproduces omega_word_table key for key."""
+    keys = {K: v for K, v in st.needed_word_keys(3, 2).items() if K <= 10}
+    saved = dict(st._PRELOADED)
+    try:
+        st._PRELOADED.clear()
+        built = st.build_word_tables(keys, workers=2, progress=False)
+        st._PRELOADED.clear()
+        assert len(built) >= 40
+        for key, table in built.items():
+            assert table == st.omega_word_table.__wrapped__(*key), key
+    finally:
+        st._PRELOADED.clear()
+        st._PRELOADED.update(saved)
+
+
+@pytest.fixture(scope="module")
+def deep():
+    with open(HERE / "singlet_tower_deep.json") as fh:
+        return json.load(fh)["levels"]
+
+
+def test_deep_exact_checks(deep):
+    """n = 7 and 8 decompose with zero residual at three generic rational
+    (lambda, q), every norm positive, symmetric kernels, and the
+    subleading coefficient q[k]_q/(1+q^(k+1)) through k = 5 and 6."""
+    assert set(deep) == {"7", "8"}
+    for n, lev in deep.items():
+        assert lev["level"] == int(n) == lev["kmax"] + 2
+        assert len(lev["exact_checks"]) == 3
+        for row in lev["exact_checks"]:
+            assert row["max_residual"] == "0"
+            assert row["n_checked"] >= {"7": 170, "8": 250}[n]
+            assert row["norms_positive"] and row["kernels_symmetric"]
+            assert set(row["subleading_closed_form"]) == {
+                str(k) for k in range(1, lev["kmax"] + 1)}
+            assert all(row["subleading_closed_form"].values())
+
+
+def test_deep_levels_reproduce_the_committed_ones(deep, art):
+    """The deep runs recompute A_2..A_6 along the way: their lambda = 2
+    shares and small-lambda shares equal the committed artifact's."""
+    row2 = next(r for r in art["scan"] if r["lam"] == 2.0)
+    old = sorted(art["share_scaling"], key=lambda r: -r["lam"])
+    for lev in deep.values():
+        for n in ("2", "3", "4", "5", "6"):
+            for m, v in row2["channels"][n]["sector_share"].items():
+                assert lev["scan_lam2"]["channels"][n]["sector_share"][m] == \
+                    pytest.approx(v, rel=1e-9)
+        new = sorted(lev["share_scaling"], key=lambda r: -r["lam"])
+        for a, b in zip(old, new):
+            assert a["lam"] == b["lam"]
+            for n, sh in a["shares"].items():
+                for m, v in sh.items():
+                    assert b["shares"][n][m] == pytest.approx(v, rel=1e-10)
+
+
+def test_deep_new_chord_is_fainter_at_each_level(deep):
+    """At lambda = 2 the new chord's share falls about tenfold per level:
+    0.18 %, 0.018 %, 0.0017 %, 0.00015 % for n = 5..8."""
+    ch = deep["8"]["scan_lam2"]["channels"]
+    new = [ch[str(n)]["sector_share"][str(n)] for n in range(3, 9)]
+    assert all(b < a / 5 for a, b in zip(new, new[1:]))
+    assert ch["7"]["sector_share"]["7"] == pytest.approx(1.69e-5, rel=0.01)
+    assert ch["8"]["sector_share"]["8"] == pytest.approx(1.51e-6, rel=0.01)
+    for n in ("7", "8"):
+        assert sum(ch[n]["sector_share"].values()) == pytest.approx(1.0, abs=1e-12)
+
+
+def test_deep_norm_law(deep):
+    """norm_m / lambda^(2 floor(m/2)) settles to a finite limit for m = 7
+    (lambda^6) and m = 8 (lambda^8): the growth per halving of lambda
+    falls toward 1.  A lambda^(2 floor(m/2) - 2) law would make it 4."""
+    rows = sorted(deep["8"]["norm_scaling"], key=lambda r: -r["lam"])
+    for m in ("7", "8"):
+        seq = [r["norm_over_power"][m] for r in rows]
+        growth = [b / a for a, b in zip(seq, seq[1:])]
+        assert all(g > 1 for g in growth)
+        assert all(b < a for a, b in zip(growth, growth[1:])), (m, growth)
+        assert growth[-1] < 1.25
+
+
+def test_deep_odd_chords_survive_and_even_fade(deep):
+    """Toward small lambda the even chords O_2, O_4, O_6, O_8 fade out of
+    A_7 and A_8 linearly in lambda; O_3, O_5, O_7 keep finite shares.  The
+    surviving dimensions through n = 8 are 2, 3, 5, 7."""
+    for n, lev in deep.items():
+        rows = sorted(lev["share_scaling"], key=lambda r: -r["lam"])
+        a, b = rows[-3], rows[-2]                 # lambda = 1/160, 1/320
+        assert a["lam"] == pytest.approx(2 * b["lam"])
+        sa, sb = a["shares"][n], b["shares"][n]
+        for m in sa:
+            if int(m) % 2 == 0:
+                assert sb[m] / sa[m] == pytest.approx(0.5, abs=0.03), (n, m)
+            else:
+                assert sb[m] / sa[m] == pytest.approx(1.0, abs=0.02), (n, m)
+        last = rows[-1]["shares"][n]
+        assert last["3"] > 0.97
+    last7 = sorted(deep["7"]["share_scaling"], key=lambda r: r["lam"])[0]["shares"]["7"]
+    last8 = sorted(deep["8"]["share_scaling"], key=lambda r: r["lam"])[0]["shares"]["8"]
+    assert last7["5"] == pytest.approx(0.0138, abs=3e-4)
+    assert last7["7"] == pytest.approx(6.4e-5, rel=0.03)
+    assert last8["5"] == pytest.approx(0.0199, abs=3e-4)
+    assert last8["7"] == pytest.approx(1.41e-4, rel=0.03)
