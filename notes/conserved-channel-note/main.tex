@@ -48,12 +48,19 @@ flavor-diagonal ($i=j$) part of the \emph{same} order --- the per-pair
 amplitude is smaller than the diagonal one by exactly the $1/N$ that the
 $N(N-1)$ multiplicity restores --- and that part does not vanish for
 $n\ge2$. Evaluating both flavor patterns exactly at finite $N$ we find the
-full $A_2$ width rising to $\mu_2/\mu_0\simeq1.19$ along
-$\lambda_{\rm chord}=2$, while at $n=1$ the two parts cancel to $3\times
+full $A_2$ width rising along $\lambda_{\rm chord}=2$ to its exact
+$N=\infty$ value $\mu_2/\mu_0=1.316906$, which has a closed form of its own
+(the flavor-summed $A_2=4\sum_iH_i^2$ is $H^2$ with every pair of $H$-chords
+weighted by the number of indices they share, Poisson-distributed in the
+double-scaled limit), while at $n=1$ the two parts cancel to $3\times
 10^{-16}$, reproducing $A_1=-2pH$. What is established is therefore a
-statement about flavor structure: whatever spectral weight the singlet
-tower carries at $N=\infty$ is entirely flavor-diagonal. Every statement is
-machine-verified in an accompanying repository.
+statement about flavor structure: the genuinely two-flavor part of the
+tower is conserved, the per-flavor diagonal and pair pieces cancel at
+leading order, and the physical channel is the finite remainder. That
+remainder is itself resolved: it is a conserved multiple of $H^2-1$ plus
+a matter chord of dimension two, whose width is $2(1-q^2)$ at every
+$\lambda$. Every statement is machine-verified in an accompanying
+repository.
 \end{abstract}
 
 \section{Setting and statement}
@@ -226,7 +233,7 @@ distinction is not the size of the operator but the correlation of its
 couplings with those of $H$.
 \end{corollary}
 
-\begin{corollary}[the surviving weight is flavor-diagonal]
+\begin{corollary}[the surviving weight]
 In the proposed DSSYK$_\infty$--'t~Hooft correspondence
 \cite{MSS2607,MSS2506}, the singlet tower $M_n$ maps to the $A_n$ channels.
 At strict double scaling their connected \emph{pair} correlators are
@@ -239,13 +246,42 @@ make the tower invisible: writing
 the two terms are the same order in $N$, so the theorem removes one of two
 comparable contributions. Evaluating both exactly at finite $N$ by Wick
 resummation (no exact diagonalization), the full $A_2$ channel has
-$\mu_2/\mu_0=1.044,\,1.118,\,1.164,\,1.194$ at
-$(p,N)=(4,16),(6,36),(8,64),(10,100)$ along $\lambda_{\rm chord}=2$ ---
-rising towards $\simeq1.2$, not falling to zero --- while the same
-construction at $n=1$ gives $3\times10^{-16}$, which is the exact
-conservation of $A_1=-2pH$. The content of the theorem is thus that the
-genuinely two-flavor part of the tower is conserved, and that any $N=\infty$
-spectral weight is carried by the diagonal part alone. This is consistent
+$\mu_2/\mu_0=1.044,\,1.118,\,1.164,\,1.194,\,\ldots,\,1.286$ at
+$(p,N)=(4,16),(6,36),(8,64),(10,100),\ldots,(40,1600)$ along
+$\lambda_{\rm chord}=2$ --- rising towards $1.316906$, not falling to zero
+--- while the same construction at $n=1$ gives $3\times10^{-16}$, which is
+the exact conservation of $A_1=-2pH$. The limit is exact: summing the
+flavor first, the identity $A_2=4\sum_iH_i^2$ (with $H_i$ the part of $H$
+containing flavor $i$) writes $A_2$ as $H^2$ weighted by the number of
+indices the two $H$-chords share, those intersections are independent
+Poisson$(\lambda/2)$ variables at $N=\infty$, and every full-channel word is
+a finite matching sum with $\mu_0=4\lambda[\lambda(1+q)+2(1-q)]$ and
+$\mu_2=16\lambda(1-q)[1-q^2+2\lambda q]$. The content of the theorem is thus
+that the genuinely two-flavor part of the tower is conserved; the
+per-flavor diagonal and pair pieces, each $O(\sqrt N)$ in the
+flavor-summed normalization, cancel identically at that order (the pair
+channel's double-scaling constant is the diagonal channel's
+$\Delta_\psi$-slope, $4\lambda(1-q)^2(5+3q)$ at $n=2$), and the physical
+channel is the $O(1)$ remainder. The remainder has a simple exact form.
+Mean subtraction removes the identity from $A_2$ but not its overlap with
+$H^2$; at strict double scaling
+\[
+A_2-\langle A_2\rangle=\frac{2\lambda(1-q)}{1+q}\,(H^2-1)+\nu\,O_2,\qquad
+\nu^2=\frac{8\lambda(1-q^2+2\lambda q)}{1+q},
+\]
+with $O_2$ a unit-normalized matter chord of dimension two, uncorrelated
+with every function of $H$. The proof sorts the chord diagrams of a
+two-insertion word by whether both chords of one insertion end on the
+other; if they do the pair is a bundle crossed twice by every separating
+$H$-chord, and if they do not, exchanging the two adjacent slots is an
+involution that reduces the class to that of a plain $H^2-1$. Hence
+$\mu_0=4\lambda^2(1-q)^2/(1+q)+\nu^2$ and the width of the part that
+moves is $\mu_2/\nu^2=2(1-q^2)$: $1.963369$ at $\lambda_{\rm chord}=2$,
+where $32.9\%$ of $\mu_0$ is conserved and the ratio $1.316906$ above is
+this width diluted. The same construction gives every $A_n$ computed
+($n\le6$) as a polynomial in $H$ plus matter chords of dimension
+$2,\dots,n$ with polynomial dressings; for $n\ge3$ this is verified in
+exact computer algebra, not proved. This is consistent
 with, and sharpens exactly in $\lambda$, the known large-interaction-order
 observation that the bilinear-tower couplings first appear at second order
 in the inverse body count --- $O(1/p^2)$ in the present conventions
@@ -256,8 +292,12 @@ chord parameter).
 Two scope remarks. First, the theorem concerns the $i\neq j$ pair
 amplitude at strict $N=\infty$ --- precisely the object the chord expansion
 computes; finite-$N$ corrections and the flavor-diagonal part of the
-physical channel are untouched (numerically, at exact-diagonalization
-sizes, the raw channel width grows toward the fixed-$p$ corner). Second,
+physical channel are treated separately (at fixed $p$ the exact
+identity-subtracted width peaks at $\lambda_{\rm chord}\approx4/3$ and
+then falls as $8p(p-2)/N$ in bandwidth units, an $N$-independent width
+$8p(p-2)$ in units of $J^2$; the peak is the conserved $H^2$ share of
+$\mu_0$ changing, and with that component removed the width is
+monotone). Second,
 conservation here is a statement about moments of the connected pair
 correlator, $\mu_k=0$ for all $k\ge1$; the weight $\mu_0$ itself is
 nonzero.
@@ -276,8 +316,11 @@ $10^{-17}$ for $n\le5$, even $k\le6$, across $\lambda\in[0.1,4]$ and
 matter weights $\Delta_\psi\in[0.1,1]$. The finite-$N$ approach to the
 zero has since been computed exactly (Wick/Isserlis over matchings, the
 subset sums evaluated as integer intersection-parity counts): $|\mu_2|$
-of the $n=2$ channel falls like $\sim N^{-4}$ along fixed $p=4$ and like
-$\approx c/(pN)$, $c\approx29$--$30$, along $\lambda=2$.
+of the $n=2$ channel falls exactly like $-64p^3(p-1)(4p-5)/N^4$ at fixed
+$p$ (an exact interpolated law with a certified closed-form coefficient)
+and like $c_2/(pN)$ along $\lambda_{\rm chord}=2$ with
+$c_2\to4\lambda(1-q)^2(5+3q)=32.334$, the $\Delta_\psi\to0$ slope of the
+diagonal chord channel.
 
 \paragraph{Acknowledgments.}
 % TODO(author): acknowledgments as appropriate.

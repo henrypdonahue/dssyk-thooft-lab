@@ -47,7 +47,33 @@ Euclidean fold fails in the double-scaled theory itself. Figure:
 `diagonal_chord.py`. The diagonal channel at N = ∞. An H-chord weighs
 q^Δψ if and only if it crosses the four-mark set an odd number of times.
 That law is derived from the finite-N sign law, and it is triple-gated.
-The diagonal A₂ width is w₂ = 4.67(9) at λ_chord = 2, Δψ → 0.
+Its Δψ → 0 slopes are closed forms λP_K(q), and the diagonal A₂ width at
+λ_chord = 2, Δψ → 0, is (1−q)(5+3q) = 4.674. Those slopes are also the
+pair channel's double-scaling constants
+(`../syk-self-averaging/double_scaling_law.py`).
+
+`full_channel_chord.py`. The FULL A₂ channel at N = ∞, exact. Summing
+the flavor first turns A₂ into H² with each pair of H-chords weighted by
+the number of indices they share, Poisson(λ/2) in the double-scaled
+limit, and every moment becomes a polynomial in λ and q:
+μ₀ = 4λ[λ(1+q) + 2(1−q)], μ₂ = 16λ(1−q)[1 − q² + 2λq]. So
+w₂ = 1.316906 at λ_chord = 2, gated by the exact finite-N series on two
+lines and by the semiclassical limit (a dimension-2 matter chord).
+
+`singlet_tower.py`. The full channel resolved, at every level. A₂ is
+exactly a conserved H² piece plus a matter chord of dimension 2
+(a theorem): A₂ − ⟨A₂⟩ = [2λ(1−q)/(1+q)](H² − 1) + νO₂. The part that
+moves has width 2(1 − q²) at every λ, 1.963369 at λ_chord = 2; the
+1.316906 above is that number diluted by the 32.9% of μ₀ that is
+conserved. Above n = 2, an exact operator identity writes Aₙ through the
+blocks Ωₖ = ΣᵢHᵢHᵏHᵢ, and each block computed (k ≤ 4) is a polynomial in
+H plus matter chords of dimension 2..k+2 with polynomial dressings:
+zero residual in computer algebra on every checked word. The new chord
+at each level is faint (1.6% of A₄, 0.2% of A₅ at λ_chord = 2), with
+norm ∝ λ^(2⌊m/2⌋). Toward small λ the even chords fade out of A₃..A₆
+and the odd ones stay: dimensions 2, 3, 5 survive. Gated by the exact
+finite-N engine and by dense ED with the commutant of H projected out.
+Figure: `plot_singlet_tower.py`.
 
 **[ANTISCRAMBLING.md](ANTISCRAMBLING.md)** and `antiscrambling.py`. The
 OTOC sign test, and the fold. DSSYK∞ scrambles at every temperature,
@@ -132,5 +158,9 @@ python3 signflip_probe.py --deep # its deep campaign              (~15 s)
 python3 jt_ds_vacuum.py          # the JT-dS vacuum-energy note    (~5 s)
 python3 largeq_kernel.py         # the derived large-q skeleton    (~20 s unloaded)
 python3 boost_inverse.py         # moments -> spectrum conditioning (~3 min)
-pytest -q                        # 288 tests
+python3 diagonal_chord.py --run  # the diagonal channel + gates     (~20 s)
+python3 full_channel_chord.py --run  # the full channel + gates    (~10 min, finite-N series)
+python3 singlet_tower.py         # the resolved channel, A_2..A_5  (~20 s)
+python3 singlet_tower.py --run   # its artifact and finite-N gates (~3 CPU-hours; --resume)
+pytest -q                        # 335 tests (331 fast, ~1 min)
 ```

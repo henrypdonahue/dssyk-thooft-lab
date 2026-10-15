@@ -2,8 +2,9 @@
 
 *Code: `chord.py` (the engine and the spectral scan), `chord_moments.py`
 (singlet moments), `chord_charges.py` (the conserved-channel theorem),
-`diagonal_chord.py` (the diagonal law), `chord_fold.py` (the fold at
-N = ∞). The ED side is `syk-self-averaging/mn_majorana_bench.py`. Every
+`diagonal_chord.py` (the diagonal law), `full_channel_chord.py` (the
+full A₂ moments), `singlet_tower.py` (the full channel resolved into
+matter chords, every n), `chord_fold.py` (the fold at N = ∞). The ED side is `syk-self-averaging/mn_majorana_bench.py`. Every
 verdict below is asserted from a committed JSON in `test_chord*.py`.*
 
 ## What the bulk is
@@ -40,7 +41,9 @@ two-matter sectors. Those sectors evaluate any operator ordering on any
 complex-time contour. Crossed and Euclidean-folded contours are included.
 There are no special functions.
 
-Three independent legs hold the engine up (`test_chord.py`):
+Four independent checks hold the engine up (`test_chord.py`): three
+legs that share nothing with the transfer-matrix bookkeeping, and the
+finite-N ED comparison below them.
 
 1. A brute-force chord-diagram enumerator. It shares nothing with the
    transfer-matrix bookkeeping. It agrees to machine precision on every
@@ -176,8 +179,11 @@ A(n=1, k) = A(n=2, k−2), and across no deeper step. The k = 2
 coefficients are A(n=1) = −16p²(p−1), A(n=2) = −64p³(p−1)(4p−5), and
 A(n=3) = −256p⁴(p−1)(34p² − 108p + 91); the other K = 8 family is
 A(1,6) = A(2,4) = −256p⁴(p−1)(34p² − 93p + 64). The double-scaling
-constant runs c₂ = 28.92 → 31.65 over p = 4..48, exact, still rising,
-with a windowed limit estimate c₂(∞) = 32.334(1).
+constant runs c₂ = 28.92 → 31.65 over p = 4..48, exact, and its limit
+is the closed form c₂(λ) = 4λ(1−q)²(5+3q) = 32.3341891 at λ_chord = 2
+(`../syk-self-averaging/double_scaling_law.py`): the Δψ → 0 slope of
+the diagonal channel below, on every double-scaling line, one rung up
+too (c₃(λ) = 4λ(1−q)³(35+56q+35q²+10q³)).
 (The float scan above is n ≤ 3 with μ₀/μ₂/μ₄; the exact-Fractions
 path behind the laws has no such cap short of K = 12.)
 
@@ -205,39 +211,165 @@ restores. So freezing the pair part does not freeze the channel.
 
 Evaluate both exactly at finite N, along λ_chord = 2:
 
-| (p, N) | (4,16) | (6,36) | (8,64) | (10,100) |
-|---|---|---|---|---|
-| w₂ = μ₂/μ₀, **full** A₂ channel | 1.044 | 1.118 | 1.164 | 1.194 |
+| (p, N) | (4,16) | (6,36) | (8,64) | (10,100) | (20,400) | (40,1600) |
+|---|---|---|---|---|---|---|
+| w₂ = μ₂/μ₀, **full** A₂ channel | 1.044 | 1.118 | 1.164 | 1.194 | 1.255 | 1.286 |
 
-It rises toward ≈ 1.2. It does not fall to zero. All four values are
-recomputed on demand and pinned in
-`syk-self-averaging/test_exact_pair_moments.py`. The committed
-`exact_pair_moments.json` stores the pair channel only.
+It rises toward 1.3169. It does not fall to zero. The first four values
+are recomputed on demand and pinned in
+`syk-self-averaging/test_exact_pair_moments.py`; the series to p = 40
+is in `full_channel_chord.json`. The committed `exact_pair_moments.json`
+stores the pair channel only.
 
 The control is exact. At n = 1 the two parts cancel to machine precision,
 w₂ = 3e-16. That is A₁ = −2pH.
 
-The diagonal channel now has its own N = ∞ chord law
+The diagonal channel has its own N = ∞ chord law
 (`diagonal_chord.py`). An H-chord weighs q^Δψ if and only if it crosses
 the four-mark set an odd number of times. The law is derived from the
 finite-N sign law, whose lone-chord mark factor is exactly (1 − 2p/N).
-There is no pairing sum and no matter-matter chord. The diagonal A₂ width
-at λ_chord = 2 is w₂ = 4.67(9) at Δψ → 0. The full-channel width is
-≈ 1.31(5), by Richardson extrapolation of the exact finite-N series
-above. The gap between 4.67 and 1.31 is a large diagonal-against-pair
-cancellation. Its remaining chord-side piece is the pair channel's 1/N
-coefficient, supplied exactly at fixed p by `pair_moment_laws.py`.
+There is no pairing sum and no matter-matter chord. Its Δψ → 0 slopes
+are closed forms, λP_K(q) with K the word length, and the diagonal A₂
+width at λ_chord = 2, Δψ → 0, is P₆/P₄ = (1−q)(5+3q) = 4.674.
 
-So the sharp statement is about flavor:
+The full channel has its own N = ∞ law too (`full_channel_chord.py`),
+and it is the physical one. Sum the flavor first: the exact identity
+A₂ = 4ΣᵢHᵢ² (`../syk-self-averaging/conserved_points.py`) makes A₂ the
+operator H² with each pair of H-chords weighted by the number of indices
+they share, |c ∩ c′|, and in the double-scaled limit those intersections
+are independent Poisson(λ/2) variables. Every full-channel word is a
+finite matching sum with the usual q per crossing and the Poisson
+intersection moments on the two weighted pairs. All of it is polynomial:
+
+    μ₀ = 4λ[λ(1+q) + 2(1−q)],   μ₂ = 16λ(1−q)[1 − q² + 2λq],
+
+μ₄ likewise, so w₂ = 1.316906 at λ_chord = 2 (μ₀ = 32 exactly), which
+the exact finite-N series above reaches to 1e-5. At small λ,
+w₂ = 4λ − 4λ² + … and the kurtosis → 7/2: a dimension-2 matter chord,
+as ψ∂²ψ should be.
+
+That closed form is what the 4.674 and the 1.3169 were both shadows of.
+Per flavor, N μ^diag and N(N−1) μ^pair are each O(√N) on a
+double-scaling line and cancel identically at that order — the pair
+channel's double-scaling constant is the diagonal channel's Δ-slope —
+and the O(1) remainder belongs to neither half.
+
+### The full channel, resolved
+
+Those moments still carry something that does not move. Subtracting the
+mean takes the identity out of A₂. It does not take out H², and A₂
+overlaps H²:
+
+    ⟨A₂ (H² − 1)⟩ = 2λ(1 − q),      ⟨(H² − 1)²⟩ = 1 + q.
+
+Remove that component and what is left is, word for word, a matter chord
+of dimension 2 (`singlet_tower.py`; this one is a theorem):
+
+    A₂ − ⟨A₂⟩ = [2λ(1−q)/(1+q)] (H² − 1)  +  ν O₂,
+    ν² = 8λ(1 − q² + 2λq)/(1+q).
+
+O₂ is an ordinary matter chord. An H-chord that crosses it weighs q².
+So every moment of the part that moves is the O_Δ closed form at Δ = 2,
+and in particular
+
+    w₂^dyn = μ₂/ν² = 2(1 − q²),    exactly, at every λ.
+
+At λ_chord = 2 that is 1.963369. The 1.316906 above is the same number
+diluted: 32.9% of μ₀ there is the conserved H² piece. The "Δ = 2 at small
+λ" remark above is the small-λ face of an identity that holds everywhere.
+
+The proof is short. In a two-insertion word, sort the chord diagrams by
+whether both chords of one A₂ end on the other A₂. If they do, the pair
+is a bundle that every separating H-chord crosses twice: a Δ = 2 matter
+chord. If they do not, swapping which of the two adjacent slots carries
+which chord flips their mutual crossing and nothing else, and that
+involution turns the remaining diagrams into those of a plain H² − 1,
+times a number.
+
+Three independent checks, none of which use the proof:
+
+- The exact finite-N full channel with its H² component removed (exact
+  rationals) extrapolates in 1/p to w₂^dyn = 1.96336 on λ_chord = 2
+  and 1.7293 on λ_chord = 1, against 1.963369 and 1.729329.
+- Dense ED, per instance, with the whole commutant of H projected out.
+  At p = 6, N = 16–20 the dynamical width is 2.03, 2.03, 2.01 against the
+  N = ∞ value 2.00. The raw width there is 0.29–0.41. So the bench does
+  reach the N = ∞ law, once the conserved weight is out of the
+  denominator.
+- The spectral density built from the decomposition and the closed-form
+  matter vertex integrates back to the moments.
+
+Two things in this note were the dilution, not dynamics. The raw width's
+maximum near λ_chord ≈ 1 at N = ∞: the dynamical width is monotone and
+saturates at 2. And the fixed-p maximum at N = 24 (λ_chord = 4/3): with
+the H² component removed the width falls monotonically along fixed p,
+and in units of J the mean-square frequency rises monotonically to
+8p(p−2).
+
+### The tower above n = 2
+
+The same construction runs for every n. An exact operator identity
+(`../syk-self-averaging/conserved_points.py`, any N, per instance)
+writes Aₙ as mixed words in H and the flavor parts Hᵢ. In the
+double-scaled limit only the pairs survive, and Aₙ is assembled from the
+blocks Ωₖ = Σᵢ Hᵢ Hᵏ Hᵢ. Each block is solved (`singlet_tower.py`):
+
+    Ω₀ = O₂
+    Ω₁ = [q/(1+q²)] {H, O₂} + O₃
+    Ω₂ = a(H²O₂ + O₂H²) + b H O₂ H + c O₂ + [q/(1−q+q²)] {H, O₃} + O₄
+    Ω₃ = … + O₅,    Ω₄ = … + O₆
+
+modulo polynomials in H, with Oₘ an un-normalized matter chord of
+dimension m. So
+
+> at N = ∞ every Aₙ computed (n ≤ 6) is a polynomial in H plus matter
+> chords of dimension 2 through n, each dressed by a polynomial in H
+> acting from the left and the right. One new chord, of dimension n,
+> enters at level n.
+
+Read the weights before reading that as a tower of independent
+particles. The new chords are faint. At λ_chord = 2 the dynamical weight
+of A₃ is 85% O₂ and 15% O₃; A₄ is 83%, 15% and 1.6% O₄; A₅ carries 0.2%
+in O₅ and A₆ 0.02% in O₆. Across λ_chord from 0.05 to 4 the weight of
+A₄, A₅, A₆ outside O₂ and O₃ stays between 0.9% and 5.4%. The norm of Oₘ
+goes as λ^(2⌊m/2⌋): λ², 2λ², (52/5)λ⁴, about 12.5λ⁴, then λ⁶.
+
+Norms are not shares, though, because the dressings carry powers of the
+frequency. The dressing of O₂ inside A₃ is (3/2)[H, A₂], a total
+derivative, plus an anticommutator admixture −(1−q)²/(3(1+q²)) of it.
+A derivative costs a factor of the width, which is O(λ). So toward small
+λ the even chords fade out of every level above the second, linearly in
+λ, and the odd ones stay: A₃ and A₄ tend to O₃ alone, A₅ to 99.5% O₃
+plus 0.53% O₅, A₆ to 99.2% O₃ plus 0.80% O₅ (exact arithmetic down to
+λ = 1/1280). A₂ is O₂ at every λ. The dimensions that survive the
+semiclassical limit are 2, 3, 5: the pattern of the large-q SYK bilinear
+spectrum h = 2, 3, 5, 7, … That is an observation on four levels, not a
+derivation.
+
+n = 2 is proven. n = 3..6 are exact identities verified in computer
+algebra: each kernel is solved linearly from cross-correlators and every
+remaining two-point word then has zero residual, symbolically for
+k ≤ 2 and in exact rational arithmetic for k = 3, 4. The closed forms
+for μ₂ of A₃ and A₄ are gated by the exact finite-N engine, to 1.5e-5
+and 2e-3; the cross moment ⟨ad²(A₄)A₂†⟩ to 7e-6. A proof for general n
+is open. Figure: `singlet_tower.png`.
+
+So the sharp statement is:
 
 > At N = ∞ the coherent i ≠ j part of every singlet bilinear channel is
-> frozen and carries no weight. Whatever the tower has at N = ∞ is
-> diagonal.
+> frozen. The full channel is not: it is a conserved polynomial in H
+> plus matter chords of dimension 2..n. The split of its weight into
+> "diagonal" and "pair" is bookkeeping that cancels at leading order.
 
-The tower propagates. It is not invisible. All of its N = ∞ weight sits
-in the channel with the least meson-like structure. In 't Hooft's model a
-meson is a color singlet, and the whole content of "singlet" is coherence
-across constituents. That is the question worth putting to the authors.
+The tower propagates. It is not invisible. An earlier version of this
+note read the diagonal half as "all of the tower's N = ∞ weight", and
+put the coherence question to the authors on that basis; the full-channel
+law withdraws that reading. What stands is the spec. A dictionary has to
+produce, from the bulk side, a conserved H² admixture of the stated
+size, a dimension-2 continuum with the stated norm, and above it chords
+of dimension 3, 4, 5 with norms that are closed forms in λ. None of that
+is a free parameter, and none of it is a discrete line: each sector is
+the smooth matter-chord continuum of the spectral scan above.
 
 **A withdrawn reading.** An earlier version of this note concluded that
 the tower is a 1/N effect, invisible at every order of the double-scaled
@@ -259,15 +391,32 @@ cancellation. That growth is also why the pair theorem cannot be lifted
 to the full channel.
 
 What the bench does find: along fixed p with λ falling, the raw width w₂
-rises from 0.30 to 1.20 over N = 10 → 20 at p = 4, n = 2. The tower
-channel turns on where the match has to be made. At the near-matched-λ
-pair (p=4, N=10) ↔ (p=6, N=22) the raw w₂ also rises with N. The approach
-to the N = ∞ zero is not visible at dense-ED sizes. Firm fixed-λ
-asymptotics need N ≫ 2p.
+rises from 0.30 to 1.20 over N = 10 → 20 at p = 4, n = 2. That window
+ends before the peak. The exact engine continues the same channel
+(`../syk-self-averaging/full_channel_laws.py`): the full width tops out
+at N = 24 (λ_chord = 4/3) and then dies as 8p(p−2)/N, a certified
+closed form (p = 2..12). In physical units that is an N-independent
+mean-square frequency 8p(p−2)·J², a finite O(J) width all the way into
+the corner. "The tower channel turns on toward the corner" was the
+rising side of that peak, and it is withdrawn. The peak itself is the
+conserved H² weight draining out of the denominator (85% of μ₀ at
+N = 10, 19% at N = 24, 0.01% at N = 1024): with that component removed
+the width has no maximum. It falls from about 2 once N ≥ 12, tracking
+the N = ∞ law 2(1 − q²) at the small-N end, and its physical value
+rises monotonically to the same 8p(p−2). At the near-matched-λ
+pair (p=4, N=10) ↔ (p=6, N=22) the raw w₂ also rises with N. The
+approach to the N = ∞ pair zero is not visible at dense-ED sizes. Firm
+fixed-λ asymptotics need N ≫ 2p.
 
-One loose end. The (N, p) = (8, 4) point shows exact per-instance
-conservation of all moments. That is absent at (12, 6) and (16, 8). The
-mechanism is unknown, and it is not a p = N/2 law.
+The (N, p) = (8, 4) point shows exact per-instance conservation of all
+moments, absent at (12, 6) and (16, 8). It is not a p = N/2 law, and the
+mechanism is now proven (`../syk-self-averaging/conserved_points.py`):
+the spin-trace map Σᵢψᵢ X ψᵢ weighs Clifford grade g by (−1)^g(N − 2g),
+every power of H at N = 8 has grades {0, 4, 8} only, so every Aₙ is a
+polynomial in H with central coefficients. Two exact identities fall
+out for every (N, p): A₁ = −2ΣHᵢ and A₂ = 4ΣHᵢ², Hᵢ the part of H
+containing flavor i — the second is the operator behind the full-channel
+chord law above.
 
 Two more caveats. The chord evaluation uses the standard leading-chord
 matter weight q^(1/p), but the pair-channel zeros hold at any weight, so

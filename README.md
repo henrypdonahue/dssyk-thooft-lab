@@ -1,166 +1,172 @@
-# Stress-testing the DSSYK∞ ↔ 't Hooft duality
+# Numerical tests of DSSYK∞ and the 't Hooft proposal
 
-Start with the picture the proposal is built on.
+This repository supplies reproducible calculations relevant to the proposed
+DSSYK∞–'t Hooft correspondence of Miyashita, Sekino and Susskind
+([2506.18054v3](https://arxiv.org/abs/2506.18054v3),
+[2607.05678v1](https://arxiv.org/abs/2607.05678v1)). It does **not** establish
+or refute the duality, and does not extract a matched meson mass spectrum.
 
-A JT static patch has a Schwarzian boundary somewhere between you and the
-horizon. Inside it there is ordinary AdS bulk. Between it and the horizon
-there is a thin layer. Susskind calls that layer the "sliver."
+Start with the [technical note](notes/author-facing-note.md) for definitions,
+results and limitations, and the [singlet-tower note](notes/singlet-tower-note.md)
+for the N = ∞ structure of the singlet channels with its proof; see
+[road_map.md](road_map.md) for the larger program.
 
-Now heat the hologram. The Schwarzian surface moves toward the horizon.
-The sliver grows. The bulk shrinks. At infinite Boltzmann temperature the
-sliver fills the whole static patch, and it has de Sitter geometry.
+## Results and their scope
 
-Is there life in the sliver?
-
-Miyashita, Sekino and Susskind answer yes
-([arXiv:2607.05678](https://arxiv.org/abs/2607.05678)). The life is 't
-Hooft mesons. Their claim: DSSYK at infinite temperature is dual to the
-'t Hooft model, which is large-N QCD in two dimensions. They name one
-test as the best one. Match the two mass spectra.
-
-Nobody has run that test. This repo builds the parts you need to run it,
-and measures the pieces that are already reachable.
-
-No new theory here. Every number is cross-checked against an independent
-method. Every verdict has a test that asserts it. The assessment of the
-paper and of the open problems is in [road_map.md](road_map.md).
-
-## Modules
-
-| module | role | tests |
+| Calculation | Supported conclusion | Limitation |
 |---|---|---|
-| [thooft-target/](thooft-target) | the yardstick: the 't Hooft meson spectrum to 12+ digits, the FLZ anchors, the condensate, the vacuum energy | 48 |
-| [syk-self-averaging/](syk-self-averaging) | the SYK-side claims: self-averaging, the Mₙ/CP sector, QED and baryon campaigns, freeness, the exact 1/N laws and their K = 12 ladder | 206 |
-| [duality/](duality) | the dictionary, the N = ∞ chord engines, the conserved-channel theorem (Majorana and Dirac), the OTOC laboratory, the KMS discriminator, the boost inverse problem, the JT-dS vacuum-energy note, the derived large-q skeleton | 288 |
+| Exact Majorana singlet identities | A₁ = −2pH and A₂ = 4ΣᵢHᵢ², with ψᵢ² = 1 | The Dirac Mₙ tower needs its own channel and CP treatment |
+| Sequential two-flavor chord insertion | A three-term recursion makes its chord image a polynomial in T for every n | This leading pair amplitude is not the full flavor-summed correlator |
+| Full, mean-subtracted Majorana A₂ channel | Nonzero strict-double-scaling moments from intersection-weighted chords, cross-checked with exact finite-N Wick sums. At N = ∞ the channel is exactly a conserved H² component plus a matter chord of dimension 2 (proved) | Majorana only; a matter-chord continuum in boost frequency is not a meson mass |
+| Majorana singlet tower Aₙ, n ≤ 6 | An exact finite-N operator identity; at N = ∞ each Aₙ is a polynomial in H plus matter chords of dimension 2..n with polynomial dressings, the new chord at level n having norm ∝ λ^(2⌊n/2⌋) | n ≥ 3 is verified in exact computer algebra on finite word sets, not proved; no general-n proof; not the Dirac Mₙ |
+| Self-averaging | Exact finite-N variance for the specified Bⱼₖ observable and singlet m₂; an m₄ extension | Not a theorem for all observables or an individual realization's full emergent gauge symmetry |
+| 't Hooft solver | Literature-anchored spectrum, sum rules and convergence checks | An accurate target spectrum does not supply the missing SYK/bulk dictionary |
+| Complex-time OTOCs | Contour-dependent sign and fold diagnostics in checked parameter windows | No universal fold no-go, full observer dictionary or all-correlator KMS theorem |
 
-Install once with `pip install -e ".[dev]"`. Then `make test` runs the 528
-fast tests in about a minute and a half. `make test-all` adds the slow ED sweeps,
-542 in total.
+### The full A₂ channel is not frozen
 
-## Main results
+Use λ = λ_chord = 2p²/N, q = exp(−λ), normalized trace and
+E[Tr H²]/dim = 1. With the ensemble mean removed, the strict-double-scaling
+intersection-weighted chord calculation gives
 
-### The pair channel is frozen at N = ∞
+```text
+μ₀ = 4λ[λ(1+q) + 2(1−q)]
+μ₂ = 16λ(1−q)[1−q² + 2λq].
+```
 
-This one is proven, not measured.
+At λ = 2, μ₀ = 32 and μ₂/μ₀ ≈ 1.316906. The positive second moment
+rules out zero propagating weight for this full channel. It does not
+establish a Regge tower or the Dirac M₂ result.
+[Code and checks](duality/full_channel_chord.py),
+[flavor-split discussion](duality/CHORD.md).
 
-The paper's singlet channels are Aₙ = Σψ(ad_H)ⁿψ. You build them out of
-the Hamiltonian. You hit a fermion with H, n times.
+The mean-subtracted μ₀ contains conserved weight. At strict double
+scaling the split is exact
+([proof and checks](notes/singlet-tower-note.md),
+[code](duality/singlet_tower.py)):
 
-At N = ∞ the chord picture says what such a probe is. It is a polynomial
-in the chord Hamiltonian, and nothing else. A polynomial in the
-Hamiltonian is conserved. It does not tick. All of its weight sits at
-zero frequency.
+```text
+A₂ − ⟨A₂⟩ = [2λ(1−q)/(1+q)] (H² − 1) + ν O₂,   ν² = 8λ(1 − q² + 2λq)/(1+q)
+μ₀ = 4λ²(1−q)²/(1+q)  [conserved]  +  ν²  [dynamical]
+μ₂/ν² = 2(1 − q²).
+```
 
-A three-term recursion proves it, for every n, every λ and every matter
-weight. The n = 1 case is the exact operator identity A₁ = −2pH. The
-engine measures the same zeros to n = 5 and μ₆.
+O₂ is a matter chord of dimension 2, uncorrelated with every function of
+H. At λ = 2 the conserved share of μ₀ is 32.9% and the dynamical width is
+1.963369; the ratio 1.316906 is that width diluted. The statement is a
+theorem within the double-scaled chord rules. It is checked without the
+proof against exact finite-N rational moments with the H² component
+removed (1.96336 at λ = 2) and against dense ED with the full
+commutant of H projected out per realization (2.03, 2.03, 2.01 at p = 6,
+N = 16–20, against 2.00). The dynamical spectral density is therefore the
+known Δ = 2 matter-chord continuum: smooth, with no discrete lines.
 
-The finite-N approach to that zero is now an exact law, not a fit
-(`syk-self-averaging/pair_moment_laws.py`, `pair_moment_ladder.py`),
-out to the K = 12 word frontier. Every moment μ_k of every Aₙ pair
-channel dies as N^−(K/2+1) with K = k + 2n, at all 55 computed laws.
-The leading coefficient is shared across the n = 1 → 2 step exactly,
-at every rung, and across no other step. The certified closed forms
-are A(n=1) = −16p²(p−1), A(n=2) = −64p³(p−1)(4p−5) and
-A(n=3) = −256p⁴(p−1)(34p² − 108p + 91). On the double-scaling line
-the constant runs c₂ = 28.92 → 31.65 over p = 4..48, exact, with a
-windowed limit estimate c₂(∞) = 32.334(1).
+For n = 3..6 the same construction gives each Aₙ as a polynomial in H
+plus matter chords of dimension 2..n with polynomial dressings. Those
+decompositions are exact identities verified in computer algebra on
+finite sets of words (zero residual), not proved. The chord that is new
+at level n is small: 14.9%, 1.6%, 0.18% and 0.02% of the dynamical
+weight for n = 3, 4, 5, 6 at λ = 2, with norm ∝ λ^(2⌊n/2⌋) at small λ.
+As λ → 0 the even chords' shares of A₃..A₆ vanish linearly and the odd
+ones remain (A₅ → 99.5% O₃ + 0.53% O₅), so the surviving dimensions are
+2, 3, 5; the resemblance to the large-q SYK bilinear spectrum
+h = 2, 3, 5, … is an observation, not a derivation.
 
-**The scope matters, and it is the whole story.** ⟨AₙAₙ⟩ has two parts.
-The pair channel (i ≠ j) is the coherent one. The diagonal channel
-(i = j) is an incoherent pile of N single-flavor pieces. They are the
-same order in N. The theorem kills the first. The second survives, and
-for n ≥ 2 it grows: the full A₂ width rises to w₂ ≈ 1.19 along
-λ_chord = 2. The diagonal channel now has its own N = ∞ chord law
-(`duality/diagonal_chord.py`), w₂ = 4.67(9) at λ_chord = 2.
+**Do not quote the earlier claim that the meson tower is invisible at every
+order of double scaling.** Taking a leading per-flavor limit before the
+flavor sum loses terms that survive the sum. The pair contribution is a
+cross-correlator, not a separately positive spectral measure. Its negative
+moments are compatible with positivity of the full autocorrelator.
 
-So the tower does propagate at N = ∞. All of its weight is diagonal.
-This is a statement about flavor, not a statement that the tower is
-invisible.
-→ [duality/CHORD.md](duality/CHORD.md)
+At fixed p, exact rational calculations for the tested even p values
+support the A₂ bandwidth-width asymptotic
+`μ₂/μ₀ = 8p(p−2)/N + O(N⁻²)`. This is not an exact finite-N equality,
+and checks at finitely many p do not prove the coefficient for all p.
+The corresponding physical mean-square frequency approaches
+`8p(p−2) J²` in the repository's coupling normalization. The maximum of
+the identity-subtracted ratio along fixed p (N = 24 at p = 4) is the
+conserved share of μ₀ changing: with the H² component removed in exact
+arithmetic the width has no maximum beyond the smallest sizes (it falls
+monotonically from N = 12 at p = 4 and from N = 16 at p = 6), and its
+physical value rises monotonically toward 8p(p−2) J². The asymptote is
+unaffected.
 
-### Self-averaging holds exactly
+`syk-self-averaging/projected_channel.py` removes all stationary energy
+blocks at finite N, including degeneracies. It reports stationary
+weight, dynamical moments and tolerance sensitivity. It is an ED
+diagnostic; the asymptotic statement is the N = ∞ split above, and the
+two agree where they overlap.
 
-The paper argues from two diagrams. `exact_wick.py` gives the closed form
-at any (N, p), with the prefactor.
+### Exact self-averaging statistics
 
-In double scaling, ln rms = −¼ √(λN) ln N. That beats the paper's own
-bound. The emergent-symmetry counting checks out.
+For `Bⱼₖ = Tr(ψⱼHψₖH)/dim`, j ≠ k, with independent Gaussian couplings
+of variance σ² = p! J²/N^(p−1),
 
-At fixed p the suppression is only polynomial. That is where the spectrum
-match has to be made, so it is worth knowing.
-→ `syk-self-averaging/exact_wick.py`
+```text
+Var(Bⱼₖ) = 4σ⁴ C(N−2,p−1).
+```
 
-### The dictionary needs four corrections
+Consequently the **absolute off-diagonal RMS** scales as
+`2p! J² / sqrt((p−1)!) × N^−((p−1)/2)` at fixed p. Relative to the
+mean diagonal observable its exponent is `(p+1)/2`. Separately,
+`relVar(Tr H²/dim) = 2/C(N,p)`. These are distinct statistics.
+[Derivation](syk-self-averaging/exact_wick.py).
 
-Each one is forced, and each one has a test. M₁ = −(p/2)iH. The sign of
-M₂. CP as the unitary particle-hole map. The λ-convention factor of two.
+For Dirac fermions, with `d/dt = i[H,·]` and p/2 creators per Hamiltonian
+monomial, `M₁ = −(p/2)iH` and `M₂ = −Σċ†ċ`. Anti-Hermiticity fixes the
+phase issue in M₁; the coefficient requires the monomial-counting identity.
+[Conventions](duality/dictionary.py), [Dirac implementation](syk-self-averaging/dirac.py).
 
-A silent factor of two would wreck any match. The dictionary was built
-before the DSSYK side existed, so there is exactly one place for it to
-hide.
-→ [duality/](duality)
+## Reproduce
 
-### A dS dictionary must flip the OTOC sign
+Use Python 3.9–3.12 in a virtual environment:
 
-DSSYK∞ scrambles. The growth coefficient is a(v) = −1/cos(πv/2), which is
-negative at every temperature. A de Sitter observer needs the opposite
-sign. So the dictionary owes a map that flips it.
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e '.[dev]'
+make test-all PY=python
+make reproduce PY=python
+make reproduce-slow PY=python
+```
 
-The Harlow–Zhao Euclidean fold does not supply that flip. It fails at ED
-sizes and it fails at N = ∞.
+Scientific dependencies and direct test/plot dependencies are pinned in
+[pyproject.toml](pyproject.toml). This is not a complete transitive lock or
+an identical BLAS guarantee. CI covers Python 3.9 and 3.12 on Linux.
 
-One map does work, semiclassically. Shift the probe pair by half the fake
-period. The flip is exact in the closed form, and it holds in the exact
-theory for λ ≲ 1.7. The same shift makes the observer thermal at the
-tomperature.
+Run tests separately in the three module directories, as the Makefile does;
+the code uses flat script imports. `test` excludes slow tests; `test-all`
+includes them. `reproduce` runs the fast deterministic producers and plots;
+`reproduce-slow` runs all listed campaigns and reference generators and
+can take many hours. Producer commands overwrite their output files: use a
+scratch copy or the logged snapshot runner described in
+[REPRODUCIBILITY.md](REPRODUCIBILITY.md). Regenerated JSON runtime fields
+and floating-point last digits need not be byte-identical.
 
-That shift is not a new invention. It is NV's ±iβ_dS/4 dressing, at the
-contour level, equation-cited and tested
-(`duality/NV-DRESSING.md`). Conditional on one constrained-sector step,
-their discriminating OTOC is already measured here.
-→ [duality/ANTISCRAMBLING.md](duality/ANTISCRAMBLING.md),
-[duality/DISCRIMINATOR.md](duality/DISCRIMINATOR.md)
+The ~1% ED agreement sometimes quoted refers to selected thermal two-point
+benchmarks (a test allows 5% plus statistical error). It does not certify
+all chord observables to 1%, especially folded four-point functions.
 
-### The 2d vacuum energy is one number
+## Repository guide
 
-ε(0) = −0.0407 Nc g². This bulk has nothing to tune. There is first data
-in the chiral corner too: the GMOR slope with its next-order correction.
-→ `thooft-target/condensate.py`
+- [thooft-target/](thooft-target): reference spectrum (40 levels to 17+
+  digits), alternative solvers, external anchors, eigenfunctions and
+  condensate calculations.
+- [syk-self-averaging/](syk-self-averaging): sparse/bitwise ED, exact Wick
+  statistics, flavor-resolved moments, finite-size and disorder campaigns.
+- [duality/](duality): chord engines, dictionary, boost-kernel calibration,
+  large-interaction-order calculations and contour diagnostics.
+- [notes/](notes): derivations, the concise author-facing note and the
+  singlet-tower note.
+- [papers/README.md](papers/README.md): source versions and retrieval.
 
-### The yardstick is ready
+The main theoretical gaps are the observer/state/time dictionary, the
+relation of boost-frequency data to invariant masses, a proof of the
+matter-chord decomposition for general n, and the complete Dirac
+CP-resolved full-channel calculation. Numerical work remains useful
+before those gaps close: independent implementations, convergence and
+uncertainty studies and reproducible release artifacts. See the
+prioritized review checklist in the technical note.
 
-The spectrum runs to 12+ digits. The decay constants are new data. The
-solver stays accurate at nonzero quark mass.
-→ [thooft-target/](thooft-target)
-
-## What is still open
-
-**Extract the tower.** The exact 1/N laws, the K = 12 ladder and the
-diagonal chord law are in hand. The chord-side derivation is not. The
-step from moments to a spectrum now has its price list
-(`duality/boost_inverse.py`): at least one moment per level, each
-level costing one to two more digits, and no mass digits from a moment
-invariant until the state map fixes the regulator — so node-level data
-it is. The Dirac pair channel
-is frozen too (`duality/dirac_chord.py`); its diagonal half and CP
-resolution are open. This is a live race with the authors.
-
-**The O(1/q) residues.** The tower cancels at leading order in large q.
-It first appears at O(1/q), on a skeleton that is now derived in-repo
-(`duality/largeq_kernel.py`) and whose finite-temperature residues are
-unpublished.
-
-**The tomperature map.** Now reduced to one constrained-sector step in
-NV's construction.
-
-**The JT-dS entropy relation.** Settled as far as it settles
-(`duality/jt_ds_vacuum.py`): the D = 4 relation is the instance of a
-general-D identity that degenerates at D = 2; JT-dS supplies an exact
-first law and a family of reduction-inherited relations whose exponent
-is a dictionary input.
-
-Two problems are out of scope. Proving DSSYK∞ = JT-dS, which the authors
-assume. And the 1+1 → 3+1 uplift, which no source constructs.
-
-[road_map.md](road_map.md) says what each one would take.
+Code and original documentation are [MIT licensed](LICENSE). Third-party
+papers are excluded from version control and retain their own licenses.

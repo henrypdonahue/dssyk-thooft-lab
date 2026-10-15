@@ -1,7 +1,8 @@
 # Road map — stress-testing DSSYK∞ ↔ 't Hooft ([arXiv:2607.05678](https://arxiv.org/abs/2607.05678))
 
 What the paper claims. What this repo has settled. What is left. The
-literature snapshot is current as of 2026-08-24.
+literature snapshot is current as of 2026-09-09; the arXiv versions and
+the citation count were re-checked on 2026-10-04.
 
 ---
 
@@ -86,23 +87,32 @@ quadrature. And a check of the anchor constants against FLZ's published
 tables ([arXiv:0905.2280](https://arxiv.org/abs/0905.2280)), digit for
 digit.
 
-The worst deviation over n ≤ 29 is 4.5e-12, which is the level of FLZ's
-own last printed digit at the top of the range. Against their Padé the
-ground state agrees to 1.1e-15. The sum rules 7ζ(3) and 2 come out to
-about 1e-10.
+The worst deviation from FLZ over n ≤ 29 is 1.0e-12, and that is FLZ's
+own last printed digit, not this solver: there is now a 40-level
+reference table good to 17–21 digits
+(`reference_spectrum_polished.json`: exact-rational Rayleigh quotients
+of double-precision Ritz vectors, with the measured K⁻⁶ truncation law
+extrapolated away), and against it the double-precision solver is at
+9e-14 for every level while FLZ's printed values are off by up to one
+unit in their twelfth decimal. The older 24-level mpmath table agrees
+with it to at least its own claimed digits at every row. All sixteen of
+FLZ's Table 3 sum rules (s = 1 through 8, both parities) come out at the
+table's last digit, about 2e-12, once the transcribed Eq. 1.6 tail is
+used; 7ζ(3) and 2 among them.
 
 Off the duality point the Chebyshev basis hardwires the α = 0 endpoint
 exponent ½, while the true exponent solves πβ cot(πβ) = −α. So
 convergence there is only algebraic. `jacobi_solver.py` fixes that with a
 matched-exponent basis [x(1−x)]^β: the ground state is below 1e-11 by
-K = 32, and the LM sum rules come out to about 1e-12.
+K = 32, and the LM sum rules come out to about 3e-8 at s = 2 and 4e-12
+at s ≥ 4.
 
-Eigenfunctions are checked (Parseval 3e-6, weak-form Rayleigh ~1e-6,
-cross-solver overlap > 0.9999). FLZ's spectral-determinant constants d±
+Eigenfunctions are checked (Parseval 3e-6, weak-form Rayleigh quotient
+~1e-12 on tanh-sinh nodes, cross-solver overlap > 0.9999). FLZ's spectral-determinant constants d±
 are consumed too (`flz_dconstants.py`): their Eq. 4.21 products
-reproduce both 12-digit values to ~1e-12 — the double-precision
-eigenvalue floor at K = 300, against the anchor's own 5e-13 rounding —
-and the exact ratio √2/π to ~4e-13. Pinning their definition corrected a
+converge to d₊ = 0.9631784563984(1), d₋ = 0.43358263983325(1), inside
+the 5e-13 rounding of both 12-digit values and one to two digits past
+them, with the exact ratio √2/π met to 2e-15. Pinning their definition corrected a
 mischaracterization — d± are spectrum functionals, not wavefunction
 data — so the external eigenfunction-anchor slot is genuinely empty.
 The decay constants are new data. No published wavefunction tables
@@ -178,11 +188,59 @@ per-pair amplitude is smaller by exactly the 1/N that the N(N−1)
 multiplicity restores. And that diagonal part does **not** vanish for
 n ≥ 2.
 
-Evaluated exactly at finite N, the full A₂ width rises to w₂ ≈ 1.19 along
-λ_chord = 2 (1.044 → 1.194 over (p,N) = (4,16)…(10,100)). At n = 1 the
-two parts cancel to 3e-16, which reproduces A₁ = −2pH.
+Evaluated exactly at finite N, the full A₂ width rises along λ_chord = 2
+(1.044 → 1.286 over (p,N) = (4,16)…(40,1600)). At n = 1 the two parts
+cancel to 3e-16, which reproduces A₁ = −2pH.
 
-So the tower does propagate at N = ∞, and all of its weight is diagonal.
+**The full channel at N = ∞ is now an exact chord law of its own**
+(`duality/full_channel_chord.py`). Sum the flavor first: the exact
+identity A₂ = 4Σᵢ Hᵢ² makes A₂ the operator H² with each pair of
+H-chords weighted by the number of indices they share, and in the
+double-scaled limit those intersections are independent Poisson(λ/2)
+variables. Every full-channel word is then a finite matching sum, and
+
+    μ₀ = 4λ[λ(1+q) + 2(1−q)],    μ₂ = 16λ(1−q)[1 − q² + 2λq],
+
+with μ₄ a polynomial too. At λ_chord = 2 that is μ₀ = 32 exactly and
+w₂ = 1.316906; the exact finite-N series extrapolates to 1.31690(1). At
+small λ it is w₂ = 4λ − 4λ² + …, kurtosis → 7/2: the full A₂ channel is
+a dimension-2 matter chord in the large-q limit, as ψ∂²ψ should be.
+
+**And that channel is now resolved, at every λ**
+(`duality/singlet_tower.py`, `notes/singlet-tower-note.md`). Mean
+subtraction leaves the conserved H² inside A₂. Take it out and the rest
+is exactly a matter chord of dimension 2 — a theorem, proved by a
+sign-reversing involution on the chord diagrams:
+
+    A₂ − ⟨A₂⟩ = [2λ(1−q)/(1+q)](H² − 1) + ν O₂,
+    ν² = 8λ(1 − q² + 2λq)/(1+q),      w₂^dyn = 2(1 − q²).
+
+At λ_chord = 2 the conserved share of μ₀ is 32.9% and the dynamical
+width is 1.963369; the 1.316906 is that width diluted. Three checks that
+do not use the proof agree: the exact finite-N channel with its H²
+component removed (1.96336), dense ED with the whole commutant of H
+projected out (2.03, 2.03, 2.01 at p = 6, N = 16–20, against 2.00), and
+the spectral density rebuilt from the closed-form matter vertex.
+
+The levels above follow the same pattern. An exact operator identity
+writes every Aₙ through the blocks Ωₖ = ΣᵢHᵢHᵏHᵢ, and each Aₙ computed
+(n ≤ 6) is a polynomial in H plus matter chords of dimension 2..n with
+polynomial dressings — zero residual in computer algebra, a proof only
+at n = 2. One new chord enters per level, and it is faint: 14.9%, 1.6%,
+0.18%, 0.02% of the dynamical weight at λ_chord = 2 for n = 3..6, with
+norm ∝ λ^(2⌊n/2⌋). Toward small λ the even chords fade out of A₃..A₆
+linearly in λ and the odd ones stay (A₅ → 99.5% O₃ + 0.53% O₅): the
+dimensions that survive are 2, 3, 5, the pattern of the large-q SYK
+bilinear spectrum. That last is an observation, not a derivation.
+
+So the tower does propagate at N = ∞. The per-flavor split of its weight
+into "diagonal" and "pair" is bookkeeping: on a double-scaling line the
+two halves are each O(√N) in the flavor-summed normalization and cancel
+identically at that order (their O(1/p) leading pieces are the same
+function of λ, see below), and the O(1) remainder, the physical channel,
+belongs to neither. An earlier version of this note read the diagonal
+half as "all of the tower's weight"; that was the bookkeeping read as
+physics, and it is withdrawn.
 
 **Withdrawn.** The conclusion that the tower is a 1/N effect, invisible
 at every order, and that the match must therefore be made at fixed p,
@@ -207,12 +265,26 @@ Q₂ = 4p − 5, and the newly identified Q₃ = 34p² − 108p + 91, certified
 at p = 18. The other K = 8 family is
 A(1,6) = A(2,4) = −256p⁴(p−1)(34p² − 93p + 64), certified at p = 18 too:
 the same prefactor and the same leading 34p² as A(3,2), differing only
-below. The double-scaling constant is exact to p = 48:
-c₂ = 28.92 → 31.65 at p = 48 and still rising, with a windowed-1/p
-limit estimate c₂(∞) = 32.334 (order-2 through order-4 windows agree
-to 1.4e-3; not 97/3, which sits 8e-4 below the stable order-4 value)
-that the artifact records as an estimate, not a law. Those are the
-numbers the chord-side derivation has to reproduce.
+below. The double-scaling constant is exact to p = 48,
+c₂ = 28.92 → 31.65, and its limit is now a closed form
+(`syk-self-averaging/double_scaling_law.py`):
+
+    c₂(λ) = lim |μ₂^pair| pN = 4λ(1−q)²(5+3q),   q = e^(−λ),
+
+32.3341891 at λ_chord = 2, which the exact sequence's 1/p extrapolation
+reproduces to 1e-8 relative (and 9.7555 at λ = 1, 77.944 at λ = 4, both
+checked on their own lines). It is not 97/3. The same holds one rung
+up: c₃(λ) = 4λ(1−q)³(35 + 56q + 35q² + 10q³), 223.648 at λ = 2, which
+the n = 3 sequence to p = 32 reproduces to 1e-4. These constants are the
+Δψ → 0 slopes of the N = ∞ *diagonal* chord channel, λP_K(q) with K the
+word length: the O(Δ) parts of the diagonal and pair halves cancel on
+every double-scaling line, the n ≥ 2 shadow of the exact A₁ identity.
+The λ-expansion of the closed form fixes the large-p growth of every
+exact rational 1/N coefficient, and the N⁻⁵ coefficient turned out to be
+a closed form too: B(2,2;p) = 64p³(p−1)(11p³ − 36p² + 29p − 3), fit on
+p = 4..12 and reproducing the committed p = 2 value out of sample. What
+the chord-side derivation now has to reproduce is that cancellation, and
+the fixed-p polynomials Q_n(p).
 
 ### The dS axis
 
@@ -240,11 +312,15 @@ Read the closed-form flip for what it is. Δ enters the growing mode's
 phase, so half a period negates it, and the algebra is short. The content
 is in the exact-λ boundary and in the deep campaign.
 
-That campaign finds a transient anti-scrambling epoch growing like
-~½ln(1/λ), not eternal dS. It locates the chaos-bound evasion: the phase
+That campaign finds a transient anti-scrambling epoch growing with
+ln(1/λ), not eternal dS. It locates the chaos-bound evasion: the phase
 winds at constant magnitude, so there is no strip-KMS structure. And it
-records the costs. The shifted contour is fold-adjacent and
-edge-dominated, and rate extraction is mode-contaminated.
+measures the frame's 2-pt: it is the T = ∞ correlator continued to the
+complex time τ_s + it, the large-q |1/cos(𝒥z)|^(2Δ), matched ever
+better toward semiclassics, with the antipodal point itself sitting on
+the fake-period singularity that the bounded chord spectrum cuts off.
+The observer is thermal by the exact detailed-balance identity, not as a
+Gibbs state.
 
 ### Other results
 
@@ -284,12 +360,20 @@ A(n=3) = −256p⁴(p−1)(34p² − 108p + 91), and for the other K = 8 family
 A(1,6) = A(2,4) = −256p⁴(p−1)(34p² − 93p + 64), each certified out of
 sample.
 
+The double-scaling constants are no longer open numbers
+(`double_scaling_law.py`): c₂(λ) = 4λ(1−q)²(5+3q) and
+c₃(λ) = 4λ(1−q)³(35 + 56q + 35q² + 10q³), the Δψ → 0 slopes λP_K(q) of
+the diagonal chord channel, identified on three double-scaling lines at
+K = 6 and K = 8 and seen directly at finite N as the cancellation
+(N−1)μ_k^pair + μ_k^diag = O(Δ²). The N⁻⁵ coefficient B(2,2;p) has a
+closed form too.
+
 What remains for theory: the chord-side derivation that *reproduces*
 these exact targets — the deficit rule, the exact first step, the broken
-deeper steps, the Q_n polynomials — and the large-p limit of the
-double-scaling constant. c₂(p) is exact to p = 48 (31.654) and still
-rising; the windowed extrapolation c₂(∞) = 32.334(1) is an estimate, and
-a closed form for it is not identified.
+deeper steps, the Q_n polynomials, and the O(Δ) diagonal-against-pair
+cancellation that makes the pair channel's double-scaling constant the
+diagonal channel's slope. The identification is measured to 1e-8 at
+K = 6; it is not derived.
 
 **The μ₆ / K = 12 extension is done** (`pair_moment_ladder.py`). Three
 engine changes — hoisted signature multisets, coset canonicalization,
@@ -297,15 +381,26 @@ DP-target aggregation — plus a 7-worker pool made K = 12 words
 affordable. The whole frontier at p = 2, (n,k) = (5,2), (4,4), (3,6),
 (2,8), (1,10), is computed, every deficit is 7, and every evaluation is
 gated by the exact k = 10 flavor-sum identity in Fractions. The p = 4
-frontier laws are affordable with `--deep` (hours) and have not been run.
+frontier laws behind `--deep` are compute-gated (the (5,2) law alone is
+past ten hours on seven workers) and have not been run; they would add
+two more checks to a deficit rule that is already 55 for 55.
 
 **The flavor-diagonal channel at N = ∞ is done**
 (`duality/diagonal_chord.py`). It is the parity-law diagram sum, derived
 from the finite-N sign law and triple-gated: walker against brute force,
 a transfer-matrix anchor, and finite-N convergence at the O(1/p) line
-rate. The diagonal A₂ width at λ_chord = 2 is w₂ = 4.67(9) at Δψ → 0. The
-full-channel limit of ≈ 1.31(5) is a diagonal-against-pair cancellation
-whose missing chord-side piece is the pair channel's 1/N coefficient.
+rate. The diagonal A₂ width at λ_chord = 2 at Δψ → 0 is the closed form
+(1−q)(5+3q) = 4.674383, the ratio of two Δ-slopes. The full channel is a
+diagonal-against-pair cancellation, and it is now closed too
+(`duality/full_channel_chord.py`): w₂ = 1.316906 at λ_chord = 2, exact
+in (λ, q), gated by the exact finite-N series on two lines and by its
+semiclassical limit. The chord side of the A₂ tower channel at N = ∞ is
+complete, conserved admixture included, and n = 3..6 are done the same
+way (`duality/singlet_tower.py`): the conserved polynomial in H is
+projected out exactly and what remains is matter chords of dimension
+2..n. What is left there is a proof for general n, the reason the new
+chord's norm scales as λ^(2⌊n/2⌋), and a derivation of which dimensions
+survive λ → 0.
 
 **Moments → spectrum.** The forward direction was run first
 (`duality/boost_forward.py`): boost-kernel moments diverge, S → 1/ω, the
@@ -331,7 +426,15 @@ the map must supply), while node positions carry exactly zero leverage
 under any multiplicative regulator. The "needs node-level data" verdict
 is now quantitative, conditional on the e^(−εω) regulator and the free
 kernel.
-Which finite-N object carries the tower remains open.
+Which finite-N object carries the tower remains open. What is no longer
+open is what the SYK side supplies at N = ∞: the full Aₙ channels are a
+conserved polynomial in H plus matter chords of dimension 2..n whose
+norms and dressings are closed forms in λ, so their complete spectral
+densities are known — smooth continua, no lines, no nodes — and at fixed
+p the full width is an exact law, w₂ = 8p(p−2)/N + O(1/N²) in bandwidth
+units, i.e. an N-independent mean-square frequency 8p(p−2) in units of J
+(`syk-self-averaging/full_channel_laws.py`). A dictionary has to map
+that structure, not just the nodes.
 
 **The Dirac/complex-SYK chord machinery** has its H-sector built
 (`duality/dirac_chord.py`, on Berkooz–Narovlansky–Raj
@@ -352,8 +455,14 @@ of M₁ = −(p/2)iH. No published source provides H-correlated chord
 rules, and the pair half did not need them.
 
 Still open, and what the CP-resolved data is actually waiting on: the
-flavor-diagonal channel at the Dirac q, and the CP resolution of the
-Dirac Mₙ.
+full (flavor-summed) channel at the Dirac q, and the CP resolution of
+the Dirac Mₙ. The Majorana route to the full channel — sum the flavor
+first, so the fermion marks disappear and Aₙ becomes an
+intersection-weighted Hⁿ — does not transfer as it stands: cᵢcᵢ† = 1 − nᵢ
+replaces ψᵢ² = 1, so rewriting the Dirac M₂ = −Σᵢ(∂H/∂cᵢ†)†(∂H/∂cᵢ†) as
+an intersection-weighted H² leaves an occupation factor 1 − nᵢ between
+its two halves. That factor is the thing to handle, and it is where the
+charge dependence will enter.
 
 Comparison to `thooft-target` then goes through the BOOST.md kernel — a
 mass is a Bessel-kernel continuum with nodes, not a peak — and through
@@ -436,7 +545,19 @@ chaos-to-integrability transition at small λ
 ([2403.01950](https://arxiv.org/abs/2403.01950),
 [2601.09801](https://arxiv.org/abs/2601.09801)) is the likely mechanism
 zone. This is where the duality most plausibly *fails*, and a sharp
-statement of where it holds would be a real contribution.
+statement of where it holds would be a real contribution. The first
+exact probe of that corner is in (`syk-self-averaging/full_channel_laws.py`):
+along fixed p the identity-subtracted A₂ width in bandwidth units peaks
+at λ_chord ≈ 4/3 (N = 24 at p = 4) and then dies as 8p(p−2)/N, while the
+N = ∞ ratio at fixed λ (`duality/full_channel_chord.py`) peaks near
+λ_chord ≈ 1 and falls to 4λ as λ → 0. The ED bench's N ≤ 20 window sat on
+the rising side of that peak; "the tower turns on toward the corner" was
+that window, and it is withdrawn. Both peaks are the conserved H² share
+of μ₀ changing (`duality/singlet_tower.py`): with it removed the
+dynamical width is 2(1 − q²) at N = ∞, monotone in λ, and along fixed p
+it falls monotonically from about 2 to the same 8p(p−2)/N. In physical
+units the channel keeps a finite O(J) width, √(8p(p−2)) ≈ 2√2·p, all the
+way into the corner, approached monotonically from below.
 
 **Freeness sharpening.** The ln N onset-time question needs sizes beyond
 ED.
@@ -487,8 +608,8 @@ be the first quantitative discriminator among all three programs.
 literature uses λ = 2p²/N, q = e^(−λ). Any reuse of chord results must
 pass through a tested conversion.
 
-**Priority.** As of 2026-08-24 the target paper has exactly one
-citation: Cui–Kolchmeyer [2607.13665](https://arxiv.org/abs/2607.13665),
+**Priority.** As of 2026-10-04 (INSPIRE, arXiv) the target paper still has
+exactly one citation, and no v2 has been posted: Cui–Kolchmeyer [2607.13665](https://arxiv.org/abs/2607.13665),
 which argues that dS observer OTOCs *anti-scramble*, and poses a
 structural challenge to observer-centric static-patch holography. Its
 same-week companion Harlow–Zhao
