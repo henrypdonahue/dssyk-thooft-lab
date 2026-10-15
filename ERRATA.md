@@ -37,7 +37,9 @@ ED width rising along fixed p over N ≤ 20). Withdrawn 2026-10-14 (`9dfa598`). 
 window is the rising side of a peak at N = 24 (p = 4), and the peak is
 conserved H² weight leaving the denominator. With the H² component
 removed the width falls monotonically along fixed p, to 8p(p−2)/N
-(`syk-self-averaging/full_channel_laws.py`).
+(`syk-self-averaging/full_channel_laws.py`). Panel (d) of
+`duality/chord_summary.png` kept the old title until 2026-10-15
+(`aa82b31`); it now plots the ED against the exact N = ∞ channel.
 
 **E5. "The ad-shift coincidence A(n=1, k) = A(n=2, k−2) holds at every
 step of the ladder."** Refuted 2026-08-28 (`501bd34`). It holds exactly
@@ -66,6 +68,11 @@ admixture could hide under. The fit basis is rank-deficient, and a
 massive density reaches a floor of about 5e-4 on it (≈ 50× above A₃ at
 λ = 0.05, not 200×). The (Δ/4)λ deviation is mostly a scale shift; at the
 best-fit scale the shape deviates by about 0.045λ.
+
+**E22. "At the p computed, A₃'s ⟨ω⁴⟩/⟨ω²⟩ lies between the Δ = 2 and
+Δ = 3 ladder values"** (`17b52cd`). Corrected 2026-10-15 (`aa82b31`).
+4p(10p − 21) passes the Δ = 2 value 28p² only at p > 7; at p = 4 and 6
+it lies below it. The law itself stands, now checked at p = 10 and 12.
 
 ## The dS / OTOC axis
 
@@ -102,7 +109,9 @@ semiclassics (0.46 → 0.18 over λ = 2 → 0.25).
 
 **E12. "The anti-scrambling window grows 0.57 → 1.14 (t·J_c)."**
 Corrected 2026-10-14 (`127b50f`). Those were grid points, one of them censored. The
-interpolated maxima are 0.52 → 1.10 over λ = 1.0 → 0.3.
+interpolated maxima are 0.52 → 1.10 over λ = 1.0 → 0.3. The figure
+`duality/signflip_summary.png` showed the grid points until it was
+regenerated on 2026-10-15 (`aa82b31`).
 
 ## The boost-to-mass calibration
 
