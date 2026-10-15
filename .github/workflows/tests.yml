@@ -6,9 +6,17 @@ on:
   push:
   pull_request:
 
+env:
+  # several tolerances are set at the double-precision floor; pin the BLAS
+  # thread count so the floor is the same on every runner
+  OMP_NUM_THREADS: "2"
+  OPENBLAS_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+
 jobs:
   pytest:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -21,6 +29,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
       - name: Install pinned dependencies
         run: |
           python -m pip install --upgrade pip
@@ -31,11 +41,14 @@ jobs:
 
   physics-gate:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.9"
+          cache: pip
+          cache-dependency-path: pyproject.toml
       - name: Install pinned dependencies
         run: |
           python -m pip install --upgrade pip

@@ -29,7 +29,8 @@ dependencies = [
 [project.optional-dependencies]
 # pytest 6.2.5 (the original pin) breaks on python 3.12: its assertion
 # rewriter uses ast.Str/ast.Num, removed in 3.12.  7.4.4 is the newest pin
-# that still supports 3.9; all 528 fast tests verified green under it.
+# that still supports 3.9; all 642 fast tests verified green under it
+# (python 3.9, the pins below, two BLAS threads; 2026-10-04).
 dev = ["pytest==7.4.4", "matplotlib==3.9.4"]
 
 [tool.setuptools]

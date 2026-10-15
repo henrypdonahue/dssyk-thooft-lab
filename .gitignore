@@ -24,6 +24,11 @@ venv/
 papers/*
 !papers/README.md
 
-# Claude Code agent worktrees (session-local, never part of the repo)
+# Claude Code agent worktrees and local permission settings (session-local,
+# never part of the repo)
 .claude/worktrees/
+.claude/settings.local.json
 *.json.tmp
+
+# Logged reproduction snapshots (can be large)
+validation-runs/

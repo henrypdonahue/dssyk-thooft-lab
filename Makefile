@@ -1,9 +1,9 @@
 # Reproduction entry points for the DSSYK <-> 't Hooft stress-test repo.
 #
-#   make test            fast test suites of all three modules   (~1.5 min)
-#   make test-all        full suites including slow ED sweeps    (~4 min)
-#   make reproduce       fast deterministic checks + figures     (~50 s)
-#   make reproduce-slow  ED sweeps behind the saved JSON         (~hours)
+#   make test            fast test suites of all three modules   (~2 min)
+#   make test-all        full suites including slow ED sweeps    (~5 min)
+#   make reproduce       fast deterministic checks + figures     (~3 min)
+#   make reproduce-slow  the campaigns behind the saved JSON     (minutes to hours each; ~10 h total)
 #
 # Run the scripts from inside their module directory (module READMEs assume
 # this).  Dependencies: pip install -e ".[dev]"  (pinned; python 3.9-3.12,
@@ -25,6 +25,7 @@ test-all:
 
 # Fast, deterministic: the physics gate, the closed-form/identity printouts,
 # the single-realization spectroscopy (Nc = 10), and figures from saved JSON.
+# (chord_moments.py --run and largeq_anchor.py are the two ~1-minute entries.)
 reproduce:
 	cd thooft-target && $(PY) validate.py
 	cd thooft-target && $(PY) condensate.py
@@ -45,11 +46,21 @@ reproduce:
 	cd duality && $(PY) dirac_chord.py
 	cd duality && $(PY) jt_ds_vacuum.py
 	cd thooft-target && $(PY) flz_dconstants.py
+	cd syk-self-averaging && $(PY) conserved_points.py
+	cd syk-self-averaging && $(PY) projected_channel.py
+	cd syk-self-averaging && $(PY) double_scaling_law.py
+	cd duality && $(PY) full_channel_chord.py
+	cd duality && $(PY) singlet_tower.py
+	cd duality && $(PY) diagonal_chord.py --run
 	cd duality && $(PY) plot_chord.py
 	cd duality && $(PY) plot_signflip.py
+	cd duality && $(PY) plot_singlet_tower.py
+	cd syk-self-averaging && $(PY) moments_fast.py --plot
 
-# The disorder-ensemble sweeps and high-precision reference generation that
-# produced the committed JSON/CSV artifacts.  Hours, not minutes.
+# The disorder-ensemble sweeps, exact campaigns and high-precision reference
+# generation that produced the committed JSON/CSV artifacts.  Individual
+# entries run from seconds (largeq_kernel, antipodal_modes, chord_fold) to
+# hours (pair_moment_ladder ~7.5 h, freeness, mn_majorana_bench ~1 h).
 reproduce-slow:
 	cd syk-self-averaging && $(PY) self_averaging.py
 	cd syk-self-averaging && $(PY) validate_syk.py
@@ -80,6 +91,11 @@ reproduce-slow:
 	cd syk-self-averaging && $(PY) pair_moment_ladder.py --refit 1,6:2,4,6,8,10,12,14,16:18
 	cd syk-self-averaging && $(PY) pair_moment_ladder.py --refit 2,4:2,4,6,8,10,12,14,16:18
 	cd syk-self-averaging && $(PY) pair_moment_ladder.py --ds-extend 32,36,40,44,48
+	cd syk-self-averaging && $(PY) full_channel_laws.py --run
+	cd syk-self-averaging && $(PY) double_scaling_law.py --run
+	cd duality && $(PY) full_channel_chord.py --run
+	cd duality && $(PY) singlet_tower.py --run
 	cd thooft-target && $(PY) generate_reference.py
+	cd thooft-target && $(PY) generate_reference.py --polish
 	cd thooft-target && $(PY) jacobi_solver.py
 	cd thooft-target && $(PY) thooft_spectrum.py --csv
