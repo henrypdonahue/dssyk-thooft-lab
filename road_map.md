@@ -298,7 +298,8 @@ without bound; so does the 't Hooft tower, built from the repo's masses
 and decay constants. The singlet channels are scale-invariant content
 with Δ = 2, 3, 5 and no massive component: consistent with their §6
 picture of a deconfined stretched horizon, and a sign that the mesons are
-not visible in the N = ∞ two-point functions of the Sₙ.
+not visible in the N = ∞ two-point functions of the Sₙ, in their
+Majorana form (the Dirac full channel is still open).
 
 ### The dS axis
 
@@ -361,7 +362,7 @@ condensate and gives first α → −1 GMOR data.
    scale-invariant content with no massive component: a field of mass M,
    and the 't Hooft tower, give pole-free K_{iω/a}(M/a)² and decay rates
    that grow without bound. So the paper's small-λ prediction cannot be
-   met by the N = ∞ two-point functions of the Sₙ. Next: test whether the
+   met by the N = ∞ two-point functions of the (Majorana) Sₙ. Next: test whether the
    1/N corrections can carry a massive component. The exact finite-N
    engine already gives the O(1/p) corrections to the full A₂ moments on
    double-scaling lines; compare them with what an admixed K² term

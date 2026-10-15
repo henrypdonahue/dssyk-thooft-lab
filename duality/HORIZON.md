@@ -105,7 +105,8 @@ and the mesons are what escapes it. It also means that, if the duality
 holds, the mesons are not visible in these channels at N = ∞. The
 prediction "the singlet spectrum at small λ matches the 't Hooft
 spectrum" then has to refer to something other than the N = ∞ two-point
-functions of the Sₙ: finite-N corrections, operators built to reach past
+functions of the Sₙ (here in their Majorana form Aₙ; the Dirac channels
+are not yet computed): finite-N corrections, operators built to reach past
 the stretched horizon, or a dictionary that is not a local probe at fixed
 distance from the horizon. Naming which is the dictionary's job.
 
