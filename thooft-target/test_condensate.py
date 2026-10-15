@@ -88,3 +88,23 @@ def test_committed_json_and_gmor_corner():
     # eps curve is monotone decreasing (condensate is negative throughout)
     eps = d["eps"]
     assert all(eps[i + 1] <= eps[i] + 1e-12 for i in range(len(eps) - 1))
+
+
+def test_committed_arrays_recompute_from_the_producer():
+    """The whole artifact reproduces from its producer's functions: the
+    f(alpha) and eps(alpha) curves on the committed alpha grid and the
+    GMOR corner rows, to float precision (0.4 s)."""
+    from condensate import gmor_corner
+    with open(HERE / "condensate.json") as fh:
+        d = json.load(fh)
+    alphas = np.array(d["alphas"])
+    f_live = np.array([condensate_dimensionless(a) for a in alphas])
+    eps_live = vacuum_energy_curve(alphas)
+    assert np.allclose(f_live, d["f"], rtol=1e-10, atol=1e-12)
+    assert np.allclose(eps_live, d["eps"], rtol=1e-10, atol=1e-12)
+    assert d["eps_duality_point"] == pytest.approx(float(eps_live[-1]), rel=1e-10)
+    corner = gmor_corner()
+    assert len(corner) == len(d["gmor_corner"])
+    for live, stored in zip(corner, d["gmor_corner"]):
+        for key in ("a", "two_lambda0", "ratio", "nlo_coeff"):
+            assert live[key] == pytest.approx(stored[key], rel=1e-9), key

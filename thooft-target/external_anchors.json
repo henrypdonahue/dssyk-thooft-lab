@@ -5,7 +5,7 @@
   "retrieved": "2026-07-20, via arXiv full-text; every closed form cross-checked numerically against the source papers' own tables before inclusion."
  },
  "flz_table3_alpha0": {
-  "comment": "{s: [G+, G-]} verbatim FLZ Table 3; exact closed forms exist for all",
+  "comment": "{s: [G+, G-]} verbatim FLZ Table 3; exact closed forms exist for all; all sixteen consumed by test_thooft.py::test_flz_table3_all_sixteen_anchors (2026-09-09, flz_reference.flz_sum_rule with the Eq. 1.6 tail, ~2e-12)",
   "1": [
    2.22417142752923,
    0.2241714275292

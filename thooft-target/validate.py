@@ -8,7 +8,6 @@ asymptotic expansion.
 
 import sys
 
-import numpy as np
 from scipy.special import zeta
 
 from thooft_spectrum import solve_sector, spectrum
@@ -16,7 +15,6 @@ import sine_solver
 from flz_reference import (FLZ_EVEN, FLZ_ODD, FLZ_PADE_LAMBDA0,
                            sum_inv_sq_with_tail)
 
-PI = np.pi
 
 
 

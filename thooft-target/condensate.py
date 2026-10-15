@@ -92,7 +92,7 @@ from scipy.integrate import quad
 
 HERE = Path(__file__).resolve().parent
 
-GAMMA_E = 0.5772156649015329
+GAMMA_E = float(np.euler_gamma)
 
 
 # ---------------------------------------------------------------------------

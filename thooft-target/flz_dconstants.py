@@ -96,38 +96,54 @@ everything computed, from the repo's eigenvalues only.
 MEASURED AGREEMENT (deterministic; asserted with margin in
 test_thooft.py, section "FLZ spectral-determinant constants")
 -------------------------------------------------------------
-Chebyshev solver, n_cut = 80, tail + residual fit, deviation from the
-FLZ 12-digit values (d+ / d-):
+Chebyshev solver, n_cut = 80, tail + residual fit on 30..90, deviation
+from the FLZ 12-digit values (d+ / d-):
 
     K = 100:  -1.5e-09 / -6.6e-10
     K = 150:  -1.3e-10 / -6.0e-11
-    K = 200:  -2.4e-11 / -1.0e-11
-    K = 300:  ~ -(4..9)e-13 / -(2..7)e-13   (eigvals-only path; the
-              test fixture's with-vectors path lands d+ at ~ -1.1e-12)
+    K = 200:  -2.4e-11 / -1.1e-11
+    K = 300:  -1.5e-12 / -7.6e-13
+    K = 400:  +3.1e-13 / +2.4e-14
+    K = 600:  +6.8e-13 / +1.9e-13
+    K = 800:  +6.7e-13 / +2.0e-13
 
-The K = 300 row sits on the double-precision eigenvalue floor, not on
-the product: the LAPACK eigh roundoff at K = 300 is ~4e-13 relative per
-level (measured against the mpmath solver at the same K), it moves with
-the BLAS thread count at that size, and larger K makes it worse (d+
-deviation -5e-12 at K = 400, -1e-11 at K = 500): the K = 100..200 rows
-converge, the K = 300 row is floor-limited rather than a further rung,
-and S-conditioning growth takes over beyond it.  The
-anchor's own 12-digit rounding is +-5e-13; the reproduction is at
-~1e-12, i.e. at the floor of both.  The computed ratio obeys
-d-/d+ - sqrt(2)/pi to ~4e-13 (a -4e-14 value seen on one thread
-setting is a chance cancellation of two ~5e-13 noises; FLZ's printed
-values themselves satisfy the ratio to -7.0e-14).  Ladder of the tail
-treatment at K = 300, n_cut = 80, d+ deviation:
+The ladder CONVERGES.  thooft_spectrum.solve_sector solves the
+reciprocal problem at alpha = 0, so the low levels no longer sit on a
+roundoff floor that grows with K, and the K = 300 row is basis
+truncation of the levels near n = 90, not a floor.  (An earlier version
+of this note, written for the direct solve, read K = 300 as the floor
+and reported the deviation growing beyond it; that was the solver, and
+it is gone.)
+
+What limits the default configuration is the tail model: with the head
+cut at n = 80 the exact ratio d-/d+ = sqrt(2)/pi is met to 1.8e-13.
+Deepening the head and the residual-fit window with the basis removes
+that too.  At K = 800:
+
+    n_cut = 120, fit 40..150:   ratio to 3e-14
+    n_cut = 160, fit 60..200:   ratio to 2e-15
+    n_cut = 200, fit 80..260:   ratio to 6e-16
+
+and the two constants settle at
+
+    d+ = 0.9631784563984(1),      d- = 0.43358263983325(1),
+
+both inside the +-5e-13 rounding of FLZ's printed 12 digits (which
+truncate these), with one to two digits added.  The anchor is consumed
+at the full precision FLZ published; the scatter over the three
+configurations above (1.2e-13 in d+, 2e-14 in d-) is the quoted
+uncertainty.
+
+Ladder of the tail treatment at K = 300, n_cut = 80, d+ deviation:
 
     bare truncation      -7.3e-07
     + Eq. (1.6) tail     -1.5e-10
-    + residual fit       ~ -(4..9)e-13
+    + residual fit       -1.5e-12
 
 Jacobi cross-solver at alpha = 0 (same trial space, independent
 Gagliardo-quadrature assembly): K = 60 lands at -1.5e-08, K = 100 at
 -1.5e-09, tracking its documented quadrature floor, with the ratio at
-2.1e-10 and 9.4e-12.  The anchor is consumed at the full precision FLZ
-published.
+2.1e-10 and 9.4e-12.
 """
 
 from __future__ import annotations
@@ -282,10 +298,10 @@ if __name__ == "__main__":
           f"{dm_flz / dp_flz - ratio_exact:+.1e}\n")
 
     print("Chebyshev solver, n_cut = 80, Eq. (1.6) tail + residual fit:")
-    print("  (the K = 300 row is at the double-precision eigenvalue floor,"
-          " ~1e-12, and moves with the BLAS thread count)")
+    print("  (converges in K; beyond K ~ 400 the 80-level head and its tail"
+          " model set the last digit)")
     ev300 = {}
-    for K in (100, 150, 200, 300):
+    for K in (100, 150, 200, 300, 600):
         evs = {par: solve_sector(K, parity=par, eigvals_only=True)[0]
                for par in (0, 1)}
         if K == 300:
@@ -302,6 +318,15 @@ if __name__ == "__main__":
                              (True, True, "+ residual fit   ")):
         dp = d_constant_sector(ev300[0], 0, tail=tail, resid_fit=fit)
         print(f"  {label}: {dp - dp_flz:+.2e}")
+
+    print("\nDeep head and fit window at K = 800 (the exact ratio is the gauge):")
+    ev800 = {par: solve_sector(800, parity=par, eigvals_only=True)[0]
+             for par in (0, 1)}
+    for n_cut, win in ((120, (40, 150)), (160, (60, 200)), (200, (80, 260))):
+        dp = d_constant_sector(ev800[0], 0, n_cut=n_cut, fit_window=win)
+        dm = d_constant_sector(ev800[1], 1, n_cut=n_cut, fit_window=win)
+        print(f"  n_cut = {n_cut}, fit {win[0]}..{win[1]}:  d+ = {dp:.15f}   "
+              f"d- = {dm:.15f}   ratio - sqrt(2)/pi = {dm / dp - ratio_exact:+.1e}")
 
     print("\nJacobi cross-solver (alpha = 0, quadrature-independent):")
     dp, dm = d_constants(num_basis=60, n_cut=50, fit_window=(30, 60),

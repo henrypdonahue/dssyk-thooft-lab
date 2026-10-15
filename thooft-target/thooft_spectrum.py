@@ -156,7 +156,24 @@ def solve_sector(num_basis: int, parity: int, alpha: float = 0.0,
     With eigvals_only=True the eigenvector slot is None (~2x faster).  The
     eigenvalue-only callers spectrum/validate/plot use that path."""
     degrees, D, S = build_sector(num_basis, parity, alpha)
-    # Generalized symmetric-definite eigenproblem  D a = Lambda S a.
+    # At alpha=0, D is positive diagonal. Solve the reciprocal problem:
+    # S a = (1/Lambda) D a. Low physical levels are then the largest
+    # eigenvalues, avoiding the absolute roundoff floor imposed by the
+    # very large ultraviolet eigenvalues of (D, S). Restore S-normalized
+    # eigenvectors so callers retain the original convention.
+    # Measured against the 17-digit polished table: the direct solve's
+    # error over n < 24 GROWS with K (2e-12, 9e-12, 3e-11, 1e-10 at
+    # K = 300, 400, 600, 800), the reciprocal solve's does not (4e-13
+    # truncation at K = 300, then 7e-14 rounding from K = 600 on).
+    if alpha == 0.0:
+        if eigvals_only:
+            reciprocal = eigh(S, D, eigvals_only=True)[::-1]
+            return 1.0 / reciprocal / PI ** 2, None, degrees
+        reciprocal, vecs = eigh(S, D)
+        reciprocal, vecs = reciprocal[::-1], vecs[:, ::-1]
+        Lam = 1.0 / reciprocal
+        return Lam / PI ** 2, vecs * np.sqrt(Lam)[None, :], degrees
+    # Generalized symmetric-definite eigenproblem D a = Lambda S a.
     if eigvals_only:
         Lam = eigh(D, S, eigvals_only=True)
         two_lambda = Lam / PI ** 2  # 2 lambda_n = M^2 / (pi g^2)
@@ -221,13 +238,17 @@ if __name__ == "__main__":
     import sys
     if "--csv" in sys.argv:
         # regenerates the committed spectrum_double_precision.csv, 14
-        # decimals.  It matches reference_spectrum.json to ~1e-11, so trust
-        # ~11 digits (see README).
+        # decimals, at K = 800.  The reciprocal solve above has no
+        # roundoff growth with K, so the basis can be taken large enough
+        # that truncation (K^-6) is below double rounding for all 40
+        # rows: measured against reference_spectrum_polished.json the
+        # worst row is 9e-14 at K = 800 (4e-13 at K = 300, n < 30).
+        # Trust 13 digits (see README).
         from pathlib import Path
         out = Path(__file__).resolve().parent / "spectrum_double_precision.csv"
         with open(out, "w") as fh:
             fh.write("n,two_lambda_n = M^2/(pi g^2),parity_under_x->1-x,CP\n")
-            for L in spectrum(num_basis=400, num_levels=40):
+            for L in spectrum(num_basis=800, num_levels=40):
                 fh.write(f"{L['n']},{L['two_lambda']:.14f},"
                          f"{L['parity']},{L['CP']:+d}\n")
         print(f"wrote {out.name}")

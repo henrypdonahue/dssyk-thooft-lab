@@ -85,26 +85,30 @@ def reconstruct(vec: np.ndarray, degrees: np.ndarray, x: np.ndarray) -> np.ndarr
 
 
 def reconstruct_derivative(vec: np.ndarray, degrees: np.ndarray,
-                           x: np.ndarray) -> np.ndarray:
+                           x: np.ndarray, omx: np.ndarray = None) -> np.ndarray:
     """d phi_n / dx at interior points (chain rule d xi/dx = 2), same
     normalization as reconstruct.
 
-    Precondition: x must be interior (Gauss-Legendre nodes).  This function
-    divides by sqrt(1-xi^2) and by (1-xi^2), so it blows up at the endpoints
-    x=0,1."""
-    xi = 2.0 * np.asarray(x) - 1.0
+    The derivative of sqrt(1-xi^2) U_m diverges like 1/sqrt(1-xi^2) at the
+    endpoints, so x must be interior.  Pass omx = 1 - x (as its own array)
+    for nodes so close to the endpoints that 1 - x^2 loses precision in
+    double, e.g. tanh-sinh nodes: then 1 - xi^2 = 4 x (1-x) is formed
+    stably."""
+    x = np.asarray(x)
+    xi = 2.0 * x - 1.0
     dmax = int(np.max(degrees))
     U = _U_all(dmax + 1, xi)
-    s = np.sqrt(1.0 - xi ** 2)
+    one_m_xi2 = (1.0 - xi ** 2) if omx is None else 4.0 * x * np.asarray(omx)
+    s = np.sqrt(one_m_xi2)
     total = np.zeros_like(xi)
     for a, m in zip(vec, np.asarray(degrees)):
         # d/dxi [ sqrt(1-xi^2) U_m ] = ( -xi U_m + (1-xi^2) U_m' ) / sqrt(1-xi^2)
-        # with U_m'(xi) = ( (m+2) U_{m-1} - m U_{m+1} ) / ( 2 (1-xi^2) )  for m>=1
+        # with (1-xi^2) U_m'(xi) = ( (m+2) U_{m-1} - m U_{m+1} ) / 2  for m>=1
         if m == 0:
-            dU = np.zeros_like(xi)
+            num = -xi * U[m]
         else:
-            dU = ((m + 2) * U[m - 1] - m * U[m + 1]) / (2.0 * (1.0 - xi ** 2))
-        total += a * (-xi * U[m] + (1.0 - xi ** 2) * dU) / s
+            num = -xi * U[m] + ((m + 2) * U[m - 1] - m * U[m + 1]) / 2.0
+        total += a * num / s
     return np.sqrt(2.0) * 2.0 * total
 
 
@@ -136,6 +140,25 @@ def decay_constants(num_basis: int = 200, num_levels: int = 60):
     return np.sqrt(2.0) * (PI / 4.0) * vecs[0, :num_levels], ev[:num_levels]
 
 
+def decay_constant_asymptotics(num_basis: int = 400, n_lo: int = 20,
+                               n_hi: int = 80) -> dict:
+    """The large-n law of the decay constants: f_n (n + 3/4) -> 2/pi, with
+    a 1/nu correction, nu = n + 3/4.  Fit f_n nu = c0 + a/nu + b/nu^2 on
+    the symmetric levels n in [n_lo, n_hi]; c0 lands on 2/pi to ~5e-6 and
+    a ~ +0.064.  (f_0 = 0.9428101504585 sits 1.2e-6 from 2 sqrt(2)/3, a
+    near-miss, not an identity.)"""
+    f, ev = decay_constants(num_basis, num_levels=num_basis // 3)
+    n = 2 * np.arange(len(f))
+    nu = n + 0.75
+    prod = f * nu
+    sel = (n >= n_lo) & (n <= n_hi)
+    A = np.vander(1.0 / nu[sel], 3, increasing=True)
+    c = np.linalg.lstsq(A, prod[sel], rcond=None)[0]
+    return dict(c0=float(c[0]), a=float(c[1]), b=float(c[2]),
+                two_over_pi=2.0 / PI, f0=float(f[0]),
+                f_nu=[[int(nn), float(v)] for nn, v in zip(n, prod)])
+
+
 def parseval_unit(num_basis: int = 200) -> float:
     """sum_n f_n^2 over the whole symmetric tower; must -> 1 (completeness)."""
     f, _ = decay_constants(num_basis, num_levels=num_basis)
@@ -163,29 +186,44 @@ def parseval_x(num_basis: int = 200) -> float:
 # 2. independent weak-form Rayleigh quotient
 # ---------------------------------------------------------------------------
 def rayleigh_weakform(vec, degrees, alpha: float = 0.0,
-                      n_quad: int = 600) -> float:
+                      n_quad: int = 600, rule: str = "legendre") -> float:
     """Recompute 2*lambda from a Chebyshev eigenvector through the Gagliardo
-    weak form on Gauss-Legendre nodes.  No Chebyshev closed forms are
-    involved."""
-    xq, wq = np.polynomial.legendre.leggauss(n_quad)
-    xq = 0.5 * (xq + 1.0)
-    wq = 0.5 * wq
-    phi = reconstruct(vec, degrees, xq)
-    dphi = reconstruct_derivative(vec, degrees, xq)
+    weak form on quadrature nodes.  No Chebyshev closed forms are involved.
+
+    rule = "legendre": Gauss-Legendre nodes (the original check; the
+    endpoint sqrt(x) behavior limits it to ~1e-6).
+    rule = "tanh-sinh": the jacobi_solver rule, which resolves the endpoint
+    exponent; with n_quad ~ 2400 the residual is at the 1e-12 level, so the
+    wavefunctions are validated against the operator to the precision of
+    the eigenvalues themselves."""
+    if rule == "legendre":
+        xq, wq = np.polynomial.legendre.leggauss(n_quad)
+        xq = 0.5 * (xq + 1.0)
+        wq = 0.5 * wq
+        omx = 1.0 - xq
+        phi = reconstruct(vec, degrees, xq)
+        dphi = reconstruct_derivative(vec, degrees, xq)
+        dx = xq[:, None] - xq[None, :]
+        with np.errstate(divide="ignore", invalid="ignore"):
+            Q = np.outer(wq, wq) / (dx * dx)
+        np.fill_diagonal(Q, 0.0)
+        r = Q.sum(axis=1)
+        off = np.sum(r * phi ** 2) - phi @ Q @ phi
+        diag = np.sum((wq * dphi) ** 2)
+        gag = off + 0.5 * diag
+    elif rule == "tanh-sinh":
+        from jacobi_solver import _tanh_sinh_01, gagliardo_from_values
+        xq, omx, wq = _tanh_sinh_01(n_quad)
+        phi = reconstruct(vec, degrees, xq)
+        dphi = reconstruct_derivative(vec, degrees, xq, omx)
+        gag = gagliardo_from_values(phi[None, :], dphi[None, :],
+                                    xq, omx, wq)[0, 0]
+    else:
+        raise ValueError(f"unknown rule {rule!r}")
 
     norm = np.sum(wq * phi ** 2)
-    V = 1.0 / xq + 1.0 / (1.0 - xq)
+    V = 1.0 / xq + 1.0 / omx
     pot = np.sum(wq * V * phi ** 2)
-
-    dx = xq[:, None] - xq[None, :]
-    with np.errstate(divide="ignore", invalid="ignore"):
-        Q = np.outer(wq, wq) / (dx * dx)
-    np.fill_diagonal(Q, 0.0)
-    r = Q.sum(axis=1)
-    off = np.sum(r * phi ** 2) - phi @ Q @ phi
-    diag = np.sum((wq * dphi) ** 2)
-    gag = off + 0.5 * diag
-
     mu = (alpha + 1.0) * pot + gag
     return float(mu / (PI ** 2 * norm))
 

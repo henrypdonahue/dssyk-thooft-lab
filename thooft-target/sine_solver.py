@@ -61,7 +61,7 @@ def _gauss_legendre_01(n_quad: int):
     return 0.5 * (x + 1.0), 0.5 * w
 
 
-def build_matrices(num_basis: int = 60, n_quad: int = 400, alpha: float = 0.0):
+def build_matrices(num_basis: int = 60, n_quad: int = 400):
     """Assemble (G, Pi, W) in the sine basis by Gauss-Legendre quadrature."""
     ks = np.arange(1, num_basis + 1)
     xq, wq = _gauss_legendre_01(n_quad)
@@ -108,7 +108,7 @@ def solve(num_basis: int = 60, n_quad: int = 400, alpha: float = 0.0,
     are G-orthonormal, i.e. the reconstructed phi are unit-normalized in
     L^2[0,1].
     """
-    G, Pi, W = build_matrices(num_basis, n_quad, alpha)
+    G, Pi, W = build_matrices(num_basis, n_quad)
     # <u,FP v> = W_gag - Pi, so  alpha*Pi - <.,FP.> = (alpha+1)*Pi - W_gag.
     # The coefficient (alpha+1) = pi m^2/g^2 is the *bare* mass.  The endpoint
     # self-energy from the finite part shifts alpha -> alpha+1, as it must.
