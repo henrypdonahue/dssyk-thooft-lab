@@ -23,6 +23,7 @@ venv/
 # papers/README.md is tracked and lists the fetch commands.
 papers/*
 !papers/README.md
+!papers/fetch.sh
 
 # Claude Code agent worktrees and local permission settings (session-local,
 # never part of the repo)
