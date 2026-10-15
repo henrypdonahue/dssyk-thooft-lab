@@ -93,15 +93,22 @@ def test_committed_json_and_gmor_corner():
 def test_committed_arrays_recompute_from_the_producer():
     """The whole artifact reproduces from its producer's functions: the
     f(alpha) and eps(alpha) curves on the committed alpha grid and the
-    GMOR corner rows, to float precision (0.4 s)."""
+    GMOR corner rows (0.4 s), to the accuracy of the quadrature.  Against
+    a 30-digit mpmath evaluation, f is good to 4e-11 for a = 1 + alpha >=
+    1e-3 but only to 6e-10 at the grid's end a = 1e-4, where I_alpha is
+    near-singular; different platforms' QUADPACK differ from the committed
+    values by that much (CI, Linux).  So the tolerance is 1e-10 on the
+    regular part of the grid and 5e-9 on the a < 1e-3 tail."""
     from condensate import gmor_corner
     with open(HERE / "condensate.json") as fh:
         d = json.load(fh)
     alphas = np.array(d["alphas"])
     f_live = np.array([condensate_dimensionless(a) for a in alphas])
     eps_live = vacuum_energy_curve(alphas)
-    assert np.allclose(f_live, d["f"], rtol=1e-10, atol=1e-12)
-    assert np.allclose(eps_live, d["eps"], rtol=1e-10, atol=1e-12)
+    rtol = np.where(1.0 + alphas >= 1e-3, 1e-10, 5e-9)
+    for live, stored in ((f_live, d["f"]), (eps_live, d["eps"])):
+        stored = np.asarray(stored)
+        assert np.all(np.abs(live - stored) <= rtol * np.abs(stored) + 1e-12)
     assert d["eps_duality_point"] == pytest.approx(float(eps_live[-1]), rel=1e-10)
     corner = gmor_corner()
     assert len(corner) == len(d["gmor_corner"])
