@@ -9,6 +9,9 @@ mass spectrum.
 
 ## Where to start
 
+- [WALKTHROUGH.html](WALKTHROUGH.html): a visual tour of the whole project,
+  layer by layer from the 't Hooft target up (open it in a browser from a
+  local clone; `scripts/walkthrough/make_walkthrough.py` regenerates it).
 - [notes/author-facing-note.md](notes/author-facing-note.md): the
   technical note. Definitions, results, limitations, priorities.
 - [notes/singlet-tower-note.md](notes/singlet-tower-note.md): the N = ∞

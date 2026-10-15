@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DSSYK–'t Hooft Walkthrough</title>
+<meta name="description" content="A bottom-to-top walkthrough of dssyk-thooft-lab: numerical tests of the DSSYK∞ ↔ 't Hooft model proposal of Miyashita, Sekino and Susskind.">
+<style>
+:root {
+  --bg: #fbfaf7; --panel: #ffffff; --ink: #1d1f24; --muted: #5d6470; --faint: #e6e3dc;
+  --accent: #2a62c9; --accent-soft: #e8eefa; --warn: #a1561b; --warn-soft: #fbf0e5;
+  --ok: #23845a; --ok-soft: #e6f4ec; --code: #f2f0ea;
+  --c0: #6b6f78; --c1: #2a72d4; --c2: #e0662f; --c3: #1fa67a; --c4: #d9a21b;
+  --c5: #c2457a; --c6: #7a5bd1; --c7: #3a9fb5;
+  --fig: #ffffff;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171b; --panel: #1c1f24; --ink: #e8e6e1; --muted: #a2a8b3; --faint: #2c3038;
+    --accent: #7aa7ff; --accent-soft: #1f2a40; --warn: #f0a868; --warn-soft: #3a2a1c;
+    --ok: #6fd3a3; --ok-soft: #173327; --code: #23262c;
+    --c0: #9aa0aa; --c1: #6ea2ff; --c2: #ff8a55; --c3: #4fd1a2; --c4: #f2c14b;
+    --c5: #f07bab; --c6: #a990ff; --c7: #6cc9de; --fig: #f4f2ee;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171b; --panel: #1c1f24; --ink: #e8e6e1; --muted: #a2a8b3; --faint: #2c3038;
+  --accent: #7aa7ff; --accent-soft: #1f2a40; --warn: #f0a868; --warn-soft: #3a2a1c;
+  --ok: #6fd3a3; --ok-soft: #173327; --code: #23262c;
+  --c0: #9aa0aa; --c1: #6ea2ff; --c2: #ff8a55; --c3: #4fd1a2; --c4: #f2c14b;
+  --c5: #f07bab; --c6: #a990ff; --c7: #6cc9de; --fig: #f4f2ee;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.62 var(--serif); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code, .mono { font-family: var(--mono); font-size: 0.86em; background: var(--code); padding: 0.08em 0.35em; border-radius: 4px; }
+pre { font-family: var(--mono); font-size: 0.84em; background: var(--code); padding: 14px 16px; border-radius: 8px; overflow-x: auto; line-height: 1.5; }
+pre code { background: none; padding: 0; }
+.wrap { display: grid; grid-template-columns: 250px minmax(0, 1fr); max-width: 1220px; margin: 0 auto; }
+nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 28px 18px 28px 22px; font: 14px/1.5 var(--sans); border-right: 1px solid var(--faint); }
+nav.toc .brand { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+nav.toc .sub { color: var(--muted); font-size: 12.5px; margin-bottom: 18px; }
+nav.toc ol { list-style: none; padding: 0; margin: 0; }
+nav.toc li a { display: block; padding: 5px 8px; border-radius: 6px; color: var(--ink); }
+nav.toc li a:hover { background: var(--accent-soft); text-decoration: none; }
+nav.toc li a .n { display: inline-block; width: 1.6em; color: var(--muted); font-variant-numeric: tabular-nums; }
+nav.toc .themebtn { margin-top: 18px; font: 12.5px var(--sans); background: none; border: 1px solid var(--faint); color: var(--muted); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+main { padding: 34px 48px 80px; min-width: 0; }
+header.hero { padding: 10px 0 26px; border-bottom: 1px solid var(--faint); margin-bottom: 10px; }
+.eyebrow { font: 600 12.5px/1 var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 700 2.3rem/1.15 var(--serif); margin: 10px 0 12px; letter-spacing: -0.01em; }
+.lede { font-size: 1.12rem; color: var(--muted); max-width: 46em; }
+.stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; font-family: var(--sans); }
+.stat { background: var(--panel); border: 1px solid var(--faint); border-radius: 10px; padding: 10px 14px; min-width: 120px; }
+.stat b { display: block; font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 12.5px; color: var(--muted); }
+section { padding-top: 34px; }
+h2 { font: 700 1.6rem/1.25 var(--serif); margin: 0 0 6px; }
+h2 .layer-no { font: 600 0.8rem var(--sans); color: var(--muted); display: block; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+h3 { font: 650 1.12rem/1.3 var(--sans); margin: 26px 0 6px; }
+p { margin: 10px 0; max-width: 46em; }
+ul, ol.body { max-width: 46em; padding-left: 1.3em; }
+li { margin: 4px 0; }
+.card { background: var(--panel); border: 1px solid var(--faint); border-radius: 12px; padding: 16px 18px; margin: 16px 0; }
+.fig { background: var(--panel); border: 1px solid var(--faint); border-radius: 12px; padding: 14px; margin: 18px 0; }
+.fig img { width: 100%; height: auto; display: block; border-radius: 6px; background: var(--fig); }
+.fig svg { width: 100%; height: auto; display: block; }
+.fig figcaption, .cap { font: 14px/1.5 var(--sans); color: var(--muted); margin-top: 8px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.callout { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 10px 10px 0; margin: 16px 0; }
+.callout.warn { border-color: var(--warn); background: var(--warn-soft); }
+.callout.ok { border-color: var(--ok); background: var(--ok-soft); }
+.callout p { margin: 4px 0; }
+.eq { font-family: var(--mono); font-size: 0.9em; background: var(--code); padding: 12px 16px; border-radius: 8px; overflow-x: auto; white-space: pre; margin: 12px 0; }
+table { border-collapse: collapse; width: 100%; font: 14.5px/1.45 var(--sans); margin: 12px 0; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--faint); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 13px; }
+.tblwrap { overflow-x: auto; }
+.badge { display: inline-block; font: 600 11.5px/1 var(--sans); padding: 4px 7px; border-radius: 999px; vertical-align: 1px; white-space: nowrap; }
+.b-thm { background: var(--ok-soft); color: var(--ok); }
+.b-ver { background: var(--accent-soft); color: var(--accent); }
+.b-obs { background: var(--warn-soft); color: var(--warn); }
+.b-open { background: var(--code); color: var(--muted); }
+.files { font: 13.5px/1.5 var(--sans); color: var(--muted); }
+/* svg styling */
+svg text { font-family: var(--sans); fill: var(--ink); }
+svg .tick { font-size: 11.5px; fill: var(--muted); }
+svg .lab { font-size: 12.5px; fill: var(--muted); }
+svg .ann { font-size: 12.5px; fill: var(--ink); }
+svg .big { font-size: 15px; font-weight: 600; fill: var(--ink); }
+svg .barlab { font-size: 11px; fill: #fff; font-weight: 600; }
+svg .grid { stroke: var(--faint); stroke-width: 1; }
+svg .axis { stroke: var(--muted); stroke-width: 1.2; fill: none; }
+svg .arrowhead { fill: var(--muted); }
+svg .ring { fill: none; stroke: var(--muted); stroke-width: 1.5; }
+svg .ln { fill: none; stroke-width: 2.4; stroke-linecap: round; }
+svg .stick { stroke: var(--c5); stroke-width: 2.6; }
+svg .layer { stroke: none; opacity: 0.18; }
+svg a:hover .layer { opacity: 0.32; }
+svg .laytxt { font-size: 14px; font-weight: 650; }
+svg .laysub { font-size: 12.5px; fill: var(--muted); }
+svg .c0 { stroke: var(--c0); fill: var(--c0); } svg .ln.c0 { fill: none; }
+svg .c1 { stroke: var(--c1); fill: var(--c1); } svg .ln.c1 { fill: none; }
+svg .c2 { stroke: var(--c2); fill: var(--c2); } svg .ln.c2 { fill: none; }
+svg .c3 { stroke: var(--c3); fill: var(--c3); } svg .ln.c3 { fill: none; }
+svg .c4 { stroke: var(--c4); fill: var(--c4); } svg .ln.c4 { fill: none; }
+svg .c5 { stroke: var(--c5); fill: var(--c5); } svg .ln.c5 { fill: none; }
+svg .c6 { stroke: var(--c6); fill: var(--c6); } svg .ln.c6 { fill: none; }
+svg .c7 { stroke: var(--c7); fill: var(--c7); } svg .ln.c7 { fill: none; }
+svg .bar { stroke: var(--panel); stroke-width: 1; }
+svg .c1t { fill: var(--c1); } svg .c2t { fill: var(--c2); } svg .c3t { fill: var(--c3); }
+svg .c4t { fill: var(--c4); } svg .c5t { fill: var(--c5); } svg .c6t { fill: var(--c6); } svg .c7t { fill: var(--c7); }
+footer { margin-top: 50px; padding-top: 18px; border-top: 1px solid var(--faint); font: 13.5px/1.5 var(--sans); color: var(--muted); }
+@media (max-width: 900px) {
+  .wrap { grid-template-columns: 1fr; }
+  nav.toc { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--faint); padding: 18px 16px; }
+  nav.toc ol { display: flex; flex-wrap: wrap; gap: 2px 6px; }
+  main { padding: 20px 16px 60px; }
+  .grid2 { grid-template-columns: 1fr; }
+  h1 { font-size: 1.8rem; }
+  body { font-size: 16px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc" aria-label="Contents">
+  <div class="brand">dssyk-thooft-lab</div>
+  <div class="sub">a walkthrough, bottom to top</div>
+  <ol>
+    <li><a href="#question"><span class="n">↳</span>The question</a></li>
+    <li><a href="#map"><span class="n">≡</span>How to read this</a></li>
+    <li><a href="#layer0"><span class="n">0</span>The yardstick</a></li>
+    <li><a href="#layer1"><span class="n">1</span>SYK at finite N</a></li>
+    <li><a href="#layer2"><span class="n">2</span>Chords at N = ∞</a></li>
+    <li><a href="#layer3"><span class="n">3</span>The singlet tower</a></li>
+    <li><a href="#layer4"><span class="n">4</span>Boost vs mass</a></li>
+    <li><a href="#layer5"><span class="n">5</span>The 't Hooft limit</a></li>
+    <li><a href="#layer6"><span class="n">6</span>The dS / OTOC axis</a></li>
+    <li><a href="#layer7"><span class="n">7</span>Where it stands</a></li>
+    <li><a href="#honesty"><span class="n">!</span>Errata &amp; scope</a></li>
+    <li><a href="#repo"><span class="n">⌘</span>Repo map &amp; reproduce</a></li>
+  </ol>
+  <button class="themebtn" id="themebtn" type="button">toggle light / dark</button>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="eyebrow">Project walkthrough · 15 October 2026</div>
+  <h1>Testing DSSYK∞ ↔ the 't Hooft model, from the ground up</h1>
+  <p class="lede">Miyashita, Sekino and Susskind propose that double-scaled SYK at infinite temperature is a hologram of a de Sitter static patch whose bulk matter is the 't Hooft model: two-dimensional QCD with mesons. Their own "best test" is that the singlet spectrum of SYK should match the 't Hooft meson tower. Nobody had run it. This repository computes both sides as exactly as it can, and says precisely what holds, what fails, and what is still missing.</p>
+  <div class="stats">
+    <div class="stat"><b>40</b><span>'t Hooft levels, 17–21 digits</span></div>
+    <div class="stat"><b>2</b><span>theorems at N = ∞</span></div>
+    <div class="stat"><b>n ≤ 8</b><span>tower levels decomposed</span></div>
+    <div class="stat"><b>696</b><span>fast tests passing</span></div>
+    <div class="stat"><b>22</b><span>errata, all public</span></div>
+  </div>
+</header>
+
+<section id="question">
+  <h2><span class="layer-no">Start here</span>The question being tested</h2>
+  <p>The proposal (<a href="https://arxiv.org/abs/2506.18054">2506.18054v3</a>, <a href="https://arxiv.org/abs/2607.05678">2607.05678</a>) is a chain of claims with different confidence levels:</p>
+  <ol class="body">
+    <li><b>Assumed</b>: DSSYK∞ is a holographic dual of a JT–de Sitter static patch.</li>
+    <li><b>Quasi-derived</b>: single disorder realizations are self-averaging, so an O(N)/U(N) symmetry emerges.</li>
+    <li><b>Argued by counting</b>: the bulk matter is the 't Hooft model (U(N) QCD₂ with one flavor, massless quark) with ḡ² = p²/N and ᾱ = p².</li>
+    <li><b>Qualitative</b>: the SYK singlet operators M<sub>n</sub> = Σ c†(dⁿ/dtⁿ)c map to the 't Hooft mesons with CP = (−1)<sup>n+1</sup>. The authors call matching these spectra "the best test of the duality".</li>
+  </ol>
+  <p>Two limits matter throughout, and confusing them is the easiest mistake to make. Chord diagrams are exact in the <b>double-scaled</b> limit (λ = 2p²/N fixed). The paper's <b>'t Hooft limit</b> fixes p instead and sends N → ∞. Both end in the same semiclassical corner.</p>
+  <figure class="fig">{{limits}}<figcaption>The two limits. Horizontal arrows: double scaling, where the N = ∞ chord results of layers 2–4 live. Vertical arrows: fixed p, where the paper's 't Hooft limit lives (layer 5). The repository uses λ = λ<sub>chord</sub> = 2p²/N, twice the paper's λ = p²/N.</figcaption></figure>
+</section>
+
+<section id="map">
+  <h2><span class="layer-no">Orientation</span>How to read this walkthrough</h2>
+  <p>The project is built in layers. Each one rests on the one below it, and each states its results with an explicit status. Click a layer to jump to it.</p>
+  <figure class="fig">{{stack}}</figure>
+  <p class="cap">Status labels used below: <span class="badge b-thm">theorem</span> proved; <span class="badge b-ver">verified</span> exact identity checked in computer algebra, not proved; <span class="badge b-obs">observation</span> a pattern, not derived; <span class="badge b-open">open</span> not done, with what it would take.</p>
+</section>
+
+<section id="layer0">
+  <h2><span class="layer-no">Layer 0 · thooft-target/</span>The yardstick: the 't Hooft meson spectrum</h2>
+  <p>A test needs a target. 't Hooft's equation for a meson's light-cone wavefunction is solved at the duality's mass point, renormalized m<sub>q</sub>² = 0 (α = 0). That is a regular, gapped theory, and not the chiral limit α = −1, a distinction that is easy to get wrong. The solver uses a Chebyshev basis that already has the exact endpoint behaviour, so the matrix elements are exact rationals and convergence is variational.</p>
+  <div class="grid2">
+    <figure class="fig"><img src="thooft-target/regge_trajectory.png" alt="Massless 't Hooft meson spectrum: 2λ_n against n, alternating CP, on the asymptote n + 3/4"><figcaption>The tower: M<sub>n</sub>²/(πg²) on a straight Regge trajectory n + ¾, CP alternating. The lightest meson has 2λ₀ = 0.737061746292689589581.</figcaption></figure>
+    <div class="card">
+      <h3 style="margin-top:0">What is checked <span class="badge b-thm">58 tests</span></h3>
+      <ul>
+        <li>40 levels to 17–21 digits, truncation error measured as K⁻⁶.</li>
+        <li>FLZ Tables 1–2 (n ≤ 29) to their last printed digit. At n = 19 the published value is itself off by 1e-12.</li>
+        <li>All sixteen FLZ sum rules, plus 7ζ(3) and 2.</li>
+        <li>The FLZ constants d₊, d₋ converged, with d₋/d₊ = √2/π to 2e-15.</li>
+        <li>An independent sine-basis solver and a Jacobi solver for α ≠ 0.</li>
+        <li>The 2d vacuum condensate ε(0) = −0.0407 N<sub>c</sub>g², now matched to a 30-digit reference to 5e-16 on every platform.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><p><b>Why this layer matters.</b> Any claimed match has to land on these numbers. The yardstick is solved, so every remaining uncertainty lies on the SYK side or in the dictionary between the two.</p></div>
+</section>
+
+<section id="layer1">
+  <h2><span class="layer-no">Layer 1 · syk-self-averaging/</span>SYK at finite N: exact identities and exact averages</h2>
+  <h3>Exact operator identities</h3>
+  <p>In the Majorana form the singlet channels are A<sub>n</sub> = Σ<sub>i</sub> ψ<sub>i</sub>(ad<sub>H</sub>)ⁿψ<sub>i</sub>. Conjugating by ψ<sub>i</sub> flips the sign of the part H<sub>i</sub> of H that contains flavor i. That gives two per-realization identities, true at any N:</p>
+  <div class="eq">A₁ = −2p H          (conserved: the "graviton" is H itself)
+A₂ = 4 Σᵢ Hᵢ²        (the first dynamical singlet)</div>
+  <p>A general mixed-word identity writes every A<sub>n</sub> the same way. It is derived, and checked against dense matrices for n ≤ 5.</p>
+  <h3>Self-averaging, exactly <span class="badge b-thm">closed form</span></h3>
+  <p>The paper estimates symmetry violation from two diagrams. Here the variances are computed exactly by Wick contraction, with no sampling:</p>
+  <div class="eq">Var(Bⱼₖ) = 4σ⁴ C(N−2, p−1),      relVar(Tr H²/dim) = 2 / C(N,p)</div>
+  <figure class="fig"><img src="syk-self-averaging/self_averaging.png" alt="Left: relative variance of the singlet m2 against N, power law at fixed p, super-exponential on the double-scaling line. Right: RMS of the adjoint bilinear against sqrt N, exact curves through ED points."><figcaption>Left: along p = √N the singlet fluctuation dies super-exponentially, beating the paper's e<sup>−a√N</sup> for every a. At fixed p it is only a power law, N<sup>−p</sup>. Right: exact curves, no fit, through ED points. The symmetry emerges most slowly in the fixed-p regime, which is exactly where the 't Hooft comparison is made.</figcaption></figure>
+  <h3>An exact moment engine, no diagonalization</h3>
+  <p>Disorder-averaged traces reduce to sums over how random p-subsets overlap, evaluated in exact rational arithmetic at any N. At fixed p the A₂ channel's mean-square frequency is an exact law, certified out of sample at p = 8, 10, 12:</p>
+  <div class="eq">⟨ω²⟩_A₂  →  8p(p − 2) J²      (fixed p, N → ∞)</div>
+</section>
+
+<section id="layer2">
+  <h2><span class="layer-no">Layer 2 · duality/chord*.py</span>Chords: the exact N = ∞ machinery</h2>
+  <p>In the double-scaled limit every moment is a sum over chord diagrams. Each crossing costs a power of q = e<sup>−λ</sup>. An operator of "dimension" Δ is a matter chord whose crossings cost q<sup>Δ</sup>. Everything at N = ∞ in this repo is computed this way, exactly.</p>
+  <figure class="fig">{{chord}}</figure>
+
+  <h3>Theorem 1: the flavor-pair part is frozen <span class="badge b-thm">theorem</span></h3>
+  <p>The i ≠ j part of every A<sub>n</sub> channel has a chord image that is a polynomial in the chord Hamiltonian. A three-term recursion forces this. So every spectral moment of that part vanishes, at every λ, every n and every matter weight. <a href="notes/conserved-channel-note/main.tex">LaTeX manuscript</a>.</p>
+  <div class="callout warn"><p>This was once over-read as "the tower is invisible at N = ∞" (<a href="ERRATA.md">ERRATA</a> E1). It is not: the flavor-diagonal part carries weight of the same order. That led to theorem 2.</p></div>
+
+  <h3>Theorem 2: the full A₂ channel <span class="badge b-thm">theorem</span></h3>
+  <p>Sum over flavors first. Then A₂ is the word H² with its two monomials weighted by how many indices they share, which is Poisson(λ/2) at N = ∞. A sign-reversing involution on chord diagrams gives, exactly:</p>
+  <div class="eq">A₂ − ⟨A₂⟩ = [2λ(1−q)/(1+q)] (H² − 1)  +  ν O₂,       ν² = 8λ(1 − q² + 2λq)/(1+q)
+
+μ₀ = 4λ²(1−q)²/(1+q)   [conserved]   +   ν²   [dynamical]
+μ₂ / ν² = 2(1 − q²)                     (a dimension-2 matter chord)</div>
+  <p>At λ = 2, 32.9% of the weight is conserved and the dynamical width is 1.963369. Two checks that don't use the proof agree. Exact finite-N rational moments extrapolate to 1.96336. Dense ED with the whole commutant of H projected out gives 2.03, 2.03, 2.01 against 2.00.</p>
+  <figure class="fig"><img src="duality/chord_summary.png" alt="Four panels: N = infinity spectra approach the semiclassical transform; de Sitter length growth; the fold; finite-N ED against the exact N = infinity channel."><figcaption>The chord engine at work: (a) N = ∞ spectra approaching the semiclassical sech<sup>2Δ</sup> transform; (b) de Sitter length growth; (c) the Euclidean fold breaking the 1/N hierarchy; (d) finite-N ED approaching the exact N = ∞ channel from below.</figcaption></figure>
+</section>
+
+<section id="layer3">
+  <h2><span class="layer-no">Layer 3 · duality/singlet_tower.py</span>The singlet tower, level by level</h2>
+  <p>Above n = 2 the same construction runs level by level. Each A<sub>n</sub> is assembled from blocks Ω<sub>k</sub> = Σ<sub>i</sub>H<sub>i</sub>H<sup>k</sup>H<sub>i</sub>. Each block is solved into matter chords from its cross-correlators with the lower blocks, and every remaining two-point word is then a check.</p>
+  <div class="eq">A_n  =  (polynomial in H)  +  Σ_{m=2..n}  F_{n,m}(H_L, H_R) · O_m          one new chord O_n per level</div>
+  <p><span class="badge b-ver">verified</span> for n = 3…8, with zero residual in exact rational arithmetic at three generic points (176 and 257 checked words per point at n = 7, 8). Only n = 2 is <span class="badge b-thm">proved</span>.</p>
+
+  <figure class="fig">{{shares}}<figcaption>What each level is made of at λ = 2. The new chord at each level is faint, falling about tenfold per level: 14.9%, 1.6%, 0.18%, 0.018%, 0.0017%, 0.00015%.</figcaption></figure>
+
+  <h3>Three patterns, predicted and then tested</h3>
+  <p>Levels 3–6 suggested three regularities. Levels 7 and 8 were computed afterwards to test them, using a parallel builder for the 16- and 18-node diagram tables. All three held:</p>
+  <div class="tblwrap"><table>
+    <tr><th>pattern (from n ≤ 6)</th><th>prediction for n = 7, 8</th><th>result</th></tr>
+    <tr><td>subleading coefficient (q + … + q<sup>k</sup>)/(1 + q<sup>k+1</sup>)</td><td>holds at k = 5, 6</td><td>exact at all three test points ✓</td></tr>
+    <tr><td>norm of the new chord ∝ λ<sup>2⌊n/2⌋</sup></td><td>λ⁶ at n = 7, λ⁸ at n = 8</td><td>norm/λ⁶ and norm/λ⁸ converge to finite limits ✓</td></tr>
+    <tr><td>as λ → 0 even chords fade, odd chords survive</td><td>O₇ survives, O₈ fades</td><td>O₇ settles near 0.006% of A₇ and 0.014% of A₈; O₈ falls ∝ λ ✓</td></tr>
+  </table></div>
+  <figure class="fig">{{survival}}<figcaption>Inside A₈ as λ → 0 (log–log, exact arithmetic down to λ = 1/1280). Dashed even chords fall in proportion to λ; solid odd chords level off. O₃ ends at 97.8%, O₅ at 2.0%, O₇ at 0.014%.</figcaption></figure>
+  <div class="callout"><p><b>Why it is interesting.</b> The dimensions that survive the semiclassical limit are <b>2, 3, 5, 7</b>, the same pattern as the large-p SYK bilinear spectrum h = 2, 3, 5, 7, … (Maldacena–Stanford). <span class="badge b-obs">observation</span> on six levels. It has not been derived, and the infinite-temperature-to-conformal map that would turn it into a result hasn't been built.</p></div>
+  <figure class="fig"><img src="duality/singlet_tower.png" alt="Four panels: A2 width with the conserved part removed, exact dynamical spectral densities, sector composition, and the finite-N check of the remainder rule."><figcaption>(a) With the conserved H² removed the width is 2(1 − q²) at every λ; the raw ratio is that width diluted. (b) The exact spectral densities: smooth continua, no lines, no nodes. (c) Composition at λ = 2 (n ≤ 6 in the committed figure). (d) Exact finite N picks the correct remainder rule (155.03 against 150.65).</figcaption></figure>
+</section>
+
+<section id="layer4">
+  <h2><span class="layer-no">Layer 4 · duality/BOOST.md, HORIZON.md</span>Boost frequency is not mass: the Rindler calibration</h2>
+  <p>The SYK Hamiltonian generates <i>boosts</i>, not time translations of a rest frame. Even a single particle of fixed mass has a continuous boost-frequency spectrum, with mass-encoding nodes rather than a peak. Layer 3's continua therefore can't be read as masses directly. They need a calibration, and the exactly solvable one is a free field near a Rindler horizon.</p>
+  <div class="grid2">
+    <figure class="fig">{{ladder}}<figcaption>As λ → 0 each chord of dimension Δ becomes the quasinormal ladder |Γ(Δ + iω/a)|², a = 2𝒥: a smooth density whose poles sit at ω = −ia(Δ + k).</figcaption></figure>
+    <div class="card">
+      <h3 style="margin-top:0">The calibration table</h3>
+      <div class="tblwrap"><table>
+        <tr><th>bulk content</th><th>boost-frequency density</th></tr>
+        <tr><td>one field of mass M</td><td>K<sub>iω/a</sub>(M/a)²/(πa): entire, no poles</td></tr>
+        <tr><td>any gapped mass spectrum</td><td>entire, no poles</td></tr>
+        <tr><td>density ∝ M<sup>2Δ−1</sup>, gapless</td><td>∝ |Γ(Δ + iω/a)|²: a ladder</td></tr>
+      </table></div>
+      <p class="cap">The last row is the Mellin transform of K²<sub>ν</sub>. The map from mass density to boost density is invertible, so a ladder <i>is</i> a gapless, scale-invariant mass spectrum.</p>
+    </div>
+  </div>
+  <figure class="fig">{{masses}}<figcaption>What the two sides look like as mass spectra (schematic heights; 't Hooft masses in units of √(πg²)). The N = ∞ singlet channels give smooth power-law densities from M = 0, while the 't Hooft model gives a gapped set of lines.</figcaption></figure>
+  <div class="callout warn"><p><b>The result.</b> At N = ∞ and small λ, the Majorana singlet channels have a gapless, scale-invariant Rindler mass spectrum (Δ = 2, 3, 5, 7 through n = 8) at the string-scale spacing a = 2√2 J<sub>MSS</sub>, with no gap and no discrete masses. So the paper's small-λ prediction cannot be met by these N = ∞ two-point functions. It has to come from 1/N corrections, the Dirac channels, other operators, or a non-local dictionary. This fits the paper's own picture of a hot, deconfined stretched horizon.</p></div>
+</section>
+
+<section id="layer5">
+  <h2><span class="layer-no">Layer 5 · syk-self-averaging/thooft_limit.py</span>The paper's own limit: fixed p, by shape</h2>
+  <p>MSS compare with the 't Hooft model at fixed ᾱ = p² ("since that's where the calculations are done"). The exact finite-N laws can be taken to that limit directly, and they give the channels' moments at every p, with no extrapolation:</p>
+  <div class="eq">A₂:  ⟨ω²⟩ = 8p(p − 2)            kurtosis = 7/2 − 1/(2(p − 2))
+A₃:  ⟨ω⁴⟩/⟨ω²⟩ = 4p(10p − 21)    (fit on p = 4, 6, 8; then exact at p = 10, 12)</div>
+  <figure class="fig">{{fixedp}}<figcaption>Each law divided by its λ → 0 ladder value. Dots are exact computations at p = 4…12; dashed lines are the closed forms. The A₂ width (1 − 2/p) and the A₃ ratio (1 − 2.1/p) nearly coincide. All tend to 1, the expected large-p ↔ small-λ consistency. At the p where a comparison would be made the corrections are large: half the ladder width at p = 4, and A₃ sits below even the Δ = 2 value until p &gt; 7.</figcaption></figure>
+  <p class="cap">Moments do not fix analytic structure, so none of this decides whether the finite-p spectrum is gapped. That question belongs to layer 7.</p>
+</section>
+
+<section id="layer6">
+  <h2><span class="layer-no">Layer 6 · duality/ANTISCRAMBLING.md</span>The de Sitter axis: which way do OTOCs grow?</h2>
+  <p>De Sitter shockwaves advance rather than delay, so a dS observer's out-of-time-order correlator should "anti-scramble" (Cui–Kolchmeyer). Harlow–Zhao proposed a mechanism, a Euclidean fold, and explicitly asked for a test in SYK. This repository ran it:</p>
+  <ul>
+    <li><b>DSSYK∞ scrambles at every temperature</b>: the growth coefficient a(v) = −1/cos(πv/2) is negative throughout.</li>
+    <li><b>The fold fails</b> at ED sizes and at N = ∞, in the windows checked. It breaks the 1/N hierarchy rather than flipping the sign. This is not a universal no-go.</li>
+    <li><b>A half-fake-period antipodal shift flips the sign</b> semiclassically for λ ≲ 1.7, with two-point thermality at β + β<sub>fake</sub> to about 1e-12. The anti-scrambling window is transient.</li>
+  </ul>
+  <figure class="fig"><img src="duality/signflip_summary.png" alt="Four panels on the antipodal sign flip: closed form, exact theory against lambda, the anti-scrambling window, and thermality residuals."><figcaption>The antipodal frame: (a) the closed-form flip; (b) on for λ ≲ 1.7 in exact theory; (c) a window that shrinks from 1.10 to 0.52 (t·J<sub>c</sub>) as λ grows; (d) thermality residuals at machine precision.</figcaption></figure>
+</section>
+
+<section id="layer7">
+  <h2><span class="layer-no">Layer 7 · road_map.md</span>Where the project stands</h2>
+  <div class="tblwrap"><table>
+    <tr><th>result</th><th>status</th></tr>
+    <tr><td>'t Hooft target: 40 levels, every published table and sum rule</td><td><span class="badge b-thm">solved</span></td></tr>
+    <tr><td>Exact self-averaging variances; fixed-p moment laws</td><td><span class="badge b-thm">closed form</span></td></tr>
+    <tr><td>Pair channel frozen at N = ∞ (all n, λ, matter weight)</td><td><span class="badge b-thm">theorem</span></td></tr>
+    <tr><td>Full A₂ = conserved H² + a Δ = 2 chord</td><td><span class="badge b-thm">theorem</span></td></tr>
+    <tr><td>A₃…A₈ = polynomial in H + chords of dimension 2…n</td><td><span class="badge b-ver">verified</span></td></tr>
+    <tr><td>Surviving dimensions 2, 3, 5, 7 ↔ large-p h = 2, 3, 5, 7</td><td><span class="badge b-obs">observation</span></td></tr>
+    <tr><td>N = ∞ Rindler mass spectrum gapless, no discrete masses (Majorana)</td><td><span class="badge b-thm">follows from the above</span></td></tr>
+    <tr><td>Fixed-p shape laws approach the ladders, with large corrections</td><td><span class="badge b-ver">exact, fit + held-out checks</span></td></tr>
+    <tr><td>DSSYK∞ scrambles; fold fails where checked; antipodal flip is transient</td><td><span class="badge b-ver">measured</span></td></tr>
+  </table></div>
+  <h3>What would move it forward (all need new theory)</h3>
+  <ol class="body">
+    <li><b>1/N corrections to the chord density.</b> Do they open a gap or create discrete masses? This is the decisive question, and moments can't answer it; it needs chord rules beyond double scaling. The exact finite-N laws here would test any derivation. <span class="badge b-open">open</span></li>
+    <li><b>The Dirac channels and CP.</b> These are the paper's actual operators. The occupation factor 1 − n<sub>i</sub> needs its own chord rule; once it exists, layers 2–5 rerun on it. <span class="badge b-open">open</span></li>
+    <li><b>A general-n proof</b> of the decomposition, the λ<sup>2⌊n/2⌋</sup> law and the odd survival, perhaps by extending the n = 2 involution bundle by bundle. <span class="badge b-open">open</span></li>
+    <li><b>The 2, 3, 5, 7 test</b>: map infinite-temperature chord weights to low-temperature OPE data (Gross–Rosenhaus). <span class="badge b-open">open</span></li>
+    <li><b>The dictionary itself</b>: which state, time and operator map the authors intend. That one answer decides which of the above matters. <span class="badge b-open">open</span></li>
+  </ol>
+  <p class="cap">Compute-only items remain (A₄ shapes at fixed p, level 9 at about 20× the n = 8 cost, a recorded day-long <code>reproduce-slow</code> run), but each now adds little.</p>
+</section>
+
+<section id="honesty">
+  <h2><span class="layer-no">Discipline</span>Errata and scope</h2>
+  <p>Every withdrawn or corrected claim is kept in <a href="ERRATA.md">ERRATA.md</a>, 22 so far, each with what replaced it. The most instructive:</p>
+  <ul>
+    <li><b>E1</b>: "the tower is invisible at N = ∞" became the pair theorem plus a full channel that does propagate.</li>
+    <li><b>E4</b>: "the tower turns on toward the corner" turned out to be the rising side of a peak seen through an N ≤ 20 window.</li>
+    <li><b>E21</b>: "no massive component" became "a gapless mass spectrum", the precise statement.</li>
+    <li><b>E22</b>: a misplaced position claim about the A₃ law, caught on review.</li>
+  </ul>
+  <div class="callout"><p><b>Scope that applies everywhere.</b> The N = ∞ tower results are for the Majorana form A<sub>n</sub>, not the paper's Dirac M<sub>n</sub>. The Rindler reading assumes a free-field calibration at a fixed distance from the horizon, with a = 2𝒥 as a natural identification rather than one the proposal supplies. No meson mass match is claimed, and no no-go theorem either.</p></div>
+</section>
+
+<section id="repo">
+  <h2><span class="layer-no">Practical</span>Repository map and how to reproduce</h2>
+  <div class="tblwrap"><table>
+    <tr><th>folder</th><th>what lives there</th><th>start with</th></tr>
+    <tr><td><code>thooft-target/</code></td><td>the yardstick: solvers, reference spectrum, condensate</td><td><a href="thooft-target/README.md">README</a></td></tr>
+    <tr><td><code>syk-self-averaging/</code></td><td>ED, exact Wick statistics, exact finite-N laws, fixed-p limit</td><td><a href="syk-self-averaging/README.md">README</a></td></tr>
+    <tr><td><code>duality/</code></td><td>chord engines, tower decomposition, horizon, boost calibration, OTOCs</td><td><a href="duality/CHORD.md">CHORD.md</a>, <a href="duality/HORIZON.md">HORIZON.md</a></td></tr>
+    <tr><td><code>notes/</code></td><td>technical note, singlet-tower note, two LaTeX manuscripts</td><td><a href="notes/author-facing-note.md">author-facing note</a></td></tr>
+    <tr><td><code>scripts/</code></td><td>the logged snapshot runner</td><td><a href="REPRODUCIBILITY.md">REPRODUCIBILITY.md</a></td></tr>
+    <tr><td><code>papers/</code></td><td>index and fetch script for every cited paper (PDFs not distributed)</td><td><a href="papers/README.md">papers/README.md</a></td></tr>
+  </table></div>
+  <pre><code>python3 -m venv .venv &amp;&amp; . .venv/bin/activate
+python -m pip install -e '.[dev]'
+make test                                  # 696 fast tests, ~3 min
+make reproduce                             # fast producers + figures, minutes
+python scripts/validate.py reproduce-slow  # every campaign, logged; about a day — run overnight
+cd duality &amp;&amp; python singlet_tower.py --deep 5 6   # levels n = 7, 8 (~25 min on 6 cores)</code></pre>
+  <p class="files">Main documents: <a href="README.md">README.md</a> · <a href="road_map.md">road_map.md</a> · <a href="notes/singlet-tower-note.md">singlet-tower-note.md</a> · <a href="duality/BOOST.md">BOOST.md</a> · <a href="duality/ANTISCRAMBLING.md">ANTISCRAMBLING.md</a> · <a href="ERRATA.md">ERRATA.md</a></p>
+</section>
+
+<footer>
+  Generated 15 October 2026 from the committed data (<code>singlet_tower_deep.json</code>, <code>thooft_limit.json</code>, <code>reference_spectrum_polished.json</code>); the inline charts are drawn from those files, and the PNG figures are the repository's own. Code and documentation MIT-licensed; third-party papers are not distributed.
+</footer>
+</main>
+</div>
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById('themebtn');
+  try { var t = localStorage.getItem('walk-theme'); if (t) root.setAttribute('data-theme', t); } catch (e) {}
+  btn.addEventListener('click', function () {
+    var dark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var next = dark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('walk-theme', next); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>
