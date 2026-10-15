@@ -2,7 +2,7 @@
 
 Pinned here: the sign structure, which is a flipped positive component
 plus a smaller unflipped negative one wherever the flip operates; the
-REFUTATION of the harmonic-tower mechanism, where kappa_2/kappa_1 is far
+the harmonic-tower test on the physical half-circle, where kappa_2/kappa_1 is far
 from 2 and the harmonic weights are comparable; and the recorded fit
 degeneracies.
 """
@@ -43,39 +43,32 @@ def test_lambda06_fit_degeneracy_recorded(data):
     assert not (con["A1"] > 0 > con["A2"]) or abs(con["A1"]) > 10
 
 
-def test_harmonic_tower_refuted(data):
-    """The even-harmonic mechanism predicts TWO things: a rate
-    kappa_2 = 2 kappa_1, and a second harmonic that is subdominant.  The
-    weights refute it outright.
-
-    The refutation leads with the weight comparison because that is the
-    robust half: |c_2| / |c_1| ~ 1 at both ends of every window, so there
-    is no harmonic hierarchy at all.  A tower would need |c_2| << |c_1|.
-    """
+def test_second_harmonic_subdominant_not_a_clean_tower(data):
+    """The even-harmonic mechanism predicts kappa_2 = 2 kappa_1 with
+    |A_2| << |A_1|.  On the physical half-circle the second harmonic is
+    subdominant (|A_2/A_1| ~ 0.3-0.6, model-dependent) and grows faster
+    than the first, kappa_2/kappa_1 ~ 1.2-1.5: between the tower's 2 and
+    the ~1 that the withdrawn full-circle DFT reported.  Neither refuted
+    nor established; the model dependence (two vs three harmonics) and
+    the 5-10% residuals are recorded, and the fit is re-run live at one
+    lambda."""
+    import numpy as np
+    from antipodal_modes import harmonics
     for h in data["harmonics"]:
-        for key in ("c2_over_c1_first", "c2_over_c1_last"):
-            assert 0.5 < h[key] < 2.0, (h["lam"], key, h[key])
-
-
-def test_harmonic_rate_ratio_is_contaminated_not_evidence(data):
-    """The companion rate comparison kappa_2/kappa_1 is NOT a growth-rate
-    measurement, and this test records why rather than quoting it as one.
-
-    The kappa_1 > 0.05 gate does not guarantee a measurable growth window:
-    on every row that passes it, |c_1| is non-monotone across the window
-    (lambda = 1.0: 16.7, 59.9, 80.6, 65.3; lambda = 0.6: 965, 1570, 501,
-    1230), so the fitted kappa are window averages over a rising-then-
-    falling curve.  The ratios do come out near 1 rather than 2, which is
-    consistent with the refutation, but the weight comparison above is
-    what carries it."""
-    gated = [h for h in data["harmonics"] if h["kappa_1"] > 0.05]
-    assert gated, "no row passes the rate gate"
-    for h in gated:
-        c1 = h["abs_c1"]
-        rising = all(b > a for a, b in zip(c1, c1[1:]))
-        assert not rising, (h["lam"], c1)      # the contamination, pinned
-        ratio = h["kappa_2"] / h["kappa_1"]
-        assert 0.5 < ratio < 1.6, (h["lam"], ratio)   # near 1, not 2
+        assert h["deltas"][-1] < h["pole_delta"]          # physical half only
+        for nh, m in h["models"].items():
+            assert 0.2 < min(m["A2_over_A1"]) and max(m["A2_over_A1"]) < 0.7
+            assert 1.1 < m["kappa2_over_kappa1"] < 1.7, (h["lam"], nh, m["kappa2_over_kappa1"])
+            assert max(m["resid_over_range"]) < 0.12
+            assert m["kappa_1"] > 0 and m["kappa_2"] > m["kappa_1"]
+        lo, hi = h["kappa2_over_kappa1_range"]
+        assert lo < 2.0 and hi < 2.0                         # not a clean tower
+    row = next(h for h in data["harmonics"] if h["lam"] == 1.0)
+    live = harmonics(1.0)
+    assert np.allclose(live["R"], row["R"], rtol=1e-9, atol=1e-12)
+    for nh in ("2", "3"):
+        assert live["models"][nh]["kappa2_over_kappa1"] == pytest.approx(
+            row["models"][nh]["kappa2_over_kappa1"], rel=1e-9)
 
 
 def test_censored_fits_are_flagged_and_stay_flagged(data):
@@ -103,13 +96,13 @@ def test_harmonics_reproduces_its_committed_row(data):
     """Execute the producer, do not just read its output.
 
     Every other test here reads antipodal_modes.json, so a regression in
-    the shift-circle DFT (the primary, fitting-free experiment behind the
-    harmonic-tower refutation) would keep the suite green until someone
+    the half-circle harmonic fit (the primary experiment behind the
+    harmonic-tower verdict) would keep the suite green until someone
     regenerated the data.  The engine is deterministic; one committed
     harmonics row reproduces (~2.5 s).
 
     TOLERANCE.  The chain is a chord transfer-matrix build, a complex
-    contour evaluation, then a DFT.  It is deterministic on one machine,
+    contour evaluation, then a least-squares fit.  It is deterministic on one machine,
     but the last two digits move between platforms (different libm and
     BLAS): the measured macOS-arm64 against linux-x86-64 spread on this
     row is 1.2e-12 relative.  So rel=1e-9, three orders above that spread
@@ -120,9 +113,12 @@ def test_harmonics_reproduces_its_committed_row(data):
 
     want = max(data["harmonics"], key=lambda h: h["lam"])
     got = antipodal_modes.harmonics(want["lam"], betaJ=want["betaJ"],
-                                    M=want["M"], thLs=tuple(want["thLs"]))
-    for key in ("abs_c0", "abs_c1", "abs_c2", "abs_c3"):
-        assert got[key] == pytest.approx(want[key], rel=1e-9, abs=1e-12)
-    for key in ("kappa_1", "kappa_2", "kappa_3",
-                "c2_over_c1_last", "c2_over_c1_first"):
-        assert got[key] == pytest.approx(want[key], rel=1e-9, abs=1e-12)
+                                    n_delta=want["n_delta"],
+                                    thLs=tuple(want["thLs"]))
+    for gr, wr in zip(got["R"], want["R"]):
+        assert gr == pytest.approx(wr, rel=1e-9, abs=1e-12)
+    for nh in want["models"]:
+        for key in ("abs_A0", "abs_A1", "abs_A2", "A2_over_A1",
+                    "kappa_1", "kappa_2", "kappa2_over_kappa1"):
+            assert got["models"][nh][key] == pytest.approx(
+                want["models"][nh][key], rel=1e-9, abs=1e-12), (nh, key)

@@ -139,11 +139,27 @@ def test_antipodal_frame_thermal_at_tomperature(data):
 
 
 def test_phase_period_set_by_v_not_kappa(data):
-    """The measured magnitude growth kappa exceeds the large-q v, yet the
-    flip works with Delta = pi/v and fails with pi/kappa where it works at
-    all -- and both fail at strong coupling."""
+    """The flip works with Delta = pi/v and fails with pi/kappa_eff where
+    it works at all -- and both fail at strong coupling.  kappa_eff is a
+    window-dependent effective exponent: the same estimator on the large-q
+    closed form gives 0.94 > v on the same window, and the exact-chord
+    value sits below that (ratio 0.85-0.95), so kappa_eff > v is NOT a
+    rate decoupling.  The calibration is recomputed live for one row."""
+    import math
+    from antiscrambling import otoc_ratio
+    from signflip_probe import CONFIG_CROSSED
     for r in data["calibrated"]:
         assert r["kappa"] > r["v_largeq"]
+        assert r["kappa_closed_same_window"] > r["kappa"] > r["v_largeq"]
+        assert 0.8 < r["kappa_over_closed"] < 1.0
+    r = data["calibrated"][0]
+    t1, t2, t3, t4 = CONFIG_CROSSED
+    rs = [otoc_ratio(t1 + 1j * t, t2 + 1j * t, t3, t4, r["v_largeq"]).real
+          for t in (0.5, 1.0, 1.5, 2.0)]
+    d1, d2, d3 = rs[1] - rs[0], rs[2] - rs[1], rs[3] - rs[2]
+    kc = 0.5 * (math.log(abs(d2 / d1)) + math.log(abs(d3 / d2))) / 0.5
+    assert kc == pytest.approx(r["kappa_closed_same_window"], rel=1e-9)
+    for r in data["calibrated"]:
         if r["lam"] >= 2.0:
             assert r["largeq"]["direction"] == "down"
             assert r["calibrated"]["direction"] == "down"

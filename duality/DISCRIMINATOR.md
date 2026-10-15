@@ -79,7 +79,7 @@ dS3 reinterpretation, not to the black-hole reading.
 
 ## A candidate map that works, semiclassically
 
-*Code: `signflip_probe.py`. Data: `signflip_probe.json`. Seven tests in
+*Code: `signflip_probe.py`. Data: `signflip_probe.json`. Nine tests in
 `test_signflip.py`.*
 
 One shift does flip the sign. Displace the probe pair by **half the fake
@@ -116,11 +116,19 @@ One map, both of Cui–Kolchmeyer's dS-observer signatures.
 anti-scrambling for λ ≤ 1.7, and not for λ ≥ 1.8, in this configuration
 and window. The unshifted control scrambles at every λ.
 
-**The phase period is set by v, not by the growth rate.** The measured
-magnitude exponent is κ ≈ 0.83–0.87, well above v ≈ 0.47. Yet the flip
-works with Δ = π/v and fails with Δ = π/κ everywhere. Phase and magnitude
-rates of the growing mode decouple at finite λ. That is why no rate
-recalibration rescues strong coupling.
+**The phase period is set by v, not by an effective growth rate.** A
+three-point log-difference on the θ_L ≤ 2 window gives an effective
+exponent κ_eff ≈ 0.83–0.88 for the exact chord OTOC. The same estimator
+on the large-q closed form itself gives 0.94 on that window, and reaches
+v ≈ 0.47 only for θ_L ≳ 6, because the cosh(vθ_L) growing/decaying pair
+contaminates early differences. So κ_eff > v is an early-window artifact,
+not a rate decoupling (the exact values sit below the closed form's own
+early-window value, ratio 0.88–0.93), and an earlier version of this
+note that read it as "phase and magnitude rates decouple" is corrected.
+What stands: the flip works with Δ = π/v and fails with Δ = π/κ_eff
+everywhere, and π/κ_eff ≈ 3.8 lands near π/(2v) = 3.3, where the
+rotation law puts Re a = 0. No rate recalibration rescues strong
+coupling.
 
 **Honesty.** A sign flip plus effective thermality under a contour shift
 are *necessary* conditions for this map. They are not a dictionary. The
@@ -136,9 +144,13 @@ probes run at the actual hologram point, β = 0.*
 
 **A semiclassical dS epoch, not eternal dS.** The antipodal frame
 anti-scrambles in a transient window. The window grows as λ falls:
-t·Jc ≈ 0.57 → 1.14 over λ = 1.0 → 0.3, consistent with ~½ ln(1/λ).
-Scrambling comes back afterward. The unshifted control scrambles from the
-start at every λ.
+t·Jc ≈ 0.52 → 1.10 over λ = 1.0 → 0.3 (the maximum of the antipodal
+curve, located by interpolation on a grid that now runs past every
+window; the earlier 0.57 → 1.14 were grid points, one of them censored).
+The growth is monotone in ln(1/λ) but not a fixed ½ ln(1/λ): the
+pairwise slopes are 0.66, 0.38, 0.34, falling as λ falls, against a
+quantization of ±0.07–0.14. Scrambling comes back afterward. The
+unshifted control scrambles from the start at every λ.
 
 **The MSS evasion is located.** The growth coefficient's phase winds
 around the fake circle while its magnitude stays constant. There is no
@@ -147,26 +159,41 @@ the chaos-bound proof requires. The frame's thermality is detailed
 balance, not strip-analytic KMS. That is how c < 0 coexists with the
 theorem.
 
-**The costs, measured.** The shifted contour is fold-adjacent. Its
-correlator shapes are spectral-edge-dominated: |G(0)| > 1, and growing
-along the shift. The shapes match neither the continued-sech form nor a
-Gibbs form, and the deviations grow toward semiclassics, which is the
-fold pattern. They show no fake-period recurrence. What survives edge
-domination is exactly the ratio identities: detailed balance, which is
-exact, and the trend-level flip.
+**The shapes, measured.** The shifted 2-pt is the T = ∞ correlator
+continued to the complex time z = τ_s + it, so its large-q form is
+|1/cos(𝒥z)|^(2Δ): sech in real time, the fake-period growth 1/cos(𝒥τ)
+in Euclidean time, singular at the antipodal point itself. For t > 0 the
+exact chord 2-pt *is* that form, with a deviation that shrinks toward
+semiclassics (0.46 → 0.18 over λ = 2 → 0.25 at t ≥ 0.25/𝒥), and the
+Euclidean 2-pt tracks the fake-period growth the same way (0.49 → 0.26).
+At t = 0 the exact value is finite, |G(0)| > 1: the bounded chord
+spectrum cuts off the sec(π/2) singularity, an edge effect, not a fold
+pathology. The naive Gibbs guess, the observer thermal at β𝒥 = π in the
+ordinary finite-temperature form, fails and fails worse toward
+semiclassics (0.42 → 1.03). So the tomperature thermality is the exact
+detailed-balance identity of the shifted sector, not a Gibbs state. An
+earlier version of this note continued the real-time form with t and
+τ_s swapped and read the resulting mismatch as "shapes fail worse toward
+semiclassics"; that instrument was wrong, and the negative is withdrawn.
 
-**Rate extraction is contaminated, and `antipodal_modes.py` tests why.**
-The natural mechanism is the unflippable *even* scramblon harmonic, at
-rate 2κ, ending the epoch. That mechanism is **refuted** where it is
-testable. On the rows with a measurable growth window (κ₁ > 0.05) the
-shift-circle Fourier analysis gives κ₂/κ₁ ≈ 0.9–1.2, not 2, with
-comparable harmonic weights. The λ = 1.5 row has both rates negative, so
-there is no growth to compare, and that gate excludes it. The exact
-shift-response has continuous band content, not v-harmonics. The harmonic
-tower is only the λ → 0 skeleton. This is the same phase/magnitude
-decoupling seen above. What survives is a flipped positive component plus
-a smaller unflipped negative one, wherever the flip operates. The dS-rate
-question stays open, now with its obstruction understood.
+**The end of the epoch, and `antipodal_modes.py`.** The natural
+mechanism is the unflippable *even* scramblon harmonic, at rate 2κ,
+ending the epoch. On the physical half of the fake circle,
+Δ ∈ [0, π/v], a least-squares harmonic fit finds a second harmonic that
+is subdominant, |A₂/A₁| ≈ 0.3–0.6, and grows faster than the first,
+κ₂/κ₁ ≈ 1.2–1.5 at λ = 1.5, 1.0, 0.6. The numbers depend on the model
+(two against three harmonics) at the 10% level and the fits leave 5–10%
+residuals: the response is not a clean sum of a few v-harmonics. So the
+mechanism is neither refuted nor established; a faster-growing
+unflippable component is there, at a rate between 1 and 2 times the
+first harmonic's. An earlier version of this note reported the
+mechanism refuted (κ₂/κ₁ ≈ 1, comparable weights) from a DFT over the
+full fake circle; the samples past the 2-pt pole at Δ = π/2 + π/v were
+two orders of magnitude larger than the physical ones and dominated
+every DFT bin, so that instrument measured a spike, and the refutation
+is withdrawn. What survives the two-mode fit is a flipped positive
+component plus a smaller unflipped negative one, wherever the flip
+operates. The dS-rate question stays open.
 
 **Net.** The mechanism is real and semiclassical. It is an
 anti-scrambling epoch with exact effective detailed balance, at

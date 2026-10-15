@@ -82,7 +82,8 @@ re-derives β_fake_c = β_c/v and β_eff = β_c(1 + 1/v) from the bridge. The
 per-line law holds at float precision, and the independent
 contour-engine check holds at ≤ 2e-13 on every stored row (≤ 8e-15 on
 the λ = 2 rows). At the hologram point
-(βJ = 0.02) the gap between β_eff and β_fake is exactly v ≈ 0.006. The
+(βJ = 0.02) the relative gap (β_eff − β_fake)/β_fake is exactly
+v ≈ 0.006, the absolute gap being β_c itself. The
 dressed frame is thermal at the tomperature. That is NV's Eq. 69 with
 β_dS ↔ β_fake.
 
@@ -133,18 +134,20 @@ coefficient. Then everything in `signflip_probe.json` and
 `signflip_deep.json` transfers to NV's dressed operators verbatim.
 
 - **Their dressed OTOC anti-scrambles semiclassically.** A transient
-  epoch with the dS-observer sign, window growing like ~½ ln(1/λ)
-  (t·Jc ≈ 0.57 → 1.14 over λ = 1.0 → 0.3), and scrambling coming back
-  afterward. Not eternal dS.
+  epoch with the dS-observer sign, its window growing monotonically with
+  ln(1/λ) (t·Jc ≈ 0.52 → 1.10 over λ = 1.0 → 0.3, sub-logarithmic at the
+  small-λ end), and scrambling coming back afterward. Not eternal dS.
 - **Their KMS engineering evades the chaos bound by the measured
   mechanism.** The coefficient's phase winds around the fake circle at
   constant magnitude. So there is no operator placement with the
   definite-sign strip structure the MSS proof requires (`mss_strip` in
   `signflip_deep.json`). The frame's thermality is detailed balance, not
   strip-analytic KMS. The evasion is consistent, because the bound's
-  hypothesis fails. But it also means the frame is not a Gibbs-like
-  state, and its correlators inherit the fold-adjacent edge sensitivity
-  measured in the deep campaign.
+  hypothesis fails. The frame is not a Gibbs-like state: its 2-pt is the
+  T = ∞ correlator continued to z = τ_s + it, the large-q
+  |1/cos(𝒥z)|^(2Δ), which the exact theory matches ever better toward
+  semiclassics, while the naive Gibbs form fails (`thermal_shape` in
+  `signflip_deep.json`).
 - **The flip is semiclassical only**, λ ≤ 1.7 in the tested window. If
   NV's proposal needs c < 0 at strong coupling too, the identification
   predicts it fails there. That is falsifiable.

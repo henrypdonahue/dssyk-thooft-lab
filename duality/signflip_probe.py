@@ -243,26 +243,50 @@ def detailed_balance(lam: float, betaJ: float, p: int = 4,
 # ---------------------------------------------------------------------------
 def calibrated_scan(lam: float, betaJ: float, p: int = 4,
                     nmax: int = 80) -> dict:
-    """Measure the exact growth exponent kappa from the unshifted curve
-    (three-point log-difference).  Then try the flip with
-    Delta = pi/kappa as well as the large-q Delta = pi/v.  Two findings.
-    (1) At strong coupling both shifts fail: the flip is genuinely
-    semiclassical, not a rate-calibration artifact.  (2) Where the flip
-    works (lam <= 1.7), it works with pi/v and NOT with pi/kappa, even
-    though kappa > v.  The phase period of the growing mode is set by the
-    large-q v while its magnitude grows faster.  Phase and magnitude
-    rates decouple at finite lambda.  kappa itself is a new measured
-    number."""
+    """Measure an effective growth exponent kappa from the unshifted curve
+    (three-point log-difference on thL = 0.5..2.0).  Then try the flip
+    with Delta = pi/kappa as well as the large-q Delta = pi/v.
+
+    CALIBRATION.  The same estimator applied to the large-q closed form
+    itself (antiscrambling.otoc_ratio) on the same window gives
+    kappa_closed = 0.94 at betaJ = 2, not v = 0.47: the cosh(v thL)
+    growing/decaying pair contaminates early differences, and the closed
+    form only reaches v for thL >~ 6.  So kappa is a window-dependent
+    effective rate, recorded next to its closed-form calibration
+    (kappa_closed_same_window) and their ratio.  The exact-chord values
+    (0.83-0.88) sit BELOW the closed form's own early-window value; they
+    are not evidence that the magnitude rate exceeds v.  An earlier
+    version of this docstring read kappa > v as "phase and magnitude
+    rates decouple at finite lambda"; that reading is withdrawn.
+
+    Two findings survive.  (1) At strong coupling both shifts fail: the
+    flip is genuinely semiclassical, not a rate-calibration artifact.
+    (2) Where the flip works (lam <= 1.7), it works with pi/v and NOT with
+    pi/kappa_eff -- the phase period of the growing mode is the large-q
+    fake period, and pi/kappa_eff (~3.8) lands near pi/(2v) = 3.3 where
+    the rotation law puts Re a = 0, so its failure is expected."""
     v = v_of_betaJ(betaJ)
     Nflav = 2.0 * p * p / lam
     cc = ChordCorrelators(lam, p, beta_chord_from_betaJ(betaJ, lam), nmax)
     t1, t2, t3, t4 = CONFIG_CROSSED
     h, thLs = 0.5, (0.5, 1.0, 1.5, 2.0)
+
+    def three_point(rs):
+        d1, d2, d3 = rs[1] - rs[0], rs[2] - rs[1], rs[3] - rs[2]
+        return 0.5 * (math.log(abs(d2 / d1)) + math.log(abs(d3 / d2))) / h
+
     r = [cc.connected_ratio((t1 + 1j * t, t2 + 1j * t, t3, t4),
                             'c', Nflav).real for t in thLs]
-    d1, d2, d3 = r[1] - r[0], r[2] - r[1], r[3] - r[2]
-    kappa = 0.5 * (math.log(abs(d2 / d1)) + math.log(abs(d3 / d2))) / h
-    out = dict(lam=lam, betaJ=betaJ, v_largeq=v, kappa=float(kappa))
+    kappa = three_point(r)
+    from antiscrambling import otoc_ratio
+    r_closed = [otoc_ratio(t1 + 1j * t, t2 + 1j * t, t3, t4, v).real
+                for t in thLs]
+    kappa_closed = three_point(r_closed)
+    out = dict(lam=lam, betaJ=betaJ, v_largeq=v, kappa=float(kappa),
+               kappa_closed_same_window=float(kappa_closed),
+               kappa_over_closed=float(kappa / kappa_closed),
+               estimator="three-point log-difference, thL = 0.5..2.0 "
+                         "(window-dependent; see docstring)")
     for name, d in [("largeq", math.pi / v), ("calibrated", math.pi / kappa)]:
         rs = [cc.connected_ratio((t1 + d + 1j * t, t2 + d + 1j * t, t3, t4),
                                  'c', Nflav).real for t in (0.0, 1.0, 2.0)]
@@ -350,14 +374,20 @@ def _ratio_z(cc, zs_path, Nflav):
 
 
 def hologram_point(lam: float, p: int = 4, nmax: int = 100,
-                   ts=(0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0)) -> dict:
+                   ts=tuple(0.25 * k for k in range(15))) -> dict:
     """The flip at the ACTUAL hologram point, beta_c = 0.  The tomperature
     is beta_f = pi/Jc there (equivalently lambda_L = 2 Jc = 2 pi/beta_f).
     W-pair regulator: Euclidean split 2*eps with eps = 0.15 beta_f
     (stated convention).  Finding: the antipodal frame anti-scrambles in
     a TRANSIENT window whose extent grows as lambda falls -- scrambling
     reasserts at later times, consistent with a semiclassical mechanism
-    fought by lambda-corrections."""
+    fought by lambda-corrections.
+
+    The window end is the maximum of the antipodal curve, located by a
+    parabola through the three grid points around the largest sample
+    (t_window), with the grid-quantized value kept as t_window_grid and a
+    `censored` flag if the curve is still rising at the last grid point
+    (the grid runs to t = 3.5, past every window through lambda = 0.3)."""
     Jc = math.sqrt(lam) * math.exp(lam / 8.0)
     beta_f = math.pi / Jc
     tau_s = 0.5 * beta_f
@@ -374,14 +404,24 @@ def hologram_point(lam: float, p: int = 4, nmax: int = 100,
         return out
 
     un, an = curve(0.0), curve(tau_s)
-    # the anti-scrambling window: largest t up to which the antipodal
-    # curve is still rising
-    t_window = 0.0
+    # the anti-scrambling window: the maximum of the antipodal curve
+    imax = 0
     for i in range(1, len(ts)):
         if an[i] > an[i - 1]:
-            t_window = ts[i]
+            imax = i
         else:
             break
+    t_window_grid = ts[imax]
+    censored = imax == len(ts) - 1
+    if 0 < imax < len(ts) - 1:
+        # parabola through (t_{i-1}, t_i, t_{i+1}): vertex position
+        (x0, y0), (x1, y1), (x2, y2) = [(ts[j], an[j]) for j in (imax - 1, imax, imax + 1)]
+        denom = (x0 - x1) * (x0 - x2) * (x1 - x2)
+        a2 = (x2 * (y1 - y0) + x1 * (y0 - y2) + x0 * (y2 - y1)) / denom
+        b1 = (x2 * x2 * (y0 - y1) + x1 * x1 * (y2 - y0) + x0 * x0 * (y1 - y2)) / denom
+        t_window = float(-b1 / (2.0 * a2)) if a2 < 0 else float(t_window_grid)
+    else:
+        t_window = float(t_window_grid)
     cc2 = ChordCorrelators(lam, p, 0.0, nmax + 20)
     zs = [-1j * (tau_s + eps) + 1.0, -1j * eps,
           -1j * (tau_s - eps) + 1.0, +1j * eps]
@@ -389,25 +429,43 @@ def hologram_point(lam: float, p: int = 4, nmax: int = 100,
     drift = abs(_ratio_z(cc, zs, Nflav) - r2) / max(abs(r2), 1e-12)
     return dict(lam=lam, beta_f=beta_f, tau_s=tau_s, eps=eps,
                 ts=list(ts), unshifted=un, antipodal=an,
-                t_window=t_window, Jc=Jc,
+                t_window=t_window, t_window_grid=float(t_window_grid),
+                censored=bool(censored), Jc=Jc,
                 window_in_Jc_units=t_window * Jc,
+                window_grid_in_Jc_units=float(t_window_grid) * Jc,
+                window_quantization_Jc=0.125 * Jc,
                 truncation_drift=float(drift))
 
 
 def thermal_shape(lam: float, p: int = 4, nmax: int = 140) -> dict:
     """The SHAPE of the antipodal observer's 2-pt at the hologram point.
 
-    Measured verdict (both candidate shapes FAIL, worse as lambda -> 0;
-    numbers in signflip_deep.json): the shifted 2-pt exceeds unity and
-    grows along the shift, because the antipodal excursion
-    is a FOLD-ADJACENT contour: its e^{+tau(Ej-Ek)} weights are dominated
-    by the spectral edge, exactly like the Harlow-Zhao fold
-    (ANTISCRAMBLING.md decider #2, fold_edge_probe).  Neither the
-    continued sech nor the Gibbs betaJ = pi shape describes it, and the
-    fake-period recurrence is absent.  What survives edge domination is
-    the detailed-balance RATIO identity (exact at any lambda) and the
-    trend-level OTOC flip: shapes do not.  Both failed targets and the
-    periodicity deviation are recorded as the measured negatives."""
+    The observable is <0| e^{zT} O e^{-zT} O |0> with z = tau_s + i t: the
+    T = infinity 2-pt continued to the complex Euclidean time z, Euclidean
+    shift tau_s = beta_fake/2 (the antipodal point) plus real time t.  Its
+    large-q form is G(z) = [1/cos(Jc z)]^{2 Delta}: in real time that is
+    the familiar sech(Jc t), in Euclidean time the fake-period growth
+    1/cos(Jc tau) with its singularity at tau = beta_fake/2.  So at the
+    antipodal shift the target is |1/cos(Jc(tau_s + i t))|^{2 Delta}
+    = |sech(Jc(t - i tau_s))|^{2 Delta}, which at t = 0 is the sec(pi/2)
+    singularity itself; the exact chord value there is finite because the
+    chord spectrum is bounded (an edge cutoff, not a fold pathology).
+
+    Measured verdict (signflip_deep.json): for t >= 0.25/Jc the antipodal
+    frame's 2-pt IS the continued large-q form, with a deviation that
+    SHRINKS toward semiclassics (0.46 -> 0.18 over lambda = 2 -> 0.25);
+    the Euclidean 2-pt likewise tracks the fake-period growth toward the
+    singularity (deviation 0.49 -> 0.26 at tau <= 0.45 beta_fake).  The
+    naive Gibbs guess (the observer thermal at beta J = pi in the ordinary
+    finite-temperature large-q form, MS Eq. 2.18 continued to real time)
+    fails, worse toward semiclassics: the tomperature thermality is the
+    detailed-balance identity of the shifted sector, not a Gibbs state.
+
+    An earlier version of this function continued the real-time form with
+    the roles of t and tau_s swapped, cosh(Jc(tau_s + i t)), and tested
+    'periodicity' in real time; both instruments were miscalibrated, and
+    the 'shapes fail worse toward semiclassics' negative they produced is
+    withdrawn (the historical numbers stay in the git history)."""
     Jc = math.sqrt(lam) * math.exp(lam / 8.0)
     beta_f = math.pi / Jc
     tau_s = 0.5 * beta_f
@@ -417,35 +475,44 @@ def thermal_shape(lam: float, p: int = 4, nmax: int = 140) -> dict:
     v0 = s.V[0, :]
     M = s.V.T @ ((q ** (dpsi * np.arange(nmax + 1)))[:, None] * s.V)
 
-    def g_obs_at(t):
-        return complex((v0 * np.exp((tau_s + 1j * t) * s.E)) @ M
-                       @ (v0 * np.exp(-(tau_s + 1j * t) * s.E)))
+    def g_obs_at(z):
+        return complex((v0 * np.exp(z * s.E)) @ M @ (v0 * np.exp(-z * s.E)))
 
+    # real time along the antipodal shift; t = 0 is the sec(pi/2) point and
+    # is excluded from the shape comparison (kept in the curve)
     ts = np.linspace(0.0, 2.0 / Jc, 25)
-    g_obs = np.array([g_obs_at(t) for t in ts])
-    # (a) the continued-sech target
+    g_obs = np.array([g_obs_at(tau_s + 1j * t) for t in ts])
     z = Jc * (tau_s + 1j * ts)
-    g_sech = np.abs(1.0 / np.cosh(z)) ** (2 * dpsi)
-    dev_sech = float(np.max(np.abs(np.abs(g_obs) - g_sech)
-                            / np.maximum(g_sech, 1e-12)))
-    # (b) the naive Gibbs guess (negative control)
+    g_true = np.abs(1.0 / np.cos(z)) ** (2 * dpsi)
+    g_true[0] = float("nan")                   # the singular point
+    win = ts >= 0.25 / Jc                      # past the edge cutoff
+    dev_sech = float(np.max(np.abs(np.abs(g_obs[win]) - g_true[win])
+                            / g_true[win]))
+    # the naive Gibbs guess (negative control): the full MS finite-T form
+    # at beta J = pi, continued to real time
     v_f = v_of_betaJ(math.pi)
-    g_th = (np.cos(np.pi * v_f / 2.0)
-            / np.cosh(np.pi * v_f * ts / beta_f)) ** (2 * dpsi)
-    dev_gibbs = float(np.max(np.abs(np.abs(g_obs) - g_th) / g_th))
-    # periodicity with the fake period
-    tp = np.linspace(0.0, 0.9 * beta_f, 10)
-    per = [abs(g_obs_at(t + beta_f)) / max(abs(g_obs_at(t)), 1e-300)
-           for t in tp]
-    per_dev = float(np.max(np.abs(np.array(per) - 1.0)))
+    g_th = np.abs(np.cos(np.pi * v_f / 2.0)
+                  / np.cos(np.pi * v_f / 2.0 - 1j * np.pi * v_f * ts / beta_f)
+                  ) ** (2 * dpsi)
+    dev_gibbs = float(np.max(np.abs(np.abs(g_obs[win]) - g_th[win]) / g_th[win]))
+    # the Euclidean fake-period growth toward the singularity
+    taus = np.linspace(0.0, 0.45 * beta_f, 10)
+    g_eu = np.array([abs(g_obs_at(tau)) for tau in taus])
+    g_eu_true = (1.0 / np.cos(Jc * taus)) ** (2 * dpsi)
+    dev_eu = float(np.max(np.abs(g_eu - g_eu_true) / g_eu_true))
     return dict(lam=lam, v_f=v_f, beta_f=beta_f,
                 ts=[float(x) for x in ts],
                 g_obs_abs=[float(abs(x)) for x in g_obs],
-                g_sech_pred=[float(x) for x in g_sech],
+                g_sech_pred=[float(x) for x in g_true],
                 g_gibbs_pred=[float(x) for x in g_th],
+                shape_window="t >= 0.25/Jc",
                 max_rel_dev_sech=dev_sech,
                 max_rel_dev_gibbs=dev_gibbs,
-                fake_periodicity_dev=per_dev)
+                taus=[float(x) for x in taus],
+                g_euclid_abs=[float(x) for x in g_eu],
+                g_euclid_pred=[float(x) for x in g_eu_true],
+                max_rel_dev_euclid=dev_eu,
+                target="|1/cos(Jc (tau_s + i t))|^(2 Delta), t >= 0.25/Jc")
 
 
 def mss_strip(betaJ: float = 2.0, n_y: int = 33) -> dict:
@@ -518,10 +585,10 @@ def main_deep():
         print(f"hologram lam={h['lam']}: window t*Jc = "
               f"{h['window_in_Jc_units']:.2f}  drift={h['truncation_drift']:.1e}")
     for s_ in payload["shape"]:
-        print(f"shape lam={s_['lam']}: dev vs continued-sech = "
+        print(f"shape lam={s_['lam']}: dev vs continued large-q form = "
               f"{s_['max_rel_dev_sech']:.3f}  vs Gibbs (neg. control) = "
-              f"{s_['max_rel_dev_gibbs']:.3f}  fake-periodicity dev = "
-              f"{s_['fake_periodicity_dev']:.3f}")
+              f"{s_['max_rel_dev_gibbs']:.3f}  Euclidean fake-period growth "
+              f"dev = {s_['max_rel_dev_euclid']:.3f}")
     print(f"mss: coefficient phase winds = {payload['mss']['oscillates']}, "
           f"|a| constant = {payload['mss']['abs_a_constant']}")
     for r in payload["rate"]:
