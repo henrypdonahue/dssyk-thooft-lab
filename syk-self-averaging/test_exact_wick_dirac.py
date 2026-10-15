@@ -213,12 +213,29 @@ def _moments_rows(Nc):
 
 def test_mu0_exact_vs_moments_json_nc6():
     """Exact Isserlis E[mu0] vs the stored ED disorder means (40 instances).
-    This is the ED-free cross-check of the moments pipeline at Nc = 6."""
+    This is the ED-free cross-check of the moments pipeline at Nc = 6.
+    The committed exact_wick_dirac.json is consumed here too: its Nc = 6
+    part-2 numbers are these, and its part-1 rows are the closed forms."""
+    import json
+    from pathlib import Path
+    from exact_wick_dirac import var_offdiag_csym
     exact = mu0_exact_csym(6, 4)
     ed = _moments_rows(6)
     for ch, tag in (("odd", "right"), ("even", "wrong")):
         z = (exact[ch] - ed[tag]["mu0"]) / ed[tag]["mu0_err"]
         assert abs(z) < 3.0, f"channel {ch}: z = {z:.2f}"
+    with open(Path(__file__).resolve().parent / "exact_wick_dirac.json") as fh:
+        art = json.load(fh)
+    stored = art["part2_mu0"]["exact"]["Nc6"]
+    for ch in ("odd", "even", "total"):
+        assert exact[ch] == pytest.approx(stored[ch], rel=1e-12), ch
+    for r in art["part1_varB"]["rows"]:
+        assert r["var_offdiag"] == pytest.approx(
+            var_offdiag_csym(r["Nc"], r["p"]), rel=1e-12), r
+        assert r["mean_diag"] == pytest.approx(
+            mean_diag_csym(r["Nc"], r["p"]), rel=1e-12), r
+        assert r["rms_offdiag"] == pytest.approx(
+            rms_offdiag_csym(r["Nc"], r["p"]), rel=1e-12), r
 
 
 @pytest.mark.slow

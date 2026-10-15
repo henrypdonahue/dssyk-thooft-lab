@@ -45,7 +45,9 @@ test_pair_moment_laws.py.
 
   A(n=3, p) has degree above 5 in p.  The minimum-degree interpolant
   fails the p = 14 check, and that is reported rather than hidden.  Its
-  exact values through p = 12 are in the artifact.
+  exact values through p = 12 are in the artifact.  (Superseded:
+  pair_moment_ladder.py deepens the grid to p = 16 and identifies
+  A(n=3, p) = -256 p^4 (p-1)(34 p^2 - 108 p + 91), certified at p = 18.)
 
 * k = 4 deficits are n + 3, for n = 1 and 2.  So mu_4 dies one power
   faster than mu_2 in the pair channel.
@@ -60,7 +62,10 @@ test_pair_moment_laws.py.
   c_2(p) = |mu_2(n=2)| p N runs 28.918 -> 30.529 over p = 4..16, and it is
   still rising.  That continues the committed float scan's 28.9 -> 29.8.
   It is not settled by p = 16.  c_3(p) runs 203.5 -> 206.6 over
-  p = 4..12, and it is not monotone at small p.
+  p = 4..12, and it is not monotone at small p.  (Superseded: the limits
+  are closed forms, c_2 = 4 lambda (1-q)^2 (5+3q) = 32.3341891 and
+  c_3 = 223.648 at lambda_chord = 2 -- double_scaling_law.py, with the
+  sequences to p = 48 and p = 32.)
 
 COST.  The sample grid needs m p + 2 exact points.  The expensive regime
 is large m, where the matchings go as (K-1)!!, crossed with large p,

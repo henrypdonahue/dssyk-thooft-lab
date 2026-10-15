@@ -7,8 +7,10 @@ Two exact identities anchor the whole story.
     per-instance OPERATOR identity.  It is validated here against dense
     algebra, independent of any chord input.
 
-Plus the committed-JSON assertions: the measured N-falloff of the n >= 2
-channel moments toward the chord prediction w2 = 0 at N = infinity.
+Plus the committed-JSON assertions: the bench's raw fixed-p rise of the
+n >= 2 widths inside its N <= 20 window (the rising side of the exact
+peak at N = 24 that full_channel_laws.py continues), and the honest
+matched-lambda negative.
 """
 
 import json
@@ -97,9 +99,9 @@ def test_bench_84_conservation_is_special_not_p_half_N(bench):
     This is an exact per-instance conservation [H, A_n] = 0 special to
     that point.  The adversarial review (2026-08-16) established that this
     is NOT a general p = N/2 phenomenon.  The test asserts that live here:
-    at (12, 6) the commutator is O(0.3), not zero.  The mechanism at
-    (8, 4) is unknown.  The row is kept as the exhibition and excluded
-    from trend statements."""
+    at (12, 6) the commutator is O(0.3), not zero.  The mechanism is the
+    grade structure of Cl_8 (conserved_points.py, test_conserved_points).
+    The row is kept as the exhibition and excluded from trend statements."""
     for r in bench["points"]:
         if r["N"] == 8 and r["p"] == 4 and r["n"] >= 2:
             assert r["w2"] == 0.0
@@ -117,11 +119,11 @@ def test_bench_84_conservation_is_special_not_p_half_N(bench):
 
 def test_bench_raw_w2_rises_toward_thooft_corner(bench):
     """Along fixed p (lambda = 2p^2/N falling), the RAW singlet-channel
-    width w2 RISES.  The tower channel turns on toward the fixed-p,
-    lambda -> 0 corner where the 't Hooft match must live.  That is
-    exactly where the strict double-scaled (chord) description says the
-    per-pair amplitude is conserved.  (N = 2p excluded: the special (8,4)
-    identity row.)"""
+    width w2 RISES inside the bench's window.  That window ends before the
+    peak: the exact engine (full_channel_laws.py, test_full_channel_laws)
+    finds the p = 4 width topping out at N = 24 (lambda_chord = 4/3) and
+    then dying as 8p(p-2)/N, i.e. a finite N-independent width 8p(p-2) in
+    units of J^2.  (N = 2p excluded: the special (8,4) identity row.)"""
     for p in (4, 6):
         for n in (2, 3):
             rows = sorted((r for r in bench["points"]

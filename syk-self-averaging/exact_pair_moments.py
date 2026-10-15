@@ -305,9 +305,11 @@ def _first_primes_below(bound: int, count: int) -> list:
 
 
 # 64 primes cover a CRT modulus of ~1600 bits: enough for the m = 3
-# double-scaling points out to N ~ 1000, where the signed-count bound
-# needs ~21 of them (the loop stops as soon as the modulus clears the
-# bound, so small words still touch only a handful).
+# double-scaling points out to N ~ 1000 (about 21 of them) and for the
+# n = 2 double-scaling line to p = 68 (41 primes at p = 48, N = 2304);
+# the pool is exhausted at p >= 72 there, and _dp_tables raises rather
+# than wrap.  The loop stops as soon as the modulus clears the bound, so
+# small words still touch only a handful.
 _PRIMES = _first_primes_below(1 << 25, 64)
 _DP_CACHE: dict = {}
 

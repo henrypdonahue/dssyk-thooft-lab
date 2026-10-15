@@ -132,5 +132,25 @@ def test_json_freeness_verdict():
     assert max(tx) - min(tx) < 0.15              # still all at t*J ~ 1.2
 
 
+def test_verdict_scalars_recompute_from_stored_series():
+    """The plateau and crossover scalars are recomputed from the committed
+    time series (not trusted as written), and the crossover's propagated
+    sigma from the stored SEMs (0.005-0.013) makes the N = 16 -> 24 rise a
+    ~7 sigma effect on the artifact's own error bars."""
+    from freeness import verdict_scalars
+    data = _load_json()
+    sig = {}
+    for pt in data["points"]:
+        v = verdict_scalars(pt)
+        for k in ("plateau_W1_arc", "plateau_W1_bin", "plateau_m2",
+                  "plateau_w4", "t_x_J"):
+            assert v[k] == pytest.approx(pt[k], rel=1e-12, abs=1e-15), (pt["N"], k)
+        assert 0.003 < v["t_x_J_sigma"] < 0.02
+        sig[pt["N"]] = v["t_x_J_sigma"]
+    tx = {pt["N"]: pt["t_x_J"] for pt in data["points"]}
+    z = (tx[24] - tx[16]) / np.hypot(sig[24], sig[16])
+    assert z > 5.0, z
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))

@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Tests for the SYK harness and the self-averaging measurement.
 
-Run with: pytest -q.  The RMT test is marked slow; deselect it with
--m 'not slow'.
+Run with: pytest -q.  Every test here is in the fast suite.
 """
 
 
@@ -342,6 +341,9 @@ def test_moments_pipeline_structure():
     assert len(rows) == 4      # n in (2,3) x (right, wrong)
     for r in rows:
         assert r["mu0"] > 0
+        # mu_1 vanishes identically for the symmetrized weight (it is even
+        # under a <-> b by construction), so this is a bookkeeping check of
+        # the pipeline's symmetrization, not a physics assertion
         assert r["odd_moment_check"] < 1e-10
         assert r["kurt"] >= 1.0
         assert r["w2"] > 0
@@ -393,10 +395,10 @@ def test_goe_arm_of_the_rmt_pattern():
             abs(r - validate_syk.RMT["GUE"])
 
 
-@pytest.mark.slow
 def test_bott_periodicity_all_three_classes():
     """The full N mod 8 slice at production size: GUE (N=10), GSE (N=12),
-    GOE (N=16)."""
+    GOE (N=16).  About a second in total, so it runs in the fast suite (it
+    used to be slow-marked, which kept the GUE/GSE arms out of CI)."""
     r10 = validate_syk.r_statistic(10, n_real=40, seed=110)
     r12 = validate_syk.r_statistic(12, n_real=40, seed=112)
     r16 = validate_syk.r_statistic(16, n_real=12, seed=116)
@@ -416,6 +418,47 @@ def test_gse_kramers_doubling():
     # and its raw spectrum has no such pairing
     with pytest.raises(ValueError):
         validate_syk.kramers_splitting(10)
+
+
+def test_results_json_rows_match_exact_wick():
+    """results.json (the section 3.5 ED measurement): every committed
+    rms_off row sits within 3 sigma of the exact Wick closed form
+    rms_offdiag_exact(N, p), and the stored model fits are the fits of the
+    stored rows (fit_models is deterministic)."""
+    import json
+    from pathlib import Path
+    import self_averaging
+    from exact_wick import rms_offdiag_exact
+    with open(Path(__file__).resolve().parent / "results.json") as fh:
+        d = json.load(fh)
+    for key in ("p4", "p6"):
+        block = d["C_symmetry_violation"][key]
+        for r in block["rows"]:
+            z = (r["rms_off"] - rms_offdiag_exact(r["N"], r["p"])) / r["rms_off_err"]
+            assert abs(z) < 3.0, (key, r["N"], z)
+        live = self_averaging.fit_models([r["N"] for r in block["rows"]],
+                                         [r["rms_off"] for r in block["rows"]])
+        for name, f in block["fits"].items():
+            for k in ("r2", "slope", "aic"):
+                assert live[name][k] == pytest.approx(f[k], rel=1e-9), (key, name, k)
+
+
+def test_mn_spectra_json_reproduces():
+    """mn_spectra.json is mn_spectroscopy.run at the stored (Nc, p, seed):
+    the per-level static fractions and CP fractions come back exactly."""
+    import json
+    from pathlib import Path
+    import mn_spectroscopy
+    with open(Path(__file__).resolve().parent / "mn_spectra.json") as fh:
+        d = json.load(fh)
+    live = mn_spectroscopy.run(Nc=d["Nc"], p=d["p"], n_max=2, seed=d["seed"])
+    stored = {r["n"]: r for r in d["spectra"]}
+    for r in live["spectra"]:
+        s = stored[r["n"]]
+        for k in ("static_fraction", "frac_right_cp"):
+            if k in s:
+                assert r[k] == pytest.approx(s[k], rel=1e-9, abs=1e-12), (r["n"], k)
+
 
 
 if __name__ == "__main__":

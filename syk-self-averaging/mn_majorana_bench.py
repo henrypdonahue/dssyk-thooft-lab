@@ -44,12 +44,28 @@ computation is the i != j flavor-PAIR amplitude.  The bench measures the
 full physical channel, which at dense-ED sizes is DIAGONAL-dominated.
 
 In the flavor decomposition at p = 4, n = 2, the summed pair part of mu_0
-is -3% of the total at N = 12 and -19% at N = 14, opposite in sign to the
-N = infinity per-pair value.
+is -0.6% of the total at N = 12, -17% at N = 14 and -34% at N = 16
+(exact, ensemble-level subtraction; the per-instance ED convention gave
+-3% and -19% at N = 12, 14), opposite in sign to the N = infinity
+per-pair value.
 
 So these bench trends do NOT directly probe the chord cancellation at
-accessible N.  What they establish is the raw fixed-p turn-on of the
-channel toward the lambda -> 0 corner.
+accessible N.  What they establish is the rising side of the fixed-p
+width: the exact engine (full_channel_laws.py) continues the same
+channel past the bench's N <= 20 window and finds a PEAK at N = 24
+(lambda_chord = 4/3) followed by the exact decay w2 = 8p(p-2)/N.  In
+physical units (J = 1) that is an N-independent mean-square frequency
+8p(p-2) -- the finite O(J) width of the channel at fixed p.  The N = inf
+full channel at fixed lambda has its own closed form
+(duality/full_channel_chord.py).
+
+The raw width divides by an identity-subtracted mu_0 that is mostly
+CONSERVED weight at these sizes (the H^2 component of A_2: 85 % at
+N = 10, 44 % at N = 16 for p = 4).  With the commutant of H projected
+out per instance the bench does reach the N = infinity law: the
+dynamical width at p = 6, N = 16-20 is 2.03, 2.03, 2.01 against
+2(1 - q^2) = 2.00 (duality/singlet_tower.py, ed_commutant_split).  The
+rows stored here are the raw ones and are unchanged.
 
 Output: mn_majorana_bench.json.  Runtime about 1 hour.
 """
@@ -171,11 +187,13 @@ def main():
     # (N, p) = (8, 4).  The adversarial review (2026-08-16) established
     # this is NOT a general p = N/2 phenomenon: at (12,6) and (16,8) the
     # channels are NOT conserved, ||[H,A_2]||/||A_2|| ~ 0.2-0.35.  The
-    # review also established that exact_wick's E[B_jj] ~ (1-2p/N) does
-    # not explain it (that is an ensemble-mean statement about the n = 1
-    # object).  Mechanism unknown; kept as the exhibition, excluded from
-    # trend statements.  (6, 22) provides the near-matched-lambda point to
-    # (4, 10): lambda = 3.27 vs 3.20.
+    # mechanism is now proven (conserved_points.py): the spin-trace map
+    # S(X) = sum_i psi_i X psi_i weighs Clifford grade g by (-1)^g (N-2g),
+    # every H^k at N = 8 has grades {0, 4, 8} only, so every S(H^k) is
+    # central and A_n = sum_j (-1)^j C(n,j) S(H^{n-j}) H^j commutes with H.
+    # Kept as the exhibition, excluded from trend statements.  (6, 22)
+    # provides the near-matched-lambda point to (4, 10): lambda = 3.27 vs
+    # 3.20.
     for p, N, n_inst in [(4, 8, 256), (4, 10, 160), (4, 12, 96),
                          (4, 14, 64), (4, 16, 48), (4, 18, 24), (4, 20, 12),
                          (6, 14, 64), (6, 16, 48), (6, 18, 24), (6, 20, 12),

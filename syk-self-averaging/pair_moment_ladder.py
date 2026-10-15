@@ -86,10 +86,15 @@ pair_moment_ladder.json, pinned by test_pair_moment_ladder.py)
   --ds-extend) 31.344, 31.445, 31.528, 31.596, 31.654 over p = 32..48,
   monotone with shrinking increments.  The sliding-window 1/p
   extrapolation is recorded as an ESTIMATE with its window spread:
-  c_2(inf) = 32.334, with the order-2, -3 and -4 windows agreeing to
-  1.4e-3 and the two order-4 windows to 1e-6.  It is not 97/3 (8e-4
-  below the stable value); no closed form is identified.  c_3(p)
-  continues 208.33, 209.76 at p = 14, 16, still rising.
+  c_2(inf) = 32.3341891 with the order-3..5 windows agreeing to 1e-4
+  and the order-5 windows to 1e-8.  It is not 97/3.  The limit IS a
+  closed form (double_scaling_law.py): c_2(lambda) = 4 lambda (1-q)^2
+  (5+3q) with q = e^-lambda, 32.3341891 at lambda = 2, the Delta -> 0
+  slope of the N = infinity diagonal chord channel; the estimate meets
+  it to 4e-9.  c_3(p) continues 208.33, 209.76 at p = 14, 16 here and
+  to p = 32 in double_scaling_law.json, extrapolating to 223.63(3)
+  against the closed form 4 lambda (1-q)^3 (35+56q+35q^2+10q^3) =
+  223.648 (the pooled estimate is stored as c3_limit).
 
 * Every K = 12 evaluation is gated end to end by the exact A_1
   flavor-sum identity at k = 10,
@@ -261,7 +266,7 @@ def ds_extension(n: int, ps, mapper=None) -> list:
     mus = _mu_map(mapper, [(p * p, p, n, 2) for p in ps])
     rows = []
     for p, mu in zip(ps, mus):
-        rows.append(dict(p=p, N=p * p, mu2=float(mu),
+        rows.append(dict(p=p, N=p * p, mu2=float(mu), mu2_exact=str(mu),
                          c=float(abs(mu) * p * p * p)))
         print(f"  lambda_chord=2, n={n}: p={p:2d} N={p * p:4d}  "
               f"mu2={float(mu):+.6e}  c={rows[-1]['c']:.3f}", flush=True)
@@ -285,32 +290,67 @@ def _window_fit(window: list) -> float:
     return float(rows_[0][npts])
 
 
-def c_limit_estimate(rows: list) -> dict:
+def c_limit_estimate(rows: list, n: int = 2) -> dict:
     """Sliding-window 1/p extrapolation of c(p) = c_inf + a/p + ...:
-    orders 2..4 (window lengths 3..5) on the deepest windows, with the
-    spread across windows and orders as the honest error bar.  An
-    ESTIMATE, not a law; a ln(p)/p term in the true asymptotics would
-    bias it, and the artifact records the raw exact points so anyone can
-    refit."""
+    orders 2..5 (window lengths 3..6) on the deepest windows, with the
+    spread across the order >= 3 windows as the error bar.  An
+    ESTIMATE; the artifact records the raw exact points so anyone can
+    refit.  The closed form the estimate is compared to,
+    c_{n,2}(lambda = 2) = 2 P_{2n+2}(e^-2) with P_6 = 4(1-q)^2(5+3q) and
+    P_8 = 4(1-q)^3(35+56q+35q^2+10q^3) (double_scaling_law.py), is
+    recorded next to it."""
     pts = sorted((r["p"], r["c"]) for r in rows)
     if len(pts) < 4:
         return dict(estimated=False, reason="too few points")
     fits = []
-    for width in (3, 4, 5):
-        if len(pts) < width + 1:
-            continue
+    # orders up to 5, and never within two of the point count (higher
+    # orders on a short sequence fit the pre-asymptotic points)
+    max_order = min(5, len(pts) - 3)
+    for width in range(3, max_order + 2):
         fits.append(dict(order=width - 1,
                          window=[p for p, _ in pts[-width:]],
                          c_inf=_window_fit(pts[-width:])))
-        fits.append(dict(order=width - 1,
-                         window=[p for p, _ in pts[-width - 1:-1]],
-                         c_inf=_window_fit(pts[-width - 1:-1])))
-    vals = [f["c_inf"] for f in fits]
-    return dict(estimated=True, fits=fits,
-                c_inf_central=fits[-2]["c_inf"] if fits else None,
+        if len(pts) > width:
+            fits.append(dict(order=width - 1,
+                             window=[p for p, _ in pts[-width - 1:-1]],
+                             c_inf=_window_fit(pts[-width - 1:-1])))
+    top = max(f["order"] for f in fits)
+    high = [f for f in fits if f["order"] >= min(3, top)]
+    vals = [f["c_inf"] for f in high]
+    # central: the deepest window of the highest order
+    central = [f for f in fits if f["order"] == top][0]["c_inf"]
+    closed = _ds_closed_form(n)
+    return dict(estimated=True, fits=fits, c_inf_central=central,
                 spread=max(vals) - min(vals),
-                note="sliding-window 1/p fits, orders 2-4; estimate, "
-                     "not exact; central = deepest widest window")
+                closed_form=closed,
+                closed_form_expr=f"2 P_{2 * n + 2}(e^-2)",
+                central_minus_closed=central - closed,
+                note="sliding-window exact 1/p fits, orders 2-5; central = "
+                     "deepest highest-order window; spread over the order "
+                     ">= 3 windows; estimate, compared to the closed form of "
+                     "double_scaling_law.py")
+
+
+def _pooled_ds_rows(rows: list, n: int) -> list:
+    """The line's points pooled with the committed pair_moment_laws.json
+    points of the same n (p = 4..12 there; the ladder grid starts at 14),
+    for the limit estimate only."""
+    pooled = {r["p"]: r for r in rows}
+    path = HERE / "pair_moment_laws.json"
+    if path.exists():
+        with open(path) as fh:
+            for r in json.load(fh).get("double_scaling", {}).get(f"n{n}", []):
+                pooled.setdefault(r["p"], r)
+    return [pooled[p] for p in sorted(pooled)]
+
+
+def _ds_closed_form(n: int, lam: float = 2.0) -> float:
+    """lambda P_K(e^-lambda), K = 2n + 2 (the mu_2 double-scaling constant
+    of the A_n pair channel): the Delta-slope of the diagonal chord channel."""
+    import math
+    q = math.exp(-lam)
+    R = {6: [5, 3], 8: [35, 56, 35, 10]}[2 * n + 2]
+    return lam * 4 * (1 - q) ** n * sum(c * q ** j for j, c in enumerate(R))
 
 
 # ---------------------------------------------------------------------------
@@ -341,8 +381,12 @@ def run(deep: bool = False, workers: int = None, out_path=None,
         "double-scaling c_2(p) extension; same exact machinery as "
         "pair_moment_laws.py, certified out of sample per law"))
 
+    prior_runtime = float(prior.get("runtime_s", 0.0)) if resume else 0.0
+
     def checkpoint():
-        payload["runtime_s"] = round(time.time() - t0, 1)
+        # cumulative over resumes: a --resume that recomputes nothing must
+        # not replace the campaign's hours with its own seconds
+        payload["runtime_s"] = round(prior_runtime + time.time() - t0, 1)
         _write_json(out, payload)
 
     try:
@@ -420,8 +464,8 @@ def run(deep: bool = False, workers: int = None, out_path=None,
             rows = have + ds_extension(n_ch, todo, mapper=mapper)
             rows.sort(key=lambda r: r["p"])
             payload["double_scaling"][label] = rows
-            if label == "n2":
-                payload["double_scaling"]["c2_limit"] = c_limit_estimate(rows)
+            payload["double_scaling"][f"c{n_ch}_limit"] = c_limit_estimate(
+                _pooled_ds_rows(rows, n_ch), n_ch)
             checkpoint()
     finally:
         pool.close()
@@ -432,27 +476,29 @@ def run(deep: bool = False, workers: int = None, out_path=None,
     return payload
 
 
-def ds_extend(ps, workers: int = None, out_path=None) -> dict:
-    """Deepen the n = 2 double-scaling scan in an EXISTING artifact:
-    compute the new exact points, merge, refit the limit estimate, and
-    rewrite.  Used to push c_2(p) beyond the default campaign grid
-    without re-running the laws."""
+def ds_extend(ps, workers: int = None, out_path=None, n: int = 2) -> dict:
+    """Deepen the n = 2 (or n = 3) double-scaling scan in an EXISTING
+    artifact: compute the new exact points, merge, refit the limit
+    estimate, and rewrite.  Used to push c_n(p) beyond the default
+    campaign grid without re-running the laws."""
     out = Path(out_path) if out_path else HERE / "pair_moment_ladder.json"
     with open(out) as fh:
         payload = json.load(fh)
-    have = {r["p"] for r in payload["double_scaling"]["n2"]}
+    label = f"n{n}"
+    rows_have = payload["double_scaling"].setdefault(label, [])
+    have = {r["p"] for r in rows_have}
     todo = tuple(p for p in ps if p not in have)
     workers = workers or max(1, mp.cpu_count() - 1)
     ctx = mp.get_context("spawn")
-    with ctx.Pool(processes=min(workers, max(1, len(todo)))) as pool:
-        rows = ds_extension(2, todo, mapper=pool.map)
-    payload["double_scaling"]["n2"].extend(rows)
-    payload["double_scaling"]["n2"].sort(key=lambda r: r["p"])
-    payload["double_scaling"]["c2_limit"] = c_limit_estimate(
-        payload["double_scaling"]["n2"])
+    if todo:
+        with ctx.Pool(processes=min(workers, len(todo))) as pool:
+            rows_have.extend(ds_extension(n, todo, mapper=pool.map))
+    rows_have.sort(key=lambda r: r["p"])
+    payload["double_scaling"][f"c{n}_limit"] = c_limit_estimate(
+        _pooled_ds_rows(rows_have, n), n)
     _write_json(out, payload)
-    print(f"extended n2 double scaling to p={max(have | set(ps))}; "
-          f"c_inf estimate: {payload['double_scaling']['c2_limit']}")
+    print(f"extended {label} double scaling to p={max(have | set(ps))}; "
+          f"c_inf estimate: {payload['double_scaling'][f'c{n}_limit']}")
     return payload
 
 
@@ -542,8 +588,11 @@ if __name__ == "__main__":
                          "skip the laws it already holds")
     ap.add_argument("--ds-extend", type=str, default=None,
                     help="comma-separated extra p values for the n = 2 "
-                         "double-scaling line, merged into the existing "
-                         "artifact (e.g. 32,36,40,44,48)")
+                         "(or, with --n 3, the n = 3) double-scaling line, "
+                         "merged into the existing artifact (e.g. "
+                         "32,36,40,44,48)")
+    ap.add_argument("--n", type=int, default=2, choices=(2, 3),
+                    help="which double-scaling line --ds-extend deepens")
     ap.add_argument("--refit", type=str, default=None,
                     help="n,k:p1,p2,...:p_check -- deepen one A(p) family's "
                          "sample grid and re-certify (e.g. "
@@ -553,7 +602,7 @@ if __name__ == "__main__":
         ap.error("--workers must be >= 1")
     if args.ds_extend:
         ds_extend(tuple(int(x) for x in args.ds_extend.split(",")),
-                  workers=args.workers)
+                  workers=args.workers, n=args.n)
     elif args.refit:
         try:
             nk, ps, pc = args.refit.split(":")

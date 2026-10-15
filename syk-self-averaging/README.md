@@ -90,9 +90,11 @@ The caveat is real. The crossover sits at the *dissipation* time
 scrambling-time separation where the claim properly lives. Word plateaus
 at N ≥ 20 are statistics-limited. The crossover is not quite
 N-independent either: t𝒥 runs 1.191, 1.172, 1.233, 1.273 over N = 12–24,
-and the N = 16 → 24 rise is about 4σ against a measured resolution of
-0.011. A drift is resolved. Four points over a factor of 2 in N cannot
-say whether it is ln N or finite size.
+and the N = 16 → 24 rise is about 4σ against a rerun-measured resolution
+of 0.011, and about 7σ on the artifact's own propagated per-point errors
+(0.005–0.013, `freeness.verdict_scalars`). A drift is resolved. Four
+points over a factor of 2 in N cannot say whether it is ln N or finite
+size.
 
 **Shape-invariant moments** (`moments_pipeline.py`, `moments_fast.py`).
 CP-resolved spectral moment invariants (w₂, kurtosis) along fixed p = 4.
@@ -151,14 +153,51 @@ frontier, with K = k + 2n the word length:
   n = 1..4) — the coincidence above is the first step of a ladder and
   nothing more;
 - A(n=3) = −256p⁴(p−1)(34p² − 108p + 91), certified at p = 18, so the
-  k = 2 family is −2^(2n+2) p^(n+1)(p−1) Q_n(p) with deg Q_n = n − 1;
+  k = 2 family is −2^(2n+2) p^(n+1)(p−1) Q_n(p) with deg Q_n = n − 1
+  through n = 3 (three data points; not a proven pattern);
   the other K = 8 family is A(1,6) = A(2,4) = −256p⁴(p−1)(34p² − 93p + 64),
   same prefactor, same leading 34p², certified at p = 18;
-- c₂(p) exact to p = 48 (31.654) and still rising, with a windowed
-  extrapolation c₂(∞) = 32.334(1) recorded as an estimate (orders 2–4
-  agree to 1.4e-3); c₃(p) = 208.33, 209.76 at p = 14, 16, still rising.
+- c₂(p) exact to p = 48 (31.654), extrapolating to 32.3341891(1);
+  c₃(p) exact to p = 32 (`double_scaling_law.json`), extrapolating to
+  223.63(3).
 
-What is left for the chord side is to *derive* these targets.
+**Those two limits are closed forms** (`double_scaling_law.py`). On the
+line λ_chord = λ, with q = e^(−λ),
+
+    c₂(λ) = 4λ(1−q)²(5+3q),    c₃(λ) = 4λ(1−q)³(35 + 56q + 35q² + 10q³),
+
+checked on three lines each (λ = 1, 2, 4; six digits at K = 6). They
+are the Δψ → 0 slopes λP_K(q) of the N = ∞ *diagonal* chord channel
+(`duality/diagonal_chord.py`), which depend on the word length K only:
+the O(Δ) parts of the pair and diagonal halves cancel on every
+double-scaling line, the n ≥ 2 shadow of the exact A₁ identity, and the
+finite-N table in the artifact shows the cancellation directly. The
+λ-expansion of the closed form fixes the large-p growth of every 1/N
+coefficient; the N⁻⁵ one is a closed form too,
+B(2,2;p) = 64p³(p−1)(11p³ − 36p² + 29p − 3), fit on p = 4..12 and
+reproducing the committed p = 2 value out of sample.
+
+What is left for the chord side is to *derive* these targets, the
+cancellation above all.
+
+**The full channel at fixed p** (`full_channel_laws.py`). Summing the
+two halves exactly, the full A₂ width along fixed p peaks at
+λ_chord ≈ 4/3 (N = 24 at p = 4) and then dies as w₂ = 8p(p−2)/N in
+bandwidth units, a closed form certified at p = 2..12 (the two leading
+coefficients are 64p²(p−1)²/N² and 512p³(p−1)²(p−2)/N³). In physical
+units (J = 1) that is an N-independent mean-square frequency 8p(p−2):
+the channel keeps a finite O(J) width into the λ → 0 corner. At fixed
+λ the N = ∞ full channel is exact too (`duality/full_channel_chord.py`).
+
+Read the peak with its denominator. μ₀ is identity-subtracted, and A₂
+overlaps the conserved H². At N = ∞ the split is a theorem
+(`duality/singlet_tower.py`): A₂ is a conserved H² piece plus a matter
+chord of dimension 2, with dynamical width 2(1 − q²). At finite N the H²
+component can be removed in exact arithmetic, and then the width has no
+maximum beyond the smallest sizes: it sits near 2 at the small-N end
+and falls monotonically to the same 8p(p−2)/N. The peak at N = 24 is
+conserved weight leaving the denominator (85% of μ₀ at N = 10, 19% at
+N = 24 for p = 4).
 
 **Gates.** A₁ = −2pH forces (N−1)μ_k^pair + μ_k^diag = 0 at k = 2 and 4,
 and that holds at machine precision. The computation is checked against
@@ -168,14 +207,30 @@ at the Krawtchouk N⁻² rate. Figure: `pair_moments.png`.
 
 **Majorana singlet-moment bench** (`mn_majorana_bench.py`) is the ED side
 of `duality/chord_moments.py`. The raw width w₂ rises along fixed p
-toward the λ → 0 corner. That is the tower channel turning on.
+inside the bench's window, N ≤ 20. The exact engine shows that window
+ends before the peak (N = 24 at p = 4), after which the width dies as
+8p(p−2)/N; "the tower channel turning on" was the rising side of that
+peak, and it is withdrawn.
 
 Scope, stated plainly. The chord result is an i ≠ j pair amplitude. At
 dense-ED sizes the measured channel is diagonal-dominated, so the bench
-does not probe the N = ∞ zero. At matched λ the raw w₂ rises with N,
-which is the honest negative. The (8, 4) point shows an exact
+does not probe the N = ∞ pair zero. At matched λ the raw w₂ rises with
+N, which is the honest negative for the raw ratio. The full channel is
+another matter: with the commutant of H projected out per instance
+(`projected_channel.py`), ED does sit on the N = ∞ full-channel law —
+dynamical width 2.03, 2.03, 2.01 at p = 6, N = 16–20 against
+2(1 − q²) = 2.00, where the raw width is 0.29–0.41. The (8, 4) point shows an exact
 per-instance conservation that is absent at (12, 6) and (16, 8). The
-mechanism is unknown.
+mechanism is now proven (`conserved_points.py`): the spin-trace map
+Σᵢψᵢ X ψᵢ weighs Clifford grade g by (−1)^g(N − 2g), every power of H
+at N = 8 has grades {0, 4, 8} only, so every Aₙ is a polynomial in H
+with central coefficients. The same algebra gives two exact identities
+at every (N, p), A₁ = −2ΣᵢHᵢ and A₂ = 4ΣᵢHᵢ², with Hᵢ the part of H
+containing flavor i, and they are the first cases of a general one:
+every Aₙ is a fixed combination of the words Hⁿ with Hᵢ on two or more
+slots, summed over i (n = 3: 4Σᵢ(HᵢHHᵢ + HHᵢ² − 2Hᵢ²H) − 8ΣᵢHᵢ³;
+asserted for n ≤ 5). That identity is what the N = ∞ tower law is built
+on.
 
 Numbers live in `results.txt` and `results.json`. Figures and data JSONs
 sit next to their scripts.
@@ -204,7 +259,11 @@ Read `rms_off`, not the ratio, which is artifacted at p = N/2.
 | `exact_wick_dirac.py` | the Dirac counterpart: exact Var(B_ij) for U(N) emergence (rms ~ Nc^(−(p−1)/2)), and ED-free singlet-moment anchors |
 | `exact_pair_moments.py` | exact finite-N pair moments of Aₙ (Wick + CRT residue-table DP, no ED; n ≤ 3, μ₀/μ₂/μ₄; exact-Fractions assembly to K = 12) |
 | `pair_moment_laws.py` | the exact 1/N laws by interpolation: deficits n+2 through n = 4, closed forms A(n=1,2)(p) certified at p = 14, exact double-scaling c(p) |
-| `pair_moment_ladder.py` | the μ₆ / K = 12 extension and the word-length ladder: deficit K/2+1 at all 55 laws, the exact n = 1 → 2 coefficient step, the K = 12 frontier, A(n=3)(p) certified at p = 18, c₂(p) exact to p = 48 (multiprocessing; `--refit`, `--ds-extend`) |
+| `pair_moment_ladder.py` | the μ₆ / K = 12 extension and the word-length ladder: deficit K/2+1 at all 55 laws, the exact n = 1 → 2 coefficient step, the K = 12 frontier, A(n=3)(p) certified at p = 18, c₂(p) exact to p = 48 (multiprocessing; `--refit`, `--ds-extend [--n 3]`) |
+| `double_scaling_law.py` | the closed forms of the double-scaling constants, c_{n,2}(λ) = λP_{2n+2}(e^(−λ)), the exact sequences on three lines, the finite-N diagonal–pair cancellation, the B(2,2;p) closed form (multiprocessing; `--resume`) |
+| `full_channel_laws.py` | the FULL A_n channel at fixed p, exact: the peak at λ_chord ≈ 4/3 and the certified law N w₂ → 8p(p−2) |
+| `conserved_points.py` | the (8, 4) per-instance conservation explained (spin-trace map, Cl₈ grades), the identities A₁ = −2ΣHᵢ, A₂ = 4ΣHᵢ², and the general mixed-word identity for every Aₙ |
+| `projected_channel.py` | finite-N ED split of a channel into stationary and dynamical weight (the whole commutant of H removed, degeneracies included) |
 | `mn_spectroscopy.py` | CP-resolved Mₙ spectral functions |
 | `moments_pipeline.py` | CP-resolved moment invariants with statistics |
 | `moments_fast.py` | charge-sector-blocked reimplementation (~140× at Nc = 12; dense equivalence measured at 5e-15 against a 1e-9 gate) |
@@ -217,7 +276,7 @@ Read `rms_off`, not the ratio, which is artifacted at p = N/2.
 | `mn_majorana_bench.py` | Majorana singlet-channel moments (the ED side of the chord computation) |
 | `validate_syk.py`, `self_averaging.py` | RMT validation; the §3.5 measurement |
 | `plot_self_averaging.py`, `plot_freeness.py`, `plot_pair_moments.py` | figures (they read the JSONs) |
-| `test_*.py` | the asserting suites (206 tests, 194 fast) |
+| `test_*.py` | the asserting suites (265 tests, 254 fast) |
 
 ## Usage
 
@@ -236,7 +295,7 @@ python3 qed_campaign.py         # the QED campaign
 python3 baryons.py              # the baryon campaign
 python3 freeness.py             # the freeness campaign           (hours)
 python3 mn_majorana_bench.py    # the singlet-moment bench        (~1 h)
-pytest -q -m 'not slow'         # 194 fast tests                  (~30 s)
+pytest -q -m 'not slow'         # 254 fast tests                  (~45 s)
 ```
 
 ## Scope

@@ -217,17 +217,45 @@ def test_double_scaling_overlap_and_extension():
 
 def test_c2_limit_is_an_estimate_with_a_spread():
     """The limit extrapolation is labeled an estimate, carries its
-    window spread, and its windows agree with each other at the 1e-2
-    level; the exact points stay in the artifact for anyone to refit."""
+    window spread, and its order >= 3 windows agree at the 1e-4 level;
+    the exact points stay in the artifact for anyone to refit.  The
+    estimate lands on the closed form 2 P_6(e^-2) = 4 lambda (1-q)^2 (5+3q)
+    = 32.3341891 (double_scaling_law.py) to better than its spread."""
+    import math
     lim = DATA["double_scaling"]["c2_limit"]
     assert lim["estimated"] is True
     assert "estimate" in lim["note"]
-    vals = [f["c_inf"] for f in lim["fits"]]
+    top = max(f["order"] for f in lim["fits"])
+    vals = [f["c_inf"] for f in lim["fits"] if f["order"] >= min(3, top)]
     assert max(vals) - min(vals) == pytest.approx(lim["spread"])
-    assert lim["spread"] < 2e-2
-    assert 32.0 < lim["c_inf_central"] < 32.6
+    assert lim["spread"] < 2e-4
+    q = math.exp(-2.0)
+    closed = 8 * (1 - q) ** 2 * (5 + 3 * q)
+    assert lim["closed_form"] == pytest.approx(closed, rel=1e-14)
+    assert abs(lim["c_inf_central"] - closed) < lim["spread"]
+    assert abs(lim["central_minus_closed"]) < 1e-7
     # and it lies above every exact point, since the sequence rises
     assert lim["c_inf_central"] > max(r["c"] for r in DATA["double_scaling"]["n2"])
+    # live: the estimator on the committed points reproduces the record
+    from pair_moment_ladder import c_limit_estimate
+    live = c_limit_estimate(DATA["double_scaling"]["n2"], 2)
+    assert live["c_inf_central"] == pytest.approx(lim["c_inf_central"], abs=1e-9)
+
+
+def test_c3_limit_pooled_estimate_meets_the_K8_closed_form():
+    """c_3(p) (n = 3, K = 8): the ladder's p = 14, 16 points pooled with
+    pair_moment_laws.json's p = 4..12 extrapolate to 223.63 +- 0.07,
+    against the closed form 2 P_8(e^-2) = 8 (1-q)^3 (35+56q+35q^2+10q^3)
+    = 223.648; the deeper n = 3 line lives in double_scaling_law.json."""
+    import math
+    lim = DATA["double_scaling"]["c3_limit"]
+    assert lim["estimated"] is True
+    q = math.exp(-2.0)
+    closed = 8 * (1 - q) ** 3 * (35 + 56 * q + 35 * q * q + 10 * q ** 3)
+    assert lim["closed_form"] == pytest.approx(closed, rel=1e-14)
+    assert abs(lim["c_inf_central"] - closed) < 2 * lim["spread"]
+    assert lim["spread"] < 0.1
+    assert lim["c_inf_central"] > max(r["c"] for r in DATA["double_scaling"]["n3"])
 
 
 def test_K8_family_closed_form():

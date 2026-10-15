@@ -9,7 +9,7 @@
   "pair": "-9656064/117649",
   "diag": "9656064/16807"
  },
- "runtime_s": 26564.9,
+ "runtime_s": 26662.2,
  "laws": [
   {
    "p": 2,
@@ -2274,11 +2274,38 @@
       44
      ],
      "c_inf": 32.334185958266595
+    },
+    {
+     "order": 5,
+     "window": [
+      28,
+      32,
+      36,
+      40,
+      44,
+      48
+     ],
+     "c_inf": 32.334189094412565
+    },
+    {
+     "order": 5,
+     "window": [
+      26,
+      28,
+      32,
+      36,
+      40,
+      44
+     ],
+     "c_inf": 32.33418912232076
     }
    ],
-   "c_inf_central": 32.334187264994085,
-   "spread": 0.0013418625757353198,
-   "note": "sliding-window 1/p fits, orders 2-4; estimate, not exact; central = deepest widest window"
+   "c_inf_central": 32.334189094412565,
+   "spread": 9.04214565480288e-05,
+   "closed_form": 32.334189079879806,
+   "closed_form_expr": "2 P_6(e^-2)",
+   "central_minus_closed": 1.453275899621076e-08,
+   "note": "sliding-window exact 1/p fits, orders 2-5; central = deepest highest-order window; spread over the order >= 3 windows; estimate, compared to the closed form of double_scaling_law.py"
   },
   "n3": [
    {
@@ -2293,6 +2320,77 @@
     "mu2": -0.05121080304694267,
     "c": 209.75944928027718
    }
-  ]
+  ],
+  "c3_limit": {
+   "estimated": true,
+   "fits": [
+    {
+     "order": 2,
+     "window": [
+      12,
+      14,
+      16
+     ],
+     "c_inf": 223.27772702928337
+    },
+    {
+     "order": 2,
+     "window": [
+      10,
+      12,
+      14
+     ],
+     "c_inf": 223.08728923853445
+    },
+    {
+     "order": 3,
+     "window": [
+      10,
+      12,
+      14,
+      16
+     ],
+     "c_inf": 223.59512334719824
+    },
+    {
+     "order": 3,
+     "window": [
+      8,
+      10,
+      12,
+      14
+     ],
+     "c_inf": 223.56506255368146
+    },
+    {
+     "order": 4,
+     "window": [
+      8,
+      10,
+      12,
+      14,
+      16
+     ],
+     "c_inf": 223.62518414071502
+    },
+    {
+     "order": 4,
+     "window": [
+      6,
+      8,
+      10,
+      12,
+      14
+     ],
+     "c_inf": 223.62991596857185
+    }
+   ],
+   "c_inf_central": 223.62518414071502,
+   "spread": 0.06485341489039342,
+   "closed_form": 223.64808930714037,
+   "closed_form_expr": "2 P_8(e^-2)",
+   "central_minus_closed": -0.022905166425346124,
+   "note": "sliding-window exact 1/p fits, orders 2-5; central = deepest highest-order window; spread over the order >= 3 windows; estimate, compared to the closed form of double_scaling_law.py"
+  }
  }
 }

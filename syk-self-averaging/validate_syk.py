@@ -130,4 +130,5 @@ def run(ns=(10, 12, 14, 16, 18, 20), p: int = 4):
 
 
 if __name__ == "__main__":
-    run()
+    import sys
+    sys.exit(0 if run() else 1)

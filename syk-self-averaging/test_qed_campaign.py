@@ -410,9 +410,24 @@ def test_qed_campaign_json_structure():
                 "charging", "spectral"):
         assert key in data
     for row in data["m2_ensembles"]:
+        # the exact references are recomputed, not read back
+        assert row["relvar_exact"] == pytest.approx(
+            relvar_m2_exact_dirac(row["Nc"], row["p"], row["ensemble"]), rel=1e-12)
+        assert row["mean_exact"] == pytest.approx(
+            mean_m2_exact(row["Nc"], row["p"], row["ensemble"]), rel=1e-12)
         assert abs(row["relvar"] - row["relvar_exact"]) < 4 * row["relvar_err"]
     for curve in data["charging"]:
         assert "fits" in curve and "verdict" in curve["fits"]
+        # the GLS fits are refit from the committed curves and covariances
+        live = fit_charging({k: v for k, v in curve.items() if k != "fits"})
+        stored = curve["fits"]
+        assert live["verdict"] == stored["verdict"]
+        for key in ("capacitance", "capacitance_err",
+                    "delta_aic_conf_minus_cap"):
+            assert live[key] == pytest.approx(stored[key], rel=1e-9), key
+        for m in ("capacitive_x2", "confining_absx"):
+            for key in ("chi2_gls", "aic", "chi2_diag", "hartlap"):
+                assert live[m][key] == pytest.approx(stored[m][key], rel=1e-9), (m, key)
         assert len(curve["e0_mean"]) == curve["Nc"] + 1
         assert len(curve["e0_cov_mean"]) == curve["Nc"] + 1
         f = curve["fits"]

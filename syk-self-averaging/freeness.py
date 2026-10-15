@@ -220,19 +220,38 @@ def run_point(N: int, p: int, n_inst: int, seed: int,
         out[k] = A.mean(axis=0).tolist()
         out[k + "_sem"] = (A.std(axis=0, ddof=1) * sem).tolist()
 
-    # verdict scalars ------------------------------------------------------
-    # late-time plateaus: mean over the last 3 grid points
+    out.update(verdict_scalars(out))
+    return out
+
+
+def verdict_scalars(row: dict) -> dict:
+    """The verdict scalars from a row's stored time series (so a test can
+    recompute them from the committed arrays): late-time plateaus as the
+    mean over the last 3 grid points, and the crossover time t_x (in tJ
+    units) as the first sign change of W1_arc - W1_bin, linearly
+    interpolated, with its per-point propagated sigma from the stored
+    SEMs."""
+    out = {}
     for k in ("W1_arc", "W1_bin", "m2", "w4"):
-        out[f"plateau_{k}"] = float(np.mean(np.abs(out[k][-3:])))
-    # crossover time t_x (in tJ units): first sign change of W1_arc - W1_bin,
-    # linearly interpolated
-    d = np.array(out["W1_arc"]) - np.array(out["W1_bin"])
-    tJ = np.array(out["tJ"])
+        out[f"plateau_{k}"] = float(np.mean(np.abs(row[k][-3:])))
+    d = np.array(row["W1_arc"]) - np.array(row["W1_bin"])
+    tJ = np.array(row["tJ"])
     out["t_x_J"] = None
+    out["t_x_J_sigma"] = None
     for i in range(1, len(d)):
         if d[i - 1] > 0.0 >= d[i]:
             frac = d[i - 1] / (d[i - 1] - d[i])
             out["t_x_J"] = float(tJ[i - 1] + frac * (tJ[i] - tJ[i - 1]))
+            # sigma(t_x) from the two bracketing points' SEMs, treating the
+            # W1_arc - W1_bin errors as independent between points
+            if "W1_arc_sem" in row and "W1_bin_sem" in row:
+                s0 = np.hypot(row["W1_arc_sem"][i - 1], row["W1_bin_sem"][i - 1])
+                s1 = np.hypot(row["W1_arc_sem"][i], row["W1_bin_sem"][i])
+                dt = tJ[i] - tJ[i - 1]
+                den = d[i - 1] - d[i]
+                dfd0 = -d[i] / den ** 2
+                dfd1 = d[i - 1] / den ** 2
+                out["t_x_J_sigma"] = float(dt * np.hypot(dfd0 * s0, dfd1 * s1))
             break
     return out
 
