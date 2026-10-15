@@ -285,17 +285,21 @@ not each open a new propagating sector. A one-to-one map from raw
 operators to new states cannot hold there.
 
 The decomposition also says what can be labelled. It is triangular: Oₙ
-first appears in Aₙ, and its dressing there has degree n − n = 0. So
+first appears in Aₙ, with constant dressing and coefficient exactly 4. So
 removing from Aₙ its overlap with the commutant of H and with every
-dressed lower chord f(H) Oₘ g(H), m < n, leaves a multiple of Oₙ at
-N = ∞: a matter chord of dimension n whose spectral density is the
-standard Δ = n continuum. The natural candidate for "the n-th member of the
+dressed lower chord f(H) Oₘ g(H), m < n, leaves Õₙ = 4Ôₙ at N = ∞, of
+weight 16 Nₙ: a matter chord of dimension n whose spectral density is the
+standard Δ = n continuum (`duality/horizon_tower.py`, checked n = 2..5). The natural candidate for "the n-th member of the
 tower" is therefore the dimension-n chord, not the raw Aₙ. Both start
 at 2: the paper's dynamical tower begins at n = 2, and so do the matter
 chords.
 
 Whether a dimension-n chord carries a meson's quantum numbers, and at
-what mass, is the dictionary question. It is not answered here. These
+what mass, is the dictionary question. It is not answered here. What a
+chord looks like in a Rindler frame is: as λ → 0 its density is the
+quasinormal ladder |Γ(n + iω/2𝒥)|² of a scale-invariant operator of
+dimension n, with no component of the form a massive field produces
+(`duality/HORIZON.md`). These
 statements are about the Majorana Aₙ; the Dirac Mₙ are not covered.
 
 ## Reproduce

@@ -180,10 +180,13 @@ Priorities before a stronger claim:
    them explicitly limited to the tested p values.
 5. Obtain the state/time/operator dictionary needed to compare boost data
    with invariant masses. No amount of numerical precision alone supplies it.
-   A concrete first step: the orthogonalized tower of
-   [singlet-tower-note.md](singlet-tower-note.md) §8 gives one matter chord
-   of dimension n per level, so each candidate dual's Δ ↔ m relation can
-   be tested against the parameter-free 't Hooft mass ratios.
+   What is now known at N = ∞ (`duality/HORIZON.md`): in the paper's
+   string units each singlet chord is, as λ → 0, the quasinormal ladder
+   of a scale-invariant operator of dimension 2, 3 or 5 at a string-scale
+   Rindler acceleration, with no component of the pole-free form a
+   massive field (or the 't Hooft tower) produces. A dictionary therefore
+   has to say where the mesons enter: finite-N corrections, other
+   operators, or a non-local probe.
 
 ## Reproduction and literature scope
 

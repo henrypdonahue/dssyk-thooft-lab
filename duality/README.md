@@ -75,6 +75,17 @@ and the odd ones stay: dimensions 2, 3, 5 survive. Gated by the exact
 finite-N engine and by dense ED with the commutant of H projected out.
 Figure: `plot_singlet_tower.py`.
 
+**[HORIZON.md](HORIZON.md)** and `horizon_tower.py`. The tower in the
+frame where the mesons should be. The orthogonalized tower is a pure chord,
+Õₙ = 4Ôₙ. As λ → 0 each chord of dimension Δ is the quasinormal ladder
+|Γ(Δ + iω/a)|², a = 2𝒥 = 2√2 J_MSS in the paper's string units, reached
+with deviation (Δ/4)λ. Calibrated against Rindler-frame fields, that is a
+scale-invariant operator of dimension Δ; a field of mass M gives the
+pole-free K_{iω/a}(M/a)², with a decay rate that grows without bound,
+and so does the 't Hooft tower. So the N = ∞ singlet channels carry no
+massive component: the mesons, if the duality holds, are not visible in
+them.
+
 **[ANTISCRAMBLING.md](ANTISCRAMBLING.md)** and `antiscrambling.py`. The
 OTOC sign test, and the fold. DSSYK∞ scrambles at every temperature,
 a(v) = −1/cos(πv/2) < 0. So the flat dictionary cannot give a de Sitter
@@ -162,5 +173,6 @@ python3 diagonal_chord.py --run  # the diagonal channel + gates     (~20 s)
 python3 full_channel_chord.py --run  # the full channel + gates    (~10 min, finite-N series)
 python3 singlet_tower.py         # the resolved channel, A_2..A_5  (~20 s)
 python3 singlet_tower.py --run   # its artifact and finite-N gates (~3 CPU-hours; --resume)
-pytest -q                        # 335 tests (331 fast, ~1 min)
+python3 horizon_tower.py         # the tower at the stretched horizon (~30 s)
+pytest -q                        # 355 tests (351 fast, ~1 min)
 ```

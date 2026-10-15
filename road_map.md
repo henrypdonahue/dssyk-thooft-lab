@@ -283,6 +283,23 @@ p = 4..12 and reproducing the committed p = 2 value out of sample. What
 the chord-side derivation now has to reproduce is that cancellation, and
 the fixed-p polynomials Q_n(p).
 
+### The tower at the stretched horizon
+
+[`duality/HORIZON.md`](duality/HORIZON.md). The flat-space limit of
+2506.18054 is λ fixed, energies fixed in string units, so the N = ∞
+results above describe the singlets in exactly that limit. In those units
+(J_MSS = pJ) the chords' ladder spacing is a = 2𝒥 = 2√2 J_MSS: string
+scale, the scale of the meson masses and of the stretched horizon of
+their §6. As λ → 0 each chord of dimension Δ is the quasinormal ladder
+|Γ(Δ + iω/a)|², reached with deviation (Δ/4)λ (measured Δ = 2..6), and
+the exact decay rates plateau at Δa. A field of mass M at a Rindler
+horizon gives the pole-free K_{iω/a}(M/a)², whose decay rate grows
+without bound; so does the 't Hooft tower, built from the repo's masses
+and decay constants. The singlet channels are scale-invariant content
+with Δ = 2, 3, 5 and no massive component: consistent with their §6
+picture of a deconfined stretched horizon, and a sign that the mesons are
+not visible in the N = ∞ two-point functions of the Sₙ.
+
 ### The dS axis
 
 DSSYK∞ **scrambles at every temperature**. The growth coefficient is
@@ -336,18 +353,19 @@ condensate and gives first α → −1 GMOR data.
 
 ### Next work items, in priority order
 
-1. **The orthogonalized tower and a dimension-to-mass fingerprint.** As
-   λ → 0 the raw A₃..A₆ all sit ≥ 99% in the Δ = 3 sector
-   (`notes/singlet-tower-note.md` §8), so the raw operators cannot be
-   labelled one-to-one with mesons. The triangular decomposition isolates
-   a dimension-n chord at each level. Build that orthogonalized tower in
-   `duality/singlet_tower.py`. Then tabulate what each candidate dual's
-   Δ ↔ m relation (MSS JT-dS, Narovlansky–Verlinde, sine-dilaton) makes of
-   the dimensions 2, 3, 4, …, against the parameter-free 't Hooft ratios
-   in `dictionary.mass_squared_ratios`. The 't Hooft trajectory is linear
-   in n (2λₙ → n + 3/4); a relation quadratic in Δ cannot match it at
-   large n under Δ = n_paper. That would make the open dictionary question a finite
-   list of yes/no checks, and add a second axis to `DISCRIMINATOR.md`.
+1. **Where are the mesons?** Done at N = ∞
+   ([duality/HORIZON.md](duality/HORIZON.md)): the orthogonalized tower is
+   a pure chord, Õₙ = 4Ôₙ, and as λ → 0 every singlet channel is a sum of
+   quasinormal ladders |Γ(Δ + iω/a)|², Δ = 2, 3, 5, at the string-scale
+   spacing a = 2√2 J_MSS. Against Rindler-frame fields that is
+   scale-invariant content with no massive component: a field of mass M,
+   and the 't Hooft tower, give pole-free K_{iω/a}(M/a)² and decay rates
+   that grow without bound. So the paper's small-λ prediction cannot be
+   met by the N = ∞ two-point functions of the Sₙ. Next: test whether the
+   1/N corrections can carry a massive component. The exact finite-N
+   engine already gives the O(1/p) corrections to the full A₂ moments on
+   double-scaling lines; compare them with what an admixed K² term
+   predicts for the moment ratios against a deformed ladder.
 2. **Scaling with the 't Hooft coupling.** At fixed p the A₂ channel's
    mean-square frequency tends to 8p(p−2)J² = 8(ᾱ − 2√ᾱ)J² with ᾱ = p²:
    linear in ᾱ at large p, the way the 't Hooft mass scale is linear in
@@ -355,8 +373,9 @@ condensate and gives first α → −1 GMOR data.
    tested consistency check, with the boost-against-mass caveat, and
    extend it to A₃ and to the H²-projected width with the exact finite-N
    engine.
-3. **Test the 2, 3, 5 coincidence.** At small λ and low temperature a
-   matter chord of dimension Δ should give conformal τ^(−2Δ) correlators.
+3. **Test the 2, 3, 5 coincidence.** At T = ∞ each chord is already the
+   ladder of a dimension-Δ scale-invariant operator (item 1); at small λ
+   and low temperature it should give conformal τ^(−2Δ) correlators.
    Check whether O₃ inside A₃ behaves as the large-p h = 3 bilinear, and
    whether the O₅/O₃ weight in A₅ (0.53% / 99.5%) matches the ratio of
    large-p OPE coefficients (Gross–Rosenhaus). Either outcome turns an

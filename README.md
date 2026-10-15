@@ -78,6 +78,19 @@ one more point: the raw A₃..A₆ there all probe essentially the same Δ = 3
 sector, so the natural "n-th member" of the tower is the dimension-n
 chord, not the raw Aₙ ([note](notes/singlet-tower-note.md) §8).
 
+**4. In the frame where the mesons should be, they are not there
+(N = ∞, small λ).** The paper's flat-space limit is λ fixed with energies
+fixed in string units, J_MSS = pJ. In those units each chord of dimension
+Δ becomes, as λ → 0, the quasinormal ladder |Γ(Δ + iω/a)|² with
+string-scale spacing a = 2√2 J_MSS: the response of a scale-invariant
+operator at a Rindler horizon. A field of mass M there, and the 't Hooft
+tower built from this repo's masses and decay constants, give instead the
+pole-free K_{iω/a}(M/a)², with decay rates that grow without bound. The
+singlet channels plateau at Δa. So at N = ∞ they carry no massive
+component, consistent with the paper's own picture of a deconfined
+stretched horizon; the mesons, if the duality holds, are not in these
+two-point functions ([duality/HORIZON.md](duality/HORIZON.md)).
+
 ## Results and their scope
 
 | Calculation | Supported conclusion | Limitation |
@@ -86,6 +99,7 @@ chord, not the raw Aₙ ([note](notes/singlet-tower-note.md) §8).
 | Pair (i ≠ j) chord amplitude | Conserved at N = ∞ for every n, λ and matter weight (theorem) | Not the full flavor-summed channel |
 | Full A₂ channel at N = ∞ | Conserved H² part plus a Δ = 2 matter chord (theorem), checked against exact finite N and projected ED | Majorana only; a boost-frequency continuum is not a mass |
 | Aₙ, n = 3..6, at N = ∞ | Polynomial in H plus matter chords of dimension 2..n | Verified in computer algebra on finite word sets; no general-n proof |
+| Singlet tower in a Rindler frame | As λ → 0 each chord is the quasinormal ladder \|Γ(Δ + iω/a)\|², a = 2√2 J_MSS (deviation (Δ/4)λ); no massive, pole-free K² component | Free-field calibration at fixed distance from the horizon; a = 2𝒥 is the natural, not a supplied, identification |
 | Fixed p, finite N | Exact rational moment laws; μ₂/μ₀ = 8p(p−2)/N + O(N⁻²) at each tested even p ≤ 12 | Not proved for all p; not an exact finite-N equality |
 | Self-averaging | Exact finite-N variance of the adjoint Bⱼₖ and the singlet m₂, with an m₄ extension | Specific observables, not a theorem about full emergent gauge symmetry |
 | 't Hooft target | 40 levels to 17–21 digits; all of FLZ's tables and sum rules reproduced | An accurate target does not supply the SYK/bulk dictionary |
@@ -154,7 +168,7 @@ or an identical BLAS guarantee. CI covers Python 3.9 and 3.12 on Linux.
 
 Run tests separately in the three module directories, as the Makefile
 does; the code uses flat script imports. `test` excludes slow tests
-(649 fast tests, 7 of them for the runner); `test-all` includes them. `reproduce` runs the fast
+(669 fast tests, 7 of them for the runner); `test-all` includes them. `reproduce` runs the fast
 deterministic producers and plots in a minute or two; `reproduce-slow`
 runs every campaign and reference generator and takes many hours.
 Producers overwrite their output files, so use a scratch copy or the

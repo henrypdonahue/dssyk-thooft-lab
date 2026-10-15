@@ -54,6 +54,7 @@ reproduce:
 	cd duality && $(PY) full_channel_chord.py
 	cd duality && $(PY) singlet_tower.py
 	cd duality && $(PY) diagonal_chord.py --run
+	cd duality && $(PY) horizon_tower.py
 	cd duality && $(PY) plot_chord.py
 	cd duality && $(PY) plot_signflip.py
 	cd duality && $(PY) plot_singlet_tower.py
