@@ -1,4 +1,4 @@
-# Fast test suites of all three modules + the thooft physics gate.
+# Fast test suites of the three modules and scripts/, plus the thooft physics gate.
 # Slow ED sweeps (-m slow) are excluded; run `make test-all` locally for those.
 name: tests
 

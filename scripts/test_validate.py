@@ -71,3 +71,56 @@ def test_binary_files_are_flagged_not_compared(tmp_path):
     a.write_bytes(b"\x89PNG1")
     b.write_bytes(b"\x89PNG2")
     assert validate.compare_artifact(a, b)["kind"] == "binary"
+
+
+def test_nan_and_inf_changes_are_reported(tmp_path):
+    nan, inf = float("nan"), float("inf")
+    for old, new in (({"x": 1.0}, {"x": nan}), ({"x": nan}, {"x": 1.0}),
+                     ({"x": 1.0}, {"x": inf}), ({"a": [nan, 1.0, 2.0]}, {"a": [1.0, 1.0, 2.0]})):
+        c = validate.compare_artifact(*_pair(tmp_path, old, new))
+        assert c["n_text_changes"] == 1, (old, new)
+    # an unchanged NaN is not a change, and does not hide a real one
+    c = validate.compare_artifact(*_pair(tmp_path, {"a": [nan, 1.0, 2.0]}, {"a": [nan, 1.0, 5.0]}))
+    assert c["n_text_changes"] == 0 and c["max_rel"] == pytest.approx(3.0 / 5.0)
+
+
+def test_type_changes_are_structural(tmp_path):
+    for old, new in (({"x": 1}, {"x": True}), ({"x": {"a": 1}}, {"x": [1]}),
+                     ({"x": 1.0}, {"x": "1.0"})):
+        c = validate.compare_artifact(*_pair(tmp_path, old, new))
+        assert c["n_structure_changes"] == 1, (old, new)
+
+
+def test_int_and_float_compare_as_numbers(tmp_path):
+    c = validate.compare_artifact(*_pair(tmp_path, {"x": 2}, {"x": 2.0}))
+    assert c["max_rel"] == 0.0 and c["n_structure_changes"] == 0
+
+
+def test_runtime_key_patterns():
+    for k in ("runtime_s", "gates_runtime_s", "runtime", "elapsed_s",
+              "mean_seconds_per_instance", "seconds"):
+        assert validate._is_runtime_key(k), k
+    for k in ("mu0", "omega2", "lam"):
+        assert not validate._is_runtime_key(k), k
+
+
+def test_nested_records_and_length_changes(tmp_path):
+    old = {"rows": [{"a": 1.0, "b": [1.0, 2.0]}, {"a": 2.0}]}
+    new = {"rows": [{"a": 1.0, "b": [1.0, 2.2]}, {"a": 2.0}], "extra": 1}
+    c = validate.compare_artifact(*_pair(tmp_path, old, new))
+    assert c["max_rel_at"] == "/rows[0]/b[1]" and c["structure_changes"] == ["/extra"]
+    c = validate.compare_artifact(*_pair(tmp_path, {"a": [1, 2]}, {"a": [1, 2, 3]}))
+    assert c["n_structure_changes"] == 1
+
+
+def test_unparseable_input(tmp_path):
+    a, b = tmp_path / "a.json", tmp_path / "b.json"
+    a.write_text("{")
+    b.write_text("{}")
+    assert "unparseable" in validate.compare_artifact(a, b)["error"]
+
+
+def test_unsupported_recipe_is_rejected(tmp_path):
+    (tmp_path / "Makefile").write_text("test:\n\techo hi\n")
+    with pytest.raises(ValueError):
+        validate.recipes(tmp_path, "test")

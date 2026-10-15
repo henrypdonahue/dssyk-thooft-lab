@@ -35,10 +35,16 @@ compares every committed artifact the run rewrote with the working-tree
 copy it started from, and records the result in the manifest under
 `artifact_comparison`. JSON and CSV files are compared value by value.
 Numbers are compared by relative difference; a numeric array is measured
-against its largest entry, and a value below 1e-14 of the largest
-magnitude in its own record counts as a roundoff zero. Runtime fields are
-ignored. Text and structural changes are listed. Images are flagged as
-changed bytes and not compared.
+against its largest finite entry, and a value below 1e-14 of the largest
+finite magnitude in its nearest enclosing JSON object (nested values
+included) counts as a roundoff zero. That floor can hide a genuinely
+small diagnostic stored next to large values (for example a quadrature
+drift beside the spectrum it qualifies); such fields are better stored in
+their own object. A change into or out of NaN or infinity, a change of
+type, a key or length change and any text change are listed. Runtime
+fields (keys ending in runtime_s or elapsed_s, or mentioning seconds) are
+ignored. A committed artifact the run deletes is reported. Images are
+flagged as changed bytes and not compared.
 
 Review those differences before copying selected outputs back. Runtime
 fields, platform rounding and plot metadata need not be identical.

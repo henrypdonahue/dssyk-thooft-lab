@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import importlib.metadata
 import json
+import math
 import os
 from pathlib import Path
 import platform
@@ -47,13 +48,19 @@ def git(root, *args):
     return p.stdout.strip() if p.returncode == 0 else None
 
 
-# Fields that record wall-clock cost rather than results.
-RUNTIME_KEYS = ('runtime_s', 'runtime', 'elapsed_s', 'seconds')
+# Fields that record wall-clock cost rather than results: 'runtime',
+# anything ending in 'runtime_s' or 'elapsed_s', anything mentioning
+# 'seconds' (e.g. gates_runtime_s, mean_seconds_per_instance).
+def _is_runtime_key(key) -> bool:
+    k = str(key)
+    return (k == 'runtime' or k.endswith('runtime_s') or k.endswith('elapsed_s')
+            or 'seconds' in k)
 
-# A value below this fraction of the largest magnitude in its own record
-# (the nearest enclosing JSON object) is a roundoff zero and is not
-# compared: e.g. the dynamical histogram of an exactly conserved channel,
-# 1e-22 against a total weight of 1.
+
+# A value below this fraction of the largest finite magnitude in its own
+# record (the nearest enclosing JSON object, nested values included) is a
+# roundoff zero and is not compared: e.g. the dynamical histogram of an
+# exactly conserved channel, 1e-22 against a total weight of 1.
 ROUNDOFF_FLOOR = 1e-14
 
 
@@ -61,9 +68,13 @@ def _is_number(v):
     return isinstance(v, (int, float)) and not isinstance(v, bool)
 
 
+def _finite(v) -> bool:
+    return math.isfinite(v)
+
+
 def _magnitudes(value):
     if _is_number(value):
-        return [abs(value)] if value == value else []   # skip NaN
+        return [abs(value)] if _finite(value) else []
     if isinstance(value, dict):
         value = list(value.values())
     if isinstance(value, list):
@@ -71,41 +82,71 @@ def _magnitudes(value):
     return []
 
 
+def _kind(v) -> str:
+    if isinstance(v, bool):
+        return 'bool'
+    if _is_number(v):
+        return 'number'
+    if isinstance(v, dict):
+        return 'object'
+    if isinstance(v, list):
+        return 'array'
+    return type(v).__name__
+
+
 def _record(out, rel, path):
     if rel > out['max_rel']:
         out['max_rel'], out['max_rel_at'] = rel, path
 
 
+def _same_nonfinite(a, b) -> bool:
+    """Both non-finite and equal (NaN matches NaN, inf matches inf of the same sign)."""
+    if math.isnan(a) and math.isnan(b):
+        return True
+    return not _finite(a) and not _finite(b) and a == b
+
+
+def _compare_numbers(a, b, path, out, floor, scale=None):
+    if not (_finite(a) and _finite(b)):
+        if not _same_nonfinite(a, b):
+            out['text'].append(f'{path} ({a!r} -> {b!r})')
+        return
+    if scale is None:
+        scale = max(abs(a), abs(b))
+    if a != b and scale > floor:
+        _record(out, abs(a - b) / scale, path)
+
+
 def _walk(old, new, path, out, floor):
     """Collect the numeric relative differences and every non-numeric
     change between two parsed JSON values."""
-    if isinstance(old, dict) and isinstance(new, dict):
+    ka, kb = _kind(old), _kind(new)
+    if ka != kb:
+        out['structure'].append(f'{path} (type {ka} -> {kb})')
+    elif ka == 'object':
         floor = ROUNDOFF_FLOOR * max(_magnitudes(old) + _magnitudes(new) + [0.0])
         for key in sorted(set(old) | set(new)):
-            if key in RUNTIME_KEYS:
+            if _is_runtime_key(key):
                 continue
             if key not in old or key not in new:
                 out['structure'].append(f'{path}/{key}')
             else:
                 _walk(old[key], new[key], f'{path}/{key}', out, floor)
-    elif isinstance(old, list) and isinstance(new, list):
+    elif ka == 'array':
         if len(old) != len(new):
             out['structure'].append(f'{path} (length {len(old)} -> {len(new)})')
             return
         if old and all(_is_number(v) for v in old + new):
             # a numeric array (a spectrum, a histogram, a series): measure each
-            # difference against the array's largest entry
-            scale = max(abs(v) for v in old + new)
-            if scale > floor:
-                for i, (a, b) in enumerate(zip(old, new)):
-                    _record(out, abs(a - b) / scale, f'{path}[{i}]')
+            # finite difference against the array's largest finite entry
+            scale = max(_magnitudes(old) + _magnitudes(new) + [0.0])
+            for i, (a, b) in enumerate(zip(old, new)):
+                _compare_numbers(a, b, f'{path}[{i}]', out, floor, scale=scale)
             return
         for i, (a, b) in enumerate(zip(old, new)):
             _walk(a, b, f'{path}[{i}]', out, floor)
-    elif _is_number(old) and _is_number(new):
-        scale = max(abs(old), abs(new))
-        if old != new and scale > floor:
-            _record(out, abs(old - new) / scale, path)
+    elif ka == 'number':
+        _compare_numbers(old, new, path, out, floor)
     elif old != new:
         out['text'].append(path)
 
@@ -227,7 +268,8 @@ def main():
     # Value-level comparison of every committed artifact the run rewrote.
     # The baseline is the working-tree file, valid only if it is still the
     # content the snapshot started from.
-    comparison = {}
+    comparison = {name: dict(kind='deleted', error='deleted by the run')
+                  for name in sorted(hashes) if not (snapshot / name).is_file()}
     for name in sorted(generated):
         if name not in hashes:
             continue
