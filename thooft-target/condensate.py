@@ -98,15 +98,44 @@ GAMMA_E = float(np.euler_gamma)
 # ---------------------------------------------------------------------------
 # the exact condensate [LM (6.1)]
 # ---------------------------------------------------------------------------
+def _odd_series(t: float, coeff) -> float:
+    """sum_{k>=1} coeff(k) t^(2k+1), summed to double precision (t <= 1/2)."""
+    t2, power, total, k = t * t, t, 0.0, 1
+    while True:
+        power *= t2
+        term = coeff(k) * power
+        total += term
+        if abs(term) <= 1e-18 * abs(total):
+            return total
+        k += 1
+
+
+def _sinh2t_minus_2t(t: float) -> float:
+    """sinh(2t) - 2t without the small-t cancellation (which costs
+    log10(1/t^2) digits in the direct form)."""
+    if t > 0.5:
+        return math.sinh(2 * t) - 2 * t
+    return 2.0 * _odd_series(t, lambda k: 4.0 ** k / math.factorial(2 * k + 1))
+
+
+def _tcosh_minus_sinh(t: float) -> float:
+    """t cosh t - sinh t = sum_k 2k t^(2k+1)/(2k+1)!, likewise."""
+    if t > 0.5:
+        return t * math.cosh(t) - math.sinh(t)
+    return _odd_series(t, lambda k: 2.0 * k / math.factorial(2 * k + 1))
+
+
 def I_alpha(alpha: float) -> float:
     """I(alpha) = (1/4) Int dt/t^2 (sinh2t - 2t)/[cosh t (alpha sinh t
     + t cosh t)].  The integrand is even, and near-singular ~ 4/(t^2 + 3a) at
     small t when a = 1 + alpha -> 0 (an explicit small-t split handles that).
 
-    Validated domain: a = 1 + alpha >= 1e-6.  Measured accuracy is 7e-14 at
-    alpha = 0, degrading to ~2e-9 by a = 1e-3.  Below a ~ 1e-6 the split
-    quadrature silently loses digits.  This function refuses rather than
-    degrades."""
+    Both factors that cancel at small t, sinh 2t - 2t and (at alpha ~ -1)
+    alpha sinh t + t cosh t, are evaluated by their series, and each piece
+    is integrated to epsrel 1e-12.  The resulting f(alpha) agrees with a
+    30-digit mpmath evaluation of the direct form to 5e-16 for a = 1 + alpha
+    from 1.6e-6 to 1 (test_condensate.py).  Validated domain: a >= 1e-6;
+    below that the function refuses rather than extrapolate."""
     a = 1.0 + alpha
     if a <= 0:
         raise ValueError(
@@ -128,9 +157,10 @@ def I_alpha(alpha: float) -> float:
         if t > 30.0:
             # tanh t = 1 to double precision: algebraic tail 2/(t^2 (t+a))
             return 2.0 / (t * t * (t + alpha))
-        return ((math.sinh(2 * t) - 2 * t) / (t * t)
-                / (math.cosh(t) * (alpha * math.sinh(t)
-                                   + t * math.cosh(t))))
+        # alpha sinh t + t cosh t = a sinh t + (t cosh t - sinh t): at
+        # alpha ~ -1 the direct form cancels to ~t^3/3, so use the series
+        return (_sinh2t_minus_2t(t) / (t * t)
+                / (math.cosh(t) * (a * math.sinh(t) + _tcosh_minus_sinh(t))))
 
     # split at the near-singular scale sqrt(3a) and again at O(1).  The tail
     # decays only ALGEBRAICALLY (integrand -> 2/(t^2 (t + alpha))), so the
@@ -142,7 +172,7 @@ def I_alpha(alpha: float) -> float:
     edges = sorted(set(edges))
     for lo, hi in zip(edges[:-1], edges[1:]):
         if hi > lo:
-            vi, _ = quad(integrand, lo, hi, limit=400)
+            vi, _ = quad(integrand, lo, hi, limit=400, epsabs=0.0, epsrel=1e-12)
             v += vi
     return 0.5 * v                  # (1/4) * 2 * Int_0^inf
 
@@ -175,11 +205,14 @@ def vacuum_energy_curve(alphas: np.ndarray) -> np.ndarray:
     the dimensionless vacuum-energy shift [E_vac(alpha) - E_vac(-1)]/(Nc g^2).
     The alpha-integrand has an integrable (1+alpha)^{-1/2} endpoint
     singularity.  The substitution u = sqrt(1+alpha) removes it exactly
-    (d alpha = 2u du).  That leaves the smooth integrand f(u^2-1)/sqrt(pi),
-    which tends to -1/(2 pi sqrt(3)) at the chiral end."""
+    (d alpha = 2u du).  That leaves the bounded integrand f(u^2-1)/sqrt(pi),
+    which tends to -1/(2 pi sqrt(3)) at the chiral end, but with a u log u
+    term there, so the spline below converges only like h^2: the error is
+    ~1e-8 ABSOLUTE at every alpha (the first cell), which is 1e-6 relative
+    at alpha = 0 and 1e-5 relative at a = 1e-4, where eps is small."""
     # evaluate f once on a dense u-grid and integrate its cubic-spline
-    # antiderivative -- no nested adaptive quadrature, smooth integrand,
-    # ~1e-8 accuracy.  The u = 0 endpoint value is the exact chiral limit.
+    # antiderivative (no nested adaptive quadrature).  The u = 0 endpoint
+    # value is the exact chiral limit.
     a = np.atleast_1d(np.asarray(alphas, dtype=float))
     if np.any(a < -1.0) or np.any(a > 0.0):
         raise ValueError(

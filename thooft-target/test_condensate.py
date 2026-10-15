@@ -39,6 +39,26 @@ def test_I_alpha_independent_route():
     assert I_alpha(0.0) == pytest.approx(float(val), rel=2e-5)
 
 
+def test_condensate_matches_mpmath():
+    """f(alpha) against a 30-digit mpmath evaluation of LM (6.1) in its
+    direct form (no series, no split), from the chiral corner to the
+    duality point (0.5 s).  The direct form cancels at small t in mpmath
+    too: 20 digits leave a 1e-11 error at a = 1e-6, 30 digits none."""
+    import mpmath as mp
+    with mp.workdps(30):
+        for alpha in (-1 + 1e-6, -0.9999, -0.999, -0.9, -0.5, 0.0):
+            al = mp.mpf(alpha)
+            a = 1 + al
+            g = lambda t: ((mp.sinh(2 * t) - 2 * t) / t ** 2
+                           / (mp.cosh(t) * (al * mp.sinh(t) + t * mp.cosh(t))))
+            s = mp.sqrt(a)
+            integral = mp.quad(g, [0, s / 10, s, 10 * s, 1, 5, 30, mp.inf]) / 2
+            exact = (mp.sqrt(a / mp.pi) / (2 * mp.pi)
+                     * (mp.log(mp.pi / a) - 1 - mp.euler + al * mp.log(4)
+                        - al ** 2 * integral))
+            assert condensate_dimensionless(alpha) == pytest.approx(float(exact), rel=1e-14), alpha
+
+
 def test_condensate_chiral_limit_with_log_rate():
     """f(-1+a) -> CHIRAL_VALUE, with the LM (6.2) log correction:
     1 - f/f_chiral ~= sqrt(3a) log(pi/a)/pi."""
@@ -93,22 +113,18 @@ def test_committed_json_and_gmor_corner():
 def test_committed_arrays_recompute_from_the_producer():
     """The whole artifact reproduces from its producer's functions: the
     f(alpha) and eps(alpha) curves on the committed alpha grid and the
-    GMOR corner rows (0.4 s), to the accuracy of the quadrature.  Against
-    a 30-digit mpmath evaluation, f is good to 4e-11 for a = 1 + alpha >=
-    1e-3 but only to 6e-10 at the grid's end a = 1e-4, where I_alpha is
-    near-singular; different platforms' QUADPACK differ from the committed
-    values by that much (CI, Linux).  So the tolerance is 1e-10 on the
-    regular part of the grid and 5e-9 on the a < 1e-3 tail."""
+    GMOR corner rows (0.4 s).  f is converged to roundoff
+    (test_condensate_matches_mpmath), so this holds across platforms;
+    before the integrand was made cancellation-free it was good only to
+    6e-10 at a = 1e-4 and failed on Linux."""
     from condensate import gmor_corner
     with open(HERE / "condensate.json") as fh:
         d = json.load(fh)
     alphas = np.array(d["alphas"])
     f_live = np.array([condensate_dimensionless(a) for a in alphas])
     eps_live = vacuum_energy_curve(alphas)
-    rtol = np.where(1.0 + alphas >= 1e-3, 1e-10, 5e-9)
-    for live, stored in ((f_live, d["f"]), (eps_live, d["eps"])):
-        stored = np.asarray(stored)
-        assert np.all(np.abs(live - stored) <= rtol * np.abs(stored) + 1e-12)
+    assert np.allclose(f_live, d["f"], rtol=1e-12, atol=0.0)
+    assert np.allclose(eps_live, d["eps"], rtol=1e-12, atol=1e-15)
     assert d["eps_duality_point"] == pytest.approx(float(eps_live[-1]), rel=1e-10)
     corner = gmor_corner()
     assert len(corner) == len(d["gmor_corner"])

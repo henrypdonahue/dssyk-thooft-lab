@@ -162,7 +162,7 @@
   ]
  },
  "condensate_link": {
-  "eps0_measured_Nc_g2": -0.04072406671895725,
+  "eps0_measured_Nc_g2": -0.04072406671975555,
   "prediction": "delta_S = -2*pi*ell**2*rho = +2*pi*|eps0|*Nc*(g*ell)**2 > 0; finite, first-order, divergence-free",
   "hedges": [
    "conditional on JT-dS being the bulk (the paper's assumption 1, unproved)",
@@ -172,5 +172,5 @@
   ],
   "not_conditional": "the shift is finite and first-order: nothing for Holographic Tuning to cancel, on either side of the first law"
  },
- "runtime_s": 4.1
+ "runtime_s": 1.73
 }

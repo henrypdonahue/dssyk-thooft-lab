@@ -174,7 +174,7 @@ or an identical BLAS guarantee. CI covers Python 3.9 and 3.12 on Linux.
 
 Run tests separately in each directory (the three modules and
 `scripts/`), as the Makefile does; the code uses flat script imports.
-`test` excludes slow tests (688 fast tests, 14 of them for the
+`test` excludes slow tests (689 fast tests, 14 of them for the
 runner); `test-all` includes them. `reproduce` runs the fast
 deterministic producers and plots in a few minutes; `reproduce-slow`
 runs every campaign and reference generator and takes many hours.

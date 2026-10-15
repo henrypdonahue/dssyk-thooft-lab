@@ -44,7 +44,7 @@ matched-exponent Jacobi basis [x(1−x)]^β, with β solving
 πβ cot(πβ) = −α exactly. That restores spectral accuracy off the duality
 point, where the Chebyshev basis is only algebraic.
 
-## What is checked (57 tests)
+## What is checked (58 tests)
 
 | check | result |
 |---|---|
@@ -119,7 +119,7 @@ python3 validate.py          # the validation report (exit code = pass/fail)
 python3 eigenfunctions.py    # wavefunction checks and decay constants
 python3 condensate.py        # condensate, GMOR corner, vacuum energy
 python3 flz_dconstants.py    # the FLZ d± anchor, consumed
-pytest -q                    # 57 tests (~40 s warm; first run builds fixtures)
+pytest -q                    # 58 tests (~40 s warm; first run builds fixtures)
 ```
 
 ## The result
