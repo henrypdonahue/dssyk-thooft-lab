@@ -12,7 +12,7 @@ Regenerate it there.
 Resolve the two `TODO(author)` markers, affiliation and
 acknowledgments, before circulating.
 
-This machine has no TeX toolchain. Compile on Overleaf, uploading
-`main.tex` and `self_averaging.png`, or with `pdflatex main.tex` run
-twice for the references. Every displayed equation is machine-verified in
-the repo test suites.
+Build with `tectonic main.tex`, or `pdflatex main.tex` run twice, or on
+Overleaf with `main.tex` and `self_averaging.png`. It compiles without
+warnings (tectonic 0.17, 2026-10-14). Every displayed equation is
+machine-verified in the repo test suites.

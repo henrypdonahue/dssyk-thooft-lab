@@ -13,54 +13,36 @@
 \newcommand{\cl}{\mathrm{cl}}
 \newcommand{\op}{\mathrm{op}}
 
-\title{Conserved singlet channels in double-scaled SYK:\\
-the two-flavor bilinear amplitude cannot propagate at $N=\infty$}
+\title{Singlet bilinear channels of double-scaled SYK at $N=\infty$:\\
+a conserved pair amplitude and a dimension-two full channel}
 
 % TODO(author): confirm author line and affiliation before circulating.
 \author{Henry Donahue}
-\date{August 2026 --- draft, not for distribution}
+\date{October 2026 --- draft, not for distribution}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-In the proposed duality between double-scaled SYK at infinite temperature and
-the 't~Hooft model [arXiv:2607.05678], the meson tower is to be matched
-against correlators of the singlet bilinears
-$A_n=\sum_i\psi_i(\ad_H)^n\psi_i$. We prove that at strict double scaling
-($N=\infty$, any $\lambda$) the \emph{two-flavor} ($i\neq j$) part of these
-channels cannot propagate. In the chord
-representation the insertion of $A_n$ into a pair correlator acts as a
-\emph{polynomial in the chord Hamiltonian}, so every spectral moment
-$\mu_k$, $k\ge1$, of every $A_n$ pair channel vanishes identically --- at
-every coupling and every matter weight. The mechanism is a closed three-term
-recursion for the ``dressed propagator'' $C(m)=\cl\circ T_M^m\circ\op$
-(open a matter chord, apply the one-particle transfer matrix $m$ times,
-close it), whose coefficients are scalars; $C(m)$ is the Motzkin-path
-polynomial of $T$ with flat weight $q^{\Delta+j}T$, down weight $[j]_q$ and
-up weight $1-q^{2\Delta+j}$ at height $j$. The first conserved charges are
-$\widehat A_1=-(1-q^{\Delta})\,T$ (the chord image of the exact identity
-$A_1=-2pH$) and $\widehat A_2=(1-q^{\Delta})^2T^2+(1-q^{2\Delta})$. By
-contrast a random matter operator inserts $q^{\Delta\hat n}$, which does not
-commute with $T$ and therefore propagates. The scope is essential and we
-state it up front: the full channel $\langle A_nA_n\rangle$ also contains a
-flavor-diagonal ($i=j$) part of the \emph{same} order --- the per-pair
-amplitude is smaller than the diagonal one by exactly the $1/N$ that the
-$N(N-1)$ multiplicity restores --- and that part does not vanish for
-$n\ge2$. Evaluating both flavor patterns exactly at finite $N$ we find the
-full $A_2$ width rising along $\lambda_{\rm chord}=2$ to its exact
-$N=\infty$ value $\mu_2/\mu_0=1.316906$, which has a closed form of its own
-(the flavor-summed $A_2=4\sum_iH_i^2$ is $H^2$ with every pair of $H$-chords
-weighted by the number of indices they share, Poisson-distributed in the
-double-scaled limit), while at $n=1$ the two parts cancel to $3\times
-10^{-16}$, reproducing $A_1=-2pH$. What is established is therefore a
-statement about flavor structure: the genuinely two-flavor part of the
-tower is conserved, the per-flavor diagonal and pair pieces cancel at
-leading order, and the physical channel is the finite remainder. That
-remainder is itself resolved: it is a conserved multiple of $H^2-1$ plus
-a matter chord of dimension two, whose width is $2(1-q^2)$ at every
-$\lambda$. Every statement is machine-verified in an accompanying
-repository.
+In the proposed duality between double-scaled SYK at infinite
+temperature and the 't~Hooft model [arXiv:2607.05678], the meson tower
+is to be read from correlators of the singlet bilinears
+$A_n=\sum_i\psi_i(\ad_H)^n\psi_i$. We prove two statements at strict
+double scaling ($N=\infty$, every $\lambda$). First, the two-flavor
+($i\neq j$) part of every $A_n$ channel cannot propagate. Its chord image
+is a polynomial in the chord Hamiltonian, by a three-term recursion with
+scalar coefficients, so every spectral moment $\mu_{k\ge1}$ vanishes at
+every coupling and matter weight. Second, this does not freeze the
+channel. The flavor-diagonal part is of the same order, and the
+flavor-summed $A_2$ is exactly a conserved multiple of $H^2-1$ plus a
+matter chord of dimension two:
+$A_2-\langle A_2\rangle=\tfrac{2\lambda(1-q)}{1+q}(H^2-1)+\nu\,O_2$, so
+the propagating part has width $2(1-q^2)$ at every $\lambda$. The proof
+is a sign-reversing involution on chord diagrams. For $3\le n\le6$ the
+same construction gives a polynomial in $H$ plus matter chords of
+dimension $2,\dots,n$, verified in exact computer algebra but not
+proved. Each statement is checked against exact finite-$N$ arithmetic
+and exact diagonalization.
 \end{abstract}
 
 \section{Setting and statement}
@@ -233,99 +215,226 @@ distinction is not the size of the operator but the correlation of its
 couplings with those of $H$.
 \end{corollary}
 
-\begin{corollary}[the surviving weight]
-In the proposed DSSYK$_\infty$--'t~Hooft correspondence
-\cite{MSS2607,MSS2506}, the singlet tower $M_n$ maps to the $A_n$ channels.
-At strict double scaling their connected \emph{pair} correlators are
-time-independent to all orders of the $\lambda$-expansion. This does not
-make the tower invisible: writing
-\[
-  \langle A_nA_n\rangle=N\,\langle X_iX_i\rangle+N(N-1)\,\langle X_iX_j\rangle,
-  \qquad X_i=\psi_i(\ad_H)^n\psi_i,
-\]
-the two terms are the same order in $N$, so the theorem removes one of two
-comparable contributions. Evaluating both exactly at finite $N$ by Wick
-resummation (no exact diagonalization), the full $A_2$ channel has
-$\mu_2/\mu_0=1.044,\,1.118,\,1.164,\,1.194,\,\ldots,\,1.286$ at
-$(p,N)=(4,16),(6,36),(8,64),(10,100),\ldots,(40,1600)$ along
-$\lambda_{\rm chord}=2$ --- rising towards $1.316906$, not falling to zero
---- while the same construction at $n=1$ gives $3\times10^{-16}$, which is
-the exact conservation of $A_1=-2pH$. The limit is exact: summing the
-flavor first, the identity $A_2=4\sum_iH_i^2$ (with $H_i$ the part of $H$
-containing flavor $i$) writes $A_2$ as $H^2$ weighted by the number of
-indices the two $H$-chords share, those intersections are independent
-Poisson$(\lambda/2)$ variables at $N=\infty$, and every full-channel word is
-a finite matching sum with $\mu_0=4\lambda[\lambda(1+q)+2(1-q)]$ and
-$\mu_2=16\lambda(1-q)[1-q^2+2\lambda q]$. The content of the theorem is thus
-that the genuinely two-flavor part of the tower is conserved; the
-per-flavor diagonal and pair pieces, each $O(\sqrt N)$ in the
-flavor-summed normalization, cancel identically at that order (the pair
-channel's double-scaling constant is the diagonal channel's
-$\Delta_\psi$-slope, $4\lambda(1-q)^2(5+3q)$ at $n=2$), and the physical
-channel is the $O(1)$ remainder. The remainder has a simple exact form.
-Mean subtraction removes the identity from $A_2$ but not its overlap with
-$H^2$; at strict double scaling
-\[
-A_2-\langle A_2\rangle=\frac{2\lambda(1-q)}{1+q}\,(H^2-1)+\nu\,O_2,\qquad
-\nu^2=\frac{8\lambda(1-q^2+2\lambda q)}{1+q},
-\]
-with $O_2$ a unit-normalized matter chord of dimension two, uncorrelated
-with every function of $H$. The proof sorts the chord diagrams of a
-two-insertion word by whether both chords of one insertion end on the
-other; if they do the pair is a bundle crossed twice by every separating
-$H$-chord, and if they do not, exchanging the two adjacent slots is an
-involution that reduces the class to that of a plain $H^2-1$. Hence
-$\mu_0=4\lambda^2(1-q)^2/(1+q)+\nu^2$ and the width of the part that
-moves is $\mu_2/\nu^2=2(1-q^2)$: $1.963369$ at $\lambda_{\rm chord}=2$,
-where $32.9\%$ of $\mu_0$ is conserved and the ratio $1.316906$ above is
-this width diluted. The same construction gives every $A_n$ computed
-($n\le6$) as a polynomial in $H$ plus matter chords of dimension
-$2,\dots,n$ with polynomial dressings; for $n\ge3$ this is verified in
-exact computer algebra, not proved. This is consistent
-with, and sharpens exactly in $\lambda$, the known large-interaction-order
-observation that the bilinear-tower couplings first appear at second order
-in the inverse body count --- $O(1/p^2)$ in the present conventions
-(written $O(1/q^2)$ in \cite{GR}, whose $q$ is this note's $p$, not the
-chord parameter).
-\end{corollary}
+\section{The full channel}
 
-Two scope remarks. First, the theorem concerns the $i\neq j$ pair
-amplitude at strict $N=\infty$ --- precisely the object the chord expansion
-computes; finite-$N$ corrections and the flavor-diagonal part of the
-physical channel are treated separately (at fixed $p$ the exact
-identity-subtracted width peaks at $\lambda_{\rm chord}\approx4/3$ and
-then falls as $8p(p-2)/N$ in bandwidth units, an $N$-independent width
-$8p(p-2)$ in units of $J^2$; the peak is the conserved $H^2$ share of
-$\mu_0$ changing, and with that component removed the width is
-monotone). Second,
-conservation here is a statement about moments of the connected pair
-correlator, $\mu_k=0$ for all $k\ge1$; the weight $\mu_0$ itself is
-nonzero.
+Theorem~1 concerns the pair amplitude. With $X_i=\psi_i(\ad_H)^n\psi_i$
+the physical correlator is
+\begin{equation}
+\langle A_nA_n\rangle=N\,\langle X_iX_i\rangle+N(N-1)\,\langle X_iX_j\rangle
+\qquad(i\neq j),
+\end{equation}
+and the per-pair amplitude is smaller than the diagonal one by exactly
+the $1/N$ that the multiplicity restores. The two terms are therefore of
+the same order, and Theorem~1 removes one of two comparable
+contributions. On a double-scaling line each term is $O(\sqrt N)$ in the
+normalization $\langle H^2\rangle=1$, and the two cancel identically at
+that order: the pair channel's double-scaling constant,
+$\lim|\mu_2^{\rm pair}|\,pN=4\lambda(1-q)^2(5+3q)$ at $n=2$, is the
+$\Delta_\psi$-slope of the diagonal channel. The physical channel is the
+$O(1)$ remainder, which belongs to neither half. Evaluated exactly at
+finite $N$ (Wick resummation, no diagonalization), the full $A_2$ channel
+has $\mu_2/\mu_0=1.044,\,1.118,\,1.164,\,1.194,\,\dots,\,1.286$ at
+$(p,N)=(4,16),(6,36),(8,64),(10,100),\dots,(40,1600)$ along
+$\lambda=2$, while at $n=1$ the two parts cancel to $3\times10^{-16}$, as
+the identity $A_1=-2pH$ requires.
+
+The remainder is computed by summing the flavor first. For even $p$,
+$\psi_iH\psi_i=H-2H_i$, with $H_i$ the part of $H$ whose monomials
+contain flavor $i$, and $\sum_iH_i=pH$. Expanding the double commutator
+then gives, for every $N$ and every disorder instance,
+\begin{equation}
+A_1=-2pH,\qquad A_2=4\,\Omega,\qquad \Omega=\sum_iH_i^2
+=\sum_{c,c'}|c\cap c'|\,J_cJ_{c'}\,\Gamma_c\Gamma_{c'},
+\label{eq:A2}
+\end{equation}
+with $\Gamma_c=i^{p/2}\psi_{c}$ the Hamiltonian monomial on the $p$-subset
+$c$. So $A_2$ is the word $H^2$ with its two monomials weighted by the
+number $X$ of indices they share. In the double-scaled limit the
+pairwise intersections of the index sets of distinct chords are
+independent Poisson($\mu$) variables, $\mu=\lambda/2$, and a crossing of
+two chords carries $(-1)^X$, whose average is $q$. A weighted pair of
+chords therefore carries $E[X(-1)^{sX}]=\mu$ or $-\mu q$ according as
+the chords do not ($s=0$) or do ($s=1$) cross, and a pair weighted by
+both insertions of a two-point word carries $E[X^2(-1)^{sX}]=\mu+\mu^2$
+or $q(\mu^2-\mu)$. A contraction of the two slots of one insertion with
+each other is the $c$-number $\langle\Omega\rangle=p$, removed by mean
+subtraction. Every full-channel word is then a finite matching sum, and
+\begin{equation}
+\mu_0=4\lambda\big[\lambda(1+q)+2(1-q)\big],\qquad
+\mu_2=16\lambda(1-q)\big[1-q^2+2\lambda q\big],
+\end{equation}
+so $\mu_0=32$ and $\mu_2/\mu_0=1.316906$ at $\lambda=2$, the limit of
+the finite-$N$ series above.
+
+The mean-subtracted channel still contains conserved weight, because
+$A_2$ overlaps $H^2$:
+\begin{equation}
+\langle A_2(H^2-1)\rangle=2\lambda(1-q),\qquad
+\langle(H^2-1)^2\rangle=1+q .
+\end{equation}
+Once that overlap is removed, what is left is an ordinary matter chord.
+
+\begin{theorem}[the full $A_2$ channel]
+At strict double scaling, for every $\lambda>0$,
+\begin{equation}
+A_2-\langle A_2\rangle=\frac{2\lambda(1-q)}{1+q}\,(H^2-1)+\nu\,O_2,
+\qquad
+\nu^2=\frac{8\lambda\,(1-q^2+2\lambda q)}{1+q},
+\label{eq:split}
+\end{equation}
+where $O_2$ is a unit-normalized matter chord of dimension $\Delta=2$,
+uncorrelated with every function of $H$. Equivalently, with
+$\tilde\Omega=\Omega-\langle\Omega\rangle$ and $G_2(a,b)$ the two-point
+word $\langle H^aO_2H^bO_2\rangle$ of a $\Delta=2$ matter chord, for all
+$a,b\ge0$
+\begin{equation}
+\langle H^a\tilde\Omega H^b\tilde\Omega\rangle
+=\Big[\frac{\mu(1-q)}{1+q}\Big]^2\big\langle H^{a+b}(H^2-1)^2\big\rangle
++\frac{\nu^2}{16}\,G_2(a,b).
+\label{eq:words}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Sort the chord diagrams of $\langle H^a\tilde\Omega H^b\tilde\Omega\rangle$
+into two classes.
+
+\emph{Class I: both chords of one insertion end on the other.} The two
+chords form a bundle, and every $H$-chord separating the insertions
+crosses both strands, weighing $q^2$. The bundle itself weighs
+$(\mu+\mu^2)$ nested plus $q(\mu^2-\mu)$ crossed. The class sums to
+$[\mu(1-q)+\mu^2(1+q)]\,G_2(a,b)$.
+
+\emph{Class II: they do not.} At each insertion, exchanging which of its
+two adjacent slots carries which chord is an involution of the class.
+No node lies between adjacent slots, so the exchange flips the mutual
+crossing of the two chords and changes no other crossing; it maps the
+weight $\mu$ to $-\mu q$. On the plain word $H^2$ the same exchange maps
+$1$ to $q$. The two involutions commute. Summing each orbit, class II
+equals $[\mu(1-q)/(1+q)]^2$ times class II of
+$\langle H^a(H^2-1)H^b(H^2-1)\rangle$ (in which $H^2-1$ is exactly the
+two-slot insertion without self-contraction).
+
+Class I of that plain word is $(1+q)\,G_2(a,b)$. Adding and subtracting
+it gives \eqref{eq:words} with the coefficient
+$\mu(1-q)+\mu^2(1+q)-\mu^2(1-q)^2/(1+q)
+=\lambda(1-q^2+2\lambda q)/\big(2(1+q)\big)=\nu^2/16$. Multiplying by
+$16$, since $A_2=4\Omega$, gives \eqref{eq:split}.
+\end{proof}
+
+The only inputs are the identity \eqref{eq:A2} and the Poisson limit; no
+property of the $q$-Hermite polynomials is used. Two consequences follow:
+\begin{equation}
+\mu_0=\underbrace{\frac{4\lambda^2(1-q)^2}{1+q}}_{\text{conserved}}
++\underbrace{\nu^2}_{\text{dynamical}},\qquad
+\frac{\mu_2}{\nu^2}=2(1-q^2).
+\end{equation}
+The second is the matter-chord law $\mu_2=2(1-q^\Delta)$ at $\Delta=2$,
+and every higher moment of the propagating part is the corresponding
+$\Delta=2$ value. At $\lambda=2$, $32.9\%$ of $\mu_0$ is conserved and
+the propagating width is $1.963369$; the ratio $1.316906$ above is that
+width diluted. The propagating spectral density is the $\Delta=2$
+matter-chord continuum \cite{BM}: smooth, with no discrete lines.
+
+Two checks do not use the proof. The exact finite-$N$ rational moments,
+with the $H^2$ component removed in exact arithmetic, extrapolate in
+$1/p$ to $\mu_2/\nu^2=1.96336$ on $\lambda=2$ and $1.7293$ on
+$\lambda=1$, against $1.963369$ and $1.729329$. Dense exact
+diagonalization with the full commutant of $H$ projected out per
+realization gives $2.03$, $2.03$, $2.01$ at $p=6$, $N=16,18,20$, against
+$2(1-q^2)=2.00$; the identity-subtracted ratio there is $0.29$--$0.41$.
+
+\section{Higher levels}
+
+The identity \eqref{eq:A2} is the first case of a general one. For a set
+$T$ of slots let $W_T=\sum_i\prod_{t=1}^n(H_i\text{ if }t\in T\text{,
+else }H)$. Then, for every $n\ge2$, $N$ and even $p$,
+\begin{equation}
+A_n=\sum_{T\subseteq[n],\,|T|\ge2}(-2)^{|T|}\,(-1)^{n-\max T}
+\binom{n-1}{\max T-1}\,W_T .
+\end{equation}
+It follows because $S(Y)=\sum_i\psi_iY\psi_i$ multiplies a Clifford
+monomial of grade $g$ by $(-1)^g(N-2g)$, and products of the even
+Hamiltonian monomials have even grade; the grade of a product of Hamiltonian
+monomials is an inclusion--exclusion sum of their intersections, and
+$A_n=\sum_j(-1)^j\binom{n}{j}S(H^{n-j})H^j$; it has been checked
+against dense matrices for $n\le5$. In the double-scaled limit triple
+intersections are $O(1/p)$, so $A_n$ is assembled from the blocks
+$\Omega_k=\sum_iH_iH^kH_i$, up to exactly conserved operators.
+
+Each block computed ($k\le4$, hence $n\le6$) decomposes, modulo
+polynomials in $H$, into matter chords of dimension $2,\dots,k+2$ with
+polynomial dressings; for example
+$\Omega_1=\frac{q}{1+q^2}\{H,\hat O_2\}+\hat O_3$. So every $A_n$ with
+$n\le6$ is a polynomial in $H$ plus matter chords of dimension
+$2,\dots,n$, one new chord entering at each level. This is verified,
+not proved: each kernel is solved linearly from cross-correlators and
+every remaining two-point word then has zero residual, symbolically in
+$(\lambda,q)$ for $k\le2$ and in exact rational arithmetic at generic
+points for $k=3,4$. A proof for general $n$ is open.
+
+The new chord at each level is faint: $14.9\%$, $1.6\%$, $0.18\%$ and
+$0.02\%$ of the dynamical weight of $A_3,\dots,A_6$ at $\lambda=2$, with
+norm $\propto\lambda^{2\lfloor m/2\rfloor}$ at small $\lambda$. As
+$\lambda\to0$ the even chords fade out of $A_3,\dots,A_6$ linearly in
+$\lambda$ while the odd ones remain: $A_3$ and $A_4$ tend to $O_3$ alone
+and $A_5$ to $99.5\%\,O_3+0.53\%\,O_5$. The dimensions that survive,
+$2,3,5$, follow the pattern of the large-$p$ SYK bilinear spectrum
+$h=2,3,5,7,\dots$ \cite{MS}. We record that as an observation on four
+levels. In particular we do not identify powers of $\lambda$ in these
+norms with powers of $1/p$ in the large-$p$ expansion \cite{GR}: how the
+$\lambda\to0$ limit of the double-scaled theory relates to the
+large-$p$ expansion at fixed $p$ is not established here.
+
+\section{Scope}
+
+\emph{Majorana only.} For the complex fermions of \cite{MSS2607},
+$c_ic_i^\dagger=1-n_i$ replaces $\psi_i^2=1$, so the flavor sum leaves
+an occupation factor between the two halves of $M_2$ instead of removing
+the fermion marks. The pair statement transfers to the Dirac model; the
+full channel and its CP resolution do not yet.
+
+\emph{Fixed $p$.} The proposal places the 't~Hooft limit at fixed $p$,
+$N\to\infty$ \cite{MSS2607,MSS2506}, outside strict double scaling. At
+each tested even $p=2,\dots,12$ the exact finite-$N$ laws give $\mu_2/\mu_0=8p(p-2)/N+O(N^{-2})$ in units
+$\langle H^2\rangle=1$, a limiting mean-square frequency $8p(p-2)J^2$ in
+the coupling normalization $\langle J^2\rangle=p!J^2/N^{p-1}$. The
+identity-subtracted ratio has a maximum along fixed $p$ (at $N=24$ for
+$p=4$); it is the conserved $H^2$ share of $\mu_0$ changing, and with
+that component removed the width is monotone.
+
+\emph{Boost frequency is not mass.} The spectral densities above are in
+the frequency conjugate to $H$, which in the proposal generates boosts.
+A particle of fixed mass has a continuous boost spectrum, so relating
+these continua to meson masses requires the state and time dictionary,
+which is not supplied here.
+
+\emph{Moments.} Theorem~1 states $\mu_k=0$ for $k\ge1$ in the connected
+pair correlator; its weight $\mu_0$ is nonzero.
 
 \paragraph{Verification.}
-Every step is machine-verified in the accompanying
-repository:\footnote{\texttt{duality/chord\_charges.py} and
-\texttt{test\_chord\_charges.py}; the original numerical discovery and the
-$n\le5$, $\mu_{2,4,6}$ scans are \texttt{duality/chord\_moments.py}.} the
-recursion \eqref{eq:rec} as a matrix identity for $j\le5$; $C(m)=P_m(T)$
-and $[C(m),T]=0$ for $m\le8$; the closed forms above; and, through an
-independent transfer-matrix evaluation of the trace words (itself validated
-against brute-force chord-diagram enumeration), the vanishing of
-$|\mu_k|$ relative to its pre-cancellation gross magnitude at the level of
-$10^{-17}$ for $n\le5$, even $k\le6$, across $\lambda\in[0.1,4]$ and
-matter weights $\Delta_\psi\in[0.1,1]$. The finite-$N$ approach to the
-zero has since been computed exactly (Wick/Isserlis over matchings, the
-subset sums evaluated as integer intersection-parity counts): $|\mu_2|$
-of the $n=2$ channel falls exactly like $-64p^3(p-1)(4p-5)/N^4$ at fixed
-$p$ (an exact interpolated law with a certified closed-form coefficient)
-and like $c_2/(pN)$ along $\lambda_{\rm chord}=2$ with
-$c_2\to4\lambda(1-q)^2(5+3q)=32.334$, the $\Delta_\psi\to0$ slope of the
-diagonal chord channel.
+Every statement is machine-checked in the accompanying
+repository.\footnote{Theorem~1: \texttt{duality/chord\_charges.py}.
+The full channel and Theorem~2: \texttt{duality/full\_channel\_chord.py}
+and \texttt{duality/singlet\_tower.py}. Exact finite $N$:
+\texttt{syk-self-averaging/exact\_pair\_moments.py},
+\texttt{full\_channel\_laws.py}, \texttt{projected\_channel.py}.} For
+Theorem~1: the recursion \eqref{eq:rec} as a matrix identity for
+$j\le5$; $C(m)=P_m(T)$ and $[C(m),T]=0$ for $m\le8$; and, through an
+independent transfer-matrix evaluation validated against brute-force
+chord-diagram enumeration, $|\mu_k|$ at $10^{-17}$ of its
+pre-cancellation magnitude for $n\le5$, even $k\le6$,
+$\lambda\in[0.1,4]$ and $\Delta_\psi\in[0.1,1]$. The finite-$N$ approach
+to the zero is exact: at fixed $p$, $\mu_2$ of the $n=2$ pair channel
+falls as $-64p^3(p-1)(4p-5)/N^4$ (an interpolated law with a certified
+coefficient), and along $\lambda=2$ as $c_2/(pN)$ with
+$c_2\to4\lambda(1-q)^2(5+3q)=32.334$. For Theorem~2: \eqref{eq:words}
+symbolically on every word through ten chord endpoints, and the two
+independent checks above.
 
 \paragraph{Acknowledgments.}
 % TODO(author): acknowledgments as appropriate.
-This note grew out of a computational stress-test of \cite{MSS2607}; all
-code and machine-verified derivations are available from the author.
+This note grew out of a computational stress-test of \cite{MSS2607}.
 
 \begin{thebibliography}{9}
 
@@ -348,6 +457,11 @@ JHEP \textbf{03} (2019) 079, arXiv:1811.02584 [hep-th].
 M.~Berkooz and O.~Mamroud,
 ``A Cordial Introduction to Double Scaled SYK,''
 Rept.\ Prog.\ Phys.\ \textbf{88} (2025) 036001, arXiv:2407.09396 [hep-th].
+
+\bibitem{MS}
+J.~Maldacena and D.~Stanford,
+``Remarks on the Sachdev-Ye-Kitaev model,''
+Phys.\ Rev.\ D \textbf{94} (2016) 106002, arXiv:1604.07818 [hep-th].
 
 \bibitem{GR}
 D.~J.~Gross and V.~Rosenhaus,
