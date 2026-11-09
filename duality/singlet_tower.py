@@ -175,11 +175,12 @@ WHAT IT SAYS ABOUT THE TOWER
   * The norms are graded: norm_m scales as lambda^(2 floor(m/2)),
 
         norm_2 -> lambda^2,  norm_3 -> 2 lambda^2,  norm_4 -> (52/5) lambda^4,
-        norm_5 ~ 12.5 lambda^4,  norm_6 ~ 6e2 lambda^6,
-        norm_7 ~ 7e2 lambda^6,   norm_8 ~ 1e5 lambda^8
+        norm_5 -> (88/7) lambda^4,  norm_6 -> (4120/7) lambda^6,
+        norm_7 -> 720 lambda^6,     norm_8 ~ 1e5 lambda^8
 
-    (the first three from the closed forms, the rest measured; m = 7, 8
-    were predicted by the law before they were computed).
+    (the first three from the closed forms, m = 5..7 the exact limits of
+    conformal_tower.py, m = 8 measured; m = 7, 8 were predicted by the law
+    before they were computed).
   * Norms are not shares, because the dressings carry powers of the
     frequency.  Toward small lambda (share_scaling, exact arithmetic
     down to lambda = 1/1280) the EVEN chords fade out of every level
@@ -195,8 +196,10 @@ WHAT IT SAYS ABOUT THE TOWER
     the semiclassical limit are 2, 3, 5, 7 -- the pattern of the large-q
     SYK bilinear spectrum h = 2, 3, 5, 7, ... (Maldacena-Stanford
     1604.07818).  O_7 surviving and O_8 fading was the pattern's
-    prediction for n = 7, 8 before they were computed.  It is still an
-    observation on six levels, not a derivation.
+    prediction for n = 7, 8 before they were computed.  conformal_tower.py
+    takes the limit exactly: the chords are weight-m primaries of a
+    conformal OPE of the bilocal, the survival follows from the norm law,
+    and the shares above have exact rational limits.
   * The O_2 kernel of A_3 is (3/2)(E - E') plus an anticommutator
     admixture -(1-q)^2 / (3 (1+q^2)) of it: A_3 = (3/2) [H, A_2] + 4 O^_3
     + ..., a total derivative plus one new chord.  (A_3 - A_3^dag =

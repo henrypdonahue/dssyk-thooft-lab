@@ -31,13 +31,20 @@ task. That is where the quantitative content of the λ → 0 corner lives.
 channels are not small: A₂ is a conserved piece plus a dimension-2 matter
 chord at every λ, and toward λ → 0 the higher Aₙ concentrate on the odd
 chords O₃, O₅ and O₇ (`singlet_tower.py`, `notes/singlet-tower-note.md`).
-That is consistent in pattern with the large-q bilinear dimensions
-h = 2, 3, 5, 7, … but it is not yet a quantitative match. Semiclassical
-correlators of the two limits agree (`ANTISCRAMBLING.md` checks the OTOC:
-chord/closed → 1 as λ → 0). The chord norms, however, scale as powers of
-λ = 2p²/N, and the large-q tower couplings as powers of 1/q; this repo has not
-mapped one onto the other, so the norms here should not be read as the
-O(1/q²) couplings.
+That matches the pattern of the large-q bilinear dimensions
+h = 2, 3, 5, 7, …. Semiclassical correlators of the two limits agree
+(`ANTISCRAMBLING.md` checks the OTOC: chord/closed → 1 as λ → 0). The
+quantitative map now exists for the odd tower (`conformal_tower.py`). As
+λ → 0 the chords are weight-m primaries of a conformal OPE of the
+bilocal, and their infinite-temperature OPE coefficients are, exactly at
+h = 3, 5, 7,
+
+  Cₕ² = N (1 − k_c(h))² cₕ²(GR),  k_c(h) = 2/(h(h−1)),  N = 2p²/λ,
+
+with cₕ² the GR (2.15) couplings above. For the odd tower, then, the
+1/q² of the couplings and the 1/λ of the chord coefficients are the same
+factor, N/q² = 2/λ. The relation was read off from three operators, and
+it is not derived.
 
 **The skeleton is now derived, not transcribed.** `largeq_kernel.py`
 takes the Maldacena–Stanford finite-T ladder-kernel eigenproblem (their

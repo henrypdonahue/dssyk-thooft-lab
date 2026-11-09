@@ -192,9 +192,9 @@ weight of A₄, A₅, A₆ outside O₂ and O₃ stays between 0.9% and 5.4%
 9.1%).
 
 The norms are graded: Nₘ scales as λ^(2⌊m/2⌋), with N₂ → λ², N₃ → 2λ²,
-N₄ → (52/5)λ⁴ from the closed forms and N₅ ≈ 12.5λ⁴, N₆ ∝ λ⁶, N₇ ∝ λ⁶,
-N₈ ∝ λ⁸ measured (N₇ and N₈ were the law's predictions before they were
-computed).
+N₄ → (52/5)λ⁴ from the closed forms, N₅ → (88/7)λ⁴ and N₆ → (4120/7)λ⁶
+as exact limits (§4a), and N₇ ∝ λ⁶, N₈ ∝ λ⁸ measured (N₇ and N₈ were the
+law's predictions before they were computed).
 
 Shares do not follow norms, because the dressings carry powers of the
 frequency. The O₂ dressing in A₃ is (3/2)[H, A₂], a total derivative,
@@ -211,16 +211,17 @@ arithmetic down to λ = 1/1280:
 | A₇ | ∝ λ | → 98.4% | ∝ λ | → 1.4% | ∝ λ | → 0.006% | |
 | A₈ | ∝ λ | → 97.8% | ∝ λ | → 2.0% | ∝ λ | → 0.014% | ∝ λ |
 
-(the arrows give the values at λ = 1/1280, where the odd shares have
-settled to about 1%). A₂ is O₂ at every λ. So the dimensions that
-survive the semiclassical limit are 2, 3, 5 and 7. That is the pattern of
-the bilinear spectrum of large-p SYK (large q in the usual notation),
-h = 2, 3, 5, 7, … ([1604.07818](https://arxiv.org/abs/1604.07818)).
-Levels 7 and 8 were computed to test it after it was noticed on
-levels 3–6: the pattern predicted that O₇ survives and O₈ fades, and both
-held. It is still an observation, on six levels. It is not derived, and
-the map between a matter-chord dimension at infinite temperature and a
-conformal dimension has not been checked beyond this coincidence.
+(the arrows give the values at λ = 1/1280; the exact limits are in §4a,
+e.g. A₅ → 2047/2058 O₃ + 11/2058 O₅). A₂ is O₂ at every λ. So the
+dimensions that survive the semiclassical limit are 2, 3, 5 and 7. That
+is the pattern of the bilinear spectrum of large-p SYK (large q in the
+usual notation), h = 2, 3, 5, 7, …
+([1604.07818](https://arxiv.org/abs/1604.07818)). Levels 7 and 8 were
+computed to test it after it was noticed on levels 3–6: the pattern
+predicted that O₇ survives and O₈ fades, and both held. §4a reduces the
+pattern to the norm law and shows that, as λ → 0, the chords are
+conformal primaries of weight m in the operator expansion of the
+bilocal.
 
 Closed forms for the moments follow, for example
 
@@ -228,6 +229,105 @@ Closed forms for the moments follow, for example
 μ₂(A₃) = 8λ(1−q)[25 + 5q − 38q² − 16q³ + 13q⁴ + 11q⁵
                   + λ(46q + 14q² − 22q³ − 26q⁴)].
 ```
+
+## 4a. The semiclassical limit: a conformal OPE plus a ladder rung
+
+Code: `duality/conformal_tower.py`. Tests: `duality/test_conformal_tower.py`.
+Data: `duality/conformal_tower.json`.
+
+Write σ = (E + E′)/2 and ω = E − E′ for the left and right energies of a
+dressing F_{n,m}(E, E′), so that ad_H acts as ω. As λ → 0 a chord of
+dimension m is the ladder sech^(2m)(at), a = √λ (`duality/HORIZON.md`), so
+ω ~ a while σ ~ 1. Scale ω = a w. Then, at every level computed (n ≤ 7),
+
+```text
+F_{n,m}(E, E′) = a^(n−m) P_{n,m}(w) (1 + O(a)),
+```
+
+with P_{n,m} a polynomial with rational coefficients and no σ dependence.
+The norms have rational limits too: Nₘ/λ^(2⌊m/2⌋) → 1, 2, 52/5, 88/7,
+4120/7, 720 for m = 2..7. "Exact" means exact rational chord sums at
+λ = 2⁻⁹..2⁻¹⁴, polynomial extrapolation to λ = 0 and rational
+reconstruction, with residuals below 1e-13. It is not a symbolic proof.
+
+**Without the remainder, Aₙ is an SL(2) operator expansion.** The chord
+rule of §4 has one ingredient that is not pairwise: the remainder, an
+O(1) term that appears when the first and last slots of Ωₖ contract with
+each other. Switch it off. Then every P_{n,m} through n = 7 (28
+coefficients below the diagonal) is exactly the prediction of a
+one-dimensional conformal OPE of the bilocal,
+
+```text
+Σᵢ ψᵢ(0)ψᵢ(t) = Σₘ Cₘ (δu)^m ₁F₁(m; 2m; δu ∂_u) Oₘ(u),
+u = tanh(at),  δu = u(t) − u(0),  Oₘ^(t) = (du/dt)^m Oₘ^(u),
+```
+
+with each Oₘ a primary of weight h = m and Δ_ψ → 0. The leading
+coefficient is the plain block coefficient 4C(n,m)(m)ₙ₋ₘ/(2m)ₙ₋ₘ (for
+example 6, 36/5, 80/7, 60/7 for (n,m) = (3,2), (4,2), (5,3), (6,2)). Each
+lower coefficient is the correction for the frame:
+A₄ ⊃ (36/5 w² + 16/5) O₂ and A₆ ⊃ (60/7 w⁴ + 96/7 w² + 64/7) O₂. The
+frame tanh(at) is the one in which sech^(2m)(at) is a conformal two-point
+function. e^(2at) is Möbius-equivalent and gives the same numbers;
+tan(at) reverses the sign of every correction and fails. So, as λ → 0,
+the matter chord of dimension m *is* a conformal primary of weight m in
+the operator expansion of the bilocal. The ₁F₁ structure requires
+exactly that.
+
+**The remainder is a ladder rung.** With the remainder on, only the lower
+coefficients change: A₄ ⊃ (36/5 w² + 56/5) O₂, A₅ ⊃ (80/7 w² + 136/7) O₃.
+At leading order the change is one rung acting on the full bilocal,
+
+```text
+B(0, t) = B_OPE(0, t) − 2a² ∫_{0<t₁<t₂<t} W(t₂ − t₁) B(t₁, t₂),
+```
+
+with B(t₁, t₂) = Σⱼψⱼ(t₁)ψⱼ(t₂). This is the shape of the linearized
+large-q Liouville equation ∂₁∂₂δg = −2𝒥²e^g δg. With W = 1 it reproduces
+every coefficient through n = 7 except the three that see the τ² term of
+W. Those three need a τ² weight that depends on the sector: −5/6 for O₂
+(from A₆ and A₇, which agree) and −9/10 for O₃. Liouville's rung
+e^g = sech² would give −1 in both. So the rung's leading form is
+identified and its subleading form is not. The remainder is O(1) at
+λ → 0: it moves O₅'s share of A₅ by about 10%.
+
+**Exact semiclassical shares; why odd dimensions survive.** The weight
+of the dressed Oₘ in Aₙ is Nₘ⟨|P_{n,m}|²⟩ ∝ λ^(n−m+2⌊m/2⌋). That is
+λ^(n−1) for every odd m and λ^n for every even m. So the survival of
+2, 3, 5, 7 follows from the norm law Nₘ ∝ λ^(2⌊m/2⌋). Given that law it
+is derived, not an observation (A₂ is O₂ alone). The surviving shares
+are exact rationals:
+
+| λ → 0 | O₃ | O₅ | O₇ |
+|---|---|---|---|
+| A₅ | 2047/2058 (99.4655%) | 11/2058 (0.5345%) | |
+| A₆ | 20443/20608 (99.1993%) | 165/20608 (0.8007%) | |
+| A₇ | 540648/548261 (98.6114%) | 7578/548261 (1.3822%) | 5/78323 (0.0064%) |
+
+The λ = 1/1280 values in the table of §4 approach these.
+
+**The T = ∞ OPE coefficients, against the IR ones.** In the
+normalization of the conformal block expansion, Cₘ² = 16νₘ/m!² ×
+λ^(2⌊m/2⌋−m). The even ones are O(1): C₂² = 4, C₄² = 13/45,
+C₆² = 103/5670. The odd ones are O(1/λ): λC₃² = 8/9, λC₅² = 22/1575,
+λC₇² = 1/2205. Compare Gross–Rosenhaus
+([1702.08016](https://arxiv.org/abs/1702.08016) (2.15)): the q → ∞
+couplings c_h² of the IR conformal SYK tower h = 3, 5, 7. Exactly, for
+all three,
+
+```text
+Cₕ² = N (1 − k_c(h))² cₕ²,     k_c(h) = 2/(h(h−1)),   N = 2p²/λ,
+```
+
+where k_c is the q = ∞ conformal ladder-kernel eigenvalue (MS (3.76)).
+The form (1 − k_c)² was read off from the ratios at h = 5 and 7. The
+absolute normalization at h = 3, with exactly the factor N, is an
+independent check. The relation is not derived. It ties the
+infinite-temperature chord tower to the IR bilinear tower operator by
+operator, with no free parameter. It predicts
+N₉ → (21482496/143)λ⁸ ≈ 1.5·10⁵λ⁸, beyond the levels computed. The even chords have no counterpart in the large-q tower
+(whose only even member is h = 2), and their T = ∞ couplings are a
+power of λ smaller.
 
 ## 5. Checks that do not use the proof
 

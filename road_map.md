@@ -235,7 +235,22 @@ out of A₃..A₈ linearly in λ and the odd ones stay (A₅ → 99.5% O₃ +
 survive are 2, 3, 5, 7, the pattern of the large-p SYK bilinear
 spectrum. Levels 7 and 8 were computed after the pattern was stated, and
 the norm law, the subleading coefficient and the odd survival all held
-there. That is still an observation, not a derivation.
+there.
+
+The semiclassical limit of that structure is now exact
+(`duality/conformal_tower.py`, note §4a). As λ → 0, each dressing is a
+polynomial in the scaled frequency ω/√λ with rational coefficients.
+Without the chord rule's grade remainder, Aₙ is *exactly* a
+one-dimensional conformal OPE of the bilocal Σψᵢ(0)ψᵢ(t) in the frame
+u = tanh(√λ t), with Oₘ a primary of weight m (every coefficient through
+n = 7). The remainder adds one ladder rung of the linearized large-q
+Liouville form. The odd survival follows from the norm law, and the
+shares are exact (A₅ → 2047/2058 O₃ + 11/2058 O₅). The odd T = ∞ OPE
+coefficients equal N(1 − k_c(h))² times the Gross–Rosenhaus IR couplings,
+exactly at h = 3, 5, 7, with k_c(h) = 2/(h(h−1)). The map from chord
+dimension to conformal dimension is therefore no longer only a
+coincidence of integers. Still open: why the relation holds, and the
+rung's subleading weight.
 
 So the tower does propagate at N = ∞. The per-flavor split of its weight
 into "diagonal" and "pair" is bookkeeping: on a double-scaling line the
@@ -388,23 +403,28 @@ condensate and gives first α → −1 GMOR data.
    moments approach the λ → 0 ladders as p grows, with exact closed-form
    finite-p corrections that are large at small p. Open: A₄ and beyond
    (the K = 12 word frontier limits the moments available).
-3. **Test the 2, 3, 5, 7 coincidence.** At T = ∞ each chord is already the
-   ladder of a dimension-Δ scale-invariant operator (item 1); at small λ
-   and low temperature it should give conformal τ^(−2Δ) correlators.
-   Check whether O₃ inside A₃ behaves as the large-p h = 3 bilinear, and
-   whether the O₅/O₃ weight in A₅ (0.53% / 99.5%), and the O₇ weight in
-   A₇ and A₈ (0.006%, 0.014%), match the ratios of large-p OPE
-   coefficients (Gross–Rosenhaus). Either outcome turns an
-   observation into a result.
+3. **The 2, 3, 5, 7 coincidence.** Done in the semiclassical limit
+   (`duality/conformal_tower.py`). As λ → 0 the chords are SL(2)
+   primaries of weight m in the bilocal OPE (exact through n = 7 with the
+   grade remainder off; with it on, one ladder rung is added). The odd
+   survival follows from the norm law, and the small-λ shares are exact
+   rationals (O₅ in A₅: 11/2058 = 0.5345%; O₇ in A₇: 5/78323). The odd
+   T = ∞ OPE coefficients are Cₕ² = N(1 − k_c(h))² cₕ²(GR), exactly at
+   h = 3, 5, 7. Open:
+   - a derivation of that relation and of the conformal structure;
+   - the rung's subleading weight (sector-dependent, −5/6 and −9/10,
+     not Liouville's −1);
+   - the predicted N₉ → (21482496/143)λ⁸, which needs n = 9.
 4. **The Dirac full channel and its CP resolution** (below). This is what
    the paper's own CP assignment waits on.
-5. **A proof of the decomposition for general n**, the λ^(2⌊n/2⌋) norm law,
-   and which dimensions survive λ → 0. At every level computed (now
+5. **A proof of the decomposition for general n** and of the λ^(2⌊n/2⌋)
+   norm law. Which dimensions survive λ → 0 now follows from the norm law
+   (item 3). At every level computed (now
    through n = 8, where all three patterns held as predicted), the first
    sub-leading coefficient is (q + … + q^k)/(1 + q^(k+1)), which suggests
-   extending the n = 2 involution bundle by bundle. More levels by
-   computation add little: n = 9 needs 20-node diagrams, about 20× the
-   n = 8 cost.
+   extending the n = 2 involution bundle by bundle. Further levels add
+   little to the proof question. n = 9 would test the predicted N₉ of
+   item 3, but it needs 20-node diagrams, about 20× the n = 8 cost.
 6. **A chord-side derivation of the finite-N pair laws** (below).
 7. The O(1/q) residues, the NV constrained-sector step and the bulk-side
    items, as below.
@@ -434,9 +454,10 @@ that already holds at 55 of 55.
 
 **A proof of the decomposition for general n.** The n = 2 split is a
 theorem. n = 3..8 are exact identities verified in computer algebra on
-finite word sets (n = 7, 8 in `duality/singlet_tower_deep.json`). Open: a proof for general n, the reason the new
-chord's norm scales as λ^(2⌊n/2⌋), and a derivation of which dimensions
-survive λ → 0.
+finite word sets (n = 7, 8 in `duality/singlet_tower_deep.json`).
+Open: a proof for general n, and the reason the new chord's norm scales
+as λ^(2⌊n/2⌋). Given that law, which dimensions survive λ → 0 is derived
+(`duality/conformal_tower.py`).
 
 **Moments → spectrum.** The forward direction (`duality/boost_forward.py`):
 boost-kernel moments diverge, S → 1/ω, the regulated invariants sweep the

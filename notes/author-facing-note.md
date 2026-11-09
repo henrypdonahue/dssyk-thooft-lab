@@ -116,8 +116,17 @@ A₄ → O₃; A₅ → 99.5% O₃ + 0.53% O₅; A₈ → 97.8% O₃ + 2.0% O₅
 The surviving dimensions, 2, 3, 5, 7, match the pattern of the large-p
 SYK bilinear spectrum. Levels 7 and 8 were computed as a test after the
 pattern was noticed, and the norm law, the subleading coefficient and
-the odd survival all held; it is still an observation on six levels,
-not a derivation.
+the odd survival all held.
+
+As λ → 0 that structure becomes exact and conformal
+(`duality/conformal_tower.py`, singlet-tower note §4a). Without the
+grade remainder of the chord rule, every Aₙ through n = 7 is exactly the
+SL(2) OPE of the bilocal Σψᵢ(0)ψᵢ(t) in the frame u = tanh(√λ t), with
+the dimension-m chord a primary of weight m. The remainder adds one
+ladder rung. The odd survival then follows from the norm law
+Nₘ ∝ λ^(2⌊m/2⌋), and the odd infinite-temperature OPE coefficients are
+N(1 − 2/(h(h−1)))² times the Gross–Rosenhaus IR couplings, exactly at
+h = 3, 5, 7. The relation is identified, not derived.
 
 The same engine computes fixed-p finite-N moments without ED. For the
 tested even p = 2,…,12, the coefficients support

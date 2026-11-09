@@ -55,6 +55,7 @@ reproduce:
 	cd duality && $(PY) singlet_tower.py
 	cd duality && $(PY) diagonal_chord.py --run
 	cd duality && $(PY) horizon_tower.py
+	cd duality && $(PY) conformal_tower.py
 	cd syk-self-averaging && $(PY) thooft_limit.py
 	cd duality && $(PY) plot_chord.py
 	cd duality && $(PY) plot_signflip.py
@@ -101,6 +102,7 @@ reproduce-slow:
 	cd duality && $(PY) full_channel_chord.py --run
 	cd duality && $(PY) singlet_tower.py --run
 	cd duality && $(PY) singlet_tower.py --deep 5 6
+	cd duality && $(PY) conformal_tower.py --run 5
 	cd thooft-target && $(PY) generate_reference.py
 	cd thooft-target && $(PY) generate_reference.py --polish
 	cd thooft-target && $(PY) jacobi_solver.py

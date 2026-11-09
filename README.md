@@ -70,8 +70,21 @@ chords fade out of A₃..A₈ and the odd ones remain (A₃, A₄ → O₃;
 A₅ → 99.5% O₃ + 0.53% O₅; A₈ → 97.8% O₃ + 2.0% O₅ + 0.014% O₇). The
 surviving dimensions, 2, 3, 5, 7, follow the pattern of the large-p SYK
 bilinear spectrum h = 2, 3, 5, 7, …. Levels 7 and 8 were computed after
-the pattern was stated and bore it out, but it is still an observation,
-not a derivation.
+the pattern was stated and bore it out.
+
+**3a. As λ → 0 the chords are conformal primaries (exact, n ≤ 7, not
+proved).** Each dressing becomes a polynomial in the scaled frequency
+with rational coefficients. With the chord rule's grade remainder
+switched off, every Aₙ is exactly the one-dimensional conformal OPE of
+the bilocal Σψᵢ(0)ψᵢ(t) in the frame u = tanh(√λ t), with Oₘ a primary
+of weight m. With the remainder on, one ladder rung of the linearized
+large-q Liouville form is added. The odd survival then follows from the
+norm law, and the shares are exact rationals (A₅ → 2047/2058 O₃ +
+11/2058 O₅). The odd T = ∞ OPE coefficients equal N(1 − k_c(h))² times
+the Gross–Rosenhaus IR couplings, k_c(h) = 2/(h(h−1)), exactly at
+h = 3, 5, 7. That relation is identified, not derived
+([code](duality/conformal_tower.py),
+[note](notes/singlet-tower-note.md) §4a).
 
 **What follows.** At N = ∞ every Aₙ channel is a conserved part plus
 smooth matter-chord continua, with no discrete lines. Those continua are
@@ -109,6 +122,7 @@ corrections ([syk-self-averaging/thooft_limit.py](syk-self-averaging/thooft_limi
 | Pair (i ≠ j) chord amplitude | Conserved at N = ∞ for every n, λ and matter weight (theorem) | Not the full flavor-summed channel |
 | Full A₂ channel at N = ∞ | Conserved H² part plus a Δ = 2 matter chord (theorem), checked against exact finite N and projected ED | Majorana only; a boost-frequency continuum is not a mass |
 | Aₙ, n = 3..8, at N = ∞ | Polynomial in H plus matter chords of dimension 2..n | Verified in computer algebra on finite word sets; no general-n proof |
+| The same as λ → 0 | Chords are weight-m primaries of a tanh-frame SL(2) OPE (remainder off), plus one ladder rung (remainder on); exact shares; odd Cₕ² = N(1 − k_c)² × GR | Rational limits by extrapolation of exact sums, n ≤ 7; the GR relation and the rung's subleading weight are not derived |
 | Singlet tower in a Rindler frame | As λ → 0 each chord is the quasinormal ladder \|Γ(Δ + iω/a)\|², the response of a gapless mass density ∝ M^(2Δ−1); the channels' Rindler mass spectrum has no gap and no discrete masses | Majorana only; free-field calibration at fixed distance from the horizon; a = 2𝒥 is the natural, not a supplied, identification |
 | 't Hooft limit (fixed p, N → ∞) | Exact moments of A₂ (and the A₃ ratio) approach the λ → 0 ladders as p grows, with large closed-form finite-p corrections | Laws fit on low p, checked on higher p; the expected large-p ↔ small-λ consistency, and moments do not decide whether the finite-p spectrum is gapped |
 | Fixed p, finite N | Exact rational moment laws; μ₂/μ₀ = 8p(p−2)/N + O(N⁻²) at each tested even p ≤ 12 | Not proved for all p; not an exact finite-N equality |
