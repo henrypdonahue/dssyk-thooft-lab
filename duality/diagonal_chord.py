@@ -113,9 +113,10 @@ N = 64 -> 1024.  The reason is that the O(1/N) mismatch of the weights is
 then absorbed into q itself.
 
 G3, the payoff.  The diagonal-channel width w2 = mu2/mu0 at
-lambda_chord = 2.  w2_diag(Delta = 1/p) for p = 4..10 tracks the rising
-finite-N FULL-channel series 1.044 -> 1.194, and its Delta -> 0 limit is
-the number this module pins.
+lambda_chord = 2 rises 3.46 -> 4.08 along Delta = 1/p (p = 4..10), and
+its Delta -> 0 limit is the closed form (1-q)(5+3q) = 4.674.  It does not
+approximate the full-channel width (1.044 -> 1.194 at finite N, 1.316906
+at N = infinity), which is a diagonal-against-pair cancellation.
 
 Scope, stated plainly.  This module supplies the diagonal half exactly.
 Its Delta -> 0 slopes are closed forms (delta_slope_closed): they are
@@ -360,7 +361,7 @@ def run(p: int = 4,
         out_path=None) -> dict:
     """The campaign: the diagonal channel over the chord_moments lambda
     grid (n = 1..5, mu_0..mu_6), plus the three gate tables of the module
-    docstring.  Runtime: minutes (the K = 16 walker words dominate)."""
+    docstring.  Runtime: ~20 s."""
     t0 = time.time()
     dpsi = 1.0 / p
     points = []

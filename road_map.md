@@ -190,7 +190,7 @@ multiplicity restores. And that diagonal part does **not** vanish for
 n ≥ 2.
 
 Evaluated exactly at finite N, the full A₂ width rises along λ_chord = 2
-(1.044 → 1.286 over (p,N) = (4,16)…(40,1600)). At n = 1 the two parts
+(1.044 → 1.278 over (p,N) = (4,16)…(32,1024)). At n = 1 the two parts
 cancel to 3e-16, which reproduces A₁ = −2pH.
 
 **The full channel at N = ∞ is now an exact chord law of its own**

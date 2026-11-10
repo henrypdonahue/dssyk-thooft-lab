@@ -248,6 +248,21 @@ def test_decomposition_symbolic_k2():
     assert d["n_checked"] >= 60
 
 
+def test_decompose_keeps_lower_level_residuals():
+    """A residual found on a lower level's check words survives the later
+    sector solves (it used to be overwritten by the next solve's exact
+    zero, so only the top level was really gated)."""
+    class Planted(st.TowerChord):
+        def dynamical_word(self, k1, k2, A, B):
+            v = super().dynamical_word(k1, k2, A, B)
+            return v + Fraction(1, 1000) if (k1, k2, A, B) == (0, 0, 2, 2) else v
+
+    lam, q = st.EXACT_POINTS[0]
+    for kmax in (0, 1, 2):
+        assert Planted(lam, q).decompose(kmax, check_len=4)["max_residual"] \
+            == Fraction(1, 1000), kmax
+
+
 @pytest.mark.parametrize("lam,q", POINTS)
 def test_decomposition_exact_k3(lam, q):
     """Through Omega_3 in exact rational arithmetic at generic points

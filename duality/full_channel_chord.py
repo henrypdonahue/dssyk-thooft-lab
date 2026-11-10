@@ -50,15 +50,15 @@ At lambda_chord = 2: mu_0 = 32 exactly, mu_2 = 42.141005,
 
 GATES (test_full_channel_chord.py).
   * The exact finite-N full channel on lambda_chord = 2 (exact Fractions,
-    syk-self-averaging engine, p = 4..40) extrapolates in 1/p to
+    syk-self-averaging engine, p = 4..32) extrapolates in 1/p to
     mu_0 = 32.0002, mu_2 = 42.1410, w2 = 1.31690; on lambda_chord = 1
-    (p <= 20) to 10.5282, 16.1853, 1.53737 against 10.5285, 16.1866,
+    (p <= 18) to 10.5285, 16.1865, 1.53735 against 10.5285, 16.1866,
     1.53741.  The p <= 10 Richardson estimate 1.31(5) is superseded.
   * Semiclassics: w2 = 4 lambda - 4 lambda^2 + ..., kurt -> 7/2 as
     lambda -> 0, i.e. exactly w2 = 2 lambda Delta, kurt = 3 + 1/Delta at
     Delta = 2: the full A_2 channel is a dimension-2 matter chord in the
     large-q limit, as psi d^2 psi should be.
-  * The operator identity itself, dense at (8,4), (10,4), (12,4).
+  * The operator identity itself, dense at (8,4) and (10,4).
 
 THE CONSERVED ADMIXTURE, RESOLVED (singlet_tower.py).  Mean subtraction
 removes the identity from A_2, not its overlap with H^2.  That overlap
@@ -99,7 +99,8 @@ that is singlet_tower.py, which finds every A_n computed (n <= 8) to be
 a polynomial in H plus matter chords of dimension 2..n.
 
 Output: full_channel_chord.json (the closed forms, a lambda scan, the
-two gate series with their 1/p limits), ~1 min for the finite-N gates.
+two gate series with their 1/p limits), ~40 min (the lambda = 2 series
+to p = 32 dominates).
 """
 
 from __future__ import annotations

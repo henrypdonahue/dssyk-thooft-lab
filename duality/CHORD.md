@@ -8,7 +8,7 @@ matter chords, n ≤ 8), `conformal_tower.py` (its λ → 0 limit, an SL(2)
 OPE plus a ladder rung), `horizon_tower.py` (the tower in a Rindler frame),
 `chord_fold.py` (the fold at N = ∞). The ED side is
 `syk-self-averaging/mn_majorana_bench.py`. Every verdict below is
-asserted from a committed JSON in `test_chord*.py`.*
+asserted from a committed JSON in the matching `test_*.py`.*
 
 ## What the bulk is
 
@@ -217,13 +217,13 @@ restores. So freezing the pair part does not freeze the channel.
 
 Evaluate both exactly at finite N, along λ_chord = 2:
 
-| (p, N) | (4,16) | (6,36) | (8,64) | (10,100) | (20,400) | (40,1600) |
+| (p, N) | (4,16) | (6,36) | (8,64) | (10,100) | (20,400) | (32,1024) |
 |---|---|---|---|---|---|---|
-| w₂ = μ₂/μ₀, **full** A₂ channel | 1.044 | 1.118 | 1.164 | 1.194 | 1.255 | 1.286 |
+| w₂ = μ₂/μ₀, **full** A₂ channel | 1.044 | 1.118 | 1.164 | 1.194 | 1.255 | 1.278 |
 
 It rises toward 1.3169. It does not fall to zero. The first four values
 are recomputed on demand and pinned in
-`syk-self-averaging/test_exact_pair_moments.py`; the series to p = 40
+`syk-self-averaging/test_exact_pair_moments.py`; the series to p = 32
 is in `full_channel_chord.json`. The committed `exact_pair_moments.json`
 stores the pair channel only.
 
@@ -385,7 +385,8 @@ The tower propagates. It is not invisible, and its weight is not
 "all diagonal" (ERRATA E1, E2). What stands is the spec. A dictionary has to
 produce, from the bulk side, a conserved H² admixture of the stated
 size, a dimension-2 continuum with the stated norm, and above it chords
-of dimension 3, 4, 5 with norms that are closed forms in λ. None of that
+of dimension 3..n, whose norms are closed forms in λ for m ≤ 4 and are
+computed exactly, in rational arithmetic, above that. None of that
 is a free parameter, and none of it is a discrete line: each sector is
 the smooth matter-chord continuum of the spectral scan above.
 

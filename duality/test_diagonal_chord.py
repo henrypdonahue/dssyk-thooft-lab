@@ -199,9 +199,9 @@ def test_g3_diagonal_width_and_full_channel_context():
     extrapolates to w2 = 4.67 +- 0.09 at Delta -> 0 -- the exact
     N = infinity chord value this module supplies.  The FULL-channel
     width is a large diagonal-vs-pair cancellation; the exact finite-N
-    series 1.044 -> 1.194 Richardson-extrapolates to ~1.31 in 1/p (data,
-    not a chord computation -- the missing chord piece is the pair
-    channel's 1/N coefficient)."""
+    series 1.044 -> 1.194 Richardson-extrapolates to ~1.31 in 1/p (data;
+    its exact N = infinity value is the full_channel_chord.py closed
+    form)."""
     w2s = [channel_moments_diag(math.exp(-2.0), 1.0 / pp, 2,
                                 ks=(0, 2))["w2"]
            for pp in (4, 6, 8, 10)]

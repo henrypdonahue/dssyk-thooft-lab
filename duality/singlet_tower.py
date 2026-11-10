@@ -245,8 +245,9 @@ step.
 
 Output: singlet_tower.json.  `python singlet_tower.py` prints the
 headline numbers in seconds; `--run` regenerates the artifact (the
-finite-N gates dominate: about three CPU-hours, most of it in the five
-K = 10 points; `--resume` keeps the points already computed).
+finite-N gates dominate: about three CPU-hours, about half of it in the
+ten K = 10 points (n3_k4 and n4_k2, p <= 12); `--resume` keeps the
+points already computed).
 `--deep 5 6` writes singlet_tower_deep.json, the levels n = 7 and 8: the
 K = 16 and 18 word tables are built in parallel (build_word_tables, about
 15 minutes on 6 cores, nearly all of it K = 18), then the same exact
@@ -771,8 +772,8 @@ class TowerChord:
                                - self._model_word(k1, k, A, B, m - 1))
                 sol, res = _solve_linear(rows, rhs)
                 n_checked += len(rows) - len(classes)
-                if _is_sympy(res) or res > worst:
-                    worst = res if not _is_sympy(res) else res
+                if res > worst:         # float, Fraction, Rational or the 0/1 sentinel
+                    worst = res
                 kern: dict = {}
                 for (i, j), c in zip(classes, sol):
                     kern[(i, j)] = c

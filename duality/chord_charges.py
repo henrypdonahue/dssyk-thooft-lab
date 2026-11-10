@@ -80,8 +80,10 @@ SCOPE, AND IT IS LOAD-BEARING.  This is the i != j pair amplitude at
 strict N = infinity -- exactly the object chord_moments.py computes.  The
 full channel also has a flavor-diagonal part of the SAME order, and that
 part does not vanish for n >= 2.  So the tower does propagate at
-N = infinity, with all of its weight diagonal.  See CHORD.md, and
-diagonal_chord.py for the diagonal law.  Finite-N corrections are in
+N = infinity.  Its weight is not all diagonal: on a double-scaling line
+the diagonal and pair halves cancel at O(sqrt N), and the physical
+channel is the O(1) remainder (full_channel_chord.py, singlet_tower.py;
+ERRATA E2).  See CHORD.md, and diagonal_chord.py for the diagonal law.  Finite-N corrections are in
 ../syk-self-averaging/exact_pair_moments.py.
 
 VERIFICATION (test_chord_charges.py): the recursion as a matrix identity;

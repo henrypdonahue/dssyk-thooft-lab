@@ -156,8 +156,9 @@ the Nc = infinity limit (gate G1's pattern) but its census is not
 written here.
 
 STILL NOT established, and said plainly: the flavor-diagonal (i = j)
-half of the channel -- which on the Majorana side carries ALL of the
-tower's N = infinity weight (diagonal_chord.py) -- has no Dirac
+half of the channel -- which on the Majorana side does not vanish, and
+combines with the pair half into the full channel of
+full_channel_chord.py and singlet_tower.py -- has no Dirac
 derivation here, and the CP RESOLUTION of the Dirac M_n (the
 cp_projections split that the CP-resolved data is actually waiting on)
 is untouched.  Gate G3's comparison to the moments_pipeline data therefore
