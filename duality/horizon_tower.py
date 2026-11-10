@@ -96,12 +96,16 @@ massive_rates() show the gapped rates).
 
 WHAT THIS DOES AND DOES NOT SAY
 -------------------------------
-At N = infinity and small lambda, the Majorana singlet channels have a
+At N = infinity and as lambda -> 0, the Majorana singlet channels have a
 gapless, scale-invariant Rindler mass spectrum, dimensions 2, 3, 5, 7, with
 no gap and no discrete masses: the spectrum of a conformal near-horizon
-region, consistent with the deconfined stretched horizon of 2506.18054
-Sec. 6, and unlike the gapped, discrete 't Hooft tower.  It does not
-exclude mesons at finite N or finite lambda (at finite lambda the
+region (in the limit, equivalent to the chords being conformal), unlike
+the gapped, discrete 't Hooft tower.  With the deconfined stretched
+horizon at a Planck distance (Susskind 2511.10907, correcting
+2506.18054 Sec. 6), the string-scale region probed here is the confined
+one, so this is a tension with the proposal, not a consistency
+(HORIZON.md, ERRATA E25).  It does not exclude mesons at finite p, finite
+N or finite lambda (at finite lambda the
 spectrum is bounded and correlators end in a t^-3 power law,
 late_time_tail()).  The calibration is for free fields probed at a fixed
 distance 1/a from the horizon; a = 2 Jc is the natural identification,

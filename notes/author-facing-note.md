@@ -124,12 +124,14 @@ remainder off it is exactly conformal (`duality/conformal_tower.py`,
 singlet-tower note §4a). Without the
 grade remainder of the chord rule, every Aₙ through n = 7 is exactly the
 SL(2) OPE of the bilocal Σψᵢ(0)ψᵢ(t) in the frame u = tanh(√λ t), with
-the dimension-m chord a primary of weight m. The remainder adds one
-ladder rung. The odd survival then follows from the norm law
+the dimension-m chord a primary of weight m. The remainder adds exactly
+one rung of the linearized large-p Liouville equation, −2a² sech²,
+acting once, with nothing fitted. The odd survival then follows from the norm law
 Nₘ ∝ λ^(2⌊m/2⌋), and the odd infinite-temperature OPE coefficients are
 N(1 − 2/(h(h−1)))² times the Gross–Rosenhaus IR couplings, exactly at
-h = 3, 5, 7. The factor was read off from h = 5 and 7, so h = 3 is the
-one out-of-sample check. The relation is identified, not derived.
+h = 3, 5, 7 (equivalently N times the free-fermion coefficient times
+(1 + k_c)/(1 − k_c)). The factor was read off from h = 5 and 7, so h = 3
+is the one out-of-sample check. The relation is identified, not derived.
 
 The same engine computes fixed-p finite-N moments without ED. For the
 tested even p = 2,…,12, the coefficients support
@@ -210,9 +212,13 @@ Priorities before a stronger claim:
    quasinormal ladder of a scale-invariant operator of dimension 2, 3, 5
    or 7 at a string-scale Rindler acceleration. Its Rindler mass spectrum
    is gapless (density ∝ M^(2Δ−1)), with no gap and no discrete masses,
-   unlike the 't Hooft tower. A dictionary therefore has to say where the mesons enter:
-   finite-N corrections, the Dirac channels, other operators, or a
-   non-local probe.
+   unlike the 't Hooft tower. With the stretched horizon at a Planck
+   distance (2511.10907), that string-scale region is the confined one,
+   so this is a tension with the proposal in the λ → 0 limit. A
+   dictionary therefore has to say where the mesons enter: finite p at
+   N = ∞ (the regime of the paper's comparison), the Dirac channels,
+   other operators, or a non-local probe; the dS₂ 't Hooft model of
+   Betzios (2610.37667) is the bulk side to compare with.
 
 ## Reproduction and literature scope
 

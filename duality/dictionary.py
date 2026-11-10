@@ -108,7 +108,11 @@ def string_tension(m_q_squared: float, p: float) -> float:
     NOT conflate that with the dimensionful g^2 N; see
     alpha_bar/gbar_squared.  Fixed, finite tau with p^2 = lambda N forces
     m_q^2 -> 0 in the double-scaled limit.  The duality point is the
-    RENORMALIZED-massless 't Hooft model."""
+    RENORMALIZED-massless 't Hooft model.  At fixed p (the regime of the
+    paper's comparison) the same relation gives m_q^2/tau = 1/p^2, so
+    the matching 't Hooft point is alpha = O(1/p^2), not 0; the O(1)
+    constant depends on the normalization of g^2 and is not fixed here
+    (thooft-target's jacobi_solver handles alpha != 0)."""
     return alpha_bar(p) * m_q_squared
 
 

@@ -5,7 +5,7 @@
 `diagonal_chord.py` (the diagonal law), `full_channel_chord.py` (the
 full A₂ moments), `singlet_tower.py` (the full channel resolved into
 matter chords, n ≤ 8), `conformal_tower.py` (its λ → 0 limit, an SL(2)
-OPE plus a ladder rung), `horizon_tower.py` (the tower in a Rindler frame),
+OPE plus one Liouville rung), `horizon_tower.py` (the tower in a Rindler frame),
 `chord_fold.py` (the fold at N = ∞). The ED side is
 `syk-self-averaging/mn_majorana_bench.py`. Every verdict below is
 asserted from a committed JSON in the matching `test_*.py`.*

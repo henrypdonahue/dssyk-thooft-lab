@@ -37,12 +37,14 @@ h = 2, 3, 5, 7, …. Semiclassical correlators of the two limits agree
 exact empirical relation now links the odd tower to the GR couplings
 (`conformal_tower.py`). As λ → 0, with the chord rule's grade remainder
 off, the chords are weight-m primaries of a conformal OPE of the
-bilocal (the full rule adds one ladder rung), and their
+bilocal (the full rule adds one Liouville rung), and their
 infinite-temperature OPE coefficients are, exactly at h = 3, 5, 7,
 
   Cₕ² = N (1 − k_c(h))² cₕ²(GR),  k_c(h) = 2/(h(h−1)),  N = 2p²/λ,
 
-with cₕ² the GR (2.15) couplings above. For the odd tower, then, the
+with cₕ² the GR (2.15) couplings above; equivalently
+Cₕ² = N c²_GFF(h) (1 + k_c)/(1 − k_c), with c²_GFF the Δψ = 1/p → 0
+generalized-free-fermion coefficient. For the odd tower, then, the
 1/q² of the couplings and the 1/λ of the chord coefficients are the same
 factor, N/q² = 2/λ. The (1 − k_c)² form was read off from the h = 5
 and 7 ratios, so h = 3 is the one out-of-sample check, and the relation

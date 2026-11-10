@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 r"""
-The singlet tower as lambda -> 0: a conformal OPE plus a ladder rung.
-=====================================================================
+The singlet tower as lambda -> 0: a conformal OPE plus one Liouville rung.
+==========================================================================
 
 singlet_tower.py writes every Majorana singlet channel
 A_n = sum_i psi_i (ad_H)^n psi_i (n <= 8) at N = infinity as a conserved
@@ -26,12 +26,17 @@ Then, through every level computed,
 with P_{n,m} a polynomial of the parity of n - m and NO sigma dependence
 (the sigma terms vanish as powers of a).  The coefficients of P_{n,m} are
 rationals (chord_limits(): exact rational arithmetic at
-lambda = 2^-9 .. 2^-14 and q within 1e-60 of e^-lambda, polynomial
-extrapolation to lambda = 0, rational reconstruction).  Three guards are
-recorded: the reconstruction residual (below 1e-13), the drift of every
-limit when an end point is dropped (a quantity that does not converge
-moves at O(1)), and the size of every term that must vanish (sigma terms
-and wrong-parity w terms, below 1e-17).  The same holds for the norms:
+lambda = 1/(3 2^j), j = 10..16, and q within 1e-60 of e^-lambda,
+polynomial extrapolation to lambda = 0, rational reconstruction).  Every
+scaled coefficient is a rational function of q = e^-lambda times an
+integer power of lambda, so it is analytic in lambda and the
+extrapolation has no log or half-integer terms to miss.  Three guards
+are recorded: the reconstruction residual, the drift of every limit when
+an end point is dropped (a quantity that does not converge moves at
+O(1)), and the size of every term that must vanish (the sigma terms and
+wrong-parity w terms that are integer powers of lambda times a rational
+function; the rest are sqrt(lambda) times a quantity whose finiteness
+the drift checks).  The same holds for the norms:
 norm_m = nu_m lambda^(2 floor(m/2)) (1 + O(lambda)) with
 nu_2..nu_7 = 1, 2, 52/5, 88/7, 4120/7, 720.
 
@@ -49,13 +54,18 @@ OPE
     u = tanh(a t),  du = u(t) - u(0),  O_m^(t) = (du/dt)^m O_m^(u),
 
 with each O_m a primary of weight h = m and Delta_psi -> 0
-(frame_dressings()).  The top coefficient is the plain block coefficient,
+(frame_dressings()).  Some SL(2) structure is expected (a subalgebra of
+the chord algebra becomes sl_2 semiclassically, Lin-Stanford 2307.15725;
+the one-particle chord space is the U_q(su(1,1)) positive discrete
+series, 2511.08743); what is computed here is the frame and the OPE
+data.  The top coefficient is the plain block coefficient,
 P_{n,m} = 4 C(n, m) (m)_(n-m) / (2m)_(n-m) w^(n-m) + ..., and every lower
 coefficient is the frame correction; e.g. A_4 > (36/5 w^2 + 16/5) O_2,
 A_6 > (60/7 w^4 + 96/7 w^2 + 64/7) O_2.  The frame u = tanh(a t) is the
 one in which the chord two-point function takes conformal form:
 sech^(2m)(a(t1 - t2)) = (du1/dt du2/dt)^m (1 - u1 u2)^(-2m), the
-two-point function with one point inverted (u2 -> 1/u2).  u = e^(2at)
+two-point function with one point inverted (u2 -> 1/u2, an
+orientation-reversing map, so up to the sign (-1)^m).  u = e^(2at)
 is Moebius-equivalent and gives the same numbers, and u = tan(a t)
 multiplies the w^(n-m-2j) coefficient by (-1)^j, e.g.
 A_6 > (60/7 w^4 - 96/7 w^2 + 64/7) O_2 (it fails).  The match is exact
@@ -63,26 +73,35 @@ on all 28 coefficients below the diagonal through n = 7, 13 of them
 frame corrections (the fast tests re-derive the 9 through n = 5, the
 slow test the 17 through n = 6; conformal_tower.json has n = 7).
 
-RESULT 2: THE REMAINDER IS THE FIRST LADDER RUNG
-------------------------------------------------
+RESULT 2: THE REMAINDER IS ONE LIOUVILLE RUNG (THE FIRST BORN TERM)
+-------------------------------------------------------------------
 With the remainder on, the chord answer differs from the OPE only in the
-lower coefficients, and at leading order the difference is one ladder
-rung acting on the full bilocal,
+lower coefficients, and at leading order the difference is exactly one
+rung of the linearized large-q Liouville equation
+d1 d2 dg = -2 J^2 e^g dg (e^g = sech^2, J = a) acting once on the OPE
+bilocal,
 
-    B(0, t)  =  B_OPE(0, t) - 2 a^2 Int_{0<t1<t2<t} W(t2 - t1) B(t1, t2),
+    B(0, t)  =  B_OPE(0, t)
+                - 2 a^2 Int_{0<t1<t2<t} sech^2(a (t2 - t1)) B_OPE(t1, t2),
 
 where B(t1, t2) = sum_j psi_j(t1) psi_j(t2) (so the total translation
-e^(i t1 ad_H) acts on it).  This is the shape of the linearized large-q
-Liouville equation d1 d2 dg = -2 J^2 e^g dg, whose rung is e^g = sech^2.
-At W = 1 it reproduces every coefficient through n = 7 except the three
-that see the tau^2 term of W (10 nontrivial matches with kappa = -2
-fixed).  Those three need a tau^2 weight of -5/6 for O_2 (fixed by two
-coefficients, from A_6 and A_7, which agree) and -9/10 for O_3 (fixed by
-one, so it is a fit, not a check), where Liouville's e^g = sech^2 would
-give -1 (rung_tau2_fit()).  So the rung's leading form is identified and
-its subleading form is not.  The remainder is what makes the full
-channels non-conformal at lambda -> 0; its weight is O(1) there (it
-lowers the O_5 share of A_5 from 11/1911 to 11/2058, by about 7%).
+e^(i t1 ad_H) acts on it).  Nothing is fitted: kappa = -2 and the shape
+sech^2 are Liouville's.  This reproduces all 13 coefficients that the
+remainder changes through n = 7; 10 of them see only W(0) = 1, and each
+implies kappa = -2 on its own; the other three, (6, 2), (7, 2) and
+(7, 3), see the tau^2 term of W, and each needs exactly Liouville's -1
+(rung_tau2_fit()).  The rung acts once, not iterated, which fits the chord
+rule: each Omega_k insertion carries the remainder at most once (r = 0
+or 1 in singlet_tower._omega_terms).  Iterating it (the geometric
+series B = B_OPE + K B) agrees through n - m = 3 and first differs, at
+n - m = 4, in exactly those three coefficients (an earlier version of
+this module iterated the rung, and fitted the difference as tau^2
+weights -5/6 and -9/10; ERRATA E24).  The next level is a prediction:
+compare() records P_{8,m} for both rules, and of the n = 8 coefficients
+only (8, 2) w^0 sees the tau^4 term of sech^2.  The
+remainder is what makes the full channels non-conformal at lambda -> 0;
+its weight is O(1) there (it lowers the O_5 share of A_5 from 11/1911
+to 11/2058, by about 7%).
 
 RESULT 3: EXACT SEMICLASSICAL SHARES, AND WHY THE ODD CHORDS SURVIVE
 -------------------------------------------------------------------
@@ -100,10 +119,13 @@ for odd m, lambda^n for even m.  So the even chords fade BECAUSE of the
 norm law norm_m ~ lambda^(2 floor(m/2)): given that law and the scaling
 F_{n,m} ~ a^(n-m) with a nonzero limit (both established here through
 n = 7, neither proved), the survival pattern follows rather than being a
-separate observation.
+separate observation.  The pattern itself is the expected one: the
+bilinear primaries of a generalized free Majorana fermion have
+h = 2 Delta_psi + 2n + 1, the odd integers as Delta_psi -> 0, with h = 2
+the energy.  What the chords add is the norm law and the coefficients.
 
-RESULT 4: THE T = infinity OPE COEFFICIENTS ARE THE IR ONES, TIMES (1-k_c)^2
----------------------------------------------------------------------------
+RESULT 4: AN EXACT EMPIRICAL FORM OF THE ODD T = infinity OPE COEFFICIENTS
+--------------------------------------------------------------------------
 In block normalization C_m^2 = 16 nu_m / m!^2 lambda^(2 floor(m/2) - m)
 (ope_coefficients()).  The even ones are O(1): C_2^2 = 4, C_4^2 = 13/45,
 C_6^2 = 103/5670.  The odd ones are O(1/lambda): lambda C_3^2 = 8/9,
@@ -120,11 +142,24 @@ the odd integers, so the pointwise limit there is singular.  The form was
 read off from the h = 5 and 7 ratios (27/20 and 10/7 are (s-1)/s over its
 h = 3 value, s = h(h-1)/2), and it is one of several equivalent
 factorizations: since q eps_h = (1 + k_c)/(1 - k_c), it is also GR with
-their eps_h^2 replaced by (1 + 1/s)^2.  The absolute normalization at
-h = 3, exactly N, is the one out-of-sample check (given psi^2 = 1 and
-GR's four-point normalization of c_h^2).  It is not derived.  It
-predicts norm_9 -> (21482496/143) lambda^8, recorded in the artifact for
-a future n = 9 computation.
+their eps_h^2 replaced by (1 + 1/s)^2.  The form that needs no GR is
+
+    C_h^2 = N c_h^2(GFF) (1 + k_c(h)) / (1 - k_c(h)),
+    c_h^2(GFF) = 4 Delta_psi^2 k_c(h) Gamma(h)^2 / Gamma(2h - 1)  (Delta_psi = 1/p),
+
+with c_h^2(GFF) the leading coefficient of the h-th bilinear primary of
+a generalized free fermion as Delta_psi -> 0 (gff_c2(); the block
+expansion of F_0 = -chi^(2 Delta) + (chi/(1 - chi))^(2 Delta) is checked
+in the tests), i.e. the free coefficient times a ladder factor
+(1 + k_c)/(1 - k_c) = 1 + 2 k_c + 2 k_c^2 + ...  It is an exact rewriting
+of the same relation, not further evidence.  The absolute normalization
+at h = 3, exactly N, is the one out-of-sample check (given psi^2 = 1 and
+GR's four-point normalization of c_h^2): one number, with the form
+chosen after seeing the h = 5 and 7 data, so it is suggestive, not
+established.  The norms, and so the C_h, are the same with the remainder
+on and off, so the ladder factor is not the rung of Result 2.  It is
+not derived.  It predicts norm_9 -> (21482496/143) lambda^8, recorded in
+the artifact for a future n = 9 computation.
 
 SCOPE.  Majorana A_n, strict N = infinity, the leading order in lambda.
 "Exact" for the limits means exact rational arithmetic plus polynomial
@@ -135,7 +170,7 @@ the levels computed, not derivations.
 Output: conformal_tower.json.  `python conformal_tower.py` prints the
 n <= 5 comparison in seconds; `--run` writes the committed n <= 7
 artifact (KMAX = 5: it builds the K = 16 word tables first, about
-4 minutes on one core); `--run 4` stops at n = 6 (a minute) and is for
+5 minutes on one core); `--run 4` stops at n = 6 (half a minute) and is for
 checking only, since the tests expect n = 7.
 """
 
@@ -147,16 +182,16 @@ import time
 from fractions import Fraction
 from math import comb, factorial
 from pathlib import Path
-from typing import Optional
 
 import singlet_tower as st
 
 HERE = Path(__file__).resolve().parent
 
-LAMS = tuple(Fraction(1, 2 ** j) for j in range(9, 15))
+LAMS = tuple(Fraction(1, 3 * 2 ** j) for j in range(10, 17))
 # a limit that moves by more than this when an end point of LAMS is dropped
-# is not converging: five-point roundoff is 2e-8 at n = 6, while a stray
-# c / lambda term moves by at least half its own size
+# is not converging: the six-point truncation error is 4e-17 at n = 6
+# (it grows about 250x per level), while a stray c / lambda term moves by
+# at least half its own size
 DRIFT_TOL = 1e-4
 
 
@@ -288,18 +323,28 @@ def block_coefficient(n: int, m: int) -> Fraction:
 
 
 # ---------------------------------------------------------------------------
-# the ladder rung
+# the Liouville rung
 # ---------------------------------------------------------------------------
-def ladder_dressings(base: dict, nmax: int, rung=(1,), kappa=-2,
-                     iterations: Optional[int] = None) -> dict:
-    """Solve B = B_base + K B sector by sector, with
+def sech2_series(nmax: int) -> tuple:
+    """sech^2 tau = d/dtau tanh tau = sum_k (k + 1) T_(k+1) tau^k."""
+    T = _tanh_series(nmax + 1)
+    return tuple((k + 1) * T[k + 1] for k in range(nmax + 1))
+
+
+def ladder_dressings(base: dict, nmax: int, rung=None, kappa=-2,
+                     iterations: int = 1) -> dict:
+    """Apply the rung K to the base bilocal sector by sector:
+    B = B_base + K B_base (iterations = 1, the default, one rung), or
+    B = B_base + K B iterated `iterations` times (toward the geometric
+    series), with
     (K B)(0, t) = kappa Int_{0<t1<t2<t} W(t2 - t1) e^(i w t1) b(t2 - t1),
-    a = 1, W(tau) = sum rung[k] tau^k.  base: {(n, m): {w-power: c}}.
+    a = 1, W(tau) = sum rung[k] tau^k (default sech^2 tau, Liouville's
+    e^g).  base: {(n, m): {w-power: c}}.
     In dressing language, with c_n the t^n coefficients of W(tau) b(tau),
     F_N = F_N^base + kappa sum_n c_n n! i^(-n-2) w^(N-2-n).  kappa = -2 is
-    the sign of the linearized Liouville rung, -2 J^2 e^g."""
-    if iterations is None:
-        iterations = nmax
+    the linearized Liouville rung -2 J^2 e^g at J = a = 1."""
+    if rung is None:
+        rung = sech2_series(nmax)
     out = {}
     for m in range(2, nmax + 1):
         F0 = {n: dict(base.get((n, m), {})) for n in range(nmax + 1)}
@@ -418,7 +463,8 @@ def _limit(xs, ys) -> tuple:
     """The lambda -> 0 extrapolation through all points, and its largest
     change when the first or the last point is dropped (relative to
     max(1, |limit|)).  A quantity that does not converge, e.g. a stray
-    1/lambda, gives an O(1) change; a convergent one, roundoff."""
+    1/lambda, gives an O(1) change; a convergent one, the truncation error
+    of the extrapolation (the arithmetic is exact)."""
     L = _extrapolate(xs, ys)
     drift = max(abs(float(_extrapolate(xs[1:], ys[1:]) - L)),
                 abs(float(_extrapolate(xs[:-1], ys[:-1]) - L)))
@@ -573,12 +619,30 @@ def odd_ope_from_gr(h: int) -> Fraction:
     return 2 * (1 - kc(h)) ** 2 * gr_c2_q2((h - 1) // 2)
 
 
+def gff_c2(h: int) -> Fraction:
+    """c_h^2 / Delta^2 as Delta -> 0 for the h = 2 Delta + 2n + 1 bilinear
+    primary of a generalized free fermion of dimension Delta (h odd, >= 3):
+    4 k_c(h) Gamma(h)^2 / Gamma(2h - 1), the limit of
+    2 Gamma(h)^2 Gamma(h + 2 Delta - 1) / (Gamma(2 Delta)^2 Gamma(2h - 1)
+    Gamma(h - 2 Delta + 1)), the block expansion of
+    F_0 = -chi^(2 Delta) + (chi/(1 - chi))^(2 Delta)."""
+    return 4 * kc(h) * Fraction(factorial(h - 1) ** 2, factorial(2 * h - 2))
+
+
+def odd_ope_from_gff(h: int) -> Fraction:
+    """lambda C_h^2 from C_h^2 = N c_h^2(GFF) (1 + k_c)/(1 - k_c), with
+    N = 2 p^2 / lambda and Delta_psi = 1/p: the same numbers as
+    odd_ope_from_gr, written without GR."""
+    k = kc(h)
+    return 2 * gff_c2(h) * (1 + k) / (1 - k)
+
+
 def rung_tau2_fit(frame: dict, chord_on: dict, nmax: int) -> list:
-    """For each coefficient that the W = 1 ladder misses, the tau^2 weight
-    w2 of W(tau) = 1 + w2 tau^2 that would fix it.  Returns
-    [(n, m, w-power, w2)], w2 = None where the coefficient does not see w2
-    or sees it nonlinearly (two tau^2 insertions, from n - m = 6 on); the
-    linearity is checked, not assumed."""
+    """For each coefficient that one rung with W = 1 misses, the tau^2
+    weight w2 of W(tau) = 1 + w2 tau^2 that would fix it (Liouville's
+    sech^2 has w2 = -1).  Returns [(n, m, w-power, w2)], w2 = None where
+    the coefficient does not see w2 (or, if iterated, sees it
+    nonlinearly); the linearity is checked, not assumed."""
     l0, l1, l2 = (ladder_dressings(frame, nmax, rung=(1, 0, c)) for c in (0, 1, 2))
     out = []
     for key, P in sorted(chord_on.items()):
@@ -608,9 +672,16 @@ def compare(kmax: int = 3, verbose: bool = True) -> dict:
     on = chord_limits(kmax, remainder=True)
     frame_match = {str(k): off["dressings"].get(k) == frame[k]
                    for k in sorted(frame) if k[0] > k[1]}
-    ladder = ladder_dressings(frame, nmax, rung=(1,))
-    ladder_match = {str(k): on["dressings"].get(k) == ladder[k]
-                    for k in sorted(ladder) if k[0] > k[1]}
+    rung = ladder_dressings(frame, nmax)                    # one sech^2 rung
+    rung_match = {str(k): on["dressings"].get(k) == rung[k]
+                  for k in sorted(rung) if k[0] > k[1]}
+    w1 = ladder_dressings(frame, nmax, rung=(1,))
+    w1_match = {str(k): on["dressings"].get(k) == w1[k]
+                for k in sorted(w1) if k[0] > k[1]}
+    iterated = ladder_dressings(frame, nmax, rung=sech2_series(nmax),
+                                iterations=nmax)
+    iterated_misses = [str(k) for k in sorted(iterated)
+                       if k[0] > k[1] and on["dressings"].get(k) != iterated[k]]
     top = {str((n, m)): frame[(n, m)].get(n - m) == block_coefficient(n, m)
            for (n, m) in frame if n >= m}
     shares = limiting_shares(on["dressings"], on["norms"], nmax)
@@ -633,7 +704,9 @@ def compare(kmax: int = 3, verbose: bool = True) -> dict:
         sub_max=max(on["sub_max"], off["sub_max"]),
         top_is_block_coefficient=top,
         frame_matches_no_remainder=frame_match,
-        ladder_w1_matches_full=ladder_match,
+        rung_matches_full=rung_match,
+        rung_w1_matches_full=w1_match,
+        iterated_rung_misses=iterated_misses,
         shares={str(n): dict(lead_power=r["lead_power"],
                              shares={str(m): str(v) for m, v in r["shares"].items()},
                              shares_float={str(m): float(v) for m, v in r["shares"].items()},
@@ -648,8 +721,17 @@ def compare(kmax: int = 3, verbose: bool = True) -> dict:
                             for n, m, e, w2 in rung_tau2_fit(frame, on["dressings"], nmax)]
     out["odd_ope_vs_gr"] = {
         str(h): dict(chord=str(c2[h]), n_one_minus_kc_sq_gr=str(odd_ope_from_gr(h)),
-                     equal=c2[h] == odd_ope_from_gr(h))
+                     equal=c2[h] == odd_ope_from_gr(h) == odd_ope_from_gff(h))
         for h in sorted(c2) if h % 2}
+    # the next level's dressings, predicted by the OPE (remainder off) and
+    # by the OPE plus one sech^2 rung (remainder on)
+    nxt = nmax + 1
+    frame_next = frame_dressings(nxt)
+    rung_next = ladder_dressings(frame_next, nxt)
+    out["prediction_next_level"] = dict(
+        n=nxt,
+        chord_off={str(m): _fmt(frame_next[(nxt, m)]) for m in range(2, nxt)},
+        chord_on={str(m): _fmt(rung_next[(nxt, m)]) for m in range(2, nxt)})
     # the relation's prediction for the first odd chord not computed
     h_next = nmax + 1 if (nmax + 1) % 2 else nmax + 2
     nu_next = odd_ope_from_gr(h_next) * factorial(h_next) ** 2 / 16
@@ -669,8 +751,12 @@ def compare(kmax: int = 3, verbose: bool = True) -> dict:
               f"largest vanishing term {out['sub_max']:.1e}")
         print("  top coefficient = SL(2) block coefficient:", all(top.values()))
         print("  no-remainder chords = tanh-frame OPE:", all(frame_match.values()))
-        bad = [k for k, v in ladder_match.items() if not v]
-        print("  full chords = OPE + one rung (W = 1):", "all" if not bad else f"all but {bad}")
+        bad = [k for k, v in rung_match.items() if not v]
+        print("  full chords = OPE + one sech^2 rung:", "all" if not bad else f"all but {bad}")
+        bad = [k for k, v in w1_match.items() if not v]
+        print("  ... with W = 1 instead:", "all" if not bad else f"all but {bad}")
+        print("  ... with the rung iterated:", "all" if not iterated_misses
+              else f"all but {iterated_misses}")
         for n, r in out["shares"].items():
             print(f"  A_{n}: " + ", ".join(f"O_{m} {s}" for m, s in r["shares"].items())
                   + (f"  (fading {r['fading']})" if r["fading"] else ""))
@@ -694,8 +780,8 @@ def run(kmax: int = 5, out_path=None, workers: int = 1) -> dict:
     payload["runtime_s"] = round(time.time() - t0, 1)
     payload["provenance"] = (
         f"conformal_tower.py --run {kmax} -- lambda -> 0 limits of the singlet-tower "
-        "dressings from exact rational chord sums at lambda = 2^-9..2^-14, "
-        "against the tanh-frame SL(2) OPE and the one-rung ladder")
+        "dressings from exact rational chord sums at lambda = 1/(3 2^j), "
+        "j = 10..16, against the tanh-frame SL(2) OPE and one Liouville rung")
     out = Path(out_path) if out_path else HERE / "conformal_tower.json"
     with open(out, "w") as fh:
         json.dump(payload, fh, indent=1)
@@ -711,7 +797,7 @@ if __name__ == "__main__":
                          "(default 5, the committed n <= 7 artifact)")
     ap.add_argument("--workers", type=int, default=1,
                     help="processes for the K >= 16 word tables (default 1: "
-                         "the n <= 7 run is about 4 minutes on one core)")
+                         "the n <= 7 run is about 5 minutes on one core)")
     args = ap.parse_args()
     if args.run is not None:
         run(args.run, workers=args.workers)

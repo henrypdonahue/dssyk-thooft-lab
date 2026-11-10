@@ -74,20 +74,26 @@ bilinear spectrum h = 2, 3, 5, 7, …. Levels 7 and 8 were computed after
 the pattern was stated and bore it out ([note](notes/singlet-tower-note.md)
 §4, [code](duality/singlet_tower.py)).
 
-**3a. As λ → 0 the levels are a conformal OPE plus one ladder rung
+**3a. As λ → 0 the levels are a conformal OPE plus one Liouville rung
 (exact limits through n = 7, not proved).** Each dressing becomes a
 polynomial in the scaled frequency with rational coefficients. With the
 chord rule's grade remainder switched off, every Aₙ is exactly the
 one-dimensional conformal OPE of the bilocal Σψᵢ(0)ψᵢ(t) in the frame
 u = tanh(√λ t), with Oₘ a primary of weight m. With the remainder on,
-one ladder rung of the linearized large-p Liouville form is added, so
-the full channels are not exactly conformal. The odd survival then
+exactly one rung of the linearized large-p Liouville equation is added,
+−2a² sech²(aτ) acting once on the OPE bilocal, with nothing fitted (all
+13 coefficients it changes), so the full channels are not exactly
+conformal. The odd survival then
 follows from the norm law and the a^(n−m) scaling of the dressings (both
 numerical, neither proved), and the shares are exact rationals
-(A₅ → 2047/2058 O₃ + 11/2058 O₅). The odd T = ∞ OPE coefficients equal
+(A₅ → 2047/2058 O₃ + 11/2058 O₅). The odd-only pattern is itself what a
+generalized free Majorana fermion gives; the content is in the norms
+and coefficients. The odd T = ∞ OPE coefficients equal
 N(1 − k_c(h))² times the Gross–Rosenhaus IR couplings, k_c(h) = 2/(h(h−1)), exactly at
-h = 3, 5, 7 (the factor was read off h = 5 and 7; h = 3 is the one
-out-of-sample check). That relation is identified, not derived
+h = 3, 5, 7; equivalently, N times the free-fermion coefficient times
+(1 + k_c)/(1 − k_c). The form was read off h = 5 and 7, so h = 3 is the
+one out-of-sample check, and the relation is suggestive, identified and
+not derived
 ([code](duality/conformal_tower.py),
 [note](notes/singlet-tower-note.md) §4a).
 
@@ -103,7 +109,7 @@ sector, so the natural "n-th member" of the tower is the dimension-n
 chord, not the raw Aₙ ([note](notes/singlet-tower-note.md) §8).
 
 **4. In the frame where the mesons should be, the mass spectrum is gapless
-(Majorana form, N = ∞, small λ).** The paper's flat-space limit is λ
+(Majorana form, N = ∞, the λ → 0 limit).** The paper's flat-space limit is λ
 fixed with energies fixed in string units, J_MSS = pJ. Each chord of
 dimension Δ becomes, as λ → 0, the quasinormal ladder |Γ(Δ + iω/a)|² at a
 string-scale spacing (a = 2√2 J_MSS in this repo's Majorana translation).
@@ -112,10 +118,18 @@ K_{iω/a}(M/a)², and the ladder is exactly the superposition of those with
 mass density ∝ M^(2Δ−1): a gapless, scale-invariant spectrum reaching
 M = 0. With the exact decomposition, that fixes the channels' Rindler
 mass spectrum as gapless power laws with Δ = 2, 3, 5, 7, with no gap and no
-discrete masses, unlike the gapped, discrete 't Hooft tower. That is
-consistent with the paper's own picture of a deconfined, conformal
-stretched horizon, and it means the meson tower is not visible in these
-N = ∞ two-point functions ([duality/HORIZON.md](duality/HORIZON.md)).
+discrete masses, unlike the gapped, discrete 't Hooft tower. (In the
+limit this is equivalent to the chords being conformal; at finite λ the
+band-limited density has no mass reading under the two-sided
+calibration used.) Since Susskind's correction
+([2511.10907](https://arxiv.org/abs/2511.10907)) the deconfined
+stretched horizon sits within a Planck distance, so the string-scale
+region these channels probe is the confined one, where the proposal
+puts the mesons: the result is a tension with the proposal in this
+limit, and the meson tower is not visible in these N = ∞ two-point
+functions ([duality/HORIZON.md](duality/HORIZON.md), ERRATA E25).
+Betzios's 't Hooft model on dS₂ ([2610.37667](https://arxiv.org/abs/2610.37667))
+is the curved-space target that a sharper comparison now needs.
 At fixed p, N → ∞, the paper's calculational regime, the exact moments
 approach the same ladders as p grows, with large closed-form finite-p
 corrections ([syk-self-averaging/thooft_limit.py](syk-self-averaging/thooft_limit.py)).
@@ -127,9 +141,9 @@ corrections ([syk-self-averaging/thooft_limit.py](syk-self-averaging/thooft_limi
 | Exact Majorana singlet identities | A₁ = −2pH and A₂ = 4ΣᵢHᵢ² per realization, any N; a general mixed-word identity for every Aₙ (checked n ≤ 5) | The Dirac Mₙ need their own channel and CP treatment |
 | Pair (i ≠ j) chord amplitude | Conserved at N = ∞ for every n, λ and matter weight (theorem) | Not the full flavor-summed channel |
 | Full A₂ channel at N = ∞ | Conserved H² part plus a Δ = 2 matter chord (theorem), checked against exact finite N and projected ED | Majorana only; a boost-frequency continuum is not a mass |
-| Aₙ, n = 3..8, at N = ∞ | Polynomial in H plus matter chords of dimension 2..n | Verified in computer algebra on finite word sets; no general-n proof |
-| The same as λ → 0 | Chords are weight-m primaries of a tanh-frame SL(2) OPE (remainder off), plus one ladder rung (remainder on); exact shares; odd Cₕ² = N(1 − k_c)² × GR | Rational limits by extrapolation of exact sums, n ≤ 7; the GR relation and the rung's subleading weight are not derived |
-| Singlet tower in a Rindler frame | As λ → 0 each chord is the quasinormal ladder \|Γ(Δ + iω/a)\|², the response of a gapless mass density ∝ M^(2Δ−1); the channels' Rindler mass spectrum has no gap and no discrete masses | Majorana only; free-field calibration at fixed distance from the horizon; a = 2𝒥 is the natural, not a supplied, identification |
+| Aₙ, n = 3..8, at N = ∞ | Polynomial in H plus matter chords of dimension 2..n | Verified in computer algebra on finite word sets (the residual tests the structure; the values rest on the rule's derivation and the n ≤ 4 finite-N gates); no general-n proof |
+| The same as λ → 0 | Chords are weight-m primaries of a tanh-frame SL(2) OPE (remainder off), plus one Liouville rung (remainder on); exact shares; odd Cₕ² = N(1 − k_c)² × GR | Rational limits by extrapolation of exact sums, n ≤ 7; neither the OPE, the rung nor the GR relation is derived |
+| Singlet tower in a Rindler frame | As λ → 0 each chord is the quasinormal ladder \|Γ(Δ + iω/a)\|², the response of a gapless mass density ∝ M^(2Δ−1); the channels' Rindler mass spectrum has no gap and no discrete masses | Majorana only; the λ → 0 limit (no mass reading at finite λ); two-sided free-field calibration, chosen, at fixed distance from the horizon; a = 2𝒥 is the natural, not a supplied, identification; tests the paper's small-λ statement, not its fixed-p regime |
 | 't Hooft limit (fixed p, N → ∞) | Exact moments of A₂ (and the A₃ ratio) approach the λ → 0 ladders as p grows, with large closed-form finite-p corrections | Laws fit on low p, checked on higher p; the expected large-p ↔ small-λ consistency, and moments do not decide whether the finite-p spectrum is gapped |
 | Fixed p, finite N | Exact rational moment laws; μ₂/μ₀ = 8p(p−2)/N + O(N⁻²) at each tested even p ≤ 12 | Not proved for all p; not an exact finite-N equality |
 | Self-averaging | Exact finite-N variance of the adjoint Bⱼₖ and the singlet m₂, with an m₄ extension | Specific observables, not a theorem about full emergent gauge symmetry |
@@ -199,7 +213,7 @@ or an identical BLAS guarantee. CI covers Python 3.9 and 3.12 on Linux.
 
 Run tests separately in each directory (the three modules and
 `scripts/`), as the Makefile does; the code uses flat script imports.
-`test` excludes slow tests (721 fast tests, 16 of them for the
+`test` excludes slow tests (723 fast tests, 16 of them for the
 runner and the walkthrough page); `test-all` includes them. `reproduce` runs the fast
 deterministic producers and plots in a few minutes; `reproduce-slow`
 runs every campaign and reference generator and takes about two days.

@@ -244,9 +244,9 @@
   "7": "720"
  },
  "norms_off_equal": true,
- "max_residual": 2.4680163803480922e-14,
- "max_drift": 4.404014346157903e-06,
- "sub_max": 2.1437482085947926e-18,
+ "max_residual": 5.1086485337361276e-24,
+ "max_drift": 1.2771963658921283e-14,
+ "sub_max": 1.4995572651043734e-27,
  "top_is_block_coefficient": {
   "(2, 2)": true,
   "(3, 2)": true,
@@ -287,7 +287,24 @@
   "(7, 5)": true,
   "(7, 6)": true
  },
- "ladder_w1_matches_full": {
+ "rung_matches_full": {
+  "(3, 2)": true,
+  "(4, 2)": true,
+  "(4, 3)": true,
+  "(5, 2)": true,
+  "(5, 3)": true,
+  "(5, 4)": true,
+  "(6, 2)": true,
+  "(6, 3)": true,
+  "(6, 4)": true,
+  "(6, 5)": true,
+  "(7, 2)": true,
+  "(7, 3)": true,
+  "(7, 4)": true,
+  "(7, 5)": true,
+  "(7, 6)": true
+ },
+ "rung_w1_matches_full": {
   "(3, 2)": true,
   "(4, 2)": true,
   "(4, 3)": true,
@@ -304,6 +321,11 @@
   "(7, 5)": true,
   "(7, 6)": true
  },
+ "iterated_rung_misses": [
+  "(6, 2)",
+  "(7, 2)",
+  "(7, 3)"
+ ],
  "shares": {
   "3": {
    "lead_power": 2,
@@ -398,7 +420,7 @@
   "7": {
    "3": 0.9861142776889109,
    "5": 0.013821884102644543,
-   "7": 6.38382084445182e-05
+   "7": 6.383820844451822e-05
   }
  },
  "ope_c2_scaled": {
@@ -414,19 +436,19 @@
    "n": 6,
    "m": 2,
    "w_power": 0,
-   "w2": "-5/6"
+   "w2": "-1"
   },
   {
    "n": 7,
    "m": 2,
    "w_power": 1,
-   "w2": "-5/6"
+   "w2": "-1"
   },
   {
    "n": 7,
    "m": 3,
    "w_power": 0,
-   "w2": "-9/10"
+   "w2": "-1"
   }
  ],
  "odd_ope_vs_gr": {
@@ -446,6 +468,67 @@
    "equal": true
   }
  },
+ "prediction_next_level": {
+  "n": 8,
+  "chord_off": {
+   "2": {
+    "0": "256/5",
+    "2": "1088/15",
+    "4": "80/3",
+    "6": "28/3"
+   },
+   "3": {
+    "1": "256",
+    "3": "320/3",
+    "5": "56/3"
+   },
+   "4": {
+    "0": "8512/33",
+    "2": "2240/11",
+    "4": "980/33"
+   },
+   "5": {
+    "1": "2240/11",
+    "3": "392/11"
+   },
+   "6": {
+    "0": "1120/13",
+    "2": "392/13"
+   },
+   "7": {
+    "1": "16"
+   }
+  },
+  "chord_on": {
+   "2": {
+    "0": "76352/35",
+    "2": "93488/105",
+    "4": "9892/105",
+    "6": "28/3"
+   },
+   "3": {
+    "1": "6912/7",
+    "3": "3824/21",
+    "5": "56/3"
+   },
+   "4": {
+    "0": "6064/11",
+    "2": "8744/33",
+    "4": "980/33"
+   },
+   "5": {
+    "1": "2592/11",
+    "3": "392/11"
+   },
+   "6": {
+    "0": "1224/13",
+    "2": "392/13"
+   },
+   "7": {
+    "1": "16"
+   }
+  }
+ },
  "prediction": {
   "h": 9,
   "lam_C2": "37/2027025",
@@ -463,6 +546,6 @@
   "gr": "1/4000",
   "chord_over_gr": "100/49"
  },
- "runtime_s": 224.0,
- "provenance": "conformal_tower.py --run 5 -- lambda -> 0 limits of the singlet-tower dressings from exact rational chord sums at lambda = 2^-9..2^-14, against the tanh-frame SL(2) OPE and the one-rung ladder"
+ "runtime_s": 273.9,
+ "provenance": "conformal_tower.py --run 5 -- lambda -> 0 limits of the singlet-tower dressings from exact rational chord sums at lambda = 1/(3 2^j), j = 10..16, against the tanh-frame SL(2) OPE and one Liouville rung"
 }

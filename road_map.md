@@ -244,15 +244,16 @@ polynomial in the scaled frequency ω/√λ with rational coefficients.
 Without the chord rule's grade remainder, Aₙ is *exactly* a
 one-dimensional conformal OPE of the bilocal Σψᵢ(0)ψᵢ(t) in the frame
 u = tanh(√λ t), with Oₘ a primary of weight m (every coefficient through
-n = 7). The remainder adds one ladder rung of the linearized large-p
-Liouville form. The odd survival follows from the norm law, and the
+n = 7). The remainder adds exactly one rung of the linearized large-p
+Liouville equation, −2a² sech²(aτ) acting once, with nothing fitted. The odd survival follows from the norm law, and the
 shares are exact (A₅ → 2047/2058 O₃ + 11/2058 O₅). The odd T = ∞ OPE
 coefficients equal N(1 − k_c(h))² times the Gross–Rosenhaus IR couplings,
-exactly at h = 3, 5, 7, with k_c(h) = 2/(h(h−1)). The map from chord
-dimension to conformal dimension is therefore no longer only a
-coincidence of integers: it is backed by an exact, though underived,
-relation fixed on two operators and checked on a third. Still open: why the relation holds, and
-the rung's subleading weight.
+exactly at h = 3, 5, 7, with k_c(h) = 2/(h(h−1)); equivalently N times
+the free-fermion coefficient times (1 + k_c)/(1 − k_c). The odd-only
+pattern itself is what a generalized free Majorana fermion gives, so
+the content is in the norms and coefficients: an exact, though
+underived, relation whose form was fixed on two operators and checked
+on a third. Still open: why it holds.
 
 So the tower does propagate at N = ∞. The per-flavor split of its weight
 into "diagonal" and "pair" is bookkeeping: on a double-scaling line the
@@ -292,7 +293,8 @@ c₂ = 28.92 → 31.65, and its limit is now a closed form
 reproduces to 1e-8 relative (and 9.7555 at λ = 1, 77.944 at λ = 4, both
 checked on their own lines). It is not 97/3. The same holds one rung
 up: c₃(λ) = 4λ(1−q)³(35 + 56q + 35q² + 10q³), 223.648 at λ = 2, which
-the n = 3 sequence to p = 32 reproduces to 1e-4. These constants are the
+the n = 3 sequence to p = 32 reproduces to 1e-4 (central value; the
+spread across fit windows is 2e-3). These constants are the
 Δψ → 0 slopes of the N = ∞ *diagonal* chord channel, λP_K(q) with K the
 word length: the O(Δ) parts of the diagonal and pair halves cancel on
 every double-scaling line, the n ≥ 2 shadow of the exact A₁ identity.
@@ -310,8 +312,7 @@ the fixed-p polynomials Q_n(p).
 results above describe the singlets in exactly that limit. In those units
 (J_MSS = pJ) the chords' ladder spacing is a = 2𝒥 = 2√2 J_MSS in this
 repo's Majorana translation (the O(1) factor is convention-dependent):
-string scale, the scale of the meson masses and of the stretched horizon of
-their §6. As λ → 0 each chord of dimension Δ is the quasinormal ladder
+string scale, the scale of the meson masses. As λ → 0 each chord of dimension Δ is the quasinormal ladder
 |Γ(Δ + iω/a)|², reached with deviation (Δ/4)λ (measured Δ = 2..6), most
 of it a shift of the scale (the shape deviates by about 0.045λ), and the
 exact decay rates plateau at Δa. At a Rindler horizon a field of
@@ -320,10 +321,15 @@ the superposition of those with mass density ∝ M^(2Δ−1): gapless and
 scale-invariant. With the exact decomposition (and the invertibility of
 the mass transform), the channels' Rindler mass spectrum is gapless power
 laws with Δ = 2, 3, 5, 7, with no gap and no discrete masses. The gapped,
-discrete 't Hooft tower gives an entire density instead. That is
-consistent with their §6 picture of a deconfined stretched horizon, and a
-sign that the meson tower is not visible in the N = ∞ two-point functions
-of the Sₙ in their Majorana form (the Dirac full channel is still open).
+discrete 't Hooft tower gives an entire density instead. This holds in
+the λ → 0 limit (at finite λ the band-limited density has no mass
+reading under the two-sided calibration). An earlier version called it
+consistent with the deconfined stretched horizon of their §6, a string
+length out; Susskind's 2511.10907 moved that layer to a Planck distance,
+so the string-scale region is confined and the result is a tension with
+the proposal in this limit (ERRATA E25): the meson tower is not visible
+in the N = ∞ two-point functions of the Sₙ in their Majorana form (the
+Dirac full channel is still open).
 
 At fixed p, N → ∞, the paper's calculational regime
 (`syk-self-averaging/thooft_limit.py`), the exact leading 1/N
@@ -397,19 +403,33 @@ condensate and gives first α → −1 GMOR data.
    quasinormal ladders |Γ(Δ + iω/a)|², Δ = 2, 3, 5, 7, whose Rindler mass
    spectrum is gapless (density ∝ M^(2Δ−1)), with no gap and no discrete
    masses. So the paper's small-λ prediction cannot be met by the N = ∞
-   two-point functions of the Majorana Sₙ. Next, theory-gated: whether
-   1/N corrections open a gap or produce discrete masses. Moments cannot
-   decide that (they do not fix analytic structure); it needs the 1/N
-   correction to the chord density itself.
+   two-point functions of the Majorana Sₙ, a tension with the proposal
+   since the corrected stretched horizon (2511.10907) leaves the
+   string-scale region confined (ERRATA E25). Next: the regime the
+   paper actually compares in, fixed p at N = ∞ (2607.05678v2 §4.1).
+   Those channels are leading-order objects, computable from the large-N
+   Schwinger–Dyson and ladder equations at β = 0, and the place to look
+   for discrete or resonant structure; 't Hooft mesons are leading order
+   in N, so 1/N corrections at fixed λ are a less natural place. The
+   curved-space bulk target is Betzios's 't Hooft model on dS₂
+   (2610.37667), where the mesons are resonances even at N = ∞.
 2. **The 't Hooft limit, by shape.** Done for A₂, with the A₃ ratio
    (`syk-self-averaging/thooft_limit.py`): at fixed p the channels'
    moments approach the λ → 0 ladders as p grows, with exact closed-form
    finite-p corrections that are large at small p. Open: A₄ and beyond
-   (the K = 12 word frontier limits the moments available).
+   (the K = 12 word frontier limits the moments available). A lead for
+   deriving the laws rather than fitting them: ⟨ω²⟩ = 8p(p−2) is
+   exactly (2p − 4) times the fermion's 4p, the second moment of a
+   product of 2p − 4 fermion propagators (Δ_eff = 2 − 4/p), and an
+   independent review enumeration found the A₂ moments through the sixth
+   to be those of G_melonic(t)^(2p−4) at β = 0 (not yet checked in this
+   repo). If that holds, the fixed-p channels follow from a real-time
+   Schwinger–Dyson solve, with no word frontier.
 3. **The 2, 3, 5, 7 coincidence.** Answered in the semiclassical limit
    (`duality/conformal_tower.py`). As λ → 0 the chords are SL(2)
    primaries of weight m in the bilocal OPE (exact through n = 7 with the
-   grade remainder off; with it on, one ladder rung is added). The odd
+   grade remainder off; with it on, one Liouville rung, −2a² sech², is
+   added once). The odd
    survival follows from the norm law, and the small-λ shares are exact
    rationals (O₅ in A₅: 11/2058 = 0.5345%; O₇ in A₇: 5/78323). The
    chord weights do not match the GR coupling ratios directly (C₅²/C₃² is
@@ -417,8 +437,8 @@ condensate and gives first α → −1 GMOR data.
    h = 3, 5, 7 after a factor (1 − k_c)² read off from the data:
    Cₕ² = N(1 − k_c(h))² cₕ²(GR). Open:
    - a derivation of that relation and of the conformal structure;
-   - the rung's subleading weight (sector-dependent, −5/6 and −9/10,
-     not Liouville's −1);
+   - the predicted n = 8 dressings of one Liouville rung (recorded in
+     `conformal_tower.json`; they need the K = 18 tables);
    - the predicted N₉ → (21482496/143)λ⁸, which needs n = 9.
 4. **The Dirac full channel and its CP resolution** (below). This is what
    the paper's own CP assignment waits on.
@@ -665,9 +685,10 @@ be the first quantitative discriminator among all three programs.
 literature uses λ = 2p²/N, q = e^(−λ). Any reuse of chord results must
 pass through a tested conversion.
 
-**Priority.** As of 2026-10-14 (INSPIRE, arXiv) the target paper is
-still v1 and has exactly one citation, Cui–Kolchmeyer
-[2607.13665](https://arxiv.org/abs/2607.13665). That paper argues that
+**Priority.** As of 2026-11-10 (INSPIRE, arXiv) the target paper is at
+v2 (2026-10-19, minor changes) and has two citations, Cui–Kolchmeyer
+[2607.13665](https://arxiv.org/abs/2607.13665) and Aguilar-Gutierrez
+[2610.20703](https://arxiv.org/abs/2610.20703). That paper argues that
 dS observer OTOCs *anti-scramble*, which poses a structural challenge to
 observer-centric static-patch holography. Its
 same-week companion Harlow–Zhao

@@ -79,12 +79,13 @@ to the serial ones. Figure: `plot_singlet_tower.py`.
 
 `conformal_tower.py`. The tower's semiclassical limit, through n = 7.
 As λ → 0 each dressing is a polynomial in the scaled frequency ω/√λ
-with rational coefficients (exact chord sums at six small λ,
+with rational coefficients (exact chord sums at seven small λ,
 extrapolated and reconstructed, with the reconstruction, convergence and
 vanishing terms all guarded). With the chord rule's grade remainder
 off, every Aₙ is exactly the SL(2) OPE of the bilocal in the frame
-u = tanh(√λ t), with Oₘ a primary of weight m; with it on, one ladder
-rung of linearized-Liouville shape is added. The odd survival follows
+u = tanh(√λ t), with Oₘ a primary of weight m; with it on, exactly one
+rung of the linearized Liouville equation (−2a² sech², nothing fitted)
+is added. The odd survival follows
 from the norm law, the shares are exact (A₅ → 2047/2058 O₃ +
 11/2058 O₅), and the odd T = ∞ OPE coefficients are N(1 − k_c(h))²
 times the Gross–Rosenhaus couplings at h = 3, 5, 7, identified and not
@@ -197,7 +198,7 @@ python3 singlet_tower.py         # the resolved channel, A_2..A_5  (~20 s)
 python3 singlet_tower.py --run   # its artifact and finite-N gates (~3 CPU-hours; --resume)
 python3 singlet_tower.py --deep 5 6  # levels n = 7, 8 (~25 min on 6 cores)
 python3 conformal_tower.py       # its lambda -> 0 limit, n <= 5   (~5 s)
-python3 conformal_tower.py --run # its artifact, n <= 7 (~4 min, one core)
+python3 conformal_tower.py --run # its artifact, n <= 7 (~5 min, one core)
 python3 horizon_tower.py         # the tower at the stretched horizon (~4 min)
-pytest -q                        # 389 tests (383 fast, ~1 min)
+pytest -q                        # 391 tests (385 fast, ~1.5 min)
 ```

@@ -166,8 +166,9 @@ frontier, with K = k + 2n the word length:
   same prefactor, same leading 34p², certified at p = 18;
 - c₂(p) exact to p = 48 (31.654), extrapolating to 32.3342 (window
   spread 9 × 10⁻⁵; the order-5 windows agree to 3 × 10⁻⁸); c₃(p) exact
-  to p = 32 (`double_scaling_law.json`), extrapolating to 223.648
-  (7 × 10⁻⁷ from the closed form).
+  to p = 32 (`double_scaling_law.json`), extrapolating to 223.648 in the
+  best-fitting window (7 × 10⁻⁷ from the closed form; the spread across
+  windows is 0.42, 2 × 10⁻³ relative, so that agreement is partly luck).
 
 **Those two limits are closed forms** (`double_scaling_law.py`). On the
 line λ_chord = λ, with q = e^(−λ),

@@ -166,9 +166,20 @@ with a lower block; every remaining two-point word is then a check. The
 residual is identically zero: symbolically in (λ, q) for k ≤ 2 (words
 through four H's; through six at one rational point), and in exact
 rational arithmetic at three generic points for k = 3..6 (k = 5, 6, the
-levels n = 7, 8, check 176 and 257 words per point and are in
-`duality/singlet_tower_deep.json`). λ and q are treated as independent,
-because the identities are polynomial in both. The subleading
+levels n = 7, 8, are in `duality/singlet_tower_deep.json`). λ and q are
+treated as independent, because the identities are polynomial in both.
+The independent checks per point are 37 at n ≤ 6, 55 at n = 7 and 78
+at n = 8; the stored word counts are about three times larger, because
+a word and its mirror give the same equation and some words are already
+used in the solves (ERRATA E26). What a zero residual tests is the
+structure, a polynomial in H plus dressed matter chords, not the values:
+it stays exactly zero under several wrong chord rules (the remainder
+off or rescaled, other pair weights), because the strands running
+between the two insertions always form a matter chord. The values (the
+norms, the dressings and so the shares) rest on the derivation of the
+rule, the n = 2 theorem, and the finite-N gates at n = 3 and 4, which do
+discriminate (⟨ad²A₄A₂†⟩ at λ = 1: 155.03 with the remainder against
+150.65 without). The subleading
 coefficient q[k]_q/(1 + q^(k+1)) holds exactly through k = 6. A proof for
 general k is open.
 
@@ -224,7 +235,7 @@ predicted that O₇ survives and O₈ fades, and both held. §4a reduces the
 pattern to the norm law and shows that, as λ → 0 and with the chord
 rule's grade remainder off, the chords are conformal primaries of weight
 m in the operator expansion of the bilocal; the full rule adds one
-ladder rung.
+Liouville rung.
 
 Closed forms for the moments follow, for example
 
@@ -233,7 +244,7 @@ Closed forms for the moments follow, for example
                   + λ(46q + 14q² − 22q³ − 26q⁴)].
 ```
 
-## 4a. The semiclassical limit: a conformal OPE plus a ladder rung
+## 4a. The semiclassical limit: a conformal OPE plus one Liouville rung
 
 Code: `duality/conformal_tower.py`. Tests: `duality/test_conformal_tower.py`.
 Data: `duality/conformal_tower.json`.
@@ -252,10 +263,14 @@ F_{n,m}(E, E′) = a^(n−m) P_{n,m}(w) (1 + O(a)),
 with P_{n,m} a polynomial with rational coefficients and no σ dependence.
 The norms have rational limits too: Nₘ/λ^(2⌊m/2⌋) → νₘ = 1, 2, 52/5,
 88/7, 4120/7, 720 for m = 2..7. "Exact" means exact rational chord sums
-at λ = 2⁻⁹..2⁻¹⁴, polynomial extrapolation to λ = 0 and rational
-reconstruction. The residuals are below 1e-13, no limit moves by more
-than 5e-6 when an end point is dropped (a hidden divergence would move
-it at O(1)), and the σ terms vanish to below 1e-17. It is not a symbolic proof.
+at λ = 1/(3·2^j), j = 10..16, polynomial extrapolation to λ = 0 and
+rational reconstruction (denominators ≤ 1000; the largest met is 35).
+Each scaled coefficient is a rational function of q = e^(−λ) times an
+integer power of λ, so it is analytic in λ and the extrapolation has no
+logarithms or half-integer powers to miss. The residuals are below
+1e-23, no limit moves by more than 2e-14 when an end point is dropped
+(a hidden divergence would move it at O(1)), and the terms that must
+vanish do so to below 1e-26. It is not a symbolic proof.
 
 **Without the remainder, Aₙ is an SL(2) operator expansion.** The chord
 rule of §4 has one ingredient that is not pairwise: the remainder, an
@@ -276,31 +291,50 @@ lower coefficient is the correction for the frame:
 A₄ ⊃ (36/5 w² + 16/5) O₂ and A₆ ⊃ (60/7 w⁴ + 96/7 w² + 64/7) O₂. The
 frame tanh(at) is the one in which the chord two-point function takes
 conformal form: sech^(2m)(a(t₁ − t₂)) = (u₁′u₂′)^m (1 − u₁u₂)^(−2m), the
-two-point function with one point inverted (u₂ → 1/u₂). e^(2at) is
+two-point function with one point inverted (u₂ → 1/u₂, orientation
+reversing, so up to a sign (−1)^m). e^(2at) is
 Möbius-equivalent and gives the same numbers; tan(at) multiplies the
 w^(n−m−2j) coefficient by (−1)^j (A₆ ⊃ (60/7 w⁴ − 96/7 w² + 64/7) O₂) and
 fails. So, with the remainder off and through n = 7, the dressings are
-exactly those of a weight-m primary in the bilocal's SL(2) OPE. The
+exactly those of a weight-m primary in the bilocal's SL(2) OPE. Some
+SL(2) structure at λ → 0 is expected: Lin–Stanford
+([2307.15725](https://arxiv.org/abs/2307.15725)) find that a subalgebra
+of the chord algebra simplifies to sl₂ in the semiclassical limit, and
+the one-particle chord space carries the positive discrete series of
+U_q(su(1,1)) (van der Heijden–Verlinde–Xu
+[2511.08743](https://arxiv.org/abs/2511.08743)), the natural route to a
+general-n proof. What is computed here is the frame, the OPE data and
+the remainder's rung. The semiclassical T = ∞ four-point function (Xu
+[2411.04251](https://arxiv.org/abs/2411.04251)) is a possible route to
+deriving the coefficients. The
 full rule adds a non-conformal rung, so the full channels are not
 exactly conformal.
 
-**The remainder is a ladder rung.** With the remainder on, only the lower
-coefficients change: A₄ ⊃ (36/5 w² + 56/5) O₂, A₅ ⊃ (80/7 w² + 136/7) O₃.
-At leading order the change is one rung acting on the full bilocal,
+**The remainder is one Liouville rung.** With the remainder on, only the
+lower coefficients change: A₄ ⊃ (36/5 w² + 56/5) O₂,
+A₅ ⊃ (80/7 w² + 136/7) O₃. At leading order the change is exactly one
+rung of the linearized large-p Liouville equation
+∂₁∂₂δg = −2𝒥²e^g δg (e^g = sech², 𝒥 = a), acting once on the OPE
+bilocal (the first Born term, not the resummed ladder):
 
 ```text
-B(0, t) = B_OPE(0, t) − 2a² ∫_{0<t₁<t₂<t} W(t₂ − t₁) B(t₁, t₂),
+B(0, t) = B_OPE(0, t) − 2a² ∫_{0<t₁<t₂<t} sech²(a(t₂ − t₁)) B_OPE(t₁, t₂),
 ```
 
-with B(t₁, t₂) = Σⱼψⱼ(t₁)ψⱼ(t₂). This is the shape of the linearized
-large-p Liouville equation ∂₁∂₂δg = −2𝒥²e^g δg. With W = 1 it reproduces
-every coefficient through n = 7 except the three that see the τ² term of
-W; the other 10 below-diagonal changes are matched with κ = −2 fixed.
-Those three need a τ² weight that depends on the sector: −5/6 for O₂
-(from A₆ and A₇, which agree, so this is a check) and −9/10 for O₃
-(one coefficient, so a fit). Liouville's rung e^g = sech² would give −1
-in both. So the rung's leading form is identified and its subleading
-form is not. The remainder is O(1) at λ → 0: it lowers O₅'s share of A₅
+with B(t₁, t₂) = Σⱼψⱼ(t₁)ψⱼ(t₂). Nothing is fitted: the coupling −2 and
+the shape sech² are Liouville's. This reproduces all 13 below-diagonal
+coefficients the remainder changes through n = 7. Ten see only the
+rung's value at τ = 0, and each fixes the coupling at −2 on its own; the
+other three, (n, m) = (6, 2), (7, 2), (7, 3), see its τ² term, and each
+needs exactly sech²'s −1. That the rung acts once fits the chord rule,
+in which each Ωₖ insertion carries the remainder at most once.
+Iterating the rung agrees through n − m = 3 and differs first, at
+n − m = 4, in exactly those three coefficients. (An earlier version
+iterated it and read the difference as sector-dependent τ² weights,
+−5/6 and −9/10; ERRATA E24.) The next level is a prediction, recorded in
+`conformal_tower.json`: for example A₈ ⊃ (28/3 w⁶ + 9892/105 w⁴ +
+93488/105 w² + 76352/35) O₂, where only the w⁰ term sees sech²'s τ⁴
+coefficient. The remainder is O(1) at λ → 0: it lowers O₅'s share of A₅
 from 11/1911 to 11/2058, by about 7%.
 
 **Exact semiclassical shares; why odd dimensions survive.** The weight
@@ -310,6 +344,10 @@ of the dressed Oₘ in Aₙ is Nₘ⟨|P_{n,m}|²⟩ ∝ λ^(n−m+2⌊m/2⌋). 
 F_{n,m} ~ a^(n−m) with a nonzero limit (A₂ is O₂ alone). Both are
 established here through n = 7 and neither is proved; given them, the
 survival is a consequence rather than a separate observation. The
+odd-only pattern is itself what a generalized free Majorana fermion
+gives (its bilinear primaries have h = 2Δψ + 2n + 1, odd as Δψ → 0,
+with h = 2 the energy); what the chords add is the norm law and the
+coefficients below. The
 surviving shares are exact rationals:
 
 | λ → 0 | O₃ | O₅ | O₇ |
@@ -340,11 +378,27 @@ kernel's poles at h = 1 + 2/p + 2n land on the odd integers, so the
 pointwise limit there is singular.) The form (1 − k_c)² was read off
 from the ratios at h = 5 and 7, and it is one of several equivalent
 factorizations: it is also GR's formula with their ε_h² replaced by
-(1 + 2/(h(h−1)))². The absolute normalization at h = 3, with exactly
-the factor N, is the one out-of-sample check, given ψ² = 1 and GR's
-four-point normalization of c_h². The relation is not derived. It ties
-the infinite-temperature chord tower to the IR bilinear tower operator
-by operator, with no continuous free parameter. It predicts that the
+(1 + 2/(h(h−1)))². The form that needs no GR is
+
+```text
+Cₕ² = N c²_GFF(h) (1 + k_c(h))/(1 − k_c(h)),
+c²_GFF(h) = 4Δψ² k_c(h) Γ(h)²/Γ(2h − 1),   Δψ = 1/p,
+```
+
+with c²_GFF the Δψ → 0 coefficient of the h-th bilinear primary of a
+generalized free fermion (the block expansion of
+F₀ = −χ^(2Δ) + (χ/(1−χ))^(2Δ), checked in the tests): the free
+coefficient times the ladder factor (1 + k_c)/(1 − k_c) =
+1 + 2k_c + 2k_c² + …. It is the same relation rewritten, not further
+evidence. Since the norms, and so the Cₕ, are identical with the
+remainder on and off, that ladder factor is not the rung above. The
+absolute normalization at h = 3, with exactly the factor N, is the one
+out-of-sample check, given ψ² = 1 and GR's four-point normalization of
+c_h². That is a single number, and the form was chosen after seeing
+the h = 5 and 7 data, so the relation is suggestive, not established,
+and it is not derived. It ties the infinite-temperature chord tower to
+the IR bilinear tower operator by operator, with no continuous free
+parameter. It predicts that the
 dimension-9 norm tends to (21482496/143)λ⁸ ≈ 1.5·10⁵λ⁸, beyond the
 levels computed. The even chords have no counterpart in the large-p
 tower (whose only even member is h = 2), and their T = ∞ couplings are

@@ -68,7 +68,8 @@ display at general angles silently breaks time-translation invariance.
 Anyone reusing these formulas should take the gauge-invariant
 combination.
 
-Three checks pin it, and all three are asserted:
+Three checks bear on it, and all three are asserted; the first two pin
+it, the third is weaker:
 
 1. **Translation invariance.** ℱ/F_d is a ratio of thermal correlators,
    so it depends only on time differences. The chord engine and ED are
@@ -80,7 +81,10 @@ Three checks pin it, and all three are asserted:
 3. **The exact N = ∞ chord engine.** As λ → 0 the double-scaled theory
    *is* the large-q limit, so chord/closed must approach 1. Measured:
    0.964 → 0.979 over λ = 2 → 0.5 (0.973 at λ = 4, the top of the
-   committed grid), tracking the TOC control 0.683 → 0.945.
+   committed grid), tracking the TOC control 0.683 → 0.945. That is
+   close to 1 but not monotone in λ, so it does not yet show the
+   approach to 1; the test asserts only 0.96 < ratio < 1, and a ~2%
+   residual could persist. Smaller λ would settle it.
 
 ## How good is the closed form?
 

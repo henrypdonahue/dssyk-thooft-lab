@@ -57,9 +57,13 @@ lighter ones (M/a ≤ 2).
 paper's units (J_MSS = pJ with this repo's Var(J) = p!J²/N^(p−1)),
 𝒥 = √2 J_MSS exactly, so a = 2√2 J_MSS. The O(1) factor depends on that
 translation; the paper's complex model changes it. Either way the ladder
-sits at the string scale: the scale of the meson masses, and of the
-stretched horizon of their §6, which sits a string length from the
-Rindler horizon with a string-scale local Unruh temperature.
+sits at the string scale, the scale of the meson masses. (2506.18054v3
+§6 also put the stretched horizon a string length from the Rindler
+horizon; Susskind [2511.10907](https://arxiv.org/abs/2511.10907)
+corrected that to a Planck distance, a factor ~√N closer, and
+[2607.05678v2](https://arxiv.org/abs/2607.05678) uses the corrected
+picture. So the string-scale region is outside the deconfined layer; see
+"What it means for the proposal".)
 
 **5. At finite λ the ladder ends in a power law.** The spectrum is
 bounded, so the exponential decay cannot last. For Δ = 2 the exact decay
@@ -103,8 +107,20 @@ chord's density converges to its ladder. The map ρ(M) ↦ S(ω) is
 invertible: the cosine representation turns S into the K₀-transform of
 ρ, which is injective. So, as λ → 0, the channels' Rindler mass spectrum
 is fixed: a power-law density M^(2m−1)(c₀ + c₁M² + …) with Δ = 2, 3, 5, 7,
-with no gap and no discrete masses. The 't Hooft model at m_q² = 0 is
-gapped and discrete (FLZ). Its tower, built with the repo's masses and
+with no gap and no discrete masses. Three qualifications. This is a
+statement about the λ → 0 limit: at finite λ the density is
+band-limited, and since each K_{iω/a}(M/a)² has only isolated zeros in
+M, which move with ω, no non-negative ρ(M) gives a density that
+vanishes beyond the band edge, so the finite-λ channels have no mass
+density under this calibration at all, and a gap that closes as λ → 0
+is not excluded by the limit. In the limit the statement is equivalent
+to conformality: M^(2Δ−1) is the Källén–Lehmann density of a 2D
+operator of dimension Δ, so "gapless" restates that the chords become
+sech^(2Δ)(𝒥t), the known semiclassical form; the new input is the exact
+decomposition into such chords. And the two-sided free-field
+calibration is a chosen identification (with the one-sided Unruh
+response no ω-symmetric density matches at all; BOOST.md). The 't Hooft
+model at m_q² = 0 is gapped and discrete (FLZ). Its tower, built with the repo's masses and
 decay constants, gives an entire density, and a decay rate that grows
 like its lightest meson's (13.9a at aτ = 8 for M₀ = a/2).
 
@@ -142,20 +158,49 @@ roughly. The moments do not decide whether the finite-p spectrum is gapped.
 
 ## What it means for the proposal
 
-At N = ∞ and small λ, the Majorana singlet channels of DSSYK∞ have a
-gapless, scale-invariant Rindler mass spectrum, dimensions 2, 3, 5, 7 at the
-string-scale ladder spacing, with no gap and no discrete masses. That
-fits the picture of [2506.18054](https://arxiv.org/abs/2506.18054) §6,
-in which the stretched horizon is the hot, deconfined, effectively
-conformal region and the mesons are what escapes it. It also means that,
-if the duality holds, the discrete meson tower is not visible in these
-channels at N = ∞. The prediction "the singlet spectrum at small λ
-matches the 't Hooft spectrum" then has to refer to something other than
-the N = ∞ two-point functions of the Sₙ in this Majorana form: finite-N
-corrections, the Dirac channels (not yet computed), operators built to
-reach past the stretched horizon, or a dictionary that is not a local
-probe at fixed distance from the horizon. Naming which is the
-dictionary's job.
+At N = ∞ and in the λ → 0 limit, the Majorana singlet channels of
+DSSYK∞ have a gapless, scale-invariant Rindler mass spectrum, dimensions
+2, 3, 5, 7 at the string-scale ladder spacing, with no gap and no
+discrete masses. An earlier version read this as consistent with the
+picture of [2506.18054](https://arxiv.org/abs/2506.18054) §6, a hot,
+deconfined stretched horizon a string length out (ERRATA E25). That
+picture was corrected by Susskind
+([2511.10907](https://arxiv.org/abs/2511.10907)): the deconfined layer
+sits within a Planck distance of the horizon, ~√N closer than the
+string length, and so it shrinks to nothing at N = ∞. In the corrected
+picture the string-scale region these channels probe is confined, which
+is where the proposal puts the mesons. So, read as a probe of that
+region, the result is a tension with the proposal, not a consistency:
+the discrete meson tower is not visible in these channels in this
+limit.
+
+Which of the paper's statements it tests matters. It tests
+2506.18054v3 §5.3, "the spectrum of the DSSYK∞ singlets for small λ
+should match that of the 't Hooft model", at fixed λ → 0 after N → ∞.
+2607.05678v2 makes its 't Hooft comparison at fixed ḡ²N, i.e. fixed p
+as N → ∞ ("since that's where the calculations are done"), and says
+"We don't have a quantitative calculation of the DSSYK spectrum". The
+λ → 0 limit is the large-p edge of that regime, and at finite p the
+exact moments differ substantially from the ladders (the next section).
+The open routes are therefore: finite p at N = ∞ (leading-order
+objects, computable from the large-N Schwinger–Dyson and ladder
+equations; 't Hooft mesons are leading-order objects in the gauge
+theory, so 1/N corrections at fixed λ, which can shift or broaden a
+spectrum, are not a natural place for them to appear); the Dirac
+channels (not yet computed); operators built to reach past the
+horizon region; or a dictionary that is not a local probe at fixed
+distance from the horizon.
+
+The flat-Rindler calibration is also not the only bulk target now.
+Betzios ([2610.37667](https://arxiv.org/abs/2610.37667)) solves the
+'t Hooft model on AdS₂ and dS₂ (his Eq. 5.4, with coupling 𝗀 = ḡ²R²).
+On dS₂ the mesons are resonances even at N = ∞, with widths set by the
+de Sitter temperature, about 𝗀 of them narrow; at 𝗀 = 0 the dimensions
+are Δ = 2Δψ + n, which with a mixed boundary condition is the SYK
+bilinear spectrum. The λ → 0 chords, with real, integer-spaced
+dimensions, resemble that free end. Which 𝗀 the proposal corresponds to
+has to be fixed by the dictionary before that comparison means
+anything.
 
 ## Scope
 
@@ -164,8 +209,10 @@ dictionary's job.
 - Majorana Aₙ, n ≤ 8 (the decomposition is a theorem at n = 2 and
   verified in computer algebra for n = 3..8; Δ = 7 enters only at
   n = 7, 8, with 0.006% and 0.014% of the weight at λ = 1/1280).
-- Free-field calibration with a probe at a fixed distance 1/a from the
-  horizon. A probe smeared down to the horizon, radius ρ ≪ 1/M, sees a
+- The gapless statement is about the λ → 0 limit (at finite λ the
+  band-limited density admits no mass density under the calibration).
+- Two-sided free-field calibration, chosen, with a probe at a fixed
+  distance 1/a from the horizon. A probe smeared down to the horizon, radius ρ ≪ 1/M, sees a
   conformal window up to τ ≈ (2/a) ln(1/(Mρ)) before the mass shows.
 - a = 2𝒥 (ladder spacing equals acceleration) is the natural
   identification, not one the proposal supplies; the spacing depends on

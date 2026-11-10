@@ -156,8 +156,17 @@ two-point word.  The residuals are identically zero: symbolically in
 (lambda, q) for k <= 2, and in exact rational arithmetic at generic
 points for k = 3..6 (test_singlet_tower.py; lambda and q are
 independent there, as the identities are polynomial in both; k = 5 and 6,
-the levels n = 7 and 8, are singlet_tower_deep.json, 176 and 257 checked
-words per point).  A proof for general k is open.
+the levels n = 7 and 8, are singlet_tower_deep.json).  n_checked counts
+each word (A, B) and its mirror (B, A), which give the same equation, and
+words already used in the sector solves: the independent checks are 37
+at n <= 6, 55 at n = 7 and 78 at n = 8 per point.  A zero residual tests
+the STRUCTURE (a polynomial in H plus dressed matter chords), not the
+values: it stays zero under several wrong chord rules (remainder off or
+rescaled, other pair weights), because the strands between the two
+insertions always form a matter chord.  The values (norms, dressings,
+shares) rest on the derivation of the rule, the n = 2 theorem and the
+finite-N gates at n = 3, 4 (ERRATA E26).  A proof for general k is
+open.
 
 WHAT IT SAYS ABOUT THE TOWER
 ----------------------------
@@ -200,7 +209,7 @@ WHAT IT SAYS ABOUT THE TOWER
     prediction for n = 7, 8 before they were computed.  conformal_tower.py
     takes the limit through n = 7: with the chord rule's grade remainder
     off the chords are weight-m primaries of a conformal OPE of the
-    bilocal (with it on, plus one ladder rung), the survival follows from
+    bilocal (with it on, plus one Liouville rung), the survival follows from
     the norm law, and the shares above have exact rational limits
     (A_5 -> 2047/2058 O_3 + 11/2058 O_5).
   * The O_2 kernel of A_3 is (3/2)(E - E') plus an anticommutator

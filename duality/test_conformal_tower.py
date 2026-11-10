@@ -1,5 +1,5 @@
 """Tests for conformal_tower.py: the lambda -> 0 dressings of the singlet
-tower against the tanh-frame SL(2) OPE and the one-rung ladder."""
+tower against the tanh-frame SL(2) OPE and one Liouville rung."""
 import json
 from ast import literal_eval
 from fractions import Fraction
@@ -82,19 +82,21 @@ def test_limits_are_clean(limits):
     no limit moves when an end point is dropped, and every sigma term and
     wrong-parity w term vanishes in the limit (the unsquared scaled size)."""
     for d in limits.values():
-        assert d["max_residual"] < 1e-15
-        assert d["max_drift"] < 1e-9
-        assert d["sub_max"] < 1e-18
+        assert d["max_residual"] < 1e-24
+        assert d["max_drift"] < 1e-16
+        assert d["sub_max"] < 1e-26
 
 
 def test_limit_guard_catches_divergence():
     """A stray c/lambda extrapolates to a clean-looking finite number
-    (c * sum 1/lambda_i = 32256 c); the end-point drift exposes it."""
+    (c * sum 1/lambda_i, 390144 c on this grid); the end-point drift
+    exposes it."""
     xs = list(ct.LAMS)
     finite = ct._limit(xs, [F(2) + F(3, 7) * x for x in xs])
     assert finite == (F(2), 0.0)
     L, drift = ct._limit(xs, [F(2) + F(3, 7) / x for x in xs])
-    assert L == 2 + F(3, 7) * 32256
+    assert sum(1 / x for x in xs) == 390144
+    assert L == 2 + F(3, 7) * 390144
     assert drift > 0.1 > ct.DRIFT_TOL
 
 
@@ -117,12 +119,26 @@ def test_no_remainder_is_the_ope(limits):
 
 def test_remainder_is_one_rung(limits):
     """Result 2: with it on, the dressings through n = 5 are the OPE plus
-    one ladder rung of weight -2 a^2 (W = 1 suffices at this depth)."""
-    ladder = ct.ladder_dressings(ct.frame_dressings(5), 5)
-    assert set(limits["on"]["dressings"]) == set(ladder)
-    for key, P in ladder.items():
+    one Liouville rung, -2 a^2 sech^2 (W = 1 suffices at this depth, and
+    iterating the rung changes nothing before n - m = 4)."""
+    frame = ct.frame_dressings(5)
+    rung = ct.ladder_dressings(frame, 5)
+    assert set(limits["on"]["dressings"]) == set(rung)
+    for key, P in rung.items():
         assert limits["on"]["dressings"][key] == P, key
+    assert rung == ct.ladder_dressings(frame, 5, rung=(1,)) \
+        == ct.ladder_dressings(frame, 5, iterations=5)
     assert limits["on"]["dressings"][(4, 2)] == {2: F(36, 5), 0: F(56, 5)}
+
+
+def test_rung_series():
+    """sech^2 tau = 1 - tau^2 + 2/3 tau^4 - 17/45 tau^6 + ..., and the
+    rung is iterated only on request: the first difference is at
+    n - m = 4, in the three coefficients that see tau^2."""
+    assert ct.sech2_series(6) == (1, 0, -1, 0, F(2, 3), 0, F(-17, 45))
+    frame = ct.frame_dressings(7)
+    one, it = ct.ladder_dressings(frame, 7), ct.ladder_dressings(frame, 7, iterations=7)
+    assert [k for k in sorted(one) if one[k] != it[k]] == [(6, 2), (7, 2), (7, 3)]
 
 
 def test_shares(limits):
@@ -182,18 +198,21 @@ def test_artifact_matches_current_code(art):
     frame = ct.frame_dressings(nmax)
     assert _parse(art["frame_dressings"]) == frame
     assert _parse(art["chord_off"]) == frame
-    ladder = ct.ladder_dressings(frame, nmax)
+    rung = ct.ladder_dressings(frame, nmax)
     on = _parse(art["chord_on"])
-    assert set(on) == set(ladder)
-    misses = [k for k in sorted(ladder) if on[k] != ladder[k]]
-    assert misses == [(6, 2), (7, 2), (7, 3)]
+    assert set(on) == set(rung)
+    assert [k for k in sorted(rung) if on[k] != rung[k]] == []
+    # with W = 1, or with the rung iterated, the three tau^2-sensitive miss
+    for other in (ct.ladder_dressings(frame, nmax, rung=(1,)),
+                  ct.ladder_dressings(frame, nmax, iterations=nmax)):
+        assert [k for k in sorted(other) if on[k] != other[k]] == [(6, 2), (7, 2), (7, 3)]
     norms = {int(m): F(v) for m, v in art["norms"].items()}
     shares = ct.limiting_shares(on, norms, nmax)
     for n, r in shares.items():
         assert {int(m): F(v) for m, v in art["shares"][str(n)]["shares"].items()} \
             == r["shares"]
-    assert art["max_residual"] < 1e-12 and art["max_drift"] < 1e-5
-    assert art["sub_max"] < 1e-15
+    assert art["max_residual"] < 1e-20 and art["max_drift"] < 1e-12
+    assert art["sub_max"] < 1e-20
 
 
 def test_artifact_through_n6(art):
@@ -208,8 +227,9 @@ def test_artifact_through_n6(art):
 
 def test_artifact_n7(art):
     """The committed run reaches n = 7: OPE exact there too, N_7 -> 720,
-    the GR relation at h = 3, 5, 7, the three tau^2 misses of the W = 1
-    rung and what they need, and the h = 9 prediction."""
+    the GR relation at h = 3, 5, 7, one sech^2 rung exact everywhere (the
+    three tau^2-sensitive coefficients each need Liouville's -1), and the
+    n = 8 and h = 9 predictions."""
     assert art["nmax"] == 7
     assert art["norms"]["7"] == "720"
     assert all(k in art["frame_matches_no_remainder"] for k in ("(7, 2)", "(7, 6)"))
@@ -217,15 +237,48 @@ def test_artifact_n7(art):
         {"3": True, "5": True, "7": True}
     assert art["odd_ratio_7_3"]["chord_over_gr"] == "100/49"
     misses = {(r["n"], r["m"], r["w_power"]): r["w2"] for r in art["rung_tau2_fit"]}
-    assert misses == {(6, 2, 0): "-5/6", (7, 2, 1): "-5/6", (7, 3, 0): "-9/10"}
-    assert [k for k, v in art["ladder_w1_matches_full"].items() if not v] == \
+    assert misses == {(6, 2, 0): "-1", (7, 2, 1): "-1", (7, 3, 0): "-1"}
+    assert all(art["rung_matches_full"].values())
+    assert [k for k, v in art["rung_w1_matches_full"].items() if not v] == \
         ["(6, 2)", "(7, 2)", "(7, 3)"]
+    assert art["iterated_rung_misses"] == ["(6, 2)", "(7, 2)", "(7, 3)"]
+    nxt = art["prediction_next_level"]
+    assert nxt["n"] == 8
+    assert nxt["chord_on"]["2"] == {"0": "76352/35", "2": "93488/105",
+                                    "4": "9892/105", "6": "28/3"}
+    assert nxt["chord_on"]["4"] == {"0": "6064/11", "2": "8744/33", "4": "980/33"}
     assert art["shares"]["7"]["shares"] == {"3": "540648/548261", "5": "7578/548261",
                                              "7": "5/78323"}
     assert F(art["prediction"]["nu"]) == F(21482496, 143)
     # the engine's own extrapolated sector weights agree with the rebuilt shares
     eng = art["shares_engine_mu0"]["7"]
     assert eng["7"] == pytest.approx(5 / 78323, rel=1e-8)
+
+
+def test_gff_coefficients():
+    """The generalized-free-fermion coefficients behind gff_c2: the block
+    expansion of F_0 = -chi^(2D) + (chi/(1-chi))^(2D) at D = 0.1, and
+    c_h^2/D^2 -> gff_c2(h) as D -> 0; and the GFF form of the relation is
+    the GR form exactly."""
+    import mpmath as mp
+    with mp.workdps(30):
+        def c2(D, n):
+            h = 2 * D + 2 * n + 1
+            return (2 * mp.gamma(h) ** 2 * mp.gamma(h + 2 * D - 1)
+                    / (mp.gamma(2 * D) ** 2 * mp.gamma(2 * h - 1)
+                       * mp.gamma(h - 2 * D + 1))), h
+        D, x = mp.mpf("0.1"), mp.mpf("0.4")
+        f0 = -x ** (2 * D) + (x / (1 - x)) ** (2 * D)
+        blocks = sum(c * x ** h * mp.hyp2f1(h, h, 2 * h, x)
+                     for c, h in (c2(D, n) for n in range(60)))
+        assert abs(blocks - f0) < mp.mpf(10) ** -25
+        D = mp.mpf(10) ** -12
+        for n in (1, 2, 3, 4):
+            c, _ = c2(D, n)
+            g = ct.gff_c2(2 * n + 1)
+            assert abs(c / D ** 2 / (g.numerator / mp.mpf(g.denominator)) - 1) < 1e-10
+    for h in (3, 5, 7, 9, 11):
+        assert ct.odd_ope_from_gff(h) == ct.odd_ope_from_gr(h)
 
 
 def test_gr_relation_closed_form():
@@ -246,6 +299,7 @@ def test_n6_live():
     frame = ct.frame_dressings(6)
     assert off["dressings"] == frame
     assert on["norms"][6] == F(4120, 7)
-    misses = [k for k, P in ct.ladder_dressings(frame, 6).items()
-              if on["dressings"][k] != P]
-    assert misses == [(6, 2)]
+    rung = ct.ladder_dressings(frame, 6)
+    assert all(on["dressings"][k] == P for k, P in rung.items())
+    w1 = ct.ladder_dressings(frame, 6, rung=(1,))
+    assert [k for k, P in w1.items() if on["dressings"][k] != P] == [(6, 2)]

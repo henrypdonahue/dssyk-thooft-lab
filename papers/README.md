@@ -72,8 +72,10 @@ Line-number citations in the code, for example in `qed_campaign.py` and
 
 ## Versions
 
-As of 2026-10-14: 2607.05678 is still v1; 2607.14215 has a v2 (minor
-corrections; the technical note cites v2 §6); 2506.18054 is at v3, which
+As of 2026-11-10: 2607.05678 has a v2 (2026-10-19, "minor changes";
+it adopts the Planck-distance stretched horizon of Susskind 2511.10907
+and keeps the fixed-ḡ²N regime for the 't Hooft comparison); 2607.14215
+has a v2 (minor corrections; the technical note cites v2 §6); 2506.18054 is at v3, which
 corrects its §5 statements about the 't Hooft and flat-space limits and
 redefines ḡ² = g²/m_q² (its footnote 9). Titles and authors were checked
 against INSPIRE on 2026-10-14.
