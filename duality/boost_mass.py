@@ -44,8 +44,10 @@ FOUR CALIBRATION FACTS (tested in test_boost.py)
 
 2. The mass enters only through the scaling variable m/a, with one
    overall 1/a: S(omega; m, a) = (1/a) s(omega/a, m/a).  So masses have
-   to be extracted from the SHAPE, through the K_{i omega/a}(m/a) kernel,
-   by moments or by kernel inversion.  Not from positions.  A 't Hooft
+   to be extracted from the SHAPE, through the K_{i omega/a}(m/a) kernel:
+   by moments, by kernel inversion, or from the node positions (zeros of
+   K_{i omega/a}(m/a), which no multiplicative regulator moves;
+   boost_inverse.py).  Not from peak positions.  A 't Hooft
    tower {M_n} appears as a SUM of such continua,
    S_tot = sum_n c_n S(omega; M_n, a).
 
@@ -139,9 +141,11 @@ if __name__ == "__main__":
     for mm in (1.0, 2.0):
         Ss = spectral_closed_form([0.0, 1.0, 2.0, 3.0], mm, a)
         print(f"  m={mm}: " + "  ".join(f"{s:.3e}" for s in Ss))
+    # the K_0(x)^2 ~ (pi/2x) e^{-2x} tail: (m1/m2) e^{-2(m2-m1)/a}
     print(f"\n  Boltzmann suppression at omega=0: S(m=2)/S(m=1) = "
           f"{spectral_closed_form([0.0],2,a)[0]/spectral_closed_form([0.0],1,a)[0]:.4f}"
-          f"   (vs e^-2(m2-m1)/a = {np.exp(-2.0):.4f} asymptotically)")
+          f"   (vs the K_0^2 tail (m1/m2) e^-2(m2-m1)/a = "
+          f"{0.5 * np.exp(-2.0):.4f} asymptotically)")
 
     print("\nScaling collapse S(w; m, a) = (1/a) s(w/a, m/a):")
     for (mm, aa, w) in [(1.0, 1.0, 1.0), (2.0, 2.0, 2.0), (3.0, 3.0, 3.0)]:

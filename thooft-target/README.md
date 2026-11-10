@@ -44,28 +44,29 @@ matched-exponent Jacobi basis [x(1−x)]^β, with β solving
 πβ cot(πβ) = −α exactly. That restores spectral accuracy off the duality
 point, where the Chebyshev basis is only algebraic.
 
-## What is checked (58 tests)
+## What is checked (61 tests)
 
 | check | result |
 |---|---|
-| FLZ Tables 1–2 (n ≤ 29) | worst deviation 1.0e-12, which is one unit of FLZ's own last printed digit: against the 17-digit polished table below, FLZ's printed values are off by up to 1.0e-12 (n = 19) and this solver by 9e-14 at K = 800 (4e-13 at K = 300). `validate.py` prints the live figure. Ground state against their Padé: 4e-16 |
-| exact sum rules, both parities | all sixteen FLZ Table 3 values, s = 1 (regularized) through s = 8, to the table's last digit (~2e-12) with the transcribed Eq. 1.6 tail; 7ζ(3) and 2 to 2e-12 (1e-10 with the leading tail only); the s = 1, 3, 4 closed forms likewise |
-| α ≠ 0, external (`external_anchors.json`) | LM tables matched at their 6-digit floor; LM exact sum rules to 1e-5–2e-4 |
-| eigenfunctions (`eigenfunctions.py`) | Parseval to 3e-6 (a completeness check); weak-form Rayleigh quotient on tanh-sinh nodes to ~1e-12 for n ≤ 5 in both sectors (1e-6 on Gauss–Legendre, the endpoint-limited original); cross-solver overlap > 0.9999 |
+| FLZ Tables 1–2 (n ≤ 29) | worst deviation 1.1e-12 at K = 300 (`validate.py` prints the live figure). That is one unit of FLZ's own last printed digit: against the 17-digit polished table below, FLZ's printed values are off by up to 1.0e-12 (n = 19), and this solver by 9e-14 at K = 800 (4e-13 at K = 300). Ground state against their Padé: 3e-16 |
+| exact sum rules, both parities | all sixteen FLZ Table 3 values, s = 1 (regularized) through s = 8, to within one unit of the table's last printed digit with the transcribed Eq. 1.6 tail (≤ 6e-13 for every G₋ and for G₊ at s ≤ 4; 5e-12 to 7e-11 for the s = 5–8 G₊ entries, which are printed to 1e-11–1e-10); 7ζ(3) and 2 to 2e-12 (1e-10 with the leading tail only); all six s = 1, 3, 4 closed forms against the table to 1e-12 |
+| α ≠ 0, external (`external_anchors.json`), Chebyshev solver | LM tables matched at their 6-digit floor; LM exact sum rules to 1e-5–2e-4 |
+| eigenfunctions (`eigenfunctions.py`) | Parseval to 3e-6 (a completeness check); weak-form Rayleigh quotient on tanh-sinh nodes to ~1e-12 for n ≤ 5 in both sectors (1e-6 to 6e-6 on Gauss–Legendre, the endpoint-limited original); cross-solver overlap > 0.9999 |
 | independent solver (`sine_solver.py`) | a different basis, no shared code; it checks the quark-mass machinery |
 | Jacobi solver at α ≠ 0 | β = ½ anchor to ~5e-13; α = ±0.5 ground state below 1e-11 by K = 32; LM sum rules s = 2 to ~3e-8, s ≥ 4 to ~4e-12 |
 | asymptotics | 2λn → n + 3/4; matrix elements against quadrature to machine precision |
-| FLZ d± constants (`flz_dconstants.py`, their Eq. 4.21 products) | converged in K: d₊ = 0.9631784563984(1), d₋ = 0.43358263983325(1) at K = 800 with a 160-level head, inside the ±5e-13 rounding of FLZ's 12 printed digits and one to two digits past them; d₋/d₊ = √2/π to 2e-15; Jacobi cross-solver to its 1.5e-8 quadrature floor |
+| FLZ d± constants (`flz_dconstants.py`, their Eq. 4.21 products) | converged in K: d₊ = 0.9631784563984(1), d₋ = 0.43358263983325(1) at K = 800 with the head n ≤ 160, inside the ±5e-13 rounding of FLZ's 12 printed digits and one to two digits past them; d₋/d₊ = √2/π to 2e-15; Jacobi cross-solver to its 1.5e-8 quadrature floor |
 | polished reference (`reference_spectrum_polished.json`) | 40 levels to 17–21 digits (2λ₀ = 0.737061746292689589581); the measured truncation rate is K⁻⁶ at every level; the older 24-level table agrees to at least its own claimed digits at every row |
 
 **The decay constants are new data.** No published wavefunction tables
 exist. In the φ(0⁺) > 0 convention every fn is positive and decreasing,
 with f₀ = +0.9428101504585 (thirteen stable digits), and the tower obeys
 fn (n + 3/4) → 2/π from above, with a +0.064/(n + 3/4) correction
-(`eigenfunctions.decay_constant_asymptotics`). FLZ's d± are spectral-determinant constants, not
-wavefunction data — pinning their definition corrected the anchor's
-earlier description — so the only external eigenvalue-adjacent anchor is
-now consumed, and the wavefunctions remain internally validated only.
+(`eigenfunctions.decay_constant_asymptotics`).
+
+FLZ's d± are spectral-determinant constants, not wavefunction data. They
+test the eigenvalues only. No external wavefunction anchor exists, so the
+wavefunctions are validated internally only.
 
 ## Precision notes
 
@@ -91,7 +92,8 @@ least the older table's claimed digits at every row. It is the file
 
 The double-precision solver solves the reciprocal problem at α = 0, so
 its low levels carry no roundoff growth with K. The CSV is that solve at
-K = 800; trust 13 digits of it (measured 9e-14 over all 40 rows).
+K = 800, written to 13 decimals (measured within 1e-13 of the polished
+table over all 40 rows). A 14th decimal would be BLAS-dependent noise.
 
 The Chebyshev solver's guarantee holds at α = 0 only. Off that point it
 has the wrong endpoint exponent. Use the Jacobi solver there.
@@ -105,12 +107,19 @@ has the wrong endpoint exponent. Use the Jacobi solver there.
 | `thooft_highprec.py`, `generate_reference.py` | mpmath solver, the Rayleigh-quotient polish, both reference builders (`--polish` for the 40-level table) |
 | `sine_solver.py` | the independent cross-check solver |
 | `eigenfunctions.py` | wavefunction checks and decay constants |
-| `condensate.py` | the exact condensate (LM Eq. 6.1), the GMOR chiral corner (first data at α → −1: 2λ₀ → (2/π)√(a/3), next order ≈ √a measured), and the vacuum-energy curve ε(0) = −0.0407 Nc g² |
+| `condensate.py` | the exact condensate (LM Eq. 6.1), the GMOR chiral corner (first data from this repo's solvers at α → −1: 2λ₀ → (2/π)√(a/3), next order ≈ √a measured), and the vacuum-energy curve ε(0) = −0.0407 Nc g² |
 | `flz_reference.py` | FLZ Tables 1–2 and the Padé anchor, one provenance-checked copy |
-| `external_anchors.json` | FLZ Table 3 sum rules (all consumed), the d± constants, and LM tables, with provenance inside |
+| `external_anchors.json` | FLZ Table 3 sum rules and their closed forms, the d± constants, LM tables and LM sum rules, with provenance inside; all consumed except the LM s = 1 sums (stored, not consumed; the JSON says why) |
 | `test_thooft.py`, `test_jacobi.py`, `test_condensate.py`, `validate.py` | the asserting suites, plus the human-readable gate |
 | `jacobi_convergence.json`, `condensate.json` | measured convergence and residual records; they set the test tolerances |
 | `reference_spectrum_polished.json`, `reference_spectrum.json`, `spectrum_double_precision.csv`, `plot_spectrum.py`, `regge_trajectory.png` | outputs |
+
+Two label conventions coexist, and both are pinned by the tests. The
+reference JSON tables label the sectors `sym`/`anti`. `spectrum()` and
+the CSV label the same sectors `even`/`odd` (parity under x → 1−x).
+`reference_spectrum.json` is a bare list of rows with no provenance block,
+because `duality/` reads that format. The other JSON outputs carry
+`provenance` and `runtime_s`.
 
 ```bash
 pip install -e ".[dev]"   # from the repo root, once
@@ -119,7 +128,7 @@ python3 validate.py          # the validation report (exit code = pass/fail)
 python3 eigenfunctions.py    # wavefunction checks and decay constants
 python3 condensate.py        # condensate, GMOR corner, vacuum energy
 python3 flz_dconstants.py    # the FLZ d± anchor, consumed
-pytest -q                    # 58 tests (~40 s warm; first run builds fixtures)
+pytest -q                    # 61 tests (~10 s)
 ```
 
 ## The result
@@ -130,8 +139,8 @@ pytest -q                    # 58 tests (~40 s warm; first run builds fixtures)
 | n | 2λn | parity | CP |
 |--:|--------------:|:------:|:--:|
 | 0 | 0.737061746292690 | sym | − |
-| 1 | 1.753731336917499 | anti | + |
-| 2 | 2.748160912370602 | sym | − |
-| 3 | 3.751057581705472 | anti | + |
-| 4 | 4.749295381037520 | sym | − |
-| 5 | 5.750492623648781 | anti | + |
+| 1 | 1.753731336917498 | anti | + |
+| 2 | 2.748160912370600 | sym | − |
+| 3 | 3.751057581705467 | anti | + |
+| 4 | 4.749295381037510 | sym | − |
+| 5 | 5.750492623648764 | anti | + |

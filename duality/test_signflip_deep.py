@@ -3,9 +3,10 @@
 Pinned here: the transient anti-scrambling window at the hologram point
 grows as lambda falls, which is the semiclassical dS epoch; the
 MSS-evasion mechanism, which is phase winding at constant magnitude; the
-honest negatives, which are no Gibbs shape, no continued-sech shape and
-no fake-period recurrence, because the shifted contour is fold-adjacent
-and edge-dominated; and the rate ordering that flags mode contamination.
+2-pt shape verdicts, which are the continued large-q form
+|1/cos(Jc z)|^(2 Delta) with a deviation shrinking toward semiclassics,
+and a naive Gibbs guess that fails and fails worse toward semiclassics
+(ERRATA E11); and the rate ordering that flags mode contamination.
 """
 
 import json
@@ -62,7 +63,6 @@ def test_shape_is_the_continued_largeq_form(data):
     worse toward semiclassics.  The t = 0 point is the sec(pi/2)
     singularity, cut off by the bounded chord spectrum (|G_obs(0)| > 1).
     The instrument is re-executed at lambda = 1 (1 s)."""
-    import math
     import numpy as np
     from signflip_probe import thermal_shape
     rows = sorted(data["shape"], key=lambda r: -r["lam"])
@@ -75,6 +75,9 @@ def test_shape_is_the_continued_largeq_form(data):
     assert sech[-1] < 0.25 and eu[-1] < 0.3 and gibbs[-1] > 1.0
     for r in rows:
         assert r["g_obs_abs"][0] > 1.0
+        # the singular t = 0 point of the target is stored as null, not NaN
+        assert r["g_sech_pred"][0] is None
+        assert "singularity" in r["g_sech_pred_null_reason"]
         # the stored target is the continued form, recomputed here
         Jc = math.sqrt(r["lam"]) * math.exp(r["lam"] / 8.0)
         z = Jc * (0.5 * r["beta_f"] + 1j * np.array(r["ts"][1:]))
@@ -84,6 +87,10 @@ def test_shape_is_the_continued_largeq_form(data):
     row = next(r for r in rows if abs(r["lam"] - 1.0) < 1e-12)
     for key in ("max_rel_dev_sech", "max_rel_dev_gibbs", "max_rel_dev_euclid"):
         assert live[key] == pytest.approx(row[key], rel=1e-9)
+    assert live["g_sech_pred"][0] is None
+    assert live["g_sech_pred"][1:] == pytest.approx(row["g_sech_pred"][1:],
+                                                    rel=1e-12)
+    assert live["g_sech_pred_null_reason"] == row["g_sech_pred_null_reason"]
 
 
 def test_mss_evasion_located(data):
@@ -96,7 +103,8 @@ def test_mss_evasion_located(data):
     from signflip_probe import mss_strip
     m = data["mss"]
     re_a = np.array(m["re_a"])
-    assert bool(re_a.max() > 0.5 and re_a.min() < -0.5) == m["oscillates"] is True
+    assert m["oscillates"] is True
+    assert bool(re_a.max() > 0.5 and re_a.min() < -0.5)
     assert m["abs_a_constant"] is True
     live = mss_strip(betaJ=m["betaJ"], n_y=len(m["ys"]))
     assert np.allclose(live["re_a"], m["re_a"], rtol=1e-9, atol=1e-12)

@@ -159,7 +159,7 @@ already measured here.
 
 ## 5. What this does to the discriminator axis
 
-`DISCRIMINATOR.md`'s three-program table sharpens.
+`DISCRIMINATOR.md`'s three-program comparison sharpens.
 
 **NV (program 2).** The still-unpublished discriminating OTOC now has a
 measured candidate value: anti-scrambling, semiclassical, transient. It

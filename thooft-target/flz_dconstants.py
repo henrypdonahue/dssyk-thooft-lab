@@ -4,8 +4,8 @@ The FLZ spectral-determinant constants d+- at alpha = 0, from this
 repo's own spectrum.
 ====================================================================
 
-This module consumes the last unconsumed external anchor in
-external_anchors.json: flz_d_constants_alpha0, the twelve-digit
+This module consumes the flz_d_constants_alpha0 anchor in
+external_anchors.json: the twelve-digit
 constants d+ and d- of Fateev-Lukyanov-Zamolodchikov (FLZ,
 arXiv:0905.2280), Eq. (5.1):
 
@@ -97,7 +97,8 @@ MEASURED AGREEMENT (deterministic; asserted with margin in
 test_thooft.py, section "FLZ spectral-determinant constants")
 -------------------------------------------------------------
 Chebyshev solver, n_cut = 80, tail + residual fit on 30..90, deviation
-from the FLZ 12-digit values (d+ / d-):
+from the FLZ 12-digit values (d+ / d-; __main__ prints the K = 100, 150,
+200, 300 and 600 rows):
 
     K = 100:  -1.5e-09 / -6.6e-10
     K = 150:  -1.3e-10 / -6.0e-11
@@ -114,7 +115,7 @@ truncation of the levels near n = 90, not a floor.  (The direct solve
 did have a floor there that grew with K; ERRATA E16.)
 
 What limits the default configuration is the tail model: with the head
-cut at n = 80 the exact ratio d-/d+ = sqrt(2)/pi is met to 1.8e-13.
+cut at n = 80 the exact ratio d-/d+ = sqrt(2)/pi is met to 1.9e-13.
 Deepening the head and the residual-fit window with the basis removes
 that too.  At K = 800:
 
@@ -139,9 +140,9 @@ Ladder of the tail treatment at K = 300, n_cut = 80, d+ deviation:
     + residual fit       -1.5e-12
 
 Jacobi cross-solver at alpha = 0 (same trial space, independent
-Gagliardo-quadrature assembly): K = 60 lands at -1.5e-08, K = 100 at
--1.5e-09, tracking its documented quadrature floor, with the ratio at
-2.1e-10 and 9.4e-12.
+Gagliardo-quadrature assembly): K = 60 (printed by __main__) lands at
+-1.5e-08, K = 100 at -1.5e-09, tracking its documented quadrature floor,
+with the ratio at 2.1e-10 and 9.4e-12.
 """
 
 from __future__ import annotations

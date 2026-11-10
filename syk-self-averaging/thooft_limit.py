@@ -19,8 +19,8 @@ N^-(d_0 + k/2)) give the N = infinity, fixed-p moments in physical units
     <omega^k> / <omega^0> = A_k / A_0       (<H^2>/dim -> N).
 
 For A_2 the identity-subtracted mu_0 carries no conserved weight in this
-limit (the H^2 share falls like N^-2, full_channel_laws.py), so these are
-the moments of the propagating channel.  For A_3 mu_0 keeps a conserved
+limit (the H^2 share falls like N^-2, duality/singlet_tower.py,
+finite_n_a2_split), so these are the moments of the propagating channel.  For A_3 mu_0 keeps a conserved
 polynomial in H, so the A_3 entry uses mu_4/mu_2, which no conserved
 piece reaches.
 
@@ -73,6 +73,7 @@ import time
 from fractions import Fraction
 from pathlib import Path
 
+from artifact_io import write_json_atomic
 from full_channel_laws import full_law
 
 HERE = Path(__file__).resolve().parent
@@ -164,18 +165,26 @@ GRID = {(2, 0): (4, 6, 8, 10, 12), (2, 2): (4, 6, 8, 10, 12), (2, 4): (4, 6, 8, 
 
 
 def compute_coefficients(cache=None) -> dict:
-    """{"p,n,k": {"deficit", "A"}} over GRID, from full_law or a cache of
-    its earlier output."""
+    """{"p,n,k": {"deficit", "A", ...}} over GRID, from full_law or a cache
+    of its earlier output.  Fresh entries record out_of_sample_N (the N of
+    full_law's certificate) and runtime_s; cached entries carry those
+    fields through when the cache has them, and are marked from_cache."""
     out = {}
     for (n, k), ps in GRID.items():
         for p in ps:
             key = f"{p},{n},{k}"
             if cache and key in cache:
-                out[key] = dict(deficit=cache[key]["deficit"], A=str(cache[key]["A"]))
+                c = cache[key]
+                out[key] = dict(deficit=c["deficit"], A=str(c["A"]),
+                                from_cache=True)
+                for extra in ("out_of_sample_N", "runtime_s"):
+                    if extra in c:
+                        out[key][extra] = c[extra]
             else:
                 t0 = time.time()
                 law = full_law(p, n, k)
                 out[key] = dict(deficit=law["deficit"], A=law["A"],
+                                out_of_sample_N=law["out_of_sample_N"],
                                 runtime_s=round(time.time() - t0, 1))
                 print(f"  p={p} n={n} k={k}: deficit {law['deficit']}  A = {law['A']}", flush=True)
     return out
@@ -215,7 +224,11 @@ def tables(coeffs: dict) -> dict:
     return dict(a2=a2, a3=a3)
 
 
-def run(out_path=None, cache=None) -> dict:
+def run(out_path=None, cache=None, cache_paths=None) -> dict:
+    """Build thooft_limit.json.  runtime_s is this invocation's wall clock
+    only; with a cache it is the assembly time, and the cost of the laws
+    themselves is in each coefficient's runtime_s where the cache kept it
+    (assembled_from_cache names the cache files)."""
     t0 = time.time()
     coeffs = compute_coefficients(cache)
     payload = dict(
@@ -225,10 +238,10 @@ def run(out_path=None, cache=None) -> dict:
                    "in N) against the lambda -> 0 ladders of the N = infinity "
                    "decomposition",
         coefficients=coeffs, laws=LAWS, **tables(coeffs),
+        assembled_from_cache=list(cache_paths) if cache else None,
         runtime_s=round(time.time() - t0, 1))
     out = Path(out_path) if out_path else HERE / "thooft_limit.json"
-    with open(out, "w") as fh:
-        json.dump(payload, fh, indent=1)
+    write_json_atomic(out, payload)
     return payload
 
 
@@ -251,13 +264,13 @@ if __name__ == "__main__":
     ap.add_argument("--from-cache", type=str, default=None)
     args = ap.parse_args()
     if args.run or args.from_cache:
-        cache = None
+        cache, cache_paths = None, None
         if args.from_cache:
-            cache = {}
-            for path in args.from_cache.split(","):
+            cache, cache_paths = {}, args.from_cache.split(",")
+            for path in cache_paths:
                 with open(path) as fh:
                     cache.update(json.load(fh))
-        report(run(cache=cache))
+        report(run(cache=cache, cache_paths=cache_paths))
     else:
         with open(HERE / "thooft_limit.json") as fh:
             report(json.load(fh))

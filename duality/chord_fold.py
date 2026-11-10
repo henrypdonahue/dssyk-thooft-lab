@@ -39,14 +39,18 @@ fold_scan.json at matched lambda.
 
 Truncation is doubled, and the drift is stored.
 
-Output: chord_fold.json.  Verdicts asserted in test_chord_fold.py, and
-narrated in ANTISCRAMBLING.md.
+Output: chord_fold.json (`python chord_fold.py`; `--quick` runs the
+scan without its three smallest lambdas and writes to a scratch file
+instead).  Verdicts asserted in test_chord_fold.py, and narrated in
+ANTISCRAMBLING.md.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import math
+import tempfile
 import time
 from pathlib import Path
 
@@ -177,7 +181,10 @@ def run_point(lam: float, p: int, betaJ: float, nmax: int,
     return out
 
 
-def main(quick: bool = False):
+def main(quick: bool = False, out_path=None) -> dict:
+    """The fold campaign.  quick drops the three smallest lambdas; its
+    output goes to a scratch file, never over the committed artifact
+    (the tests need the full scan)."""
     t0 = time.time()
     betaJ = 2.0
     # lambda_chord = 32/N for the fold_scan p = 4 series, extended toward
@@ -233,11 +240,27 @@ def main(quick: bool = False):
         fold_thetas=[float(x) for x in fold_map(CONFIG_CROSSED, 1)],
         runtime_s=round(time.time() - t0, 1),
         points=points, ed_bridge_points=ed_rows)
-    out = HERE / "chord_fold.json"
+    if out_path is not None:
+        out = Path(out_path)
+    elif quick:
+        out = Path(tempfile.gettempdir()) / "chord_fold_quick.json"
+    else:
+        out = HERE / "chord_fold.json"
     with open(out, "w") as fh:
         json.dump(payload, fh, indent=1)
     print(f"wrote {out} ({payload['runtime_s']} s)")
+    return payload
 
 
 if __name__ == "__main__":
-    main(quick="--quick" in __import__('sys').argv)
+    ap = argparse.ArgumentParser(
+        description="The Harlow-Zhao fold at N = infinity.  With no flag: "
+                    "the full scan, written to chord_fold.json (~10 s).")
+    ap.add_argument("--quick", action="store_true",
+                    help="skip lambda = 1.2, 0.8, 0.5 and write to a "
+                         "scratch file (the system temp dir), not the "
+                         "committed artifact")
+    ap.add_argument("--out", default=None,
+                    help="output path (overrides the default)")
+    args = ap.parse_args()
+    main(quick=args.quick, out_path=args.out)

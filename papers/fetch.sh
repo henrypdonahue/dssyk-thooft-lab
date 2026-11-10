@@ -15,7 +15,11 @@ for id in "${PAPERS[@]}"; do
   [ -f "$id.pdf" ] && continue
   echo "fetching $id"
   # download to a temporary name, so an interrupted run leaves nothing to skip
-  curl -sfL -o "$id.pdf.part" "https://arxiv.org/pdf/$id"
+  if ! curl -sfL -o "$id.pdf.part" "https://arxiv.org/pdf/$id"; then
+    echo "  download failed: $id" >&2
+    rm -f "$id.pdf.part"
+    continue
+  fi
   if head -c 5 "$id.pdf.part" | grep -q '%PDF'; then
     mv "$id.pdf.part" "$id.pdf"
   else

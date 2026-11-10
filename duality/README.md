@@ -115,10 +115,12 @@ against the chaos-bound no-go and this repo's data. Sine-dilaton's
 black-hole reading agrees with the data qualitatively. Its quantitative
 θ ↔ v tie is untested here.
 
-`signflip_probe.py`. The first candidate dS map that works. Shift the
-probe pair by half the fake period. That flips the OTOC sign, exactly in
-the closed form and in the exact theory for λ ≤ 1.7, and it makes the
-2-point sector thermal at the tomperature. Necessary, not sufficient.
+`signflip_probe.py`. The first candidate dS map that passes the
+necessary checks. Shift the probe pair by half the fake period. That
+flips the OTOC sign: exactly in the closed form, and in the exact theory
+for λ ≤ 1.7. It also makes the 2-point sector obey detailed balance at
+β + β_fake, which is the tomperature at the hologram point β → 0.
+Necessary, not sufficient.
 Mode separation is in `antipodal_modes.py`. Figure: `plot_signflip.py`.
 
 **[NV-DRESSING.md](NV-DRESSING.md)** and `test_nv_dressing.py`. The
@@ -151,7 +153,7 @@ regulator. The node verdict, with its price list.
 
 **[LARGEQ.md](LARGEQ.md)** and `largeq_anchor.py`. The large-q, λ → 0
 anchor, with the conventions bridge 𝒥 = √2 p locked against ED. The
-meson tower cancels at leading order. The anchor lives at O(1/q).
+would-be bilinear tower cancels at leading order. The anchor lives at O(1/q).
 `largeq_kernel.py` derives the 𝓜ᵉ/𝓜ᵒ skeleton from the
 Maldacena–Stanford kernel eigenproblem and reproduces the transcribed
 sets to 3e-12 — the perturbable substrate for the O(1/q) task.
@@ -175,23 +177,27 @@ resolution are pinned as the remaining gap.
 
 ```bash
 python3 dictionary.py            # the yardstick in both conventions
+python3 boost_mass.py            # one mass in boost frequency     (~1 s)
+python3 largeq_anchor.py         # the large-q closed forms        (~1 s)
 python3 antiscrambling.py        # the OTOC sign table and the fold map
 python3 chord.py --spectra       # the lambda -> 0 spectral scan  (~4 min)
 python3 chord_moments.py --run   # exact N = inf moments          (~5 s)
 python3 chord_charges.py         # the conserved-channel theorem  (~1 s)
 python3 chord_fold.py            # the fold at N = inf            (~10 s)
-python3 signflip_probe.py        # the antipodal map              (~15 s)
-python3 signflip_probe.py --deep # its deep campaign              (~15 s)
-python3 jt_ds_vacuum.py          # the JT-dS vacuum-energy note    (~5 s)
+python3 signflip_probe.py        # the antipodal map              (~40 s)
+python3 signflip_probe.py --deep # its deep campaign              (~90 s)
+python3 antipodal_modes.py       # its mode separation            (~45 s)
+python3 jt_ds_vacuum.py          # the JT-dS vacuum-energy note    (~2 s)
 python3 largeq_kernel.py         # the derived large-q skeleton    (~20 s unloaded)
+python3 boost_forward.py         # the tower through the boost kernel (~25 s)
 python3 boost_inverse.py         # moments -> spectrum conditioning (~3 min)
 python3 diagonal_chord.py --run  # the diagonal channel + gates     (~20 s)
-python3 full_channel_chord.py --run  # the full channel + gates    (~10 min, finite-N series)
+python3 full_channel_chord.py --run  # the full channel + gates    (~40 min, finite-N series)
 python3 singlet_tower.py         # the resolved channel, A_2..A_5  (~20 s)
 python3 singlet_tower.py --run   # its artifact and finite-N gates (~3 CPU-hours; --resume)
 python3 singlet_tower.py --deep 5 6  # levels n = 7, 8 (~25 min on 6 cores)
 python3 conformal_tower.py       # its lambda -> 0 limit, n <= 5   (~5 s)
 python3 conformal_tower.py --run # its artifact, n <= 7 (~4 min, one core)
 python3 horizon_tower.py         # the tower at the stretched horizon (~4 min)
-pytest -q                        # 386 tests (380 fast, ~1 min)
+pytest -q                        # 389 tests (383 fast, ~1 min)
 ```

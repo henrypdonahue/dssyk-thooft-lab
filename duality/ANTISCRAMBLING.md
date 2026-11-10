@@ -58,7 +58,7 @@ sign."
 
 ### A note on transcribing Streicher
 
-Streicher's crossed-OTOC display (his Eq. 3.5) is written *after* the
+Streicher's crossed-OTOC display (his Eq. 3.10) is written *after* the
 time-translation freedom is fixed. His Appendix A says it: "we use
 time-translation invariance to set θ₃₄⁺ = 0."
 
@@ -79,8 +79,8 @@ Three checks pin it, and all three are asserted:
    −2.000000 at every configuration and every v.
 3. **The exact N = ∞ chord engine.** As λ → 0 the double-scaled theory
    *is* the large-q limit, so chord/closed must approach 1. Measured:
-   0.964 → 0.979 over λ = 2 → 0.5, the committed grid, tracking the TOC
-   control 0.683 → 0.945.
+   0.964 → 0.979 over λ = 2 → 0.5 (0.973 at λ = 4, the top of the
+   committed grid), tracking the TOC control 0.683 → 0.945.
 
 ## How good is the closed form?
 

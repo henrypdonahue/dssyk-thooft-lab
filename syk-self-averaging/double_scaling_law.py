@@ -53,7 +53,7 @@ EVIDENCE, all exact-arithmetic sequences with polynomial-in-1/p limits:
     lambda = 1 (p <= 32): 9.75548 vs 9.75548;  lambda = 4 (p <= 40):
     77.9436 vs 77.9436.  Three lines, one function.
   * K = 8: lambda = 2 (p <= 32): the c_3(p) sequence heads to
-    lambda P_8 = 223.66; lambda = 1, 4 likewise (see the artifact for
+    lambda P_8 = 223.648; lambda = 1, 4 likewise (see the artifact for
     the limit estimates and their window spreads).
   * The small-lambda expansion of the law fixes the large-p growth of
     every exact rational 1/N coefficient of the fixed-p laws
@@ -89,12 +89,12 @@ import argparse
 import json
 import math
 import multiprocessing as mp
-import os
 import sys
 import time
 from fractions import Fraction
 from pathlib import Path
 
+from artifact_io import write_json_atomic
 from pair_moment_laws import _mu_sample
 
 HERE = Path(__file__).resolve().parent
@@ -175,9 +175,16 @@ def line_N(lam: float, p: int) -> int:
 
 
 def limit_estimate(rows: list, min_points: int = 5) -> dict:
-    """Polynomial-in-1/p least-squares limits of c(p), orders 2..5 on the
-    deepest window, central = highest order that is residual-stable;
-    spread over orders and over the two deepest windows.  Estimate."""
+    """Polynomial-in-1/p least-squares limits of c(p).  An estimate.
+
+    Fits orders 2..5 on three windows: all points, then dropping the
+    smallest one and the smallest two p (a window or order is skipped when
+    it has too few points).  central = the c_inf of the fit with the
+    smallest max residual.  spread = max - min of c_inf over every
+    order >= 3 fit on every window.  This differs from
+    pair_moment_ladder.c_limit_estimate (exact sliding windows at the deep
+    end, spread over its order >= 3 windows only), so the two artifacts'
+    spreads for the same limit are not comparable."""
     import numpy as np
     pts = sorted((r["p"], r["c"]) for r in rows)
     if len(pts) < min_points:
@@ -216,11 +223,7 @@ DEFAULT_GRID = {
 }
 
 
-def _write_json(path: Path, payload: dict) -> None:
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    with open(tmp, "w") as fh:
-        json.dump(payload, fh, indent=1)
-    os.replace(tmp, path)
+_write_json = write_json_atomic
 
 
 def _ladder_n2_rows() -> list:

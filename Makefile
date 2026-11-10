@@ -2,8 +2,8 @@
 #
 #   make test            fast suites: the three modules and scripts/ (~3 min)
 #   make test-all        full suites including slow ED sweeps    (~6 min)
-#   make reproduce       fast deterministic checks + figures     (~3-5 min)
-#   make reproduce-slow  the campaigns behind the saved JSON     (minutes to hours each; about a day total)
+#   make reproduce       fast deterministic checks + figures     (~3 min)
+#   make reproduce-slow  the campaigns behind the saved JSON     (minutes to hours each; about two days total)
 #
 # Run the scripts from inside their module directory (module READMEs assume
 # this).  Dependencies: pip install -e ".[dev]"  (pinned; python 3.9-3.12,
@@ -27,7 +27,8 @@ test-all:
 
 # Fast, deterministic: the physics gate, the closed-form/identity printouts,
 # the single-realization spectroscopy (Nc = 10), and figures from saved JSON.
-# (chord_moments.py --run and largeq_anchor.py are the two ~1-minute entries.)
+# (horizon_tower.py, about 2 min, is the longest entry; the walkthrough
+# page is regenerated last, from the data it charts.)
 reproduce:
 	cd thooft-target && $(PY) validate.py
 	cd thooft-target && $(PY) condensate.py
@@ -61,6 +62,7 @@ reproduce:
 	cd duality && $(PY) plot_signflip.py
 	cd duality && $(PY) plot_singlet_tower.py
 	cd syk-self-averaging && $(PY) moments_fast.py --plot
+	cd scripts && $(PY) walkthrough/make_walkthrough.py
 
 # The disorder-ensemble sweeps, exact campaigns and high-precision reference
 # generation that produced the committed JSON/CSV artifacts.  Individual
@@ -88,7 +90,6 @@ reproduce-slow:
 	cd duality && $(PY) signflip_probe.py
 	cd duality && $(PY) signflip_probe.py --deep
 	cd duality && $(PY) antipodal_modes.py
-	cd duality && $(PY) diagonal_chord.py --run
 	cd duality && $(PY) boost_forward.py
 	cd duality && $(PY) boost_inverse.py
 	cd duality && $(PY) largeq_kernel.py

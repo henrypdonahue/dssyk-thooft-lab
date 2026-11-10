@@ -55,8 +55,9 @@ takes the Maldacena–Stanford finite-T ladder-kernel eigenproblem (their
 walls, and solves it by parity-split sine-Galerkin. The derived sets
 match the transcribed CMS 3.3 roots to 3e-12 across v = 0.05..0.95 (the
 producer's full-scan numbers, stored in `largeq_kernel.json`; the fast
-tests re-derive the match at 1e-8 with K = 160 across the scan and at
-1e-11 with the producer's K = 400 at three v), the grid-doubling shift
+tests re-derive the match at 1e-8 at four v across the scan, K = 160
+at v = 0.05, 0.35, 0.65 and K = 256 at v = 0.95, and at 1e-11 with the
+producer's K = 400 at three v), the grid-doubling shift
 is 4e-11, and m = 0 and m = ±v come out as the
 exact solutions that fail the Dirichlet condition while their
 eigenfunctions degenerate — CMS's Regge-pole slots, derived. That is the
@@ -72,7 +73,7 @@ consistent with [BOOST.md](BOOST.md): masses are not boost-frequency peak
 positions.
 
 The ED bench checks the transcription end to end. ⟨H²⟩ matches the
-bridge exactly. G(t) = sech(√2 p t)^(2/p) matches ED with no free
+exact bridge value within the ED errors (deviations ≤ 1.2%). G(t) = sech(√2 p t)^(2/p) matches ED with no free
 parameters at the O(1/p) level. The measured deviations are 0.065–0.095
 at p = 4, against 1/p = 0.25. They do not shrink as λ → 0. The intrinsic
 1/p error survives.
@@ -81,7 +82,9 @@ at p = 4, against 1/p = 0.25. They do not shrink as λ → 0. The intrinsic
 
 The obvious Majorana singlet (i/N) Σ ψ ψ̇ is exactly conserved. The
 identity is Σ ψ[H, ψ] = −2pH. This is the Majorana counterpart of
-M₁ = −(p/2)iH, and it is asserted in the tests.
+M₁ = −(p/2)iH, and it is asserted per instance in
+`../syk-self-averaging/test_mn_majorana.py` and
+`../syk-self-averaging/test_exact_pair_moments.py`.
 
 So the first dynamical Majorana member is Σ ψ̇ψ̇, which is what the bench
 uses.

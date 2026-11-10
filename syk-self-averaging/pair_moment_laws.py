@@ -79,12 +79,12 @@ Output: pair_moment_laws.json.
 from __future__ import annotations
 
 import argparse
-import json
 import time
 from fractions import Fraction
 from math import comb, factorial
 from pathlib import Path
 
+from artifact_io import write_json_atomic
 from exact_pair_moments import (_DP_CACHE, _EXP_CACHE, channel_pair_moments)
 
 HERE = Path(__file__).resolve().parent
@@ -356,8 +356,7 @@ def run(deep: bool = False, out_path=None) -> dict:
         runtime_s=round(time.time() - t0, 1),
         laws=laws, double_scaling=ds, A_of_p=A_of_p)
     out = Path(out_path) if out_path else HERE / "pair_moment_laws.json"
-    with open(out, "w") as fh:
-        json.dump(payload, fh, indent=1)
+    write_json_atomic(out, payload)
     print(f"wrote {out} ({payload['runtime_s']} s)")
     return payload
 

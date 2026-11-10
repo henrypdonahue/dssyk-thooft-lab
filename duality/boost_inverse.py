@@ -26,7 +26,7 @@ boost_forward's exact moment route, generalized to arbitrary order:
             = 2 pi (-1)^k d^k/ds^k [ K_0((2m/a) sin(a s/2)) / 2pi ]|_{s=eps}
 
 computed to k <= 23 by the same K_0 ODE-recurrence Taylor composition
-(reusing boost_forward._k0_derivs), now with an adaptive-precision
+(reusing boost_forward._w_series_impl), now with an adaptive-precision
 dps-doubling gate: the series is recomputed at doubled working precision
 until successive runs agree coefficient-wise to rel_tol (default 1e-30;
 the conditioning study runs at 1e-60).  The certified relative error is
@@ -84,7 +84,8 @@ NEGATIVE in the expected direction):
   the regulator dial the state map must fix also sets how many levels
   exist numerically.
 * Restricting to even orders (the symmetrized correlator's observable
-  set, 12 rows) is ~2 decades worse than all 24 orders; the CP = -1
+  set, 12 rows) is ~4 decades worse than all 24 orders (amplification
+  19.7 against 15.6 decades at a*eps = 0.4); the CP = -1
   6-level sub-tower (the physical CP-resolved channel) is the easy
   case: all 6 levels above double precision, 5.8 decades total.
 
@@ -160,7 +161,7 @@ the kernel; the e^{-eps omega} regulator is a convention standing in
 for the unfixed state map, and every eps-dependent number above is
 recorded on an eps grid rather than at a preferred point.
 
-Output: boost_inverse.json.  Runtime: ~1-3 min on 2 cores.
+Output: boost_inverse.json.  Runtime: ~3 min, single core (mpmath).
 """
 
 from __future__ import annotations
@@ -177,7 +178,7 @@ import numpy as np
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "thooft-target"))
 
-from boost_forward import _k0_derivs  # noqa: E402  (shared single source)
+from boost_forward import _w_series_impl  # noqa: E402  (shared single source)
 import dictionary  # noqa: E402
 
 K_MAX = 23           # moment orders 0..K_MAX
@@ -189,40 +190,6 @@ L_LEVELS = 12
 # ---------------------------------------------------------------------------
 # study 1: the engine -- arbitrary-order regulated moments, certified
 # ---------------------------------------------------------------------------
-def _series_mul(a, b, length):
-    out = [mp.mpf(0)] * length
-    for i, ai in enumerate(a):
-        if ai == 0:
-            continue
-        for j, bj in enumerate(b):
-            if i + j < length:
-                out[i + j] += ai * bj
-    return out
-
-
-def _w_series_impl(eps, m, a, length):
-    """Taylor coefficients of W(eps + t) = K_0((2m/a) sin(a(eps+t)/2))/2pi
-    to order length-1, at the CURRENT working precision: boost_forward's
-    exact composition (K_0 ODE recurrence o sine worldline), general order."""
-    eps_, m_, a_ = mp.mpf(eps), mp.mpf(m), mp.mpf(a)
-    if not 0 < a_ * eps_ < 2 * mp.pi:
-        raise ValueError("need 0 < a*eps < 2*pi for convergence")
-    half = a_ * eps_ / 2
-    s0, c0 = mp.sin(half), mp.cos(half)
-    z = []
-    for k in range(length):
-        trig = (s0, c0, -s0, -c0)[k % 4]
-        z.append((2 * m_ / a_) * trig * (a_ / 2) ** k / factorial(k))
-    z0, dz = z[0], [mp.mpf(0)] + z[1:]
-    cder = _k0_derivs(z0, length - 1)
-    res = [mp.mpf(0)] * length
-    res[0] = cder[-1] / factorial(length - 1)
-    for j in range(length - 2, -1, -1):
-        res = _series_mul(res, dz, length)
-        res[0] += cder[j] / factorial(j)
-    return [r / (2 * mp.pi) for r in res]
-
-
 def w_series_k(eps, m, a=1.0, kmax=K_MAX, rel_tol=1e-30, dps0=None,
                max_doublings=8):
     """Certified Taylor coefficients w_0..w_kmax of the regulated Wightman
@@ -262,12 +229,6 @@ def regulated_moments(m, eps, a=1.0, kmax=K_MAX, rel_tol=1e-30):
         mus = [2 * mp.pi * (-1) ** k * factorial(k) * ws[k]
                for k in range(kmax + 1)]
     return mus, err, dps
-
-
-def regulated_moments_float(m, eps, a=1.0, kmax=K_MAX):
-    """Convenience float view of regulated_moments."""
-    mus, _, _ = regulated_moments(m, eps, a, kmax)
-    return [float(x) for x in mus]
 
 
 # ---------------------------------------------------------------------------
@@ -736,11 +697,15 @@ def run(out_path=None) -> dict:
         runtime_s=round(time.time() - t0, 1))
     out = Path(out_path) if out_path else HERE / "boost_inverse.json"
     with open(out, "w") as fh:
-        json.dump(payload, fh, indent=1)
+        json.dump(payload, fh, indent=1, allow_nan=False)
     print(f"verdict: {verdict['moments_needed']}")
     print(f"wrote {out} ({payload['runtime_s']} s)")
     return payload
 
 
 if __name__ == "__main__":
+    import argparse
+    argparse.ArgumentParser(
+        description=__doc__.strip().splitlines()[0],
+        epilog="Takes no options; writes boost_inverse.json (~3 min).").parse_args()
     run()

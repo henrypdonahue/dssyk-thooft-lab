@@ -17,8 +17,9 @@ THE LIMIT
 ---------
 Write sigma = (E + E')/2 and omega = E - E' (the frequency: ad_H acts on a
 dressed chord as omega).  At small lambda a chord of dimension m is the
-ladder sech^(2m)(a t), a = sqrt(lambda) (horizon_tower.py), so omega ~ a
-and sigma ~ 1.  Scale omega = a w.  Then, through every level computed,
+ladder sech^(2m)(a t) with a = sqrt(lambda) here (horizon_tower.py, whose
+ladder spacing is 2 a), so omega ~ a and sigma ~ 1.  Scale omega = a w.
+Then, through every level computed,
 
     F_{n,m}(E, E')  =  a^(n-m) P_{n,m}(w) (1 + O(a))
 

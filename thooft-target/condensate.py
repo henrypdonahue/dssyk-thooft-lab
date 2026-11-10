@@ -155,7 +155,8 @@ def I_alpha(alpha: float) -> float:
             den = math.cosh(t) * (a * t + (alpha / 6.0 + 0.5) * t ** 3)
             return num / den
         if t > 30.0:
-            # tanh t = 1 to double precision: algebraic tail 2/(t^2 (t+a))
+            # tanh t = 1 to double precision: algebraic tail
+            # 2/(t^2 (t+alpha))
             return 2.0 / (t * t * (t + alpha))
         # alpha sinh t + t cosh t = a sinh t + (t cosh t - sinh t): at
         # alpha ~ -1 the direct form cancels to ~t^3/3, so use the series

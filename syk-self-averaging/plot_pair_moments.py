@@ -22,10 +22,14 @@ import numpy as np
 
 _HERE = Path(__file__).resolve().parent
 
-try:
-    data = json.loads((_HERE / "exact_pair_moments.json").read_text())
-except FileNotFoundError as e:
-    sys.exit(f"{e.filename} not found -- run exact_pair_moments.py")
+def _load(name):
+    try:
+        return json.loads((_HERE / name).read_text())
+    except FileNotFoundError as e:
+        sys.exit(f"{e.filename} not found -- a committed artifact is missing")
+
+
+data = _load("exact_pair_moments.json")
 
 fig, axes = plt.subplots(1, 2, figsize=(11.5, 4.4))
 
@@ -54,25 +58,19 @@ c3 = np.array([abs(r["n3"]["mu2"]) * r["p"] * r["N"] for r in ds])
 ax.plot(ps, c2, "o-", color="crimson", label=r"$|\mu_2(n{=}2)|\,pN$")
 ax.plot(ps, c3, "s--", color="darkgreen", label=r"$|\mu_2(n{=}3)|\,pN$")
 # the exact points beyond the float campaign, and the closed-form limits
+# (all three are committed: a missing one is a broken checkout and must
+# fail, not silently thin the figure)
 exact2, exact3 = {}, {}
 for name in ("pair_moment_laws.json", "pair_moment_ladder.json"):
-    path = _HERE / name
-    if path.exists():
-        with open(path) as fh:
-            dd = json.load(fh).get("double_scaling", {})
-        exact2.update({r["p"]: r["c"] for r in dd.get("n2", [])})
-        exact3.update({r["p"]: r["c"] for r in dd.get("n3", [])})
-path = _HERE / "double_scaling_law.json"
-if path.exists():
-    with open(path) as fh:
-        dd = json.load(fh).get("sequences", {})
-    exact3.update({r["p"]: r["c"] for r in dd.get("lam2_n3", [])})
-if exact2:
-    ax.plot(sorted(exact2), [exact2[p] for p in sorted(exact2)], ".",
-            color="crimson", ms=4, label="exact, $n=2$ (laws + ladder)")
-if exact3:
-    ax.plot(sorted(exact3), [exact3[p] for p in sorted(exact3)], ".",
-            color="darkgreen", ms=4, label="exact, $n=3$")
+    dd = _load(name)["double_scaling"]
+    exact2.update({r["p"]: r["c"] for r in dd["n2"]})
+    exact3.update({r["p"]: r["c"] for r in dd["n3"]})
+dd = _load("double_scaling_law.json")["sequences"]
+exact3.update({r["p"]: r["c"] for r in dd["lam2_n3"]})
+ax.plot(sorted(exact2), [exact2[p] for p in sorted(exact2)], ".",
+        color="crimson", ms=4, label="exact, $n=2$ (laws + ladder)")
+ax.plot(sorted(exact3), [exact3[p] for p in sorted(exact3)], ".",
+        color="darkgreen", ms=4, label="exact, $n=3$")
 q = np.exp(-2.0)
 ax.axhline(8 * (1 - q) ** 2 * (5 + 3 * q), color="crimson", lw=0.8, ls=":",
            label=r"$4\lambda(1-q)^2(5+3q) = 32.334$")

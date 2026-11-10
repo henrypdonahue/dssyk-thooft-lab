@@ -86,15 +86,18 @@ pair_moment_ladder.json, pinned by test_pair_moment_ladder.py)
   --ds-extend) 31.344, 31.445, 31.528, 31.596, 31.654 over p = 32..48,
   monotone with shrinking increments.  The sliding-window 1/p
   extrapolation is recorded as an ESTIMATE with its window spread:
-  c_2(inf) = 32.3341891 with the order-3..5 windows agreeing to 1e-4
-  and the order-5 windows to 1e-8.  It is not 97/3.  The limit IS a
-  closed form (double_scaling_law.py): c_2(lambda) = 4 lambda (1-q)^2
-  (5+3q) with q = e^-lambda, 32.3341891 at lambda = 2, the Delta -> 0
-  slope of the N = infinity diagonal chord channel; the estimate meets
-  it to 4e-9.  c_3(p) continues 208.33, 209.76 at p = 14, 16 here and
-  to p = 32 in double_scaling_law.json, extrapolating to 223.63(3)
-  against the closed form 4 lambda (1-q)^3 (35+56q+35q^2+10q^3) =
-  223.648 (the pooled estimate is stored as c3_limit).
+  c_2(inf) = 32.3342 with the order-3..5 windows agreeing to 1e-4 (the
+  recorded spread, 9.0e-5) and the order-5 windows to 3e-8.  It is not
+  97/3.  The limit IS a closed form (double_scaling_law.py):
+  c_2(lambda) = 4 lambda (1-q)^2 (5+3q) with q = e^-lambda, 32.3341891
+  at lambda = 2, the Delta -> 0 slope of the N = infinity diagonal
+  chord channel; the estimate meets
+  it to 1.5e-8.  c_3(p) continues 208.33, 209.76 at p = 14, 16 here;
+  pooled with pair_moment_laws.json's p = 4..12 it extrapolates to
+  223.625 (spread 0.065, stored as c3_limit) against the closed form
+  4 lambda (1-q)^3 (35+56q+35q^2+10q^3) = 223.648.  The deeper
+  sequence, to p = 32, is in double_scaling_law.json and extrapolates
+  to 223.648 (7e-7 from the closed form).
 
 * Every K = 12 evaluation is gated end to end by the exact A_1
   flavor-sum identity at k = 10,
@@ -115,11 +118,11 @@ from __future__ import annotations
 import argparse
 import json
 import multiprocessing as mp
-import os
 import time
 from fractions import Fraction
 from pathlib import Path
 
+from artifact_io import write_json_atomic
 from exact_pair_moments import channel_pair_moments
 from pair_moment_laws import _lagrange_in_p, _mu_map, _poly_eval, law
 
@@ -141,14 +144,9 @@ def _append_law(laws: list, row: dict) -> None:
     laws.append(row)
 
 
-def _write_json(path: Path, payload: dict) -> None:
-    """Atomic rewrite: dump to a sibling temp file, then os.replace, so a
-    kill mid-dump can never leave a truncated artifact (the campaign is
-    hours long and the read-modify-write paths would otherwise lose it)."""
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    with open(tmp, "w") as fh:
-        json.dump(payload, fh, indent=1)
-    os.replace(tmp, path)
+# Atomic rewrite (temp file + os.replace): the campaign is hours long and
+# the read-modify-write paths would otherwise lose it to a mid-dump kill.
+_write_json = write_json_atomic
 
 
 # ---------------------------------------------------------------------------
@@ -292,8 +290,12 @@ def _window_fit(window: list) -> float:
 
 def c_limit_estimate(rows: list, n: int = 2) -> dict:
     """Sliding-window 1/p extrapolation of c(p) = c_inf + a/p + ...:
-    orders 2..5 (window lengths 3..6) on the deepest windows, with the
-    spread across the order >= 3 windows as the error bar.  An
+    orders 2..5 (window lengths 3..6), each fit exactly through the
+    deepest window and through the window one point shallower.  central =
+    the deepest window of the highest order.  spread = max - min of c_inf
+    over every order >= 3 window (every window of the top order, if that
+    is below 3).  This is not double_scaling_law.limit_estimate's spread
+    (least squares over three windows), so the two are not comparable.  An
     ESTIMATE; the artifact records the raw exact points so anyone can
     refit.  The closed form the estimate is compared to,
     c_{n,2}(lambda = 2) = 2 P_{2n+2}(e^-2) with P_6 = 4(1-q)^2(5+3q) and
@@ -346,11 +348,10 @@ def _pooled_ds_rows(rows: list, n: int) -> list:
 
 def _ds_closed_form(n: int, lam: float = 2.0) -> float:
     """lambda P_K(e^-lambda), K = 2n + 2 (the mu_2 double-scaling constant
-    of the A_n pair channel): the Delta-slope of the diagonal chord channel."""
-    import math
-    q = math.exp(-lam)
-    R = {6: [5, 3], 8: [35, 56, 35, 10]}[2 * n + 2]
-    return lam * 4 * (1 - q) ** n * sum(c * q ** j for j, c in enumerate(R))
+    of the A_n pair channel): the Delta-slope of the diagonal chord channel.
+    Delegates to double_scaling_law.c_closed_form, the single definition."""
+    from double_scaling_law import c_closed_form
+    return c_closed_form(lam, 2 * n + 2)
 
 
 # ---------------------------------------------------------------------------

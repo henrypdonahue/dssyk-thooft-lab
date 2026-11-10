@@ -158,8 +158,8 @@ footer { margin-top: 50px; padding-top: 18px; border-top: 1px solid var(--faint)
     <div class="stat"><b>40</b><span>'t Hooft levels, 17–21 digits</span></div>
     <div class="stat"><b>2</b><span>theorems at N = ∞</span></div>
     <div class="stat"><b>n ≤ 8</b><span>tower levels decomposed</span></div>
-    <div class="stat"><b>713</b><span>fast tests passing</span></div>
-    <div class="stat"><b>23</b><span>errata, all public</span></div>
+    <div class="stat"><b>721</b><span>fast tests passing</span></div>
+    <div class="stat"><b>{{errata}}</b><span>errata, all public</span></div>
   </div>
 </header>
 
@@ -189,7 +189,7 @@ footer { margin-top: 50px; padding-top: 18px; border-top: 1px solid var(--faint)
   <div class="grid2">
     <figure class="fig"><img src="thooft-target/regge_trajectory.png" alt="Massless 't Hooft meson spectrum: 2λ_n against n, alternating CP, on the asymptote n + 3/4"><figcaption>The tower: M<sub>n</sub>²/(πg²) on a straight Regge trajectory n + ¾, CP alternating. The lightest meson has 2λ₀ = 0.737061746292689589581.</figcaption></figure>
     <div class="card">
-      <h3 style="margin-top:0">What is checked <span class="badge b-thm">58 tests</span></h3>
+      <h3 style="margin-top:0">What is checked <span class="badge b-thm">61 tests</span></h3>
       <ul>
         <li>40 levels to 17–21 digits, truncation error measured as K⁻⁶.</li>
         <li>FLZ Tables 1–2 (n ≤ 29) to their last printed digit. At n = 19 the published value is itself off by 1e-12.</li>
@@ -281,9 +281,9 @@ A₂ = 4 Σᵢ Hᵢ²        (the first dynamical singlet)</div>
 
 <section id="layer5">
   <h2><span class="layer-no">Layer 5 · syk-self-averaging/thooft_limit.py</span>The paper's own limit: fixed p, by shape</h2>
-  <p>MSS compare with the 't Hooft model at fixed ᾱ = p² ("since that's where the calculations are done"). The exact finite-N laws can be taken to that limit directly, and they give the channels' moments at every p, with no extrapolation:</p>
+  <p>MSS compare with the 't Hooft model at fixed ᾱ = p² ("since that's where the calculations are done"). The exact finite-N laws can be taken to that limit directly, and they give the channels' moments as closed forms in p, fit on the smallest p and checked exactly on the larger ones (p ≤ 12):</p>
   <div class="eq">A₂:  ⟨ω²⟩ = 8p(p − 2)            kurtosis = 7/2 − 1/(2(p − 2))
-A₃:  ⟨ω⁴⟩/⟨ω²⟩ = 4p(10p − 21)    (fit on p = 4, 6, 8; then exact at p = 10, 12)</div>
+A₃:  ⟨ω⁴⟩/⟨ω²⟩ = 4p(10p − 21)    (fit on p = 4, 6, 8; checked at p = 10, 12)</div>
   <figure class="fig">{{fixedp}}<figcaption>Each law divided by its λ → 0 ladder value. Dots are exact computations at p = 4…12; dashed lines are the closed forms. The A₂ width (1 − 2/p) and the A₃ ratio (1 − 2.1/p) nearly coincide. All tend to 1, the expected large-p ↔ small-λ consistency. At the p where a comparison would be made the corrections are large: half the ladder width at p = 4, and A₃ sits below even the Δ = 2 value until p &gt; 7.</figcaption></figure>
   <p class="cap">Moments do not fix analytic structure, so none of this decides whether the finite-p spectrum is gapped. That question belongs to layer 7.</p>
 </section>
@@ -323,12 +323,12 @@ A₃:  ⟨ω⁴⟩/⟨ω²⟩ = 4p(10p − 21)    (fit on p = 4, 6, 8; then exac
     <li><b>Why the Gross–Rosenhaus relation holds</b>: derive C<sub>h</sub>² = N(1 − k<sub>c</sub>)² c<sub>h</sub>² and the rung's subleading weight, and test the predicted dimension-9 norm. <span class="badge b-open">open</span></li>
     <li><b>The dictionary itself</b>: which state, time and operator map the authors intend. That one answer decides which of the above matters. <span class="badge b-open">open</span></li>
   </ol>
-  <p class="cap">Compute-only items remain (A₄ shapes at fixed p, level 9 at about 20× the n = 8 cost, which would test the predicted dimension-9 norm, a recorded day-long <code>reproduce-slow</code> run), but each now adds little.</p>
+  <p class="cap">Compute-only items remain (A₄ shapes at fixed p, level 9 at about 20× the n = 8 cost, which would test the predicted dimension-9 norm, a recorded two-day <code>reproduce-slow</code> run), but each now adds little.</p>
 </section>
 
 <section id="honesty">
   <h2><span class="layer-no">Discipline</span>Errata and scope</h2>
-  <p>Every withdrawn or corrected claim is kept in <a href="ERRATA.md">ERRATA.md</a>, 23 so far, each with what replaced it. The most instructive:</p>
+  <p>Every withdrawn or corrected claim is kept in <a href="ERRATA.md">ERRATA.md</a>, {{errata}} so far, each with what replaced it. The most instructive:</p>
   <ul>
     <li><b>E1</b>: "the tower is invisible at N = ∞" became the pair theorem plus a full channel that does propagate.</li>
     <li><b>E4</b>: "the tower turns on toward the corner" turned out to be the rising side of a peak seen through an N ≤ 20 window.</li>
@@ -351,9 +351,9 @@ A₃:  ⟨ω⁴⟩/⟨ω²⟩ = 4p(10p − 21)    (fit on p = 4, 6, 8; then exac
   </table></div>
   <pre><code>python3 -m venv .venv &amp;&amp; . .venv/bin/activate
 python -m pip install -e '.[dev]'
-make test                                  # 713 fast tests, ~3 min
+make test                                  # 721 fast tests, ~3 min
 make reproduce                             # fast producers + figures, minutes
-python scripts/validate.py reproduce-slow  # every campaign, logged; about a day — run overnight
+python scripts/validate.py reproduce-slow  # every campaign, logged; about two days
 cd duality &amp;&amp; python singlet_tower.py --deep 5 6   # levels n = 7, 8 (~25 min on 6 cores)</code></pre>
   <p class="files">Main documents: <a href="README.md">README.md</a> · <a href="road_map.md">road_map.md</a> · <a href="notes/singlet-tower-note.md">singlet-tower-note.md</a> · <a href="duality/BOOST.md">BOOST.md</a> · <a href="duality/ANTISCRAMBLING.md">ANTISCRAMBLING.md</a> · <a href="ERRATA.md">ERRATA.md</a></p>
 </section>

@@ -7,9 +7,11 @@ The same Rayleigh-Ritz / Chebyshev-U method as thooft_spectrum.py, but
 carried out in arbitrary-precision arithmetic.  The working precision is
 then not the floor; the basis truncation is.  Measured at alpha = 0 the
 truncation error falls like K^-6 (2 lambda_0 moves by 5.9e-11, 5.2e-12,
-4.1e-13 over K = 20 -> 30 -> 45 -> 60), so at the K = 90 the reference
-builder runs the eigenvalues are good to ~3e-15 -- one digit past double
--- and 1e-18 would need K ~ 400 (tens of minutes per sector in mpmath).
+4.1e-13 over K = 20 -> 30 -> 45 -> 60), so at K = 90 (the __main__ demo
+below) the ground state is good to ~8e-15, about double precision, and
+1e-18 would need K ~ 400 (tens of minutes per sector in mpmath).  The
+reference builder, generate_reference.py, runs K = 160 and 220 for its
+12-15 stable digits.
 
 There is a cheaper way to the same place, and past it.  rayleigh_polish
 takes a DOUBLE-precision Ritz vector and evaluates its Rayleigh quotient
@@ -202,7 +204,8 @@ if __name__ == "__main__":
     K = 90
     print(f"Arbitrary precision (mp.dps={mp.dps}, basis K={K} per sector)\n")
     print("NOTE: the accuracy floor is the basis size K, not mp.dps (matrix")
-    print("elements are exact rationals).  Certified table: reference_spectrum.json.\n")
+    print("elements are exact rationals).  Sharpest table: "
+          "reference_spectrum_polished.json.\n")
 
     sym = solve_sector_mp(K, parity=0)
     anti = solve_sector_mp(K, parity=1)
@@ -221,4 +224,4 @@ if __name__ == "__main__":
     print(f"  2*lambda_0 = {nstr(sym[0], 20)}")
     from flz_reference import FLZ_PADE_LAMBDA0
     print(f"  FLZ Pade   = {FLZ_PADE_LAMBDA0:.15f}  (FLZ Eq. 4.37)")
-    print("  reference  = reference_spectrum.json, ~15 digits (see validate.py)")
+    print("  reference  = reference_spectrum_polished.json, 17-21 digits")

@@ -905,7 +905,11 @@ def make_figure(results: dict, out_png: Path) -> None:
 def main(big: bool = False) -> dict:
     here = Path(__file__).resolve().parent
     p = 4
-    results = {"p": p, "citation_context": (
+    results = {"provenance": (
+        "qed_campaign.py%s -- U(N)/Dirac self-averaging of m2 (exact vs ED), "
+        "disorder-averaged charging curves with full covariance and GLS "
+        "fits, charged-vs-singlet spectral scales" % (" --big" if big else "")),
+        "p": p, "citation_context": (
         "arXiv:2012.12326 (Susskind, 'Electric Forces in the Charged SYK "
         "Model') is cited once in arXiv:2607.05678, at the M_0 discussion: "
         "'photon exchange gives rise to long range confining Coulomb "

@@ -35,7 +35,8 @@ density is
 
 with poles at ω = −ia(Δ + k): a ladder with spacing a and lowest decay
 rate Δa. At the fixed scale 𝒥 the exact N = ∞ density deviates from it
-by (Δ/4)λ + O(λ²) for Δ = 2..6. Almost all of that is a scale shift: the
+by (Δ/4)λ + O(λ²) for Δ = 2..6 (measured, not derived: dev/λ = 0.504,
+0.757, 1.011, 1.266, 1.522 at λ = 0.05). Almost all of that is a scale shift: the
 best-fit scale is 𝒥(1 − (Δ/4)λ), and there the shape deviates by about
 0.045λ for every Δ. So one common spacing a holds for all channels at
 leading order only. In time, the exact decay rate −d ln G/dt plateaus at
@@ -49,7 +50,8 @@ of λ (8× to 16×: 1.7e-2 → 1.0e-5 for A₃ over λ = 0.4 → 0.05,
 3.0e-2 → 4.1e-5 for A₄). This is a consistency check only.
 Since |Γ(m + 1 + ix)|² = (m² + x²)|Γ(m + ix)|², the basis is just an even
 polynomial times ρ₂, and a massive-field density also fits it on a finite
-window, at a floor of about 5e-4 at best.
+window: to about 5e-4 for a heavy field (M/a ≥ 3.5), 8e-4 to 1.3e-1 for
+lighter ones (M/a ≤ 2).
 
 **4. The ladder is string-scale.** In the Majorana translation of the
 paper's units (J_MSS = pJ with this repo's Var(J) = p!J²/N^(p−1)),
@@ -161,7 +163,7 @@ dictionary's job.
   correlators end in a t⁻³ tail (result 5).
 - Majorana Aₙ, n ≤ 8 (the decomposition is a theorem at n = 2 and
   verified in computer algebra for n = 3..8; Δ = 7 enters only at
-  n = 7, 8, with 0.006% and 0.014% of the weight as λ → 0).
+  n = 7, 8, with 0.006% and 0.014% of the weight at λ = 1/1280).
 - Free-field calibration with a probe at a fixed distance 1/a from the
   horizon. A probe smeared down to the horizon, radius ρ ≪ 1/M, sees a
   conformal window up to τ ≈ (2/a) ln(1/(Mρ)) before the mass shows.

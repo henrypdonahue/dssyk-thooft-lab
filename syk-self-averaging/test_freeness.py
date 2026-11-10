@@ -8,8 +8,8 @@ constant.
 A quick ensemble at N = 12 asserts the measured classical -> free
 crossover itself.
 
-JSON-verdict tests assert the production N-trend.  They skip if
-freeness.json has not been generated.
+JSON-verdict tests assert the production N-trend.  They fail if
+freeness.json is missing (it is committed).
 """
 import json
 from pathlib import Path
@@ -97,8 +97,11 @@ def test_json_freeness_verdict():
     (c) ONSET: the crossover sits at the DISSIPATION time t ~ 1.2/J over
         the whole range N = 12..24.  It is NOT N-independent: t_x_J runs
         1.191, 1.172, 1.233, 1.273, and the N = 16 -> 24 rise of +0.101 is
-        about 4 sigma given the measured resolution (sigma(t_x_J) ~ 0.011
-        at n_inst = 24, ~0.019 at n_inst = 12, from reruns at N = 12).  So
+        about 7 sigma on the artifact's own propagated errors (next test),
+        and about 4 sigma on an uncommitted rerun estimate of the
+        resolution (sigma(t_x_J) ~ 0.011 at n_inst = 24, ~0.019 at
+        n_inst = 12, from reruns at N = 12, scaled to each point's n_inst:
+        N = 24 has n_inst = 6).  So
         a drift IS resolved -- but it is non-monotone (it dips at N = 16),
         the lever arm is a factor 2 in N, and ln(24/16) = 0.41, so these
         four points cannot separate a ln N scrambling time from a

@@ -14,10 +14,14 @@ reference_spectrum_polished.json: 40 levels, each with its measured
 rate, its extrapolation correction and that correction's magnitude as
 the error bar.  About seven minutes (395 s recorded in the artifact).
 """
-from mpmath import mp, nstr, fabs
-from thooft_highprec import solve_sector_mp
-import json, sys, time
+import json
+import sys
+import time
 from pathlib import Path
+
+from mpmath import mp, nstr, fabs
+
+from thooft_highprec import solve_sector_mp
 
 HERE = Path(__file__).resolve().parent
 

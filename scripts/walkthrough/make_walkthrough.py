@@ -2,10 +2,13 @@
 
 Run from anywhere: python scripts/walkthrough/make_walkthrough.py
 The inline charts are drawn from singlet_tower_deep.json, thooft_limit.json
-and reference_spectrum_polished.json; the prose lives in template.html.
+and reference_spectrum_polished.json, and the errata count from ERRATA.md;
+the prose lives in template.html.  scripts/test_walkthrough.py checks that
+the committed WALKTHROUGH.html is what this produces.
 """
 import json
 import math
+import re
 from fractions import Fraction
 from pathlib import Path
 
@@ -316,8 +319,26 @@ SVG = dict(limits=limits_svg(), chord=chord_svg(), shares=shares_svg(),
            survival=survival_svg(), ladder=ladder_svg(), masses=masses_svg(),
            fixedp=fixedp_svg(), stack=stack_svg())
 
-html = (Path(__file__).parent / "template.html").read_text()
-for k, v in SVG.items():
-    html = html.replace("{{" + k + "}}", v)
-(ROOT / "WALKTHROUGH.html").write_text(html)
-print("wrote", len(html), "bytes; first meson", math.sqrt(float(ref[0]["value"])))
+def errata_count() -> int:
+    """The highest entry number in ERRATA.md (entries are E1, E2, ...)."""
+    text = (ROOT / "ERRATA.md").read_text()
+    return max(int(n) for n in re.findall(r"^\*\*E(\d+)\.", text, re.M))
+
+
+def build_html() -> str:
+    html = (Path(__file__).parent / "template.html").read_text()
+    for k, v in SVG.items():
+        html = html.replace("{{" + k + "}}", v)
+    html = html.replace("{{errata}}", str(errata_count()))
+    assert "{{" not in html, "unfilled placeholder in template.html"
+    return html
+
+
+def main(out=ROOT / "WALKTHROUGH.html") -> None:
+    html = build_html()
+    Path(out).write_text(html)
+    print("wrote", len(html), "bytes; first meson", math.sqrt(float(ref[0]["value"])))
+
+
+if __name__ == "__main__":
+    main()

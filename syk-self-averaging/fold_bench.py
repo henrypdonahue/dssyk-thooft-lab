@@ -83,18 +83,20 @@ first data on their question.
 Output: fold_bench.json.  Runtime is about 10 minutes by default; the
 crossed evaluator is O(N^2) batched dense matmuls, and the committed
 artifact's own runtime_s values sum to 580 s.  `--quick` runs a reduced
-campaign in about 2 minutes.
+campaign in about 2 minutes and writes nothing.  `--scan` is the
+fixed-lambda decider (fold_scan.json; its runtime_s values sum to about
+19 h).
 """
 
 from __future__ import annotations
 
-import json
-import sys
+import argparse
 import time
 from pathlib import Path
 
 import numpy as np
 
+from artifact_io import write_json_atomic
 from pauli_strings import majorana_hamiltonian_fast
 from syk import majorana_operators
 
@@ -293,9 +295,12 @@ def main(quick: bool = False):
                    "the module docstring; N-sequence at betaJ=2 probes the "
                    "continuation-commutes question vs system size",
         points=results)
-    with open(Path(__file__).resolve().parent / "fold_bench.json", "w") as fh:
-        json.dump(payload, fh, indent=1)
+    if quick:
+        return payload
+    write_json_atomic(Path(__file__).resolve().parent / "fold_bench.json",
+                      payload)
     print("wrote fold_bench.json")
+    return payload
 
 
 def main_scan():
@@ -331,13 +336,22 @@ def main_scan():
                    "<-> (p = 4, N = 8), both lambda = 2.0.  N <= 20 cap is "
                    "stated, not silent: crossed 4-pt is O(N^2 dim^3).",
         points=results)
-    with open(Path(__file__).resolve().parent / "fold_scan.json", "w") as fh:
-        json.dump(payload, fh, indent=1)
+    write_json_atomic(Path(__file__).resolve().parent / "fold_scan.json",
+                      payload)
     print("wrote fold_scan.json")
 
 
 if __name__ == "__main__":
-    if "--scan" in sys.argv:
+    ap = argparse.ArgumentParser(
+        description="folded 4-pt ED bench; with no flag, the default "
+                    "campaign, which rewrites fold_bench.json")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--scan", action="store_true",
+                      help="the fixed-lambda scan (hours); rewrites fold_scan.json")
+    mode.add_argument("--quick", action="store_true",
+                      help="one reduced point; writes nothing")
+    args = ap.parse_args()
+    if args.scan:
         main_scan()
     else:
-        main(quick="--quick" in sys.argv)
+        main(quick=args.quick)

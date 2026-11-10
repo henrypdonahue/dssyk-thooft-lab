@@ -27,6 +27,8 @@ def test_every_makefile_target_parses():
         for module, argv in recipes:
             assert (ROOT / module).is_dir(), module
             assert argv
+            if argv[0].endswith(".py"):
+                assert (ROOT / module / argv[0]).is_file(), (module, argv[0])
 
 
 def test_identical_artifacts_compare_clean(tmp_path):

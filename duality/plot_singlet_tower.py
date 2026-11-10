@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Figure for the singlet-tower result.  Reads singlet_tower.json only;
-nothing is recomputed except the two closed-form curves of panel (a).
+nothing is recomputed except the two closed-form curves of panel (a)
+(full_channel_chord.mu0_closed, mu2_closed and 2(1 - q^2)).
 
 (a) The A_2 width against lambda_chord: the identity-subtracted ratio
     mu_2/mu_0 and the dynamical width 2(1 - q^2), with the exact finite-N
@@ -20,6 +21,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+
+from full_channel_chord import mu0_closed, mu2_closed
 
 HERE = Path(__file__).resolve().parent
 with open(HERE / "singlet_tower.json") as fh:
@@ -54,9 +57,8 @@ fig, axes = plt.subplots(2, 2, figsize=(11.0, 8.8))
 ax = axes[0, 0]
 lam = np.linspace(0.02, 5.0, 400)
 q = np.exp(-lam)
-raw = 16 * lam * (1 - q) * (1 - q * q + 2 * lam * q) / (
-    4 * lam * (lam * (1 + q) + 2 * (1 - q)))
-dyn = 2 * (1 - q * q)
+raw = mu2_closed(lam, q) / mu0_closed(lam, q)       # full_channel_chord
+dyn = 2 * (1 - q * q)                                 # singlet_tower theorem
 ax.plot(lam, dyn, color=SERIES[0], label=r"dynamical: $2(1-q^2)$")
 ax.plot(lam, raw, color=SERIES[1], label=r"identity-subtracted $\mu_2/\mu_0$")
 gx = [g["lam"] for g in D["a2_gate"].values()]

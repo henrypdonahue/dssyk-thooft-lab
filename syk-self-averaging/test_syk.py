@@ -373,9 +373,22 @@ def test_relvar_m2_matches_ED():
 
 
 def test_self_averaging_decreases_with_N():
-    """Singlet variance must fall as N grows (the whole point of self-averaging)."""
-    rv = [relvar_m2_exact(N, 4) for N in (10, 14, 18)]
-    assert rv[0] > rv[1] > rv[2]
+    """The committed ED singlet variances (results.json, block B, p = 4,
+    N = 10..18) fall strictly with N for m2, m4 and m6 -- the measured
+    self-averaging trend, not the closed form -- and each m2 point sits
+    within 3 sigma of the exact 2/C(N,p)."""
+    import json
+    from pathlib import Path
+    with open(Path(__file__).resolve().parent / "results.json") as fh:
+        rows = sorted(json.load(fh)["B_moments"], key=lambda r: r["N"])
+    assert [r["N"] for r in rows] == [10, 12, 14, 16, 18]
+    for k in ("relvar_m2", "relvar_m4", "relvar_m6"):
+        rv = [r[k] for r in rows]
+        assert all(b < a for a, b in zip(rv, rv[1:])), (k, rv)
+    for r in rows:
+        exact = relvar_m2_exact(r["N"], r["p"])
+        assert r["relvar_m2_exact"] == pytest.approx(exact, rel=1e-12)
+        assert abs(r["relvar_m2"] - exact) < 3 * r["relvar_m2_err"], r["N"]
 
 
 def test_goe_arm_of_the_rmt_pattern():
@@ -445,7 +458,9 @@ def test_results_json_rows_match_exact_wick():
 
 def test_mn_spectra_json_reproduces():
     """mn_spectra.json is mn_spectroscopy.run at the stored (Nc, p, seed):
-    the per-level static fractions and CP fractions come back exactly."""
+    for the levels n <= 2 (of the 7 stored; n_max = 2 keeps this fast) the
+    static fractions and CP fractions come back exactly.  Histograms and
+    the n >= 3 levels are not recomputed here."""
     import json
     from pathlib import Path
     import mn_spectroscopy
@@ -456,8 +471,8 @@ def test_mn_spectra_json_reproduces():
     for r in live["spectra"]:
         s = stored[r["n"]]
         for k in ("static_fraction", "frac_right_cp"):
-            if k in s:
-                assert r[k] == pytest.approx(s[k], rel=1e-9, abs=1e-12), (r["n"], k)
+            assert k in s, (r["n"], k)
+            assert r[k] == pytest.approx(s[k], rel=1e-9, abs=1e-12), (r["n"], k)
 
 
 

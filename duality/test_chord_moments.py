@@ -133,7 +133,7 @@ def test_ed_bench_scope():
     physical channel, which at dense-ED sizes is
     flavor-diagonal-dominated.  The pair part of mu_0 is opposite in sign
     and grows fast with N: -0.6% at N = 12 to -34% by N = 16, p = 4
-    (measured during the adversarial review; CHORD.md quotes the series).
+    (pinned from the exact engine in test_ed_bench_pair_share_of_mu0).
     So the bench does NOT yet probe the chord cancellation: at
     the near-matched-lambda pair the RAW w2 rises with N.  What the bench
     establishes is the raw fixed-p turn-on toward the 't Hooft corner
@@ -149,3 +149,21 @@ def test_ed_bench_scope():
     assert abs(r4["lambda_chord"] - r6["lambda_chord"]) < 0.1
     assert r6["w2"] > r4["w2"]      # the approach to the chord zero is
     #                                 NOT visible at dense-ED sizes
+
+
+def test_ed_bench_pair_share_of_mu0():
+    """The pair share of the full A_2 channel's mu_0 at p = 4,
+    N(N-1) mu0^pair / (N mu0^diag + N(N-1) mu0^pair), from the exact
+    finite-N engine: -0.6 %, -17.2 %, -34 % at N = 12, 14, 16 (the series
+    CHORD.md and test_ed_bench_scope quote).  Opposite in sign, and growing
+    fast with N: the dense-ED bench is diagonal-dominated, but not
+    overwhelmingly, and does not probe the pair zero."""
+    from diagonal_chord import finite_n_diag, finite_n_pair
+    shares = []
+    for N in (12, 14, 16):
+        pr = finite_n_pair(N, 4, 2, ks=(0,))["mu0"]
+        dg = finite_n_diag(N, 4, 2, ks=(0,))["mu0"]
+        pair = N * (N - 1) * pr
+        shares.append(pair / (N * dg + pair))
+    assert shares == pytest.approx([-0.0058, -0.1715, -0.3375], abs=5e-4)
+    assert all(b < a < 0 for a, b in zip(shares, shares[1:]))

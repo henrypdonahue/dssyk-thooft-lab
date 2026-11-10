@@ -33,23 +33,8 @@ FLZ = {**FLZ_EVEN, **FLZ_ODD}                 # merged, keyed by FLZ n
 FLZ_PADE_LAMBDA0 = 0.737061746292690          # FLZ Eq. (4.37), Pade estimate
 
 
-def sum_inv_sq_with_tail(evs, offset, n_cut):
-    """G2 partial sum sum_n 4/(2 lambda_n)^2 over one CP sector (levels at
-    n = offset, offset+2, ... up to n_cut), closed with the analytic tail
-    from the leading asymptotic 2 lambda_n -> n + 3/4.  The tail is
-    polygamma(1, (n0 + 3/4)/2), with n0 the first level index past the
-    summed head."""
-    total, n = 0.0, offset
-    for two_lam in evs:
-        if n > n_cut:
-            break
-        total += 4.0 / two_lam ** 2
-        n += 2
-    return total + polygamma(1, (n + 0.75) / 2.0)
-
-
 def flz_sum_rule(evs, offset, s, n_cut=120, tail="leading",
-                 m_tail=2_000_000):
+                 m_tail=None):
     """FLZ G^(s)+- = sum_n lambda_n^-s over one CP sector (s >= 2), or the
     regularized s = 1 sum G^(1)+- = sum_m [1/lambda_n - 1/(m+1)]
     (FLZ Eq. 4.18; n = 2m + offset), from the computed 2*lambda_n up to
@@ -59,7 +44,10 @@ def flz_sum_rule(evs, offset, s, n_cut=120, tail="leading",
     (the original; limits G2 to ~1e-10 and G1 to ~4e-9).
     tail = "eq16": the transcribed FLZ Eq. (1.6) correction delta_n is
     summed term by term for m_tail levels before the leading tail takes
-    over; that brings every s to the ~1e-12 level of FLZ's Table 3."""
+    over; that brings every s to within one unit of the last printed
+    digit of FLZ's Table 3.  m_tail defaults to flz_dconstants._M_TAIL.
+
+    validate.py and test_thooft.py both use this one implementation."""
     total, n, m = 0.0, offset, 0
     for two_lam in evs:
         if n > n_cut:
@@ -68,7 +56,9 @@ def flz_sum_rule(evs, offset, s, n_cut=120, tail="leading",
         n += 2
         m += 1
     if tail == "eq16":
-        from flz_dconstants import flz_delta_asymptotic
+        from flz_dconstants import _M_TAIL, flz_delta_asymptotic
+        if m_tail is None:
+            m_tail = _M_TAIL
         ns = np.arange(n, n + 2 * m_tail, 2, dtype=float)
         two_lam = ns + 0.75 + flz_delta_asymptotic(ns)
         if s == 1:

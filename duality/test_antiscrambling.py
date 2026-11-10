@@ -94,10 +94,11 @@ def test_growth_coefficient_is_real_and_negative():
 def test_growth_coefficient_numeric_agrees(betaJ):
     """The late-time fit of otoc_ratio recovers a(v) = -1/cos(pi v/2)
     (validates the asymptotics of the transcription, not just the
-    formula)."""
+    formula).  Measured agreement is 2e-16 .. 2.4e-15, so the tolerance
+    sits three decades above it."""
     v = v_of_betaJ(betaJ)
     assert growth_coefficient_numeric(betaJ) == pytest.approx(
-        growth_coefficient(v).real, rel=5e-3)
+        growth_coefficient(v).real, rel=1e-12)
 
 
 # ---------------------------------------------------------------------------

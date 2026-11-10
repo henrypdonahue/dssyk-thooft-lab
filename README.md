@@ -55,9 +55,9 @@ H. At λ = 2, 32.9% of μ₀ is conserved and the dynamical width is
 1.963369. The identity-subtracted ratio μ₂/μ₀ = 1.316906 is that width
 diluted. The proof is a sign-reversing involution on chord diagrams
 ([note](notes/singlet-tower-note.md) §3, [code](duality/singlet_tower.py)).
-Two checks do not use it. Exact finite-N rational moments with the H²
-component removed extrapolate to 1.96336. Dense ED with the full
-commutant of H projected out per realization gives 2.03, 2.03, 2.01 at
+Checks that do not use it agree (note §5). Exact finite-N rational
+moments with the H² component removed extrapolate to 1.96336. Dense ED
+with the full commutant of H projected out per realization gives 2.03, 2.03, 2.01 at
 p = 6, N = 16–20, against 2.00.
 
 **3. The levels above are matter chords too (verified, not proved).** For
@@ -82,14 +82,17 @@ one-dimensional conformal OPE of the bilocal Σψᵢ(0)ψᵢ(t) in the frame
 u = tanh(√λ t), with Oₘ a primary of weight m. With the remainder on,
 one ladder rung of the linearized large-p Liouville form is added, so
 the full channels are not exactly conformal. The odd survival then
-follows from the norm law, and the shares are exact rationals (A₅ → 2047/2058 O₃ +
-11/2058 O₅). The odd T = ∞ OPE coefficients equal N(1 − k_c(h))² times
-the Gross–Rosenhaus IR couplings, k_c(h) = 2/(h(h−1)), exactly at
-h = 3, 5, 7. That relation is identified, not derived
+follows from the norm law and the a^(n−m) scaling of the dressings (both
+numerical, neither proved), and the shares are exact rationals
+(A₅ → 2047/2058 O₃ + 11/2058 O₅). The odd T = ∞ OPE coefficients equal
+N(1 − k_c(h))² times the Gross–Rosenhaus IR couplings, k_c(h) = 2/(h(h−1)), exactly at
+h = 3, 5, 7 (the factor was read off h = 5 and 7; h = 3 is the one
+out-of-sample check). That relation is identified, not derived
 ([code](duality/conformal_tower.py),
 [note](notes/singlet-tower-note.md) §4a).
 
-**What follows.** At N = ∞ every Aₙ channel is a conserved part plus
+**What follows.** At N = ∞ every Aₙ channel computed (n ≤ 8; proved at
+n = 2) is a conserved part plus
 smooth matter-chord continua, with no discrete lines. Those continua are
 in the frequency conjugate to H, which in the proposal generates boosts.
 A particle of fixed mass already has a continuous boost spectrum
@@ -196,10 +199,10 @@ or an identical BLAS guarantee. CI covers Python 3.9 and 3.12 on Linux.
 
 Run tests separately in each directory (the three modules and
 `scripts/`), as the Makefile does; the code uses flat script imports.
-`test` excludes slow tests (713 fast tests, 14 of them for the
-runner); `test-all` includes them. `reproduce` runs the fast
+`test` excludes slow tests (721 fast tests, 16 of them for the
+runner and the walkthrough page); `test-all` includes them. `reproduce` runs the fast
 deterministic producers and plots in a few minutes; `reproduce-slow`
-runs every campaign and reference generator and takes about a day.
+runs every campaign and reference generator and takes about two days.
 Producers overwrite their output files, so use a scratch copy or the
 logged snapshot runner, which also compares regenerated artifacts with
 the committed ones ([REPRODUCIBILITY.md](REPRODUCIBILITY.md)).
@@ -231,8 +234,9 @@ The main theoretical gaps are the state/time/operator dictionary that
 relates boost-frequency data to invariant masses, a proof of the
 matter-chord decomposition and its norm law for general n, a derivation
 of the relation between the odd T = ∞ OPE coefficients and the
-Gross–Rosenhaus couplings, and the full Dirac CP-resolved channel. [road_map.md](road_map.md) Part III lists them with
-the next computational steps.
+Gross–Rosenhaus couplings, and the full Dirac CP-resolved channel.
+[road_map.md](road_map.md) Part III lists them with the next
+computational steps.
 
 Code and original documentation are [MIT licensed](LICENSE). Third-party
 papers are excluded from version control and keep their own licenses.

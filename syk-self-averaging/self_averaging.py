@@ -233,7 +233,11 @@ def fit_verdict(fits, ns=None) -> str:
 
 
 if __name__ == "__main__":
-    results = {}
+    results = {"provenance": (
+        "self_averaging.py -- the Sec. 3.5 measurement: A exact 2/C(N,p) "
+        "singlet m2 rate (fixed p = 4 and double scaling), B ED singlet "
+        "moment relVar at p = 4, C ED adjoint-bilinear rms_off at p = 4, 6; "
+        "stdout is the human-readable report (results.txt)")}
 
     print("=" * 70)
     print("A. Self-averaging MECHANISM: singlet m2 relative variance = 2/C(N,p)")

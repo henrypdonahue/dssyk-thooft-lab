@@ -18,7 +18,10 @@ The two fit together. The flavor-diagonal and pair halves are each
 O(√N) on a double-scaling line and cancel at that order, so the
 physical channel is the O(1) remainder that Theorem 2 describes. The
 note also records, as verified but not proved, the n = 3..8 levels: a
-polynomial in H plus matter chords of dimension 2..n.
+polynomial in H plus matter chords of dimension 2..n, and their λ → 0
+limit: the odd survival follows from the norm law, and the odd
+infinite-temperature OPE coefficients match the Gross–Rosenhaus couplings
+up to an identified, underived factor (`duality/conformal_tower.py`).
 
 `notes/singlet-tower-note.md` is the longer companion, with the block
 kernels, the norm table and the small-λ shares.

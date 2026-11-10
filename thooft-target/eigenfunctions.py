@@ -23,12 +23,14 @@ too.  Three independent checks, all encoded in test_thooft.py.
    overlap is (pi/4) a_0^(n), the 't Hooft-model decay-constant column of
    the eigenvector matrix.
 
-   These are genuine tests of the eigenvectors as a complete orthonormal
-   set.
+   They test that the eigenvectors form a complete S-orthonormal set.
+   They do not involve D, so they do not test the individual
+   wavefunctions; check 2 does.
 
 2. AN INDEPENDENT RAYLEIGH-QUOTIENT RECOMPUTATION.  Each reconstructed
    phi_n(x) is pushed through the *weak-form* Gagliardo quadratic form of
-   the finite-part operator, on Gauss-Legendre nodes.  That form is the
+   the finite-part operator, on Gauss-Legendre or tanh-sinh nodes.  That
+   form is the
    sine_solver's discretization-free representation.  It shares no basis
    and no closed-form matrix elements with the Chebyshev solver:
 
@@ -145,7 +147,7 @@ def decay_constant_asymptotics(num_basis: int = 400, n_lo: int = 20,
     """The large-n law of the decay constants: f_n (n + 3/4) -> 2/pi, with
     a 1/nu correction, nu = n + 3/4.  Fit f_n nu = c0 + a/nu + b/nu^2 on
     the symmetric levels n in [n_lo, n_hi]; c0 lands on 2/pi to ~5e-6 and
-    a ~ +0.064.  (f_0 = 0.9428101504585 sits 1.2e-6 from 2 sqrt(2)/3, a
+    a ~ +0.064.  (f_0 = 0.9428101504585 sits 1.1e-6 from 2 sqrt(2)/3, a
     near-miss, not an identity.)"""
     f, ev = decay_constants(num_basis, num_levels=num_basis // 3)
     n = 2 * np.arange(len(f))
@@ -191,11 +193,16 @@ def rayleigh_weakform(vec, degrees, alpha: float = 0.0,
     weak form on quadrature nodes.  No Chebyshev closed forms are involved.
 
     rule = "legendre": Gauss-Legendre nodes (the original check; the
-    endpoint sqrt(x) behavior limits it to ~1e-6).
+    endpoint sqrt(x) behavior limits it to 1e-6 to 6e-6 for the lowest
+    levels).
     rule = "tanh-sinh": the jacobi_solver rule, which resolves the endpoint
-    exponent; with n_quad ~ 2400 the residual is at the 1e-12 level, so the
+    exponent; with n_quad = 1201 the residual is ~2e-13, so the
     wavefunctions are validated against the operator to the precision of
-    the eigenvalues themselves."""
+    the eigenvalues themselves.
+
+    Both rules use the same graph-Laplacian Gagliardo assembly,
+    jacobi_solver.gagliardo_from_values."""
+    from jacobi_solver import _tanh_sinh_01, gagliardo_from_values
     if rule == "legendre":
         xq, wq = np.polynomial.legendre.leggauss(n_quad)
         xq = 0.5 * (xq + 1.0)
@@ -203,23 +210,14 @@ def rayleigh_weakform(vec, degrees, alpha: float = 0.0,
         omx = 1.0 - xq
         phi = reconstruct(vec, degrees, xq)
         dphi = reconstruct_derivative(vec, degrees, xq)
-        dx = xq[:, None] - xq[None, :]
-        with np.errstate(divide="ignore", invalid="ignore"):
-            Q = np.outer(wq, wq) / (dx * dx)
-        np.fill_diagonal(Q, 0.0)
-        r = Q.sum(axis=1)
-        off = np.sum(r * phi ** 2) - phi @ Q @ phi
-        diag = np.sum((wq * dphi) ** 2)
-        gag = off + 0.5 * diag
     elif rule == "tanh-sinh":
-        from jacobi_solver import _tanh_sinh_01, gagliardo_from_values
         xq, omx, wq = _tanh_sinh_01(n_quad)
         phi = reconstruct(vec, degrees, xq)
         dphi = reconstruct_derivative(vec, degrees, xq, omx)
-        gag = gagliardo_from_values(phi[None, :], dphi[None, :],
-                                    xq, omx, wq)[0, 0]
     else:
         raise ValueError(f"unknown rule {rule!r}")
+    gag = gagliardo_from_values(phi[None, :], dphi[None, :],
+                                xq, omx, wq)[0, 0]
 
     norm = np.sum(wq * phi ** 2)
     V = 1.0 / xq + 1.0 / omx
@@ -252,3 +250,12 @@ if __name__ == "__main__":
         rq = rayleigh_weakform(vecs1[:, n], deg1)
         print(f"  anti n={n}: 2lam = {ev1[n]:.10f}   R[phi] = {rq:.10f}   "
               f"diff = {rq-ev1[n]:+.2e}")
+    ts0 = max(abs(rayleigh_weakform(vecs0[:, n], deg0, n_quad=1201,
+                                    rule="tanh-sinh") - ev0[n])
+              for n in range(6))
+    ts1 = max(abs(rayleigh_weakform(vecs1[:, n], deg1, n_quad=1201,
+                                    rule="tanh-sinh") - ev1[n])
+              for n in range(3))
+    print("\nSame check on tanh-sinh nodes (n_quad = 1201), which resolve "
+          "the endpoint exponent:")
+    print(f"  max |R[phi] - 2lam|: sym n<6 {ts0:.1e}, anti n<3 {ts1:.1e}")

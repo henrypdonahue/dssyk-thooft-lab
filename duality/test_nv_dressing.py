@@ -26,32 +26,19 @@ that scope boundary.  These tests pin the contour realization only.
 
 import math
 
-import numpy as np
 import pytest
 
-from antiscrambling import otoc_ratio
 from chord import beta_chord_from_betaJ
 from chord_fold import CONFIG_CROSSED
 from largeq_anchor import v_of_betaJ
 from signflip_probe import detailed_balance, growth_coefficient_shifted
 
 
-def _coef_two_sided(v: float, d12: float, d34: float,
-                    config=CONFIG_CROSSED) -> complex:
+def _coef_two_sided(v: float, d12: float, d34: float) -> complex:
     """Growth coefficient with the (theta1, theta2) pair shifted by d12
-    and the (theta3, theta4) pair by d34 -- the two-sided generalization
-    of signflip_probe.growth_coefficient_shifted, needed because NV's
-    O^+/O^- dressing displaces the two operator pairs in OPPOSITE
-    directions (their Eq. 33)."""
-    t1, t2, t3, t4 = config
-    thLs = np.array([4.0, 5.0, 6.0, 7.0]) / v
-    vals = np.array([complex(otoc_ratio(t1 + d12 + 1j * t, t2 + d12 + 1j * t,
-                                        t3 + d34, t4 + d34, v))
-                     for t in thLs])
-    A = np.vstack([np.ones_like(thLs), np.exp(v * thLs),
-                   np.exp(-v * thLs)]).T
-    coef, *_ = np.linalg.lstsq(A.astype(complex), vals, rcond=None)
-    return complex(coef[1])
+    and the (theta3, theta4) pair by d34: NV's O^+/O^- dressing displaces
+    the two operator pairs in OPPOSITE directions (their Eq. 33)."""
+    return growth_coefficient_shifted(v, d12, CONFIG_CROSSED, delta34=d34)
 
 
 @pytest.mark.parametrize("betaJ", [0.5, 2.0])
@@ -70,8 +57,7 @@ def test_quarter_dressings_compose_to_the_antipodal_flip(betaJ):
     v = v_of_betaJ(betaJ)
     quarter = math.pi / (2.0 * v)
     a0 = _coef_two_sided(v, 0.0, 0.0)
-    # baseline agrees with the producer's one-sided fit and closed form
-    assert a0 == pytest.approx(growth_coefficient_shifted(v, 0.0), rel=1e-12)
+    # baseline agrees with the closed form
     assert a0.real == pytest.approx(-1.0 / math.cos(math.pi * v / 2.0),
                                     rel=1e-12)
     a_quarter = _coef_two_sided(v, quarter, 0.0)

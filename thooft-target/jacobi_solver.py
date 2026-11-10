@@ -7,7 +7,7 @@ The Chebyshev solver in thooft_spectrum.py hardwires the alpha = 0
 endpoint exponent 1/2 into its basis, sqrt(x(1-x)) U_m.  Away from the
 duality point its convergence is therefore only algebraic.  The measured
 residuals in the Litvinov-Meshcheriakov sum-rule tests are 1e-5 to 2e-4;
-see the README's precision notes.
+see the README's "What is checked" table.
 
 This solver builds the TRUE endpoint exponent into the basis, and
 restores fast convergence at alpha != 0.
@@ -152,9 +152,10 @@ converges below 1e-11 by K = 32.
 
 The old solver there follows the exponent-mismatch algebraic law
 ~K^-(4 beta) -- the fitted rates match 4 beta to 2 digits, 2.34 and 1.48 --
-and still sits at 1e-7 to 1e-5 at K = 128.  The reference's K = 200
-against 160 self-consistency is about 4e-12.  The LM tables, at their
-6-digit floor, and the 20-digit LM sum rules certify that externally:
+and still sits at 2e-8 to 4e-5 at K = 128 (levels n = 0 and 4).  The
+reference's K = 200 against 160 self-consistency is 1e-12 to 4e-12
+(BLAS-dependent).  The LM tables, at their 6-digit floor, and the
+20-digit LM sum rules certify that externally:
 s = 2 within 3e-8, s >= 4 about 4e-12 relative.
 
 A CAVEAT.  The true wavefunction also carries subleading endpoint
@@ -172,6 +173,10 @@ assertion.
 
 from __future__ import annotations
 
+import json
+import time
+from pathlib import Path
+
 import numpy as np
 from scipy.linalg import eigh
 from scipy.optimize import brentq
@@ -180,6 +185,7 @@ from scipy.special import gammaln, roots_jacobi
 from thooft_spectrum import interleave_levels
 
 PI = np.pi
+HERE = Path(__file__).resolve().parent
 
 
 # ---------------------------------------------------------------------------
@@ -525,11 +531,7 @@ def _sum_rule_scan(K=150):
     """Residuals of sum_rule_G against the 20-digit LM closed forms for
     s = 2..7 at all five LM alpha values.  This measurement sets the
     tolerances asserted in test_jacobi.py.  Returns a JSON-ready dict."""
-    import json
-    import os
-
-    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                           "external_anchors.json")) as fh:
+    with open(HERE / "external_anchors.json") as fh:
         anchors = json.load(fh)
 
     out = {}
@@ -552,8 +554,7 @@ def _sum_rule_scan(K=150):
 
 
 if __name__ == "__main__":
-    import json
-
+    t0 = time.time()
     print("Matched-exponent Jacobi solver for the 't Hooft equation\n")
 
     print("Endpoint exponents beta(alpha)  [pi b cot(pi b) = -alpha]:")
@@ -580,7 +581,7 @@ if __name__ == "__main__":
     print("Sum-rule residual scan (s = 2..7, five LM alphas)...")
     sums = _sum_rule_scan()
     payload = {
-        "_provenance": {
+        "provenance": {
             "generated_by": "jacobi_solver.py __main__",
             "reference": "high-K Jacobi solve (K=200, auto n_ts) per alpha; "
                          "reference_self_consistency = max |K=200 - K=160| "
@@ -602,12 +603,11 @@ if __name__ == "__main__":
         },
         "old_vs_jacobi": scan,
         "lm_sum_rule_residuals": sums,
+        "runtime_s": round(time.time() - t0, 1),
     }
-    from pathlib import Path
-    with open(Path(__file__).resolve().parent / "jacobi_convergence.json",
-              "w") as fh:
+    with open(HERE / "jacobi_convergence.json", "w") as fh:
         json.dump(payload, fh, indent=1)
-    print("wrote jacobi_convergence.json")
+    print(f"wrote jacobi_convergence.json ({payload['runtime_s']} s)")
     for a_str, blk in scan.items():
         print(f"\nalpha = {a_str} (beta = {blk['beta']:.6f}, reference "
               f"self-consistency {blk['reference_self_consistency']:.1e}, "

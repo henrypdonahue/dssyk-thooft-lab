@@ -122,7 +122,7 @@ def toc_ratio(th1, th2, th3, th4, v: float):
 
 def otoc_ratio(th1, th2, th3, th4, v: float):
     """script-F/F_d for the CROSSED configuration theta1 > theta3 > theta2
-    [Streicher (3.5)], as an analytic function of the four thetas --
+    [Streicher (3.10)], as an analytic function of the four thetas --
     complex arguments implement Lorentzian continuation
     (tau_j -> tau_j + i t_j  <=>  theta_j -> theta_j + 2 pi i t_j / beta):
 
@@ -134,7 +134,7 @@ def otoc_ratio(th1, th2, th3, th4, v: float):
     writes that display after fixing the time-translation freedom:
     Appendix A, "we use time-translation invariance to set theta_34^+ = 0"
     (with theta_3 = -theta_4 = theta_34^-/2).  So the phi_12^+ appearing in
-    (3.5) is the squeeze of theta_12^+ - theta_34^+, not of theta_12^+.
+    (3.10) is the squeeze of theta_12^+ - theta_34^+, not of theta_12^+.
     The two agree in Streicher's gauge and nowhere else.  Using the
     gauge-fixed display at general angles breaks time-translation
     invariance, which script-F/F_d must have -- the chord engine's
@@ -146,7 +146,8 @@ def otoc_ratio(th1, th2, th3, th4, v: float):
     (the old form gives arbitrary values); and the exact N = infinity chord
     engine converges onto it as lambda -> 0, where the double-scaled theory
     IS the large-q limit (chord/closed 0.964 -> 0.979 over lambda = 2 ->
-    0.5, the committed chord_fold.json range, tracking the TOC control;
+    0.5, with 0.973 at lambda = 4, the top of the committed chord_fold.json
+    grid; tracking the TOC control;
     against the old form the same ratios run to 1.68, away from 1).
     """
     ph12m = squeeze(np.asarray(th1) - th2, v)

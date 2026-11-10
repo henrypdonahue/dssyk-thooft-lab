@@ -56,9 +56,11 @@ def test_engine_matches_kernel_quadrature_to_high_order():
 
 
 def test_engine_matches_boost_forward_fixed_order():
-    """At kmax <= 6 the generalized engine reproduces boost_forward's
-    single_mass_moments exactly (same mathematics, independent code path
-    for the composition length)."""
+    """At kmax <= 6 the gated engine reproduces boost_forward's
+    single_mass_moments (one shared composition, boost_forward.
+    _w_series_impl; this pins the gate's precision handling and the
+    moment assembly, not an independent derivation -- the quadrature test
+    above is the independent route)."""
     for m, eps in ((0.8585230027743485, 0.4), (1.0, 1.6), (2.5, 0.05)):
         ref = bf.single_mass_moments(m, eps)
         mus, _, _ = bi.regulated_moments(m, eps, kmax=6)
@@ -183,14 +185,15 @@ def test_moments_beyond_L_level_count(data):
 def test_cp_subtower_and_even_rows(data):
     """The CP = -1 6-level sub-tower is the easy case (all levels above
     double precision), and restricting to even moment orders (the
-    symmetrized correlator's observables) does not rescue conditioning."""
+    symmetrized correlator's observables) makes conditioning WORSE, by
+    ~4 decades of amplification (19.7 against 15.6 at a*eps = 0.4)."""
     cp = data["conditioning"]["cp_minus_subtower_eps_ref"]
     assert len(cp["lg_sv_raw"]) == 6
     assert cp["n_above"]["1e-16"] == 6
     even = data["conditioning"]["even_only_eps_ref"]["lg_sv_raw"]
     full = next(c for c in data["conditioning"]["cells"]
                 if c["eps"] == bi.EPS_REF and c["K"] == 24)["lg_sv_raw"]
-    assert even[-1] - even[0] <= (full[-1] - full[0]) + 0.6
+    assert (full[-1] - full[0]) - (even[-1] - even[0]) > 3.5
 
 
 # ---------------------------------------------------------------------------

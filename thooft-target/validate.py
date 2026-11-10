@@ -2,8 +2,10 @@
 """Validation of the massless 't Hooft spectrum against
 Fateev-Lukyanov-Zamolodchikov (arXiv:0905.2280).
 
-Three checks: the eigenvalue tables, the exact sum rules, and the large-n
-asymptotic expansion.
+Five sections: the eigenvalue tables, the exact sum rules, the
+variational convergence of the ground state, the large-n asymptotics, and
+the independent sine-basis cross-check.  Three of them are pass/fail gates
+(exit code); the other two are printouts asserted in test_thooft.py.
 """
 
 import sys
@@ -12,15 +14,12 @@ from scipy.special import zeta
 
 from thooft_spectrum import solve_sector, spectrum
 import sine_solver
-from flz_reference import (FLZ_EVEN, FLZ_ODD, FLZ_PADE_LAMBDA0,
-                           sum_inv_sq_with_tail)
-
-
+from flz_reference import FLZ_EVEN, FLZ_ODD, FLZ_PADE_LAMBDA0, flz_sum_rule
 
 
 def compare_tables(num_basis=300):
-    ev_sym, _, _ = solve_sector(num_basis, parity=0)
-    ev_anti, _, _ = solve_sector(num_basis, parity=1)
+    ev_sym, _, _ = solve_sector(num_basis, parity=0, eigvals_only=True)
+    ev_anti, _, _ = solve_sector(num_basis, parity=1, eigvals_only=True)
 
     print(f"Basis size per sector K = {num_basis}\n")
     print("Comparison with FLZ Tables 1 & 2 (2*lambda_n):")
@@ -51,10 +50,10 @@ def check_sum_rules(num_basis=400, n_cut=120):
     for n <= n_cut and close the (small) tail analytically with the leading
     asymptotic 2 lambda_n -> n + 3/4.  That gives
         tail = sum_{n=n0,n0+2,...} 4/(n+3/4)^2 = polygamma(1, (n0+3/4)/2)."""
-    ev_sym, _, _ = solve_sector(num_basis, parity=0)
-    ev_anti, _, _ = solve_sector(num_basis, parity=1)
-    G2p = sum_inv_sq_with_tail(ev_sym, 0, n_cut)
-    G2m = sum_inv_sq_with_tail(ev_anti, 1, n_cut)
+    ev_sym, _, _ = solve_sector(num_basis, parity=0, eigvals_only=True)
+    ev_anti, _, _ = solve_sector(num_basis, parity=1, eigvals_only=True)
+    G2p = flz_sum_rule(ev_sym, 0, 2, n_cut=n_cut, tail="leading")
+    G2m = flz_sum_rule(ev_anti, 1, 2, n_cut=n_cut, tail="leading")
     print("\nExact sum rules (FLZ Eq. 1.8):")
     print(f"  G2+ = sum 1/lambda_2m^2   = {G2p:.12f}   "
           f"target 7*zeta(3) = {7*zeta(3):.12f}   |diff|={abs(G2p-7*zeta(3)):.1e}")
@@ -68,7 +67,7 @@ def crosscheck_independent():
     at alpha = 0 and two nonzero masses.  This is the check on the quark-mass
     machinery (invisible at alpha = 0)."""
     print("\nIndependent cross-check (sine-basis solver, sine_solver.py):")
-    print("  (algebraic convergence -> ~1e-3..1e-4 agreement is expected and confirms")
+    print("  (algebraic convergence -> ~1e-2..1e-4 agreement is expected and confirms")
     print("   the potential term; NOT a precision statement about the main solver)")
     worst = 0.0
     for alpha in (0.0, 0.5, 2.0):
@@ -87,7 +86,7 @@ def convergence_study():
     print(f"{'K':>5} {'2*lambda_0':>20} {'change':>12}")
     prev = None
     for K in [2, 4, 8, 16, 32, 64, 128, 256]:
-        ev, _, _ = solve_sector(K, parity=0)
+        ev, _, _ = solve_sector(K, parity=0, eigvals_only=True)
         v = ev[0]
         ch = "" if prev is None else f"{v-prev:+.2e}"
         print(f"{K:>5} {v:>20.15f} {ch:>12}")
@@ -112,9 +111,17 @@ if __name__ == "__main__":
     worst_cross = crosscheck_independent()
 
     # Pass/fail gate (exit code != 0 breaks CI if the physics regresses).
+    # The FLZ and sum-rule bounds are ~3.5x the measured values (headroom
+    # for other BLAS/LAPACK paths, e.g. CI's Linux runner); the sine bound
+    # is unchanged at 2x its measured value:
+    #   FLZ tables: measured 1.1e-12 at K = 300, of which up to 1.0e-12 is
+    #     FLZ's own last printed digit (vs the polished table);
+    #   sum rules: measured 9.5e-11, the leading-asymptotic tail's error;
+    #   sine cross-check: measured 2.4e-3 at alpha = 0.5, the sine basis'
+    #     algebraic convergence (no precision claim about the main solver).
     checks = {
-        "FLZ tables (< 1e-10)": worst_tables < 1e-10,
-        "sum rules (< 1e-8)": worst_sumrule < 1e-8,
+        "FLZ tables (< 4e-12)": worst_tables < 4e-12,
+        "sum rules (< 3e-10)": worst_sumrule < 3e-10,
         "sine cross-check alpha!=0 (< 5e-3)": worst_cross < 5e-3,
     }
     print("\n" + "=" * 40)

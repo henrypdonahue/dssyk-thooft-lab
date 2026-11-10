@@ -217,8 +217,8 @@ sign-reversing involution on the chord diagrams:
     ν² = 8λ(1 − q² + 2λq)/(1+q),      w₂^dyn = 2(1 − q²).
 
 At λ_chord = 2 the conserved share of μ₀ is 32.9% and the dynamical
-width is 1.963369; the 1.316906 is that width diluted. Three checks that
-do not use the proof agree: the exact finite-N channel with its H²
+width is 1.963369; the 1.316906 is that width diluted. Independent checks
+that do not use the proof agree (note §5), among them: the exact finite-N channel with its H²
 component removed (1.96336), dense ED with the whole commutant of H
 projected out (2.03, 2.03, 2.01 at p = 6, N = 16–20, against 2.00), and
 the spectral density rebuilt from the closed-form matter vertex.
@@ -251,7 +251,7 @@ coefficients equal N(1 − k_c(h))² times the Gross–Rosenhaus IR couplings,
 exactly at h = 3, 5, 7, with k_c(h) = 2/(h(h−1)). The map from chord
 dimension to conformal dimension is therefore no longer only a
 coincidence of integers: it is backed by an exact, though underived,
-relation on three operators. Still open: why the relation holds, and
+relation fixed on two operators and checked on a third. Still open: why the relation holds, and
 the rung's subleading weight.
 
 So the tower does propagate at N = ∞. The per-flavor split of its weight
@@ -392,7 +392,8 @@ condensate and gives first α → −1 GMOR data.
 
 1. **Where are the mesons?** Done at N = ∞ for the Majorana channels
    ([duality/HORIZON.md](duality/HORIZON.md)): the orthogonalized tower is
-   a pure chord, Õₙ = 4Ôₙ, and as λ → 0 every singlet channel is a sum of
+   a pure chord, Õₙ = 4Ôₙ (checked n = 2..5), and as λ → 0 every singlet
+   channel computed (n ≤ 8) is a sum of
    quasinormal ladders |Γ(Δ + iω/a)|², Δ = 2, 3, 5, 7, whose Rindler mass
    spectrum is gapless (density ∝ M^(2Δ−1)), with no gap and no discrete
    masses. So the paper's small-λ prediction cannot be met by the N = ∞
@@ -484,9 +485,11 @@ carry exactly zero leverage under any multiplicative regulator. The
 node verdict is quantitative, conditional on the e^(−εω) regulator and
 the free kernel.
 
-What the SYK side supplies at N = ∞ is no longer open: the full Aₙ
+What the SYK side supplies at N = ∞ is now specified for n ≤ 8 (proved
+at n = 2): the full Aₙ
 channels are a conserved polynomial in H plus matter chords of dimension
-2..n whose norms and dressings are closed forms in λ, so their spectral
+2..n, with norms and dressings in closed form for m ≤ 4 and exact at
+any (λ, q) for m ≤ 8, so their spectral
 densities are known — smooth continua, no lines, no nodes. At fixed p the
 full width is an exact law, w₂ = 8p(p−2)/N + O(1/N²) in bandwidth units,
 an N-independent mean-square frequency 8p(p−2) in units of J²

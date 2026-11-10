@@ -29,8 +29,9 @@ in chord units, with spectral density
 
 poles at omega = -2 i Jc (Delta + k): a quasinormal ladder with spacing
 a = 2 Jc.  Against the exact N = infinity density (chord.s_omega_smooth),
-Delta = 2..6, the deviation at the fixed scale Jc is (Delta/4) lambda +
-O(lambda^2) (convergence()).  Almost all of it is a scale shift: at the
+Delta = 2..6, the deviation at the fixed scale Jc is measured to be
+(Delta/4) lambda + O(lambda^2): dev/lambda = 0.504, 0.757, 1.011, 1.266,
+1.522 at lambda = 0.05 (convergence(); fitted, not derived).  Almost all of it is a scale shift: at the
 best-fit scale J_eff = Jc (1 - (Delta/4) lambda + ...) the shape deviates
 by about 0.045 lambda for every Delta (scale_fit()).  So one common
 spacing a for all channels holds at leading order only.  In time, the
@@ -40,8 +41,9 @@ A full channel's density is a sum of polynomial multiples of its sectors'
 ladders, since a dressing is a polynomial in omega at small lambda.
 full_channel_fit() checks that; it is a consistency check only, because
 |Gamma(m + 1 + ix)|^2 = (m^2 + x^2) |Gamma(m + ix)|^2 makes the basis
-rank-deficient (an even polynomial times rho_2), and a massive-field
-density also fits it on a finite window to ~5e-4 (massive_fit_control).
+rank-deficient (an even polynomial times rho_2), and a heavy massive
+field (M/a >= 3.5) also fits it on a finite window to ~5e-4, lighter
+ones (M/a <= 2) to 8e-4 .. 1.3e-1 (massive_fit_control).
 
 UNITS
 -----
@@ -111,6 +113,7 @@ and writes the artifact (a few minutes).
 
 from __future__ import annotations
 
+import argparse
 import json
 import math
 import sys
@@ -306,7 +309,9 @@ def thooft_tower_rates(m0_over_a: float, n_levels: int = 12, a_taus=(2, 4, 6, 8)
     symmetric-sector decay constants (thooft-target/eigenfunctions.py),
     G = sum f_n^2 K_0((2 M_n/a) cosh(a tau/2)).  Positive and gapped, so
     its rate grows without bound like the lightest meson's."""
-    sys.path.insert(0, str(HERE.parent / "thooft-target"))
+    path = str(HERE.parent / "thooft-target")
+    if path not in sys.path:
+        sys.path.insert(0, path)
     from eigenfunctions import decay_constants
     f, ev = decay_constants(200, n_levels)
     masses = m0_over_a * np.sqrt(np.asarray(ev[:n_levels]) / ev[0])
@@ -453,7 +458,14 @@ def run(out_path=None) -> dict:
 
 
 if __name__ == "__main__":
-    p = run()
+    ap = argparse.ArgumentParser(
+        description="The singlet tower at the stretched horizon.  With no "
+                    "flag: compute every table, print them, and write "
+                    "horizon_tower.json (~2-4 min, one core).")
+    ap.add_argument("--out", default=None,
+                    help="output path (default: horizon_tower.json here)")
+    args = ap.parse_args()
+    p = run(args.out)
     print("Orthogonalized tower, lambda_chord = 2:  O~_n = 4 O^_n")
     for r in p["orthogonal_tower"]["2.0"]:
         print(f"  n={r['n']}  top kernel {r['top_kernel']}  16 norm = {r['weight_16norm']:.6f}"
@@ -487,4 +499,4 @@ if __name__ == "__main__":
               f"residual {r['rel_residual']:.2e} (fixed floor)")
     print("\nNodes on [0, 12a]:", p["nodes"])
     print("Units (MSS string units):", p["units_mss"][0])
-    print(f"\nwrote horizon_tower.json ({p['runtime_s']} s)")
+    print(f"\nwrote {args.out or 'horizon_tower.json'} ({p['runtime_s']} s)")

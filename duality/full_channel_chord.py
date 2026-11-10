@@ -10,9 +10,10 @@ a per-flavor object; the physical channel is their flavor sum,
 
     <A_n ad^k A_n> = N mu_k^diag + N(N-1) mu_k^pair ,
 
-and until now its N = infinity value was a Richardson extrapolation of
-the exact finite-N series, w2 ~ 1.31(5) at lambda_chord = 2, with "the
-pair channel's 1/N coefficient" named as the missing chord-side piece.
+and before this module its N = infinity value was a Richardson
+extrapolation of the exact finite-N series, w2 ~ 1.31(5) at
+lambda_chord = 2, with "the pair channel's 1/N coefficient" named as the
+missing chord-side piece.
 
 It is not missing.  Sum the flavor FIRST.  The exact operator identity
 (syk-self-averaging/conserved_points.py)
@@ -242,8 +243,16 @@ def symbolic():
 # ---------------------------------------------------------------------------
 # gates: the exact finite-N full channel on a double-scaling line
 # ---------------------------------------------------------------------------
+def _syk_path():
+    """Put ../syk-self-averaging on sys.path once (guarded: repeated calls
+    do not grow it)."""
+    path = str(HERE.parent / "syk-self-averaging")
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
+
 def finite_n_full(N: int, p: int, ks=(0, 2)) -> dict:
-    sys.path.insert(0, str(HERE.parent / "syk-self-averaging"))
+    _syk_path()
     import exact_pair_moments as epm
     pr = epm.channel_pair_moments(N, p, 2, marks=('i', 'i', 'j', 'j'),
                                   ks=ks, exact=True)
@@ -274,8 +283,12 @@ def line_series(lam: float, ps, progress: bool = True) -> list:
 
 
 def inverse_p_limit(rows: list, key: str, orders=(3, 4, 5), p_min: int = 8) -> dict:
-    """Least-squares polynomial in 1/p; central = highest order with the
-    smallest residual, spread over orders.  An estimate."""
+    """Least-squares polynomials in 1/p over the rows with p >= p_min, one
+    fit per order in `orders` that has at least order + 2 points.  The
+    central value is the limit of the fit with the smallest max residual
+    (whatever its order); the spread is the range of the limits over the
+    orders.  An estimate.  (singlet_tower.series_limit uses a different
+    rule; the committed numbers of each module follow its own.)"""
     import numpy as np
     pts = [(r["p"], r[key]) for r in rows if r["p"] >= p_min]
     x = np.array([1.0 / p for p, _ in pts])

@@ -429,7 +429,7 @@ def run(out_path=None, K: int = K_DEFAULT) -> dict:
         runtime_s=round(time.time() - t0, 1))
     out = Path(out_path) if out_path else HERE / "largeq_kernel.json"
     with open(out, "w") as fh:
-        json.dump(payload, fh, indent=1)
+        json.dump(payload, fh, indent=1, allow_nan=False)
     print(f"derived vs transcribed over v in {{{V_SCAN[0]} .. {V_SCAN[-1]}}}: "
           f"max rel dev {max_dev:.2e} (target 1e-8)")
     print(f"grid doubling K = {K} -> {2*K}: max root shift "
@@ -446,4 +446,8 @@ def run(out_path=None, K: int = K_DEFAULT) -> dict:
 
 
 if __name__ == "__main__":
+    import argparse
+    argparse.ArgumentParser(
+        description=__doc__.strip().splitlines()[0],
+        epilog="Takes no options; writes largeq_kernel.json (~20 s).").parse_args()
     run()

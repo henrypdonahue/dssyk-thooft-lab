@@ -192,9 +192,14 @@ class SectorM:
     closes.
 
     States |n0, n1>: n0 H-chords below the matter chord (opened earlier),
-    n1 above.  The module docstring derives the scaled-basis action of one
-    H node.  That action reduces to the review (5.18)-(5.20) one-boundary
-    case, and the brute-force enumerator validates it exactly:
+    n1 above.  In the formal basis one H node opens a chord on top
+    (coefficient 1), closes one from above ([n1]_q, summed over which of
+    the n1 closes), or closes one from below (q^{Delta+n1} [n0]_q: it also
+    crosses the matter chord and all n1 above it).  This is
+    chord_charges.transfer_one_matter_formal.  The scaled basis
+    v_s = sqrt([n0]! [n1]!) v_f turns those into the coefficients below.
+    The action reduces to the review (5.18)-(5.20) one-boundary case, and
+    the brute-force enumerator validates it exactly:
 
         open (top):            (n0, n1) -> (n0, n1+1)  coeff sqrt([n1+1])
         close from above:      (n0, n1) -> (n0, n1-1)  coeff sqrt([n1])
@@ -267,7 +272,8 @@ class Contour:
             self._sm[delta] = SectorM(self.nmax, self.q, delta)
         return self._sm[delta]
 
-    # -- maps between sectors (scaled-basis coefficients; module docstring) --
+    # -- maps between sectors (scaled-basis coefficients, v_s = sqrt([n0]! [n1]!) v_f;
+    #    see the SectorM docstring) --
     def _open_first(self, v0: np.ndarray) -> np.ndarray:
         """0-matter |n> -> |n0=n, n1=0>, coeff 1."""
         m = self.nmax + 1
@@ -531,16 +537,8 @@ def vertex2_matrix(th: np.ndarray, q: float, delta: float) -> np.ndarray:
     the four sign choices pairs into real quadratics,
     prod_k [1 - 2 qt q^k cos(th_i+th_j) + qt^2 q^{2k}]
            [1 - 2 qt q^k cos(th_i-th_j) + qt^2 q^{2k}]."""
-    qt = q ** delta
-    num = qpoch(qt * qt, q).real
-    Cp = np.cos(np.add.outer(th, th))
-    Cm = np.cos(np.subtract.outer(th, th))
-    den = np.ones((len(th), len(th)))
-    a = qt
-    while a > 1e-18:
-        den *= (1.0 - 2.0 * a * Cp + a * a) * (1.0 - 2.0 * a * Cm + a * a)
-        a *= q
-    return num / den
+    th = np.asarray(th, float)
+    return _vertex2_pairs(th[:, None], th[None, :], q, delta)
 
 
 def g2_closed_form(beta1: complex, beta2: complex, q: float, delta: float,
@@ -632,8 +630,9 @@ def length_channel_lines(q: float, nmax: int):
 # ---------------------------------------------------------------------------
 def _vertex2_pairs(th1: np.ndarray, th2: np.ndarray, q: float,
                    delta: float) -> np.ndarray:
-    """<th1|q^{Delta n}|th2> elementwise on paired theta arrays (the (2.30)
-    kernel; real-factorized q-Pochhammer products)."""
+    """<th1|q^{Delta n}|th2> elementwise on paired (or broadcastable)
+    theta arrays (the (2.30) kernel; real-factorized q-Pochhammer
+    products).  vertex2_matrix is its outer-product form."""
     qt = q ** delta
     num = qpoch(qt * qt, q).real
     Cp = np.cos(th1 + th2)
@@ -830,12 +829,14 @@ def run_spectra(lams=(2.0, 1.0, 0.5, 0.25, 0.1, 0.05),
 # CLI
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(
+        description="The N = infinity chord engine.  With no flag: a quick "
+                    "sanity demo (an engine word against the brute-force "
+                    "enumerator, and the thermal 2-pt function against the "
+                    "(2.30) closed form).  Nothing is written.")
     ap.add_argument("--spectra", action="store_true",
-                    help="run the lambda->0 spectral scan")
-    ap.add_argument("--demo", action="store_true",
-                    help="quick sanity demo (moments + 2pt cross-checks); "
-                         "this is the default when --spectra is absent")
+                    help="run the lambda -> 0 spectral scan and write "
+                         "chord_spectra.json (~1-4 min)")
     args = ap.parse_args()
     if args.spectra:
         run_spectra()

@@ -184,11 +184,11 @@ not a demonstration of a complete observer state or all-correlator KMS.
 
 Priorities before a stronger claim:
 
-1. Record a `reproduce-slow` run against the release commit. As of
-   2026-10-15 all work is committed, the fast suites pass and the fast
-   `reproduce` target regenerates every committed artifact to within
-   1e-11 relative; the hours-long campaigns have not been re-run (a full
-   run takes about a day of dedicated compute).
+1. Record a `reproduce-slow` run against the release commit. On
+   2026-11-10 the logged fast `reproduce` target (33 commands, about
+   3 minutes on one core) ran clean and regenerated every committed
+   artifact it writes to within 5e-15 relative. The hours-long campaigns
+   have not been re-run (about two days of compute).
 2. Prove the matter-chord decomposition for general n (done for n = 2;
    verified, not proved, for n = 3..8) and explain the λ^(2⌊n/2⌋) scaling
    of the new chord's norm (the small-λ survival of the odd dimensions

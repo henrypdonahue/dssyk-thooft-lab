@@ -11,11 +11,12 @@ from boost_mass import (spectral_closed_form, spectral_from_wightman,
 
 def test_closed_form_vs_independent_ft():
     """The derived S(w) = (1/pi a) e^{pi w/a} K_{iw/a}(m/a)^2 must match the
-    independent numeric Fourier transform of the K0 Wightman function."""
+    independent numeric Fourier transform of the K0 Wightman function
+    (measured agreement ~1e-14 at these omegas, 8e-12 at omega = -2)."""
     ws = np.array([-1.0, 0.0, 0.7, 2.0])
     Sc = spectral_closed_form(ws, m=1.0, a=1.0)
     Sn = spectral_from_wightman(ws, m=1.0, a=1.0)
-    assert np.all(np.abs(Sn / Sc - 1.0) < 1e-8)
+    assert np.all(np.abs(Sn / Sc - 1.0) < 1e-11)
 
 
 def test_kms_detailed_balance():

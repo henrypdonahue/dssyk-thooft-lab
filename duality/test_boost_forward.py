@@ -130,13 +130,26 @@ def test_verdict_band_and_single_mass_dominance(data, tower12):
     assert data["verdict"]["syk_band_covered"]
     rel = data["verdict"]["max_tower_vs_single_mass_rel"]
     assert 0.005 < rel < 0.10, rel
-    # every finite eps* is a genuine root of the reported target
+    # every recorded eps* is a genuine root of the reported target, and
+    # an unreachable target is null with its reason, never NaN
     masses, w, ev, _ = tower12
     for row in data["eps_star"]:
         e = row["eps_star_mscale1"]
-        if not math.isnan(e):
-            k = bf.tower_invariants(masses, w, ev, 1.0, e)["kurt"]
-            assert k == pytest.approx(row["target_kurt"], rel=1e-6)
+        if e is None:
+            assert "unreachable" in row["reason"]
+            continue
+        assert "reason" not in row
+        k = bf.tower_invariants(masses, w, ev, 1.0, e)["kurt"]
+        assert k == pytest.approx(row["target_kurt"], rel=1e-6)
+    # the targets are the committed SYK values, not hand-typed copies
+    odelta = data["syk_targets"]["odelta"]
+    lam_min = min(r["lam"] for r in odelta)
+    labels = {r["target_label"]: r["target_kurt"] for r in data["eps_star"]}
+    assert labels[f"odelta_delta1_lam{lam_min:g}"] == next(
+        r["kurt"] for r in odelta
+        if r["lam"] == lam_min and r["channel"] == "O_delta=1")
+    assert labels["a2_full_p10"] == next(
+        r["kurt"] for r in data["syk_targets"]["a2_full"] if r["p"] == 10)
     # truncation of the 12-level tower is controlled
     assert data["truncation"]["rel"] < 0.01
     assert data["truncation"]["residual_weight"] < 0.02

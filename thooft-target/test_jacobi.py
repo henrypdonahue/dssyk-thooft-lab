@@ -24,7 +24,7 @@ The three correctness gates:
 """
 
 import json
-import os
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -37,14 +37,14 @@ from jacobi_solver import (
     solve_sector_jacobi, spectrum_jacobi, sum_rule_G,
 )
 
-PI = np.pi
-HERE = os.path.dirname(os.path.abspath(__file__))
-
-with open(os.path.join(HERE, "external_anchors.json")) as _fh:
-    ANCHORS = json.load(_fh)
-
 # FLZ Tables 1 & 2 anchors: one provenance-checked copy (flz_reference.py)
 from flz_reference import FLZ
+
+PI = np.pi
+HERE = Path(__file__).resolve().parent
+
+with open(HERE / "external_anchors.json") as _fh:
+    ANCHORS = json.load(_fh)
 
 LM_ALPHAS = ("-0.5", "-0.1", "0.1", "0.5")          # eigenvalue tables
 SUM_RULE_ALPHAS = ("-0.5", "-0.1", "0.1", "0.5", "1")  # exact sum rules
@@ -211,7 +211,7 @@ def test_assembled_matrix_is_hermitian():
 def test_alpha0_flz_tables():
     """Reproduce the FLZ 14-digit tables to < 1e-8 at moderate K = 60
     (measured worst deviation 5.3e-9).  The Chebyshev solver needs its exact
-    closed-form matrix elements plus K = 300 for its 1e-10."""
+    closed-form matrix elements plus K = 300 for its ~1e-12."""
     ev_s, _, _ = solve_sector_jacobi(60, 0, 0.0)
     ev_a, _, _ = solve_sector_jacobi(60, 1, 0.0)
     worst = 0.0
@@ -262,8 +262,8 @@ def test_convergence_beats_old_solver():
     """THE rate gate: at K = 32 the Jacobi ground-state error must beat the
     old solver's by > 1e3 (measured: 1.5e5 at alpha = 0.5, 1.8e7 at
     alpha = -0.5).  It must also sit below 1e-10 absolute (measured ~4e-12
-    with reference self-consistency ~4e-12, itself certified externally by the
-    LM tables and 20-digit sum rules).  Also: the Jacobi error must fall
+    with reference self-consistency 1e-12 to 4e-12, itself certified
+    externally by the LM tables and 20-digit sum rules).  Also: the Jacobi error must fall
     monotonically over K = 8 -> 16 -> 32 (spectral-like).  The Chebyshev
     solver's error decreases only algebraically (~K^(-4 beta), measured rates
     2.34 and 1.48 vs 4 beta = 2.34, 1.48 -- see jacobi_convergence.json)."""
@@ -286,7 +286,7 @@ def test_convergence_json_matches_live_solver():
     """The committed jacobi_convergence.json must describe THIS code.  Replay
     the K = 16 row at alpha = 0.5 against the stored reference values."""
     from thooft_spectrum import solve_sector
-    with open(os.path.join(HERE, "jacobi_convergence.json")) as fh:
+    with open(HERE / "jacobi_convergence.json") as fh:
         blk = json.load(fh)["old_vs_jacobi"]["0.5"]
     ref_n0 = blk["reference_two_lambda_n0"]
     row = next(r for r in blk["rows"] if r["K"] == 16)
@@ -333,7 +333,7 @@ def test_lm_sum_rules_s2_to_s7(lm_sectors):
     at alpha = 1, so this is a pure prediction against their closed forms.
     Tolerances are the MEASURED residuals (jacobi_convergence.json,
     lm_sum_rule_residuals: s2 <= 3e-8, s3 <= 2e-10 absolute, s4..7 <=
-    4e-12 relative) with ~10-50x margin.  The Chebyshev solver's documented
+    4e-12 relative) with 7-25x margin.  The Chebyshev solver's documented
     limitation was 1e-5..2e-4 at s = 2 only.  This beats it by > 3 orders of
     magnitude and extends to s = 7."""
     tol_abs = {2: 2e-7, 3: 2e-9}
@@ -353,6 +353,17 @@ def test_lm_sum_rules_s2_to_s7(lm_sectors):
                     f"alpha={a_str} Gp{s}"
                 assert abs(gm - tm) < tol_rel * abs(tm) + 1e-11, \
                     f"alpha={a_str} Gm{s}"
+
+
+def test_lm_d_ratio_transcription():
+    """The stored LM ratios d-/d+ at each alpha are the stated closed form
+    sqrt(2 (1 + alpha))/pi (LM provenance in external_anchors.json).  This
+    is a transcription check only: the alpha != 0 d+- products are not
+    implemented, so no solver value is compared."""
+    for a_str in SUM_RULE_ALPHAS:
+        stored = float(ANCHORS["lm_sum_rules_exact"][a_str]["d-/d+"])
+        exact = np.sqrt(2.0 * (1.0 + float(a_str))) / PI
+        assert abs(stored - exact) < 1e-15, a_str
 
 
 if __name__ == "__main__":

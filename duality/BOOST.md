@@ -20,7 +20,8 @@ function to about 1e-12.
 
 1. **One discrete mass gives a continuum.** S(ω) has support at every ω.
    There is no pole and no peak at ω = m. So broad continua in
-   `mn_spectroscopy.py` do not falsify a discrete meson tower.
+   `../syk-self-averaging/mn_spectroscopy.py` do not falsify a discrete
+   meson tower.
    Peak-hunting is the wrong observable.
 2. **The mass lives in the node pattern.** The Bessel kernel oscillates
    in ω, and the zeros move with m. The first node sits at ω ≈ 3.0 for
@@ -66,8 +67,10 @@ more than 5%.
 
 So moments cannot see the tower. The spec the state map must supply is
 the ε* consistency table in `boost_forward.json`: one smearing scale has
-to fit every channel, not one scale per channel. The tower discriminant
-is the nodes.
+to fit every channel, not one scale per channel. At a = 1 the lowest
+O_Δ target (kurt 2.53) is out of reach at any ε, because kurt(ε)
+bottoms out at 2.66; the table records it as null with that reason. The
+tower discriminant is the nodes.
 
 ## The inverse direction is now measured
 

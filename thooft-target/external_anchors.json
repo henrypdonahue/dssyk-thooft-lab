@@ -5,7 +5,7 @@
   "retrieved": "2026-07-20, via arXiv full-text; every closed form cross-checked numerically against the source papers' own tables before inclusion."
  },
  "flz_table3_alpha0": {
-  "comment": "{s: [G+, G-]} verbatim FLZ Table 3; exact closed forms exist for all; all sixteen consumed by test_thooft.py::test_flz_table3_all_sixteen_anchors (2026-09-09, flz_reference.flz_sum_rule with the Eq. 1.6 tail, ~2e-12)",
+  "comment": "{s: [G+, G-]} verbatim FLZ Table 3; exact closed forms exist for all; all sixteen consumed by test_thooft.py::test_flz_table3_all_sixteen_anchors (2026-09-09, flz_reference.flz_sum_rule with the Eq. 1.6 tail, to within one unit of the last printed digit: <= 6e-13 for every G- and for G+ at s <= 4, 5e-12 to 7e-11 for the s = 5-8 G+ entries, which are printed to 1e-11-1e-10); the flz_exact_forms below are evaluated against this table by test_thooft.py::test_flz_higher_sum_rules",
   "1": [
    2.22417142752923,
    0.2241714275292
@@ -53,7 +53,7 @@
   "d+": 0.963178456398,
   "d-": 0.433582639833,
   "ratio_exact": "sqrt(2)/pi",
-  "status": "consumed (2026-08-27) by flz_dconstants.py, asserted in test_thooft.py::test_flz_d_constants_*.  Definition pinned from the FLZ full text: d+- are NOT eigenfunction quantities (the earlier 'endpoint constants' guess was wrong) -- they are the constants in the large-(-lambda) asymptotics of the spectral determinants D+-(lambda) (FLZ Eq. 4.16), with no analytic expression individually (only the ratio d-/d+ = sqrt(2)/pi is exact, Eq. 4.20), and computable from the eigenvalues alone via the convergent products of Eq. (4.21): d+ = Gamma(3/8)/sqrt(2pi) prod (m+3/8)/lambda_{2m}, d- = Gamma(7/8)/sqrt(2pi) prod (m+7/8)/lambda_{2m+1}.  So this anchor certifies the SPECTRUM through an infinite-product functional independent of the G^(s) power sums; the eigenfunction-level checks remain internal.  Measured deviation (Chebyshev K=300, n_cut=80, Eq. 1.6 tail + residual fit): d+ ~ -(4..9)e-13 (eigvals-only path) to -1.1e-12 (with vectors), d- ~ -(2..7)e-13, i.e. ~1e-12, the double-precision eigenvalue floor at K=300 (moves with the LAPACK path and the BLAS thread count; the 12 printed digits' own rounding floor is 5e-13); computed ratio minus sqrt(2)/pi ~ 4e-13; Jacobi cross-solver K=60 agrees to 1.5e-8 (its quadrature floor)."
+  "status": "consumed (2026-08-27) by flz_dconstants.py, asserted in test_thooft.py::test_flz_d_constants_*.  Definition pinned from the FLZ full text: d+- are NOT eigenfunction quantities (the earlier 'endpoint constants' guess was wrong) -- they are the constants in the large-(-lambda) asymptotics of the spectral determinants D+-(lambda) (FLZ Eq. 4.16), with no analytic expression individually (only the ratio d-/d+ = sqrt(2)/pi is exact, Eq. 4.20), and computable from the eigenvalues alone via the convergent products of Eq. (4.21): d+ = Gamma(3/8)/sqrt(2pi) prod (m+3/8)/lambda_{2m}, d- = Gamma(7/8)/sqrt(2pi) prod (m+7/8)/lambda_{2m+1}.  So this anchor certifies the SPECTRUM through an infinite-product functional independent of the G^(s) power sums; the eigenfunction-level checks remain internal.  Measured deviation (Chebyshev K=300, n_cut=80, Eq. 1.6 tail + residual fit): d+ -1.5e-12, d- -7.7e-13, ratio minus sqrt(2)/pi 1.9e-13.  This is basis truncation of the levels near n = 90, not a floor (ERRATA E16).  At K=800 with n_cut = 160 or 200: d+ = 0.9631784563984(1), d- = 0.43358263983325(1), ratio to 2e-15.  The Jacobi cross-solver at K=60 agrees to 1.5e-8 (its quadrature floor)."
  },
  "lm_two_lambda_tables": {
   "comment": "2*lambda_n (converted from LM lambda_n x2), interleaved by parity; 6 significant digits in lambda => absolute uncertainty up to ~1e-4 on 2*lambda at the top of the tables",
@@ -203,7 +203,7 @@
   }
  },
  "lm_sum_rules_exact": {
-  "comment": "20-digit evaluations of LM's exact alpha-dependent sum-rule closed forms; keys Gp{s}/Gm{s} = G^(s)+/- as in FLZ; d-/d+ exact.",
+  "comment": "20-digit evaluations of LM's exact alpha-dependent sum-rule closed forms; keys Gp{s}/Gm{s} = G^(s)+/- as in FLZ; d-/d+ exact.  Consumption: Gp2-Gp7/Gm2-Gm7 by test_jacobi.py::test_lm_sum_rules_s2_to_s7 (Gp2/Gm2 also by test_thooft.py::test_lm_exact_alpha_sum_rules); d-/d+ transcription-checked against sqrt(2(1+alpha))/pi by test_jacobi.py::test_lm_d_ratio_transcription (no solver comparison: the alpha != 0 d+- products are not implemented).  Gp1/Gm1 are stored, not consumed: the drift-corrected tail of jacobi_solver.sum_rule_G (with a digamma remainder) leaves the regularized s = 1 sum 4e-7 to 1e-5 off these values, growing with alpha and not shrinking with the tail length (against 1e-8 at alpha = 0), so the regularization convention at alpha != 0 is not certified.",
   "-0.5": {
    "Gp1": "4.3322001113909111973",
    "Gm1": "0.78837128649243958554",

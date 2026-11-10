@@ -3,7 +3,7 @@
 The Makefile is the command inventory. Use its four targets: `test`,
 `test-all`, `reproduce`, and `reproduce-slow`. Slow reproduction includes
 large ED ensembles, exact rational interpolation, multiprocessing campaigns
-and high-precision reference generation. Allow about a day and inspect logs;
+and high-precision reference generation. Allow about two days and inspect logs;
 the short unit suite does not regenerate those artifacts.
 
 ## Preserve the working tree and record the run
@@ -49,9 +49,9 @@ flagged as changed bytes and not compared.
 Review those differences before copying selected outputs back. Runtime
 fields, platform rounding and plot metadata need not be identical.
 Compare exact rational strings exactly; compare floating-point results
-with the producer's justified tolerances. On 2026-10-14 (macOS, Python
-3.9) the fast `reproduce` target regenerated every committed artifact to
-within 1e-11 relative. A passing
+with the producer's justified tolerances. On 2026-11-10 (macOS, Python
+3.9, one BLAS thread) the logged fast `reproduce` target regenerated
+every committed artifact it writes to within 5e-15 relative. A passing
 script exit code is not sufficient if the script merely prints a failed
 condition: inspect the log and run the corresponding asserting tests after
 regeneration.

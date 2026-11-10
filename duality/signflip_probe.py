@@ -17,8 +17,14 @@ what the Narovlansky-Verlinde dressing does: their operators sit at
 +-i beta_dS/4, which is half a period apart, and they call the two
 insertions antipodal.
 
-THREE LEVELS, ONE JSON
-----------------------
+SIX LEVELS, TWO JSONS
+---------------------
+Levels 1-3 are the core probe.  Levels 4-6 (detailed balance at the
+tomperature, the self-calibrated shift, the TOC control and a second
+configuration) are below them, and `--deep` runs a separate campaign
+(the hologram point, the 2-pt shape, the MSS locator, the observer
+rate).
+
 1. Closed form (large-q, `antiscrambling.otoc_ratio`).  Shift the
    (theta1, theta2) pair by Delta.  Extract the growth coefficient
    a(Delta) by a complex fit in the late-time window.
@@ -57,7 +63,8 @@ complete.
 What this probe measures is whether the mechanism survives exactness in
 lambda.  That is the question the closed form cannot answer.
 
-Output: signflip_probe.json.  Asserted in test_signflip.py.  Narrated in
+Output: signflip_probe.json (default) and signflip_deep.json (--deep).
+Asserted in test_signflip.py and test_signflip_deep.py.  Narrated in
 DISCRIMINATOR.md.
 """
 
@@ -73,6 +80,7 @@ import numpy as np
 from antiscrambling import G2_thermal, otoc_ratio
 from chord import Contour, Sector0, beta_chord_from_betaJ, q_of_lambda
 from chord_fold import CONFIG_CROSSED, CONFIG_TOC, ChordCorrelators
+from horizon_tower import jc_bridge   # Jc = sqrt(lam) e^(lam/8), chord units
 from largeq_anchor import v_of_betaJ
 
 HERE = Path(__file__).resolve().parent
@@ -82,16 +90,19 @@ HERE = Path(__file__).resolve().parent
 # level 1: closed form
 # ---------------------------------------------------------------------------
 def growth_coefficient_shifted(v: float, delta: float,
-                               config=CONFIG_CROSSED) -> complex:
+                               config=CONFIG_CROSSED,
+                               delta34: float = 0.0) -> complex:
     """Coefficient of exp(v thL) in the closed-form crossed ratio, with the
-    (theta1, theta2) pair shifted by `delta` in Euclidean angle.  The fit
-    is a complex least-squares fit on the basis
-    {1, e^{v thL}, e^{-v thL}} over a late window.  antiscrambling.py
-    validates the same technique at delta = 0."""
+    (theta1, theta2) pair shifted by `delta` in Euclidean angle (and the
+    (theta3, theta4) pair by `delta34`, which NV's opposed O^+/O^-
+    dressing needs; test_nv_dressing.py).  The fit is a complex
+    least-squares fit on the basis {1, e^{v thL}, e^{-v thL}} over a late
+    window.  antiscrambling.py validates the same technique at delta = 0."""
     t1, t2, t3, t4 = config
     thLs = np.array([4.0, 5.0, 6.0, 7.0]) / v
     vals = np.array([complex(otoc_ratio(t1 + delta + 1j * t, t2 + delta + 1j * t,
-                                        t3, t4, v)) for t in thLs])
+                                        t3 + delta34, t4 + delta34, v))
+                     for t in thLs])
     A = np.vstack([np.ones_like(thLs), np.exp(v * thLs),
                    np.exp(-v * thLs)]).T
     coef, *_ = np.linalg.lstsq(A.astype(complex), vals, rcond=None)
@@ -241,6 +252,18 @@ def detailed_balance(lam: float, betaJ: float, p: int = 4,
 # ---------------------------------------------------------------------------
 # level 5: self-calibrated shift at strong coupling (honest negative)
 # ---------------------------------------------------------------------------
+KAPPA_STEP = 0.5                       # thL spacing of the estimator window
+KAPPA_WINDOW = (0.5, 1.0, 1.5, 2.0)    # thL = 0.5 .. 2.0
+
+
+def three_point_rate(rs, h: float) -> float:
+    """Effective growth exponent from four equally spaced samples (step h):
+    the mean of the two log-ratios of successive differences.  Window-
+    dependent by construction (see calibrated_scan)."""
+    d1, d2, d3 = rs[1] - rs[0], rs[2] - rs[1], rs[3] - rs[2]
+    return 0.5 * (math.log(abs(d2 / d1)) + math.log(abs(d3 / d2))) / h
+
+
 def calibrated_scan(lam: float, betaJ: float, p: int = 4,
                     nmax: int = 80) -> dict:
     """Measure an effective growth exponent kappa from the unshifted curve
@@ -267,19 +290,13 @@ def calibrated_scan(lam: float, betaJ: float, p: int = 4,
     Nflav = 2.0 * p * p / lam
     cc = ChordCorrelators(lam, p, beta_chord_from_betaJ(betaJ, lam), nmax)
     t1, t2, t3, t4 = CONFIG_CROSSED
-    h, thLs = 0.5, (0.5, 1.0, 1.5, 2.0)
-
-    def three_point(rs):
-        d1, d2, d3 = rs[1] - rs[0], rs[2] - rs[1], rs[3] - rs[2]
-        return 0.5 * (math.log(abs(d2 / d1)) + math.log(abs(d3 / d2))) / h
-
+    h, thLs = KAPPA_STEP, KAPPA_WINDOW
     r = [cc.connected_ratio((t1 + 1j * t, t2 + 1j * t, t3, t4),
                             'c', Nflav).real for t in thLs]
-    kappa = three_point(r)
-    from antiscrambling import otoc_ratio
+    kappa = three_point_rate(r, h)
     r_closed = [otoc_ratio(t1 + 1j * t, t2 + 1j * t, t3, t4, v).real
                 for t in thLs]
-    kappa_closed = three_point(r_closed)
+    kappa_closed = three_point_rate(r_closed, h)
     out = dict(lam=lam, betaJ=betaJ, v_largeq=v, kappa=float(kappa),
                kappa_closed_same_window=float(kappa_closed),
                kappa_over_closed=float(kappa / kappa_closed),
@@ -386,7 +403,7 @@ def hologram_point(lam: float, p: int = 4, nmax: int = 100,
     (t_window), with the grid-quantized value kept as t_window_grid and a
     `censored` flag if the curve is still rising at the last grid point
     (the grid runs to t = 3.5, past every window through lambda = 0.3)."""
-    Jc = math.sqrt(lam) * math.exp(lam / 8.0)
+    Jc = jc_bridge(lam)
     beta_f = math.pi / Jc
     tau_s = 0.5 * beta_f
     eps = 0.15 * beta_f
@@ -435,6 +452,11 @@ def hologram_point(lam: float, p: int = 4, nmax: int = 100,
                 truncation_drift=float(drift))
 
 
+SECH_NULL_REASON = ("g_sech_pred[0] is null: t = 0 is the sec(pi/2) "
+                    "singularity of the target, excluded from the shape "
+                    "window t >= 0.25/Jc")
+
+
 def thermal_shape(lam: float, p: int = 4, nmax: int = 140) -> dict:
     """The SHAPE of the antipodal observer's 2-pt at the hologram point.
 
@@ -462,7 +484,7 @@ def thermal_shape(lam: float, p: int = 4, nmax: int = 140) -> dict:
     The target is 1/cos(Jc (tau_s + i t)); the form with t and tau_s
     swapped, 1/cosh(Jc (tau_s + i t)), is a different function and
     miscalibrates the test (ERRATA E11)."""
-    Jc = math.sqrt(lam) * math.exp(lam / 8.0)
+    Jc = jc_bridge(lam)
     beta_f = math.pi / Jc
     tau_s = 0.5 * beta_f
     q = q_of_lambda(lam)
@@ -499,7 +521,9 @@ def thermal_shape(lam: float, p: int = 4, nmax: int = 140) -> dict:
     return dict(lam=lam, v_f=v_f, beta_f=beta_f,
                 ts=[float(x) for x in ts],
                 g_obs_abs=[float(abs(x)) for x in g_obs],
-                g_sech_pred=[float(x) for x in g_true],
+                # entry 0 is the singular point itself: null, not NaN
+                g_sech_pred=[None] + [float(x) for x in g_true[1:]],
+                g_sech_pred_null_reason=SECH_NULL_REASON,
                 g_gibbs_pred=[float(x) for x in g_th],
                 shape_window="t >= 0.25/Jc",
                 max_rel_dev_sech=dev_sech,
@@ -549,11 +573,9 @@ def observer_rate(lam: float, betaJ: float = 2.0, p: int = 4,
     cc = ChordCorrelators(lam, p, beta_c, nmax)
     t1, t2, t3, t4 = CONFIG_CROSSED
     d = math.pi / v
-    h, thLs = 0.5, (0.5, 1.0, 1.5, 2.0)
     r = [cc.connected_ratio((t1 + d + 1j * t, t2 + d + 1j * t, t3, t4),
-                            'c', Nflav).real for t in thLs]
-    d1, d2, d3 = r[1] - r[0], r[2] - r[1], r[3] - r[2]
-    kap = 0.5 * (math.log(abs(d2 / d1)) + math.log(abs(d3 / d2))) / h
+                            'c', Nflav).real for t in KAPPA_WINDOW]
+    kap = three_point_rate(r, KAPPA_STEP)
     # rates are per theta_L; convert to chord time: t_c = beta_c thL/(2 pi)
     to_time = 2.0 * math.pi / beta_c
     return dict(lam=lam, betaJ=betaJ,
@@ -576,7 +598,7 @@ def main_deep():
     payload["runtime_s"] = round(time.time() - t0, 1)
     out = HERE / "signflip_deep.json"
     with open(out, "w") as fh:
-        json.dump(payload, fh, indent=1)
+        json.dump(payload, fh, indent=1, allow_nan=False)
     for h in payload["hologram"]:
         print(f"hologram lam={h['lam']}: window t*Jc = "
               f"{h['window_in_Jc_units']:.2f}  drift={h['truncation_drift']:.1e}")
@@ -616,7 +638,7 @@ def main():
     payload["runtime_s"] = round(time.time() - t0, 1)
     out = HERE / "signflip_probe.json"
     with open(out, "w") as fh:
-        json.dump(payload, fh, indent=1)
+        json.dump(payload, fh, indent=1, allow_nan=False)
     for cf in payload["closed_form"]:
         print(f"betaJ={cf['betaJ']}: Re a unshifted = "
               f"{cf['re_a_unshifted']:+.6f} -> antipodal = "
@@ -631,8 +653,14 @@ def main():
 
 
 if __name__ == "__main__":
-    import sys
-    if "--deep" in sys.argv:
+    import argparse
+    ap = argparse.ArgumentParser(
+        description=__doc__.strip().splitlines()[0])
+    ap.add_argument("--deep", action="store_true",
+                    help="run the deep campaign instead and write "
+                         "signflip_deep.json (~90 s); without it, write "
+                         "signflip_probe.json (~40 s)")
+    if ap.parse_args().deep:
         main_deep()
     else:
         main()

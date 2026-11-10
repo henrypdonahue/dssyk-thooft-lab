@@ -4,7 +4,7 @@ The forward tower check: 't Hooft masses through the boost kernel.
 ==================================================================
 
 BOOST.md names three observables that could discriminate the headline
-test.  Its item (b) is "moment ratios against the kernel-transformed
+test.  Its second bullet is "moment ratios against the kernel-transformed
 't Hooft tower".  This module RUNS that forward direction.
 
 No inversion, no new theory.  Sum the single-mass boost spectral function
@@ -38,7 +38,7 @@ RAW BOOST MOMENTS DIVERGE.
 The worldline 2-pt function of a free field behaves as
 W ~ -(1/2pi) ln|tau| at short times.  So S(omega) -> 1/omega at large
 omega, independent of the mass.  Measured: the mean of omega*S over
-[60, 80] is 0.994 at m = a = 1.
+[60, 80] is 0.997 at m = a = 1 (fine grid).
 
 Hence mu_0 diverges logarithmically, and every higher moment diverges as
 a power.  So all moments here carry the standard Wightman regulator
@@ -153,13 +153,14 @@ def _k0_derivs(z0, n: int):
     return c
 
 
-def _series_mul(a, b):
-    out = [mp.mpf(0)] * _SERIES_LEN
+def _series_mul(a, b, length: int):
+    """Truncated product of two power series (coefficient lists)."""
+    out = [mp.mpf(0)] * length
     for i, ai in enumerate(a):
         if ai == 0:
             continue
         for j, bj in enumerate(b):
-            if i + j < _SERIES_LEN:
+            if i + j < length:
                 out[i + j] += ai * bj
     return out
 
@@ -172,10 +173,14 @@ def w_series(eps: float, m: float, a: float = 1.0):
     the default 15 digits would shed accuracy exactly in the small-eps
     corner the divergence scan probes."""
     with mp.workdps(40):
-        return _w_series_impl(eps, m, a)
+        return _w_series_impl(eps, m, a, _SERIES_LEN)
 
 
-def _w_series_impl(eps: float, m: float, a: float):
+def _w_series_impl(eps, m, a, length: int):
+    """Taylor coefficients of W(eps + t) = K_0((2m/a) sin(a(eps+t)/2))/2pi
+    to order length-1, at the CURRENT working precision: the K_0 ODE
+    recurrence composed with the sine worldline.  The single source for
+    both this module (length 7) and boost_inverse.py (arbitrary order)."""
     eps_, m_, a_ = mp.mpf(eps), mp.mpf(m), mp.mpf(a)
     if not 0 < a_ * eps_ < 2 * mp.pi:
         raise ValueError("need 0 < a*eps < 2*pi for convergence")
@@ -183,16 +188,16 @@ def _w_series_impl(eps: float, m: float, a: float):
     half = a_ * eps_ / 2
     s0, c0 = mp.sin(half), mp.cos(half)
     z = []
-    for k in range(_SERIES_LEN):
+    for k in range(length):
         trig = (s0, c0, -s0, -c0)[k % 4]
         z.append((2 * m_ / a_) * trig * (a_ / 2) ** k / factorial(k))
     z0, dz = z[0], [mp.mpf(0)] + z[1:]
-    cder = _k0_derivs(z0, _SERIES_LEN - 1)
+    cder = _k0_derivs(z0, length - 1)
     # Horner composition of P(w) = sum_j cder_j w^j / j! with w = dz (w_0 = 0)
-    res = [mp.mpf(0)] * _SERIES_LEN
-    res[0] = cder[-1] / factorial(_SERIES_LEN - 1)
-    for j in range(_SERIES_LEN - 2, -1, -1):
-        res = _series_mul(res, dz)
+    res = [mp.mpf(0)] * length
+    res[0] = cder[-1] / factorial(length - 1)
+    for j in range(length - 2, -1, -1):
+        res = _series_mul(res, dz, length)
         res[0] += cder[j] / factorial(j)
     return [r / (2 * mp.pi) for r in res]
 
@@ -240,13 +245,13 @@ def eps_star_for_kurt(masses, weights, two_lambda, mscale: float,
                       lo: float = 0.02, hi: float = 3.0) -> float:
     """A regulator eps* at which the tower kurtosis equals `target`
     (bracketed bisection on [lo, hi]; kurt is continuous but not monotone,
-    so this returns one valid root; NaN if [lo, hi] does not bracket)."""
+    so this returns one valid root; None if [lo, hi] does not bracket)."""
     def kurt(e):
         return tower_invariants(masses, weights, two_lambda,
                                 mscale, e, s_pow)["kurt"]
     klo, khi = kurt(lo), kurt(hi)
     if not (khi <= target <= klo):
-        return float("nan")
+        return None
     for _ in range(60):
         mid = 0.5 * (lo + hi)
         if kurt(mid) > target:
@@ -262,8 +267,9 @@ def eps_star_for_kurt(masses, weights, two_lambda, mscale: float,
 def syk_targets() -> dict:
     """The exact SYK-side kurtosis values this comparison aims at: the chord
     O_Delta closed-form channels over the committed lambda grid, and the
-    finite-N full A_2 channel along lambda_chord = 2 (values recomputed and
-    pinned in the tests; frozen here for the campaign record)."""
+    finite-N full A_2 channel along lambda_chord = 2 (frozen here for the
+    campaign record; the tests recompute the cheapest point, p = 4,
+    N = 16, live)."""
     with open(HERE / "chord_moments.json") as fh:
         pts = json.load(fh)["points"]
     odelta = [dict(lam=row["lam"], channel=name,
@@ -271,8 +277,9 @@ def syk_targets() -> dict:
                    w2=row["channels"][name]["w2"])
               for row in pts
               for name in ("O_delta=2/p", "O_delta=1")]
-    # full A_2 channel, exact finite N (recomputed live in the tests from
-    # exact_pair_moments.channel_pair_moments; 7 s, so frozen here)
+    # full A_2 channel, exact finite N, from
+    # exact_pair_moments.channel_pair_moments (all four take ~7 s, so they
+    # are frozen here; test_boost_forward recomputes p = 4 live)
     a2_full = [dict(p=4, N=16, kurt=4.5875), dict(p=6, N=36, kurt=4.3151),
                dict(p=8, N=64, kurt=4.1857), dict(p=10, N=100, kurt=4.1119)]
     kurts = [r["kurt"] for r in odelta] + [r["kurt"] for r in a2_full]
@@ -325,13 +332,28 @@ def run(out_path=None) -> dict:
 
     targets = syk_targets()
     lo, hi = targets["band"]
+    lam_min = min(r["lam"] for r in targets["odelta"])
+    delta1_small_lam = next(r["kurt"] for r in targets["odelta"]
+                            if r["lam"] == lam_min
+                            and r["channel"] == "O_delta=1")
+    a2_p10 = next(r["kurt"] for r in targets["a2_full"] if r["p"] == 10)
+    grid_m1 = [g for g in grid if g["mscale"] == 1.0 and g["s_pow"] == 0]
+    g_min = min(grid_m1, key=lambda g: g["kurt"])
     eps_star = []
     for label, target in (
-            [("odelta_min", lo), ("odelta_delta1_lam0", 3.8573),
-             ("a2_full_p10", 4.1119), ("odelta_max", hi)]):
-        eps_star.append(dict(target_label=label, target_kurt=target,
-                             eps_star_mscale1=eps_star_val(
-                                 masses, w, ev, 1.0, target)))
+            [("odelta_min", lo), (f"odelta_delta1_lam{lam_min:g}",
+                                  delta1_small_lam),
+             ("a2_full_p10", a2_p10), ("odelta_max", hi)]):
+        e = eps_star_for_kurt(masses, w, ev, 1.0, target)
+        row = dict(target_label=label, target_kurt=target,
+                   eps_star_mscale1=e)
+        if e is None:
+            row["reason"] = (
+                f"unreachable at mscale = 1: kurt(eps) bottoms out at "
+                f"{g_min['kurt']:.3f} (a*eps = {g_min['eps']}) on the grid "
+                f"and turns back up, so no eps in [0.02, 3.0] reaches "
+                f"{target:.3f}")
+        eps_star.append(row)
     verdict = dict(
         structurally_excluded=False,
         tower_kurt_range=[min(kurts), max(kurts)],
@@ -350,8 +372,8 @@ def run(out_path=None) -> dict:
             "structure, not the moments."))
 
     payload = dict(
-        provenance="boost_forward.py -- the forward tower check of BOOST.md "
-                   "item (b): 't Hooft masses + measured decay constants "
+        provenance="boost_forward.py -- the forward tower check of BOOST.md's "
+                   "second bullet: 't Hooft masses + measured decay constants "
                    "through the exact boost kernel (Wightman-regulated "
                    "moments via K_0 Taylor composition, no quadrature); "
                    "SYK targets from chord_moments.json (O_Delta closed "
@@ -367,20 +389,21 @@ def run(out_path=None) -> dict:
         verdict=verdict, runtime_s=round(time.time() - t0, 1))
     out = Path(out_path) if out_path else HERE / "boost_forward.json"
     with open(out, "w") as fh:
-        json.dump(payload, fh, indent=1)
+        json.dump(payload, fh, indent=1, allow_nan=False)
     print(f"tower kurt range over grid: {min(kurts):.3f} .. {max(kurts):.3f} "
           f"(SYK band {lo:.3f} .. {hi:.3f})")
     for r in eps_star:
+        e = r["eps_star_mscale1"]
         print(f"  eps* ({r['target_label']}, kurt = {r['target_kurt']:.3f}) "
-              f"= {r['eps_star_mscale1']:.4f}")
+              f"= {'none (' + r['reason'] + ')' if e is None else f'{e:.4f}'}")
     print(f"tower vs ground-state-only: max rel diff {max_rel:.2%}")
     print(f"wrote {out} ({payload['runtime_s']} s)")
     return payload
 
 
-def eps_star_val(masses, w, ev, mscale, target):
-    return eps_star_for_kurt(masses, w, ev, mscale, target)
-
-
 if __name__ == "__main__":
+    import argparse
+    argparse.ArgumentParser(
+        description=__doc__.strip().splitlines()[0],
+        epilog="Takes no options; writes boost_forward.json (~25 s).").parse_args()
     run()

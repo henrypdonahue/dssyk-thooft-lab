@@ -47,7 +47,8 @@ first.
 
 So the reported a1_residual is a FLOAT-CANCELLATION yardstick,
 |mu_2|/gross, not a physical finite-p effect.  It is the residual of the
-alternating sum relative to its pre-cancellation magnitude, about 1e-16.
+alternating sum relative to its pre-cancellation magnitude: below 1e-16
+(at most 4e-17 in the committed scan, exactly 0 on some rows).
 It calibrates how much of the measured zero could be rounding noise.
 
 SCOPE.  These are i != j PAIR amplitudes.  The full channel also has a

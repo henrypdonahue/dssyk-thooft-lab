@@ -534,6 +534,11 @@ def test_higher_gates_against_exact_finite_n(art):
         assert all(b > a for a, b in zip(vals, vals[1:])), key   # rising
         assert vals[-1] < g["closed_form"], key                   # from below
         assert g["rel_dev"] < tol[key], (key, g["rel_dev"])
+        # one fit has no spread to report (p <= 12 series: order 2 only)
+        if len(g["limit"]["fits"]) < 2:
+            assert g["limit"]["spread"] is None, key
+        else:
+            assert g["limit"]["spread"] > 0, key
         assert g["closed_form"] == pytest.approx(
             st.closed_form_target(g["n"], g["k"], g["lam"]), rel=1e-12)
     # three cheap points recomputed exactly
@@ -749,3 +754,15 @@ def test_deep_odd_chords_survive_and_even_fade(deep):
     assert last7["7"] == pytest.approx(6.4e-5, rel=0.03)
     assert last8["5"] == pytest.approx(0.0199, abs=3e-4)
     assert last8["7"] == pytest.approx(1.41e-4, rel=0.03)
+
+
+def test_series_limit_spread_needs_two_orders():
+    """A series that admits a single fit order reports spread None, not
+    0.0 (which would read as perfect agreement between orders)."""
+    rows = [dict(p=p, mu=1.0 + 2.0 / p + 3.0 / p ** 2) for p in (4, 6, 8, 10, 12)]
+    one = st.series_limit(rows)                       # p >= 6: four points
+    assert len(one["fits"]) == 1 and one["spread"] is None
+    assert one["central"] == pytest.approx(1.0, rel=1e-12)
+    more = st.series_limit(rows + [dict(p=p, mu=1.0 + 2.0 / p + 3.0 / p ** 2)
+                                   for p in (14, 16)])
+    assert len(more["fits"]) == 3 and more["spread"] == pytest.approx(0.0, abs=1e-9)

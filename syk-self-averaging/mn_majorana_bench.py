@@ -72,29 +72,21 @@ Output: mn_majorana_bench.json.  Runtime about 1 hour.
 
 from __future__ import annotations
 
-import json
 import time
 from pathlib import Path
 
 import numpy as np
 
+from artifact_io import write_json_atomic
 from pauli_strings import majorana_hamiltonian_fast
 from syk import majorana_operators
 
 
-def a_n_tower(H: np.ndarray, psis: list, n_max: int) -> dict:
-    """A_n = sum_i psi_i (ad_H)^n psi_i, built incrementally: D^0 = psi_i,
-    D^{k+1} = [H, D^k].  Computational-basis reference path; the production
-    route in instance_moments works in the eigenbasis (identical results,
-    asserted in test_mn_majorana.py, ~2x faster on the committed run)."""
-    dim = H.shape[0]
-    A = {n: np.zeros((dim, dim), dtype=complex) for n in range(1, n_max + 1)}
-    for P in psis:
-        D = P.astype(complex)
-        for n in range(1, n_max + 1):
-            D = H @ D - D @ H
-            A[n] += P @ D
-    return A
+# conserved_points.a_n_tower: A_n = sum_i psi_i (ad_H)^n
+# psi_i, built incrementally, D^0 = psi_i, D^{k+1} = [H, D^k].  It is the
+# computational-basis reference path; the production route in
+# instance_moments works in the eigenbasis (identical results, asserted in
+# test_mn_majorana.py, ~2x faster on the committed run).
 
 
 def instance_moments(N: int, p: int, seed: int, n_list=(1, 2, 3)) -> dict:
@@ -209,8 +201,7 @@ def main():
                    "duality/chord_moments.py",
         runtime_s=round(time.time() - t0, 1), points=rows)
     out = Path(__file__).resolve().parent / "mn_majorana_bench.json"
-    with open(out, "w") as fh:
-        json.dump(payload, fh, indent=1)
+    write_json_atomic(out, payload)
     print(f"wrote {out} ({payload['runtime_s']} s)")
 
 

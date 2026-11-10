@@ -1,5 +1,5 @@
 {
- "provenance": "boost_forward.py -- the forward tower check of BOOST.md item (b): 't Hooft masses + measured decay constants through the exact boost kernel (Wightman-regulated moments via K_0 Taylor composition, no quadrature); SYK targets from chord_moments.json (O_Delta closed forms) and the exact finite-N full A_2 channel",
+ "provenance": "boost_forward.py -- the forward tower check of BOOST.md's second bullet: 't Hooft masses + measured decay constants through the exact boost kernel (Wightman-regulated moments via K_0 Taylor composition, no quadrature); SYK targets from chord_moments.json (O_Delta closed forms) and the exact finite-N full A_2 channel",
  "units": "masses in sqrt(pi g^2) = 1; kernel depends on (mscale = 1/a, a*eps) only; coupling c_n = f_n^2 (M_n^2)^s_pow",
  "tower": {
   "two_lambda": [
@@ -1144,12 +1144,13 @@
   {
    "target_label": "odelta_min",
    "target_kurt": 2.5274734583331018,
-   "eps_star_mscale1": NaN
+   "eps_star_mscale1": null,
+   "reason": "unreachable at mscale = 1: kurt(eps) bottoms out at 2.659 (a*eps = 1.6) on the grid and turns back up, so no eps in [0.02, 3.0] reaches 2.527"
   },
   {
-   "target_label": "odelta_delta1_lam0",
-   "target_kurt": 3.8573,
-   "eps_star_mscale1": 0.7764063891170752
+   "target_label": "odelta_delta1_lam0.1",
+   "target_kurt": 3.85725612705396,
+   "eps_star_mscale1": 0.776417807101323
   },
   {
    "target_label": "a2_full_p10",

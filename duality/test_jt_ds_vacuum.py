@@ -154,9 +154,23 @@ def test_condensate_cross_link(data):
 
 
 def test_literature_record_is_fetch_gated(data):
-    """No equation number appears outside the verified-fetch record: the
-    JSON's own honesty constraint."""
+    """No equation number appears outside the verified-fetch record: every
+    "Eq. (n)" the module docstring cites is in the JSON's verified list
+    (integer numbers are SVVV's, dotted ones MTY's -- the only two papers
+    the module cites by equation)."""
+    import re
     lit = data["literature"]
+    svvv = lit["svvv_2203_00700"]["verified"]
+    mty = lit["mty_1904_01911"]["verified"]
+    cited = set()
+    for m in re.finditer(r"Eqs?\.\s*\(([\d.]+)\)((?:\s*(?:,|and)\s*\([\d.]+\))*)",
+                         jv.__doc__):
+        cited.add(m.group(1))
+        cited.update(re.findall(r"\(([\d.]+)\)", m.group(2)))
+    assert len(cited) >= 8, cited
+    for n in sorted(cited):
+        pool = mty if "." in n else svvv
+        assert any(f"({n})" in entry for entry in pool), n
     assert "two independent extractions" in lit["fetch_method"]
     assert any("Eq. (9)" in s for s in lit["svvv_2203_00700"]["verified"])
     assert any("Eq. (26)" in s for s in lit["svvv_2203_00700"]["verified"])

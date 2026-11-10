@@ -33,3 +33,10 @@ papers/*
 
 # Logged reproduction snapshots (can be large)
 validation-runs/
+
+# LaTeX build products
+notes/**/*.pdf
+notes/**/*.aux
+notes/**/*.log
+notes/**/*.out
+notes/**/*.synctex.gz

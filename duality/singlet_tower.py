@@ -734,7 +734,9 @@ class TowerChord:
         Returns {"kernels": {k: {m: {(i, j): coeff}}}, "norm": {m: N_m},
         "max_residual": worst deviation over all checked words,
         "n_checked": their number}.  For exact inputs the residual is
-        exactly 0."""
+        exactly 0.  Levels already decomposed on this instance are
+        skipped: a repeat call reports the residual and count of the new
+        levels only, while "kernels" covers every level."""
         worst = 0
         n_checked = 0
 
@@ -963,7 +965,6 @@ def a4_mu2(lam, q):
         + lam ** 3 * 8 * q ** 5)
 
 
-
 # ---------------------------------------------------------------------------
 # the exact spectral density of the A_n channel
 # ---------------------------------------------------------------------------
@@ -1024,19 +1025,19 @@ def spectra_block(lam: float, levels=(2, 3, 4), n_omega: int = 201,
     on [0, 2 band], with their moment closures and the position of the
     maximum (omega = 0 for A_2: monotone)."""
     import numpy as np
+    from chord import _round6
     q = math.exp(-lam)
     band = 2.0 / math.sqrt(1.0 - q)
     om = np.linspace(0.0, 2.0 * band, n_omega)
     T = TowerChord(lam, q)
-    out = dict(lam=lam, band=band, omega=[float(f"{x:.6g}") for x in om],
+    out = dict(lam=lam, band=band, omega=_round6(om),
                levels={})
     for n in levels:
         S = spectral_density(n, om, lam, n_theta=n_theta)
         tot = np.array(S["total"])
         out["levels"][str(n)] = dict(
-            sectors={str(m): [float(f"{x:.6g}") for x in v]
-                     for m, v in S["sectors"].items()},
-            total=[float(f"{x:.6g}") for x in tot],
+            sectors={str(m): _round6(v) for m, v in S["sectors"].items()},
+            total=_round6(tot),
             mu0_integral=float(2.0 * np.trapezoid(tot, om)),
             mu0_exact=float(T.sector_moment(n, 0)),
             mu2_integral=float(2.0 * np.trapezoid(tot * om ** 2, om)),
@@ -1206,12 +1207,14 @@ GATE_GRID = {
     ((4, 2), 2, 1.0): (4, 6, 8, 10, 12, 14, 16, 18, 20),
 }
 
+# dense-ED commutant split: (N, p, number of instances)
+ED_GRID = ((12, 4, 40), (14, 4, 30), (16, 4, 20), (18, 4, 10),
+           (16, 6, 12), (18, 6, 8), (20, 6, 4))
+
 
 def gate_key(n, k: int, lam: float) -> str:
     tag = f"cross{n[0]}{n[1]}" if isinstance(n, (tuple, list)) else f"n{n}"
     return f"{tag}_k{k}_lam{lam:g}"
-ED_GRID = ((12, 4, 40), (14, 4, 30), (16, 4, 20), (18, 4, 10),
-           (16, 6, 12), (18, 6, 8), (20, 6, 4))
 
 
 def closed_form_target(n, k: int, lam: float) -> float:
@@ -1226,8 +1229,14 @@ def closed_form_target(n, k: int, lam: float) -> float:
 
 def remainder_control(lams=(1.0, 2.0)) -> dict:
     """<ad^2(A_4) A_2^dag> and mu_2(A_4) with the O(1) remainder of the
-    self-contracted Omega_2 term switched off, next to the true values."""
+    self-contracted Omega_2 term switched off, next to the true values.
+
+    The switch patches _omega_terms, which tables preloaded by
+    build_word_tables would bypass, so it refuses to run with any."""
     global _omega_terms
+    if _PRELOADED:
+        raise RuntimeError("remainder_control needs freshly enumerated "
+                           "tables; _PRELOADED is not empty")
     saved = _omega_terms
     out = {}
     try:
@@ -1252,7 +1261,9 @@ def remainder_control(lams=(1.0, 2.0)) -> dict:
 def series_limit(rows: list, p_min: int = 6) -> dict:
     """Polynomial-in-1/p least-squares limits of an exact series, every
     order from 2 up to (points - 2), capped at 5.  The spread over the
-    orders is a sensitivity estimate, not a confidence interval."""
+    orders is a sensitivity estimate, not a confidence interval.  With
+    fewer than two orders there is nothing to compare, and the spread is
+    None (not 0)."""
     import numpy as np
     pts = sorted((r["p"], r["mu"]) for r in rows if r["p"] >= p_min)
     x = np.array([1.0 / p for p, _ in pts])
@@ -1265,7 +1276,7 @@ def series_limit(rows: list, p_min: int = 6) -> dict:
     lims = [f["limit"] for f in fits]
     return dict(p_used=[p for p, _ in pts], fits=fits,
                 central=lims[-1] if lims else None,
-                spread=(max(lims) - min(lims)) if lims else None)
+                spread=(max(lims) - min(lims)) if len(lims) > 1 else None)
 
 
 def _write_json(path: Path, payload: dict) -> None:
@@ -1541,7 +1552,7 @@ def run(out_path=None, workers: int = None, resume: bool = False,
         omega2="a (H^2 O2 + O2 H^2) + b H O2 H + c O2 + [q/(1-q+q^2)] {H, O3} "
                "+ O4;  a = q^2 [3]_q / ((1+q^2) [5]_q), b = q^2 (1+q)^2 / "
                "((1+q^2) [5]_q), c = (1 + q - q^2 - q^3 + 2 lam q^2 [5]_q)/[5]_q")
-    payload["provenance"] = (
+    provenance = (
         "singlet_tower.py -- the full A_n singlet channels at N = infinity "
         "as matter chords of dimension 2..n: exact decomposition checks in "
         "rational arithmetic, the lambda scan, the A_2 split against the "
@@ -1549,6 +1560,12 @@ def run(out_path=None, workers: int = None, resume: bool = False,
         "component removed) and against dense-ED commutant projection, and "
         "exact finite-N series for mu_4(A_2), mu_2 and mu_4 of A_3, "
         "mu_2(A_4) on double-scaling lines with their 1/p limits")
+    # provenance first, as in the other artifacts (in place: checkpoint()
+    # closes over this dict)
+    rest = {k: v for k, v in payload.items() if k != "provenance"}
+    payload.clear()
+    payload["provenance"] = provenance
+    payload.update(rest)
     checkpoint()
     print(f"wrote {out} ({payload['runtime_s']} s)")
     return payload

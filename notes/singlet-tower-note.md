@@ -240,8 +240,9 @@ Data: `duality/conformal_tower.json`.
 
 Write σ = (E + E′)/2 and ω = E − E′ for the left and right energies of a
 dressing F_{n,m}(E, E′), so that ad_H acts as ω. As λ → 0 a chord of
-dimension m is the ladder sech^(2m)(at), a = √λ (`duality/HORIZON.md`), so
-ω ~ a while σ ~ 1. Scale ω = a w. Then, at every level taken to the
+dimension m is the ladder sech^(2m)(𝒥t), with 𝒥 = √λ in chord units
+(`duality/HORIZON.md`, whose ladder spacing is 2𝒥). Write a ≡ √λ in this
+section, so ω ~ a while σ ~ 1. Scale ω = a w. Then, at every level taken to the
 limit (n ≤ 7),
 
 ```text
@@ -401,7 +402,8 @@ N = ∞ results here hold at fixed λ.
 
 For a dictionary the content is a specification: a conserved H²
 admixture of stated size, a dimension-2 continuum of stated norm, and
-chords of dimension 3, 4, … whose norms are closed forms in λ and scale
+chords of dimension 3, 4, … whose norms are closed forms for m ≤ 4 and
+exact rationals at any point for m ≤ 8, and scale
 as λ^(2⌊m/2⌋), with the even ones dropping out of the higher levels as
 λ → 0. In the paper's dictionary ḡ² = p²/N, so ḡ² = λ/2 in this note's
 Majorana chord convention. The paper's complex model has its own chord

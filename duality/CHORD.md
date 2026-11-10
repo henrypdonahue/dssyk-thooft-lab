@@ -356,7 +356,7 @@ semiclassical limit are 2, 3, 5, 7: the pattern of the large-q SYK
 bilinear spectrum h = 2, 3, 5, 7, … Levels 7 and 8 were the test of that
 pattern (O₇ should survive, O₈ fade), and it held. Given the norm law
 and the scaling of the dressings, the survival follows
-(`conformal_tower.py`, singlet-tower note §4a); neither of those is
+(`conformal_tower.py`, [singlet-tower note](../notes/singlet-tower-note.md) §4a); neither of those is
 proved.
 
 What these continua look like in a Rindler frame is in

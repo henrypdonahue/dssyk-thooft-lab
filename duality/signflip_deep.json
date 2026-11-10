@@ -322,7 +322,7 @@
     0.763316750846827
    ],
    "g_sech_pred": [
-    NaN,
+    null,
     3.46209797022693,
     2.4438314139646904,
     1.9896319165368253,
@@ -348,6 +348,7 @@
     0.5483605351471009,
     0.525091006180627
    ],
+   "g_sech_pred_null_reason": "g_sech_pred[0] is null: t = 0 is the sec(pi/2) singularity of the target, excluded from the shape window t >= 0.25/Jc",
    "g_gibbs_pred": [
     1.0,
     0.9982699759594282,
@@ -476,7 +477,7 @@
     0.5884430611427444
    ],
    "g_sech_pred": [
-    NaN,
+    null,
     3.4620979702269303,
     2.4438314139646904,
     1.9896319165368253,
@@ -502,6 +503,7 @@
     0.548360535147101,
     0.525091006180627
    ],
+   "g_sech_pred_null_reason": "g_sech_pred[0] is null: t = 0 is the sec(pi/2) singularity of the target, excluded from the shape window t >= 0.25/Jc",
    "g_gibbs_pred": [
     1.0,
     0.9982699759594282,
@@ -630,7 +632,7 @@
     0.5543582076848006
    ],
    "g_sech_pred": [
-    NaN,
+    null,
     3.4620979702269303,
     2.4438314139646904,
     1.9896319165368253,
@@ -656,6 +658,7 @@
     0.548360535147101,
     0.525091006180627
    ],
+   "g_sech_pred_null_reason": "g_sech_pred[0] is null: t = 0 is the sec(pi/2) singularity of the target, excluded from the shape window t >= 0.25/Jc",
    "g_gibbs_pred": [
     1.0,
     0.9982699759594281,
@@ -784,7 +787,7 @@
     0.5389372193225156
    ],
    "g_sech_pred": [
-    NaN,
+    null,
     3.4620979702269303,
     2.4438314139646904,
     1.9896319165368253,
@@ -810,6 +813,7 @@
     0.5483605351471009,
     0.525091006180627
    ],
+   "g_sech_pred_null_reason": "g_sech_pred[0] is null: t = 0 is the sec(pi/2) singularity of the target, excluded from the shape window t >= 0.25/Jc",
    "g_gibbs_pred": [
     1.0,
     0.9982699759594281,

@@ -154,7 +154,7 @@ def solve_sector(num_basis: int, parity: int, alpha: float = 0.0,
                  eigvals_only: bool = False):
     """Return (two_lambda, eigenvectors, degrees) for one CP sector, ascending.
     With eigvals_only=True the eigenvector slot is None (~2x faster).  The
-    eigenvalue-only callers spectrum/validate/plot use that path."""
+    eigenvalue-only callers spectrum, validate and plot use that path."""
     degrees, D, S = build_sector(num_basis, parity, alpha)
     # At alpha=0, D is positive diagonal. Solve the reciprocal problem:
     # S a = (1/Lambda) D a. Low physical levels are then the largest
@@ -163,7 +163,7 @@ def solve_sector(num_basis: int, parity: int, alpha: float = 0.0,
     # eigenvectors so callers retain the original convention.
     # Measured against the 17-digit polished table: the direct solve's
     # error over n < 24 GROWS with K (2e-12, 9e-12, 3e-11, 1e-10 at
-    # K = 300, 400, 600, 800), the reciprocal solve's does not (4e-13
+    # K = 300, 400, 600, 800), the reciprocal solve's does not (2e-13
     # truncation at K = 300, then 7e-14 rounding from K = 600 on).
     if alpha == 0.0:
         if eigvals_only:
@@ -226,6 +226,10 @@ def spectrum(num_basis: int = 200, num_levels: int = 40, alpha: float = 0.0):
       two_lambda: 2 lambda_n = M_n^2 / (pi g^2)
       parity    : 'even' (symmetric) or 'odd' (antisymmetric) under x->1-x
       CP        : (-1)^(n+1)   [MSS convention]
+
+    Label note: this dict and the CSV say 'even'/'odd'; the reference
+    JSON tables say 'sym'/'anti' for the same sectors.  Both spellings are
+    pinned by test_thooft.py and read downstream, so neither is renamed.
     """
     ev_sym, _, _ = solve_sector(num_basis, parity=0, alpha=alpha,
                                 eigvals_only=True)   # symmetric -> FLZ even n
@@ -237,19 +241,20 @@ def spectrum(num_basis: int = 200, num_levels: int = 40, alpha: float = 0.0):
 if __name__ == "__main__":
     import sys
     if "--csv" in sys.argv:
-        # regenerates the committed spectrum_double_precision.csv, 14
+        # regenerates the committed spectrum_double_precision.csv, 13
         # decimals, at K = 800.  The reciprocal solve above has no
         # roundoff growth with K, so the basis can be taken large enough
         # that truncation (K^-6) is below double rounding for all 40
         # rows: measured against reference_spectrum_polished.json the
         # worst row is 9e-14 at K = 800 (4e-13 at K = 300, n < 30).
-        # Trust 13 digits (see README).
+        # A 14th decimal would be BLAS-dependent noise (16 significant
+        # figures for n >= 10), so 13 are written (see README).
         from pathlib import Path
         out = Path(__file__).resolve().parent / "spectrum_double_precision.csv"
         with open(out, "w") as fh:
             fh.write("n,two_lambda_n = M^2/(pi g^2),parity_under_x->1-x,CP\n")
             for L in spectrum(num_basis=800, num_levels=40):
-                fh.write(f"{L['n']},{L['two_lambda']:.14f},"
+                fh.write(f"{L['n']},{L['two_lambda']:.13f},"
                          f"{L['parity']},{L['CP']:+d}\n")
         print(f"wrote {out.name}")
         sys.exit(0)

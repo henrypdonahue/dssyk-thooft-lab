@@ -81,13 +81,13 @@ freeness.json.
 """
 from __future__ import annotations
 
-import json
-import sys
+import argparse
 import time
 from pathlib import Path
 
 import numpy as np
 
+from artifact_io import write_json_atomic
 from pauli_strings import majorana_hamiltonian_fast
 from syk import majorana_operators
 
@@ -283,10 +283,15 @@ def main(quick: bool = False) -> dict:
         points=results)
     if not quick:
         path = Path(__file__).resolve().parent / "freeness.json"
-        path.write_text(json.dumps(payload, indent=1))
+        write_json_atomic(path, payload)
         print(f"wrote {path}")
     return payload
 
 
 if __name__ == "__main__":
-    main(quick="--quick" in sys.argv)
+    ap = argparse.ArgumentParser(
+        description="freeness onset; with no flag, the full campaign "
+                    "(~16 h), which rewrites freeness.json")
+    ap.add_argument("--quick", action="store_true",
+                    help="one small N = 12 ensemble; writes nothing")
+    main(quick=ap.parse_args().quick)

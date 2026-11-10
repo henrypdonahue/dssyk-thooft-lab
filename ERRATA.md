@@ -58,7 +58,7 @@ Majorana form Aₙ; the Dirac full channel is not computed.
 
 **E21. "The N = ∞ singlet channels carry no massive component," with "the
 decay rates show it directly" and a frequency fit "200 times below the
-best massive floor"** (`621f0b3`). Corrected 2026-10-15. A quasinormal
+best massive floor"** (`621f0b3`). Corrected 2026-10-15 (`17b52cd`). A quasinormal
 ladder is itself a superposition of massive responses, with Rindler mass
 density ∝ M^(2Δ−1), so the defensible statement is that the channels'
 mass spectrum is gapless, with no gap and no discrete masses. That
@@ -77,8 +77,8 @@ it lies below it. The law itself stands, now checked at p = 10 and 12.
 **E23. The small-λ share table, "the arrows give the values at
 λ = 1/1280": A₃, A₄ → 100% O₃, A₅ → 99.5% O₃ + 0.53% O₅, A₆ → 99.2% O₃
 + 0.80% O₅** (`64636b8`, and the summaries quoting A₅). Corrected
-2026-11-10. The O₃ entries of A₃..A₆ were rounded λ → 0 limits, not the
-λ = 1/1280 values, and the A₅ row summed to 100.03%. At λ = 1/1280 the
+2026-11-10 (`a9c2319`). The O₃ entries of A₃..A₆ were rounded λ → 0
+limits, not the λ = 1/1280 values, and the A₅ row summed to 100.03%. At λ = 1/1280 the
 O₃ shares are 99.65%, 99.61%, 99.19% and 98.96%, with the rest in the
 fading even chords. The exact limits are 1, 1, 2047/2058 = 99.47% and
 20443/20608 = 99.20% (`duality/conformal_tower.py`). The O₅ and O₇

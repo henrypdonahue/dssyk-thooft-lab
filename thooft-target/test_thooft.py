@@ -6,25 +6,31 @@ Run with: pytest -q, or python3 -m pytest -q.
 Every check that validate.py PRINTS, this file ASSERTS, with an explicit
 tolerance.  So the package fails loudly if a change breaks the physics.
 
-The whole suite is double precision and runs in a few seconds.  The sine
-cross-check quadrature dominates the cost.
+Most of the suite is double precision; the reference-table and
+high-precision-path tests use mpmath.  It runs in about ten seconds; the
+2-million-term Eq. (1.6) tails of the FLZ Table 3 and d+- tests dominate.
 """
 
 import json
+import math
 from pathlib import Path
 
 import numpy as np
 import pytest
 from scipy.integrate import quad
-from scipy.special import zeta, polygamma
+from scipy.special import zeta
 
 from thooft_spectrum import solve_sector, spectrum, _I_matrix
 import sine_solver
 
-PI = np.pi
-
 # FLZ Tables 1 & 2 anchors: one provenance-checked copy (flz_reference.py)
-from flz_reference import FLZ, FLZ_PADE_LAMBDA0, sum_inv_sq_with_tail
+from flz_reference import FLZ, FLZ_PADE_LAMBDA0, flz_sum_rule
+
+PI = np.pi
+HERE = Path(__file__).resolve().parent
+
+with open(HERE / "external_anchors.json") as _fh:
+    ANCHORS = json.load(_fh)
 
 
 @pytest.fixture(scope="module")
@@ -36,13 +42,16 @@ def sectors():
 
 
 def test_flz_tables(sectors):
-    """Reproduce FLZ Tables 1 & 2 to high precision for n <= 29."""
+    """Reproduce FLZ Tables 1 & 2 for n <= 29.  Measured 1.1e-12 at
+    K = 300, of which up to 1.0e-12 is FLZ's own last printed digit
+    (test_polished_table_certifies_the_older_tables); the bound is the
+    validate.py gate."""
     ev_sym, ev_anti = sectors
     worst = 0.0
     for n, ref in FLZ.items():
         mine = ev_sym[n // 2] if n % 2 == 0 else ev_anti[n // 2]
         worst = max(worst, abs(mine - ref))
-    assert worst < 1e-10, f"worst FLZ deviation {worst:.2e} exceeds 1e-10"
+    assert worst < 4e-12, f"worst FLZ deviation {worst:.2e} exceeds 4e-12"
 
 
 def test_ground_state_matches_pade(sectors):
@@ -56,8 +65,9 @@ def test_sum_rules():
     ev_anti, _, _ = solve_sector(400, parity=1)
     n_cut = 120
 
-    assert abs(sum_inv_sq_with_tail(ev_sym, 0, n_cut) - 7 * zeta(3)) < 1e-8
-    assert abs(sum_inv_sq_with_tail(ev_anti, 1, n_cut) - 2.0) < 1e-8
+    # leading-asymptotic tail; measured 9.5e-11 (the validate.py gate)
+    assert abs(flz_sum_rule(ev_sym, 0, 2, n_cut) - 7 * zeta(3)) < 3e-10
+    assert abs(flz_sum_rule(ev_anti, 1, 2, n_cut) - 2.0) < 3e-10
 
 
 def test_variational_from_above():
@@ -143,49 +153,35 @@ def test_potential_matrix_vs_quadrature():
 # External anchors (external_anchors.json): FLZ higher sum rules and the
 # Litvinov-Meshcheriakov alpha != 0 tables / exact alpha-dependent sum rules
 # --------------------------------------------------------------------------
-import math
-import os as _os
-from math import factorial as _factorial
-
-with open(_os.path.join(_os.path.dirname(__file__), "external_anchors.json")) as _fh:
-    ANCHORS = json.load(_fh)
-
-
-def _G_sum(evs_two_lambda, offset, s, n_cut=120):
-    """G^(s) = sum 1/lambda_n^s over one parity sector, with the analytic
-    polygamma tail from the leading asymptotic 2*lambda_n -> n + 3/4."""
-    total, n = 0.0, offset
-    for tl in evs_two_lambda:
-        if n > n_cut:
-            break
-        total += 2.0 ** s / tl ** s
-        n += 2
-    a = (n + 0.75) / 2.0
-    total += (-1) ** s * polygamma(s - 1, a) / _factorial(s - 1)
-    return total
+def _exact_forms():
+    """external_anchors.json flz_exact_forms, evaluated in sympy, keyed
+    (s, parity).  The stored strings are the one copy of the closed forms."""
+    import sympy
+    out = {}
+    for key, expr in ANCHORS["flz_exact_forms"].items():   # e.g. "G3+"
+        s, parity = int(key[1:-1]), 0 if key[-1] == "+" else 1
+        out[(s, parity)] = float(sympy.sympify(expr).evalf(30))
+    return out
 
 
 def test_flz_higher_sum_rules():
-    """FLZ Eq. (1.8) beyond s = 2: G3+- and G4+- against the exact zeta-value
-    closed forms.  These are four more independent whole-spectrum
-    certificates."""
+    """FLZ Eq. (1.8) beyond s = 2: G3+- and G4+- from the spectrum against
+    the stored exact closed forms (leading-asymptotic tail, measured
+    <= 2e-12).  And all eight stored closed forms, s = 1..4, against the
+    tabulated FLZ Table 3 values (measured <= 4e-13, the table's
+    truncation)."""
     ev_sym, _, _ = solve_sector(400, parity=0)
     ev_anti, _, _ = solve_sector(400, parity=1)
-    targets = {
-        (3, 0): -4 * PI ** 2 / 3 + 28 * zeta(3),
-        (3, 1): -8.0 / 3.0 + 4 * PI ** 2 / 9,
-        (4, 0): (-2 * PI ** 2 + 42 * zeta(3) - (7 / 3) * PI ** 2 * zeta(3)
-                 + (49 / 2) * zeta(3) ** 2 + (31 / 2) * zeta(5)),
-        (4, 1): 11.0 / 3.0 - (7 / 9) * PI ** 2 + (7 / 6) * PI ** 2 * zeta(3)
-                - (31 / 4) * zeta(5),
-    }
-    for (s, parity), tgt in targets.items():
-        evs = ev_sym if parity == 0 else ev_anti
-        got = _G_sum(evs, parity, s)
-        assert abs(got - tgt) < 1e-10, f"G{s} parity {parity}: {got} vs {tgt}"
-    # and the tabulated FLZ Table 3 values agree with those closed forms
-    assert abs(targets[(3, 0)] - ANCHORS["flz_table3_alpha0"]["3"][0]) < 1e-12
-    assert abs(targets[(4, 1)] - ANCHORS["flz_table3_alpha0"]["4"][1]) < 1e-12
+    forms = _exact_forms()
+    assert sorted(forms) == [(s, p) for s in (1, 2, 3, 4) for p in (0, 1)]
+    for s in (3, 4):
+        for parity, evs in ((0, ev_sym), (1, ev_anti)):
+            got = flz_sum_rule(evs, parity, s)
+            tgt = forms[(s, parity)]
+            assert abs(got - tgt) < 1e-10, f"G{s} parity {parity}: {got} vs {tgt}"
+    table = ANCHORS["flz_table3_alpha0"]
+    for (s, parity), tgt in forms.items():
+        assert abs(tgt - table[str(s)][parity]) < 1e-12, (s, parity)
 
 
 def test_flz_table3_all_sixteen_anchors():
@@ -368,34 +364,47 @@ def test_highprec_alpha_nonzero_path():
     other caller)."""
     from mpmath import mp
     from thooft_highprec import solve_sector_mp
-    mp.dps = 30
     K, alpha = 16, 0.5
-    mp_ev = [float(v) for v in solve_sector_mp(K, parity=0, alpha=alpha)]
+    with mp.workdps(30):
+        mp_ev = [float(v) for v in solve_sector_mp(K, parity=0, alpha=alpha)]
     ev, _, _ = solve_sector(K, parity=0, alpha=alpha)
     assert max(abs(mp_ev[n] - ev[n]) for n in range(5)) < 1e-12
+
+
+@pytest.mark.parametrize("parity", [0, 1])
+def test_highprec_alpha0_eigsy_path(parity):
+    """The mpmath alpha = 0 path (diagonal scaling + eigsy), which built
+    reference_spectrum.json, agrees with the double-precision reciprocal
+    solve at K = 16 over the whole sector."""
+    from mpmath import mp
+    from thooft_highprec import solve_sector_mp
+    with mp.workdps(30):
+        mp_ev = [float(v) for v in solve_sector_mp(16, parity=parity)]
+    ev, _, _ = solve_sector(16, parity=parity, eigvals_only=True)
+    assert np.max(np.abs(np.array(mp_ev) - ev) / ev) < 1e-13
 
 
 # --------------------------------------------------------------------------
 # the committed artifacts, against the live solver
 # --------------------------------------------------------------------------
 def _reference_rows():
-    path = Path(__file__).resolve().parent / "reference_spectrum.json"
+    path = HERE / "reference_spectrum.json"
     with open(path) as fh:
         return json.load(fh)
 
 
 def _polished_rows():
-    path = Path(__file__).resolve().parent / "reference_spectrum_polished.json"
+    path = HERE / "reference_spectrum_polished.json"
     with open(path) as fh:
         return json.load(fh)["rows"]
 
 
 def test_reference_spectrum_matches_live_solver():
-    """reference_spectrum.json is the module's flagship output and is consumed
-    cross-module by duality/dictionary.py, but nothing asserted its values
-    against a live solve: its producer (generate_reference.py, mpmath) is a
-    reproduce-slow target CI never runs, and the only other check covered
-    row 0 and row 1 only.  Every level is now pinned."""
+    """reference_spectrum.json, which duality/dictionary.py reads, against a
+    live double-precision solve at every level.  Its producer
+    (generate_reference.py, mpmath) is a reproduce-slow target that CI
+    never runs, so this test is what keeps the committed table honest.
+    It also pins the parity/CP bookkeeping the dictionary relies on."""
     rows = _reference_rows()
     assert len(rows) >= 24
     live = {d["n"]: d for d in spectrum(num_basis=300, num_levels=len(rows))}
@@ -412,11 +421,12 @@ def test_reference_spectrum_matches_live_solver():
 
 
 def test_double_precision_csv_matches_reference():
-    """spectrum_double_precision.csv is the 40-row published table; it must
-    agree with the certified reference over their common range at the ~1e-11
-    the README advertises, and stay interleaved beyond it."""
+    """spectrum_double_precision.csv is the 40-row published table (13
+    decimals).  It must agree with the older reference table over their
+    common range at that table's 12-15 digits, with the polished table at
+    every row to 4e-13 (measured 1e-13), and stay interleaved."""
     import csv
-    path = Path(__file__).resolve().parent / "spectrum_double_precision.csv"
+    path = HERE / "spectrum_double_precision.csv"
     with open(path) as fh:
         rows = list(csv.DictReader(fh))
     assert len(rows) >= 40

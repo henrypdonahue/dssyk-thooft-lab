@@ -77,5 +77,3 @@ corrections; the technical note cites v2 §6); 2506.18054 is at v3, which
 corrects its §5 statements about the 't Hooft and flat-space limits and
 redefines ḡ² = g²/m_q² (its footnote 9). Titles and authors were checked
 against INSPIRE on 2026-10-14.
-
-`EMAIL-draft-local.md` is a local, gitignored outreach draft (stale).

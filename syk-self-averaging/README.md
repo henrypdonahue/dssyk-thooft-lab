@@ -10,17 +10,20 @@ Var(J) = p!/N^(p−1), λ = p²/N, and ⟨W⟩ = Tr(W)/dim.
 | claim | eq. | verdict |
 |---|---|---|
 | singlet Var⟨W⟩ ~ p!/Nᵖ | 3.27 | holds; the rate is exactly 2/C(N,p) |
-| adjoint violations ≤ exp(−a√N) | 3.28 | exact in double scaling (`exact_wick.py`) |
+| adjoint violations ≤ exp(−a√N) | 3.28 | holds, exactly: ln rms = −¼√N ln N on p = √N; only polynomial, N^(−(p−1)/2), at fixed p (`exact_wick.py`) |
 
 ## Self-averaging
 
 The paper argues from two diagrams. We can do better than that.
 
-**Eq. 3.27.** The singlet rate is exactly 2/C(N,p). That is one over the
-number of couplings, and it equals the paper's p!/Nᵖ times an O(1)
-factor. The m₂ identity holds whatever the diagrammatics say, so the
-content that is not tautological is m₄ and m₆ self-averaging at the same
-rate. ED gives that at N ≤ 18, within about 10% statistics.
+**Eq. 3.27.** The singlet rate is exactly 2/C(N,p). That is twice the
+inverse number of couplings, and it equals the paper's p!/Nᵖ times an
+O(1) factor. The m₂ identity holds whatever the diagrammatics say, so
+the content that is not tautological is m₄ and m₆ self-averaging at the
+same rate. m₄ is exact: relVar(m₄) = 4 relVar(m₂)(1 + o(1))
+(`exact_wick.py`). m₆ rests on ED at N ≤ 18, within about 10%
+statistics, and its in-window slope steepens slightly (−4.86, against
+−4.56 for 2/C(N,4)).
 
 **Eq. 3.28, settled beyond ED.** B_jk = Tr(ψⱼHψₖH)/dim is quadratic in
 the couplings. So Wick contraction gives closed forms at any (N, p):
@@ -57,7 +60,7 @@ CP has to be the **unitary** particle-hole map, because M₁ ∝ iH rules out
 an antiunitary one. CP of the traceless M₀ (= Q − Nc/2, with C Q C =
 Nc − Q) is −1, and CP(M₁) = +1. Both are exact.
 
-Raw Mₙ for n ≥ 2 are CP mixtures, with 15–65% wrong-channel content. So
+Raw Mₙ for n ≥ 2 are CP mixtures, with 15–60% wrong-channel content. So
 the paper's CP = (−1)^(n+1) lives in CP-*resolved* correlators, not in
 the raw ones. `mn_spectroscopy.py` computes those: n = 0 and n = 1 are
 conserved and exact at ω = 0, and there are broad continua at λ = 1.6.
@@ -82,18 +85,20 @@ spec(E + F(t)) is the arcsine law.
 
 Measured at N = 12–24, the spectrum lands on the arcsine law, the W₁
 plateau falls like dim^(−0.9), and every alternating word goes to zero.
-The plateau is a rigid-spectrum floor, far below sampling noise. To our
-knowledge this is the first exhibition of the free-product transition in
-a microscopic dS-candidate model.
+The plateau is a rigid-spectrum floor, far below the dim^(−1/2) floor of
+unstructured sampling. To our knowledge this is the first measurement of
+this pair's classical → free crossover in a microscopic dS-candidate
+model.
 
 The caveat is real. The crossover sits at the *dissipation* time
 (t𝒥 ≈ 1.2, nearly N-independent), so ED cannot resolve the ln N
 scrambling-time separation where the claim properly lives. Word plateaus
 at N ≥ 20 are statistics-limited. The crossover is not quite
 N-independent either: t𝒥 runs 1.191, 1.172, 1.233, 1.273 over N = 12–24,
-and the N = 16 → 24 rise is about 4σ against a rerun-measured resolution
-of 0.011, and about 7σ on the artifact's own propagated per-point errors
-(0.005–0.013, `freeness.verdict_scalars`). A drift is resolved. Four
+and the N = 16 → 24 rise is about 7σ on the artifact's own propagated
+per-point errors (0.005–0.013, `freeness.verdict_scalars`). An
+uncommitted rerun estimate of the resolution, scaled to each point's
+n_inst, gives about 4σ. A drift is resolved. Four
 points over a factor of 2 in N cannot say whether it is ln N or finite
 size.
 
@@ -116,7 +121,8 @@ evaluated by a CRT residue-table dynamic program. No ED, no sampling
 noise. Scope: n ≤ 3, moments μ₀/μ₂/μ₄, words up to K = 10 H-nodes.
 
 Along fixed p = 4 every |μ_k| with k ≥ 1 falls monotonically to zero. The
-fitted tail slopes are 2.96, 3.90, 4.82 for n = 1, 2, 3.
+local slopes of |μ₂| over the last two points (N = 192 → 256) are 2.96,
+3.90, 4.82 for n = 1, 2, 3.
 
 (μ₀ of the n = 2 channel is not monotone. It changes sign near N = 12,
 which is the exact counterpart of an effect first seen in ED. The word is
@@ -134,7 +140,7 @@ P(N) = 2μ_k C(N,p)^m is a polynomial in N, so interpolation over
 exact-Fraction samples gives the closed form of μ_k(N) at fixed p,
 certified out of sample. Results:
 
-- The deficits are exactly n + 2 through n = 4. The fitted slopes above
+- The deficits are exactly n + 2 through n = 4. The local slopes above
   were their shadows.
 - The leading coefficients have certified closed forms in p:
   A(n=1) = −16p²(p−1) and A(n=2) = −64p³(p−1)(4p−5).
@@ -158,9 +164,10 @@ frontier, with K = k + 2n the word length:
   through n = 3 (three data points; not a proven pattern);
   the other K = 8 family is A(1,6) = A(2,4) = −256p⁴(p−1)(34p² − 93p + 64),
   same prefactor, same leading 34p², certified at p = 18;
-- c₂(p) exact to p = 48 (31.654), extrapolating to 32.3341891(1);
-  c₃(p) exact to p = 32 (`double_scaling_law.json`), extrapolating to
-  223.63(3).
+- c₂(p) exact to p = 48 (31.654), extrapolating to 32.3342 (window
+  spread 9 × 10⁻⁵; the order-5 windows agree to 3 × 10⁻⁸); c₃(p) exact
+  to p = 32 (`double_scaling_law.json`), extrapolating to 223.648
+  (7 × 10⁻⁷ from the closed form).
 
 **Those two limits are closed forms** (`double_scaling_law.py`). On the
 line λ_chord = λ, with q = e^(−λ),
@@ -195,7 +202,8 @@ Read the peak with its denominator. μ₀ is identity-subtracted, and A₂
 overlaps the conserved H². At N = ∞ the split is a theorem
 (`duality/singlet_tower.py`): A₂ is a conserved H² piece plus a matter
 chord of dimension 2, with dynamical width 2(1 − q²). At finite N the H²
-component can be removed in exact arithmetic, and then the width has no
+component can be removed in exact arithmetic
+(`duality/singlet_tower.finite_n_a2_split`), and then the width has no
 maximum beyond the smallest sizes: it sits near 2 at the small-N end
 and falls monotonically to the same 8p(p−2)/N. The peak at N = 24 is
 conserved weight leaving the denominator (85% of μ₀ at N = 10, 19% at
@@ -243,8 +251,10 @@ Scope, stated plainly. The chord result is an i ≠ j pair amplitude. At
 dense-ED sizes the measured channel is diagonal-dominated, so the bench
 does not probe the N = ∞ pair zero. At matched λ the raw w₂ rises with
 N, which is the honest negative for the raw ratio. The full channel is
-another matter: with the commutant of H projected out per instance
-(`projected_channel.py`), ED does sit on the N = ∞ full-channel law —
+another matter: with the commutant of H projected out per instance (the
+split of `projected_channel.py`, run at p = 6 by
+`duality/singlet_tower.ed_commutant_split`), ED does sit on the N = ∞
+full-channel law —
 dynamical width 2.03, 2.03, 2.01 at p = 6, N = 16–20 against
 2(1 − q²) = 2.00, where the raw width is 0.29–0.41. The (8, 4) point shows an exact
 per-instance conservation that is absent at (12, 6) and (16, 8). The
@@ -294,7 +304,7 @@ Read `rms_off`, not the ratio, which is artifacted at p = N/2.
 | `projected_channel.py` | finite-N ED split of a channel into stationary and dynamical weight (the whole commutant of H removed, degeneracies included) |
 | `mn_spectroscopy.py` | CP-resolved Mₙ spectral functions |
 | `moments_pipeline.py` | CP-resolved moment invariants with statistics |
-| `moments_fast.py` | charge-sector-blocked reimplementation (~140× at Nc = 12; dense equivalence measured at 5e-15 against a 1e-9 gate) |
+| `moments_fast.py` | charge-sector-blocked reimplementation (~140× at Nc = 12; dense equivalence measured at 5e-15 against a 1e-8 gate, 1e-9 in the Nc ≤ 10 tests; the dense partial input behind the 5e-15 is not committed) |
 | `qed_campaign.py` | U(N) self-averaging and charging curves |
 | `baryons.py` | the baryon sector: collapse, extensivity, hierarchy |
 | `largeq_bench.py` | ED ground truth for the large-q anchor |
@@ -304,9 +314,15 @@ Read `rms_off`, not the ratio, which is artifacted at p = N/2.
 | `mn_majorana_bench.py` | Majorana singlet-channel moments (the ED side of the chord computation) |
 | `validate_syk.py`, `self_averaging.py` | RMT validation; the §3.5 measurement |
 | `plot_self_averaging.py`, `plot_freeness.py`, `plot_pair_moments.py` | figures (they read the JSONs) |
+| `artifact_io.py` | atomic JSON writes (temp file + `os.replace`) shared by the long campaigns |
 | `test_*.py` | the asserting suites (274 tests, 261 fast) |
 
 ## Usage
+
+The top-level Makefile's `reproduce-slow` target is authoritative: it
+lists every campaign behind the committed artifacts, in dependency
+order. The main entries, with approximate wall-clock times (from the
+artifacts' `runtime_s` where they record one):
 
 ```bash
 pip install -e ".[dev]"      # from the repo root, once
@@ -316,20 +332,28 @@ python3 exact_wick.py           # exact 3.28 + double-scaling scan (~1 s)
 python3 exact_pair_moments.py   # the approach to the chord zero  (~6 min)
 python3 pair_moment_laws.py --deep  # the exact 1/N laws          (~27 min)
 python3 pair_moment_ladder.py       # the K = 12 ladder campaign   (~7.5 h, 7 workers; --resume)
+python3 pair_moment_ladder.py --refit 1,6:2,4,6,8,10,12,14,16:18   # A(1,6)(p), certified at p = 18
+python3 pair_moment_ladder.py --refit 2,4:2,4,6,8,10,12,14,16:18   # A(2,4)(p), certified at p = 18
 python3 pair_moment_ladder.py --ds-extend 32,36,40,44,48   # c2(p) to p = 48
+python3 full_channel_laws.py --run  # the full-channel laws       (~27 min)
+python3 double_scaling_law.py --run # the c_n(lambda) sequences   (~7.4 h, multiprocessing; --resume)
+python3 thooft_limit.py --run       # the fixed-p shape laws      (~10 h, one core)
 python3 dirac.py                # Dirac/QED identities + CP report (~5 s)
-python3 mn_spectroscopy.py      # Mn spectral functions           (seconds)
+python3 mn_spectroscopy.py      # Mn spectral functions           (~35 s)
 python3 qed_campaign.py         # the QED campaign
 python3 baryons.py              # the baryon campaign
-python3 freeness.py             # the freeness campaign           (hours)
+python3 freeness.py             # the freeness campaign           (~16 h; --quick writes nothing)
 python3 mn_majorana_bench.py    # the singlet-moment bench        (~1 h)
-pytest -q -m 'not slow'         # 261 fast tests                  (~45 s)
+pytest -q -m 'not slow'         # 261 fast tests                  (~50 s)
 ```
 
 ## Scope
 
-This settles §3.5, both equations, one of them exactly. It also settles
-the operator-level prerequisites of the U(N) story.
+This tests §3.5 on both equations. Eq. 3.28 is settled exactly, in
+closed form at any (N, p). Eq. 3.27 is verified for the H²ᵏ singlets
+(m₂ and m₄ exactly, m₆ by ED); a general bounded singlet W is not
+probed. It also settles the operator-level prerequisites of the U(N)
+story.
 
 The paper places the spectrum match at fixed p, λ → 0. See
 `exact_wick.py` for why the emergent gauge symmetry is only polynomially

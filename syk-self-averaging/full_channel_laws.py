@@ -76,13 +76,13 @@ test_full_channel_laws.py.  Runtime: a few minutes.
 from __future__ import annotations
 
 import argparse
-import json
 import time
 from fractions import Fraction
 from math import comb
 from pathlib import Path
 
 import exact_pair_moments as epm
+from artifact_io import write_json_atomic
 from pair_moment_laws import (_binom_poly, _newton_to_monomial, _poly_eval,
                               _poly_pow, _series_at_infinity)
 
@@ -229,8 +229,7 @@ def run(out_path=None) -> dict:
         coefficients_identified=coeffs_identified,
         L_samples=[2, 4, 6], L_checks=[8, 10, 12])
     out = Path(out_path) if out_path else HERE / "full_channel_laws.json"
-    with open(out, "w") as fh:
-        json.dump(payload, fh, indent=1)
+    write_json_atomic(out, payload)
     print(f"wrote {out} ({payload['runtime_s']} s)")
     return payload
 

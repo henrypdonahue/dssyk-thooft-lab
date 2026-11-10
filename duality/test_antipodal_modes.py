@@ -2,9 +2,9 @@
 
 Pinned here: the sign structure, which is a flipped positive component
 plus a smaller unflipped negative one wherever the flip operates; the
-the harmonic-tower test on the physical half-circle, where kappa_2/kappa_1 is far
-from 2 and the harmonic weights are comparable; and the recorded fit
-degeneracies.
+harmonic-tower test on the physical half-circle, where kappa_2/kappa_1 ~
+1.2-1.5 is short of 2 and the second harmonic is subdominant; and the
+recorded fit degeneracies.
 """
 
 import json
@@ -50,10 +50,8 @@ def test_second_harmonic_subdominant_not_a_clean_tower(data):
     than the first, kappa_2/kappa_1 ~ 1.2-1.5: between the tower's 2 and
     the ~1 that the withdrawn full-circle DFT reported.  Neither refuted
     nor established; the model dependence (two vs three harmonics) and
-    the 5-10% residuals are recorded, and the fit is re-run live at one
-    lambda."""
-    import numpy as np
-    from antipodal_modes import harmonics
+    the 5-10% residuals are recorded.  The producer itself is re-run in
+    test_harmonics_reproduces_its_committed_row."""
     for h in data["harmonics"]:
         assert h["deltas"][-1] < h["pole_delta"]          # physical half only
         for nh, m in h["models"].items():
@@ -63,12 +61,6 @@ def test_second_harmonic_subdominant_not_a_clean_tower(data):
             assert m["kappa_1"] > 0 and m["kappa_2"] > m["kappa_1"]
         lo, hi = h["kappa2_over_kappa1_range"]
         assert lo < 2.0 and hi < 2.0                         # not a clean tower
-    row = next(h for h in data["harmonics"] if h["lam"] == 1.0)
-    live = harmonics(1.0)
-    assert np.allclose(live["R"], row["R"], rtol=1e-9, atol=1e-12)
-    for nh in ("2", "3"):
-        assert live["models"][nh]["kappa2_over_kappa1"] == pytest.approx(
-            row["models"][nh]["kappa2_over_kappa1"], rel=1e-9)
 
 
 def test_censored_fits_are_flagged_and_stay_flagged(data):
@@ -84,7 +76,10 @@ def test_censored_fits_are_flagged_and_stay_flagged(data):
                 flags[(pt["lam"], frame, fit)] = \
                     pt[frame][fit]["kappa_at_grid_max"]
     assert sum(flags.values()) == 9, sorted(k for k, v in flags.items() if v)
-    # every free-fit row saturates except the two smallest lambda
+    # every free fit saturates except the antipodal ones at lambda = 1.5
+    # and 0.6; the only censored constrained fit is antipodal lambda = 0.8
+    for lam in (1.5, 0.6):
+        assert flags[(lam, "antipodal", "free")] is False
     assert flags[(0.8, "antipodal", "constrained")] is True
     # the rows test_sign_structure_where_flip_operates relies on for their
     # AMPLITUDES are fine; only lambda = 0.8's kappa is censored

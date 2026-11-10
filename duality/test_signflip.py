@@ -5,7 +5,7 @@ Three things are pinned.
 THE CLOSED-FORM FLIP IS EXACT.  Re a goes from a(0) to -a(0) at
 Delta = pi/v, at every temperature, with a(0) = -1/cos(pi v/2), which
 tends to -1 at the T_B = infinity hologram point.  The rotation law holds
-to 1e-6.
+to machine precision (stored errors <= 5.1e-15; asserted at 1e-12).
 
 THE SHIFTED 2-PT FUNCTION stays finite and positive, up to a MEASURED
 propagator pole.
@@ -50,7 +50,7 @@ def test_closed_form_flip_exact(data):
         assert cf["re_a_antipodal"] > 0                 # anti-scrambling
         assert cf["re_a_antipodal"] == pytest.approx(-a0, rel=1e-9)
         for row in cf["rows"]:
-            assert row["rotation_law_error"] < 1e-6
+            assert row["rotation_law_error"] < 1e-12
     # the hologram point (betaJ -> 0, v -> 0) is the -1 -> +1 limit
     coldest = min(data["closed_form"], key=lambda c: c["v"])
     assert coldest["re_a_unshifted"] == pytest.approx(-1.0, abs=0.05)
@@ -143,9 +143,8 @@ def test_phase_period_set_by_v_not_kappa(data):
     it works at all -- and both fail at strong coupling.  kappa_eff is a
     window-dependent effective exponent: the same estimator on the large-q
     closed form gives 0.94 > v on the same window, and the exact-chord
-    value sits below that (ratio 0.85-0.95), so kappa_eff > v is NOT a
+    value sits below that (ratio 0.88-0.93), so kappa_eff > v is NOT a
     rate decoupling.  The calibration is recomputed live for one row."""
-    import math
     from antiscrambling import otoc_ratio
     from signflip_probe import CONFIG_CROSSED
     for r in data["calibrated"]:
@@ -169,11 +168,16 @@ def test_phase_period_set_by_v_not_kappa(data):
 
 
 def test_toc_bounded_under_shift(data):
-    """The time-ordered 4-pt stays bounded under the antipodal shift
-    (magnitudes essentially unchanged) while the crossed one flips."""
+    """The time-ordered 4-pt is unchanged by the antipodal shift while the
+    crossed one flips.  In the uncrossed chord diagram the region outside
+    both matter chords has length theta_23 + theta_41 = 2 pi - theta_12 -
+    theta_34, which a rigid shift of the (1, 2) pair does not move, so the
+    stored magnitudes agree to ~1e-13 -- asserted at 1e-10, an engine check
+    rather than a loose bound."""
     for r in data["toc"]:
         assert r["bounded"]
-        assert r["max_shifted"] < 2.0 * max(r["max_unshifted"], 0.1)
+        assert r["max_shifted"] == pytest.approx(r["max_unshifted"],
+                                                 rel=1e-10)
 
 
 def test_second_configuration(data):

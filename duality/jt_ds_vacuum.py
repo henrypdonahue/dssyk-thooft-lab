@@ -594,10 +594,10 @@ def piece3_reduction() -> dict:
 def condensate_link() -> dict:
     """The measured 2d vacuum-energy shift, pushed through the first law."""
     path = HERE.parent / "thooft-target" / "condensate.json"
-    eps0 = None
-    if path.exists():
-        with open(path) as fh:
-            eps0 = json.load(fh)["eps_duality_point"]
+    # committed artifact: a missing file is a broken checkout, so fail
+    # loudly rather than record a silent null
+    with open(path) as fh:
+        eps0 = json.load(fh)["eps_duality_point"]
     return {
         "eps0_measured_Nc_g2": eps0,
         "prediction": ("delta_S = -2*pi*ell**2*rho = "
@@ -701,16 +701,21 @@ def main() -> dict:
 
 
 if __name__ == "__main__":
+    import argparse
+    argparse.ArgumentParser(
+        description=__doc__.strip().splitlines()[0],
+        epilog="Takes no options; writes jt_ds_vacuum.json (~2 s).").parse_args()
     result = main()
     all_checks = {}
     for key in ("general_D", "d2_degeneration", "jt_first_law", "reduction_3d"):
         all_checks.update({f"{key}.{k}": v
                            for k, v in result[key]["checks"].items()})
-    assert all(all_checks.values()), {k: v for k, v in all_checks.items()
-                                      if not v}
+    failed = {k: v for k, v in all_checks.items() if v is not True}
+    if failed:      # explicit, not assert: survives python -O
+        raise SystemExit(f"machine checks failed: {failed}")
     out_path = HERE / "jt_ds_vacuum.json"
     with open(out_path, "w") as fh:
-        json.dump(result, fh, indent=1)
+        json.dump(result, fh, indent=1, allow_nan=False)
         fh.write("\n")
     print(f"all {len(all_checks)} machine checks pass")
     print(f"a(D) = {result['general_D']['a_of_D']},  "

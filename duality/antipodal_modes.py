@@ -100,7 +100,7 @@ def two_mode_fit(thLs: np.ndarray, r: np.ndarray,
                 continue
             A = np.vstack([np.ones_like(thLs), np.exp(k * thLs),
                            np.exp(k2 * thLs)]).T
-            coef, res, *_ = np.linalg.lstsq(A, r, rcond=None)
+            coef, *_ = np.linalg.lstsq(A, r, rcond=None)
             resid = float(np.sqrt(np.mean((A @ coef - r) ** 2)))
             if best is None or resid < best["resid"]:
                 best = dict(kappa=float(k), kappa2=float(k2),
@@ -206,7 +206,7 @@ def main():
     payload["runtime_s"] = round(time.time() - t0, 1)
     out = HERE / "antipodal_modes.json"
     with open(out, "w") as fh:
-        json.dump(payload, fh, indent=1)
+        json.dump(payload, fh, indent=1, allow_nan=False)
     for h in payload["harmonics"]:
         for nh, m in h["models"].items():
             print(f"harmonics lam={h['lam']} ({nh} harmonics): "
@@ -227,4 +227,8 @@ def main():
 
 
 if __name__ == "__main__":
+    import argparse
+    argparse.ArgumentParser(
+        description=__doc__.strip().splitlines()[0],
+        epilog="Takes no options; writes antipodal_modes.json (~45 s).").parse_args()
     main()

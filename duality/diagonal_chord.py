@@ -282,8 +282,16 @@ def channel_moments_diag(q: float, delta_psi: float, n: int,
 # ---------------------------------------------------------------------------
 # finite-N ground truth (exact Wick machinery from syk-self-averaging)
 # ---------------------------------------------------------------------------
+def _syk_path():
+    """Put ../syk-self-averaging on sys.path once (guarded: repeated calls
+    do not grow it)."""
+    path = str(HERE.parent / "syk-self-averaging")
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
+
 def _finite_n(N: int, p: int, n: int, marks, ks=(0, 2)) -> dict:
-    sys.path.insert(0, str(HERE.parent / "syk-self-averaging"))
+    _syk_path()
     import exact_pair_moments as epm
     out = epm.channel_pair_moments(N, p, n, marks=marks, ks=ks)
     epm._DP_CACHE.clear()
@@ -310,10 +318,10 @@ def delta_slope_closed(K: int, q: float) -> float:
     (syk-self-averaging/double_scaling_law.py, sympy-certified).  These
     slopes are also the pair channel's double-scaling constants: the
     O(Delta) parts of the two halves cancel identically."""
-    R = {2: [1], 4: [1], 6: [5, 3], 8: [35, 56, 35, 10],
-         10: [294, 840, 1134, 951, 525, 189, 35]}[K]
     if K == 2:
         return 2.0
+    R = {4: [1], 6: [5, 3], 8: [35, 56, 35, 10],
+         10: [294, 840, 1134, 951, 525, 189, 35]}[K]
     return 4 * (1 - q) ** (K // 2 - 1) * sum(c * q ** j for j, c in enumerate(R))
 
 
@@ -394,7 +402,7 @@ def run(p: int = 4,
     # O(lambda^2) ~ 1/N^2, the same order as its finite-N corrections, so
     # the sharp gate lives on the O(1) words, not the alternating sums)
     fixed_p = []
-    sys.path.insert(0, str(HERE.parent / "syk-self-averaging"))
+    _syk_path()
     import exact_pair_moments as epm
     for N in (64, 256, 1024):
         lamN = 2.0 * p * p / N

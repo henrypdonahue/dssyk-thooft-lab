@@ -5,8 +5,10 @@ The large-q (lambda -> 0) anchor: closed forms, and their structure.
 
 Every formula here was transcribed from its source paper with
 equation-level verification.  The provenance block is at the bottom.
-test_largeq.py checks each one against this repo's ED bench,
-syk-self-averaging/largeq_bench.json.
+test_largeq.py checks the conventions bridge (<H^2>) and G(t) against
+this repo's ED bench, syk-self-averaging/largeq_bench.json; v(beta J),
+the quantization sets and the GR tower are checked analytically and
+structurally (largeq_kernel.py re-derives the sets independently).
 
 THE CONVENTIONS BRIDGE (exact, no approximation)
 
@@ -154,7 +156,7 @@ def gr_tower(q: float, n_max: int = 8):
 PROVENANCE = """
 Equation-verified sources (arXiv, fetched 2026-07-21):
   1604.07818 (Maldacena-Stanford): (2.2)-(2.3) model+variance; (2.16)
-    Liouville + scriptJ def; (2.18)-(2.19) thermal e^g and v; (3.113)-(3.120)
+    Liouville + scriptJ def; (2.18)-(2.19) thermal e^g and v; (3.112)-(3.118)
     exact large-q kernel eigenproblem at any coupling; (3.76) k_c = 2/[h(h-1)]
     at q = inf; (3.145) exact q=inf CoM propagator.
   1911.10171 (Streicher): (2.1) conventions (psi^2 = 1 THERE TOO, but

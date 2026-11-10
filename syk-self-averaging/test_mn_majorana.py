@@ -158,10 +158,11 @@ def test_bench_matched_lambda_honest_negative(bench):
 
 def test_eigenbasis_tower_matches_reference_path():
     """instance_moments builds the tower in the eigenbasis (ad_H there is
-    the Hadamard product with omega -- the 2x production path); a_n_tower
-    is the computational-basis reference.  The two must agree to rounding
+    the Hadamard product with omega -- the 2x production path);
+    conserved_points.a_n_tower is the computational-basis reference.  The two must agree to rounding
     on every reported moment, including the conserved n = 1 zeros."""
     import mn_majorana_bench as mb
+    from conserved_points import a_n_tower
 
     N, p, seed = 10, 4, 7001
     rng = np.random.default_rng(seed)
@@ -170,7 +171,7 @@ def test_eigenbasis_tower_matches_reference_path():
     E, V = np.linalg.eigh(H)
     omega = E[:, None] - E[None, :]
     psis = [op.toarray() for op in majorana_operators(N)]
-    A = mb.a_n_tower(H, psis, 3)
+    A = a_n_tower(H, psis, 3)
     got = mb.instance_moments(N, p, seed)
     for n in (1, 2, 3):
         M = V.conj().T @ A[n] @ V

@@ -33,8 +33,8 @@ paper's CP = (-1)^{n+1} assignment can be tested on.
 EXACT STRUCTURAL CHECKS BUILT IN.
 
   * n = 0 and 1: all spectral weight is at omega = 0.  That is the
-    conserved charge and the Hamiltonian, the non-propagating photon and
-    graviton.  Machine-exact.
+    conserved charge and the Hamiltonian, the paper's non-propagating
+    "photon" and "graviton".  Machine-exact.
   * n >= 2: weight moves to omega != 0.  These are the dynamical
     candidates.
 
@@ -49,7 +49,8 @@ organizes.  Those are inputs for the moments-against-sum-rules program.
 They are not a spectrum match.
 
 Output: mn_spectra.json, holding histogrammed S_n^+- and summary numbers,
-plus mn_spectra.png.  Runtime is seconds at Nc = 10, the default.  Pass
+plus mn_spectra.png, both next to this file.  Runtime is about 35 s at
+Nc = 10, the default (one core).  Pass
 --big for Nc = 12, which takes minutes at dim 4096, and writes to the
 separate stem mn_spectra_big.{json,png} so the committed Nc = 10
 artifacts survive.  Bin edges are spectrum-scaled per run, so big and
@@ -58,14 +59,17 @@ non-big histograms are not bin-aligned.
 
 from __future__ import annotations
 
+import argparse
 import json
-import sys
+from pathlib import Path
 
 import numpy as np
 
 from dirac import (draw_couplings, dirac_hamiltonian, annihilators,
                    mn_tower, particle_hole, cp_projections,
                    symmetrized_weight)
+
+HERE = Path(__file__).resolve().parent
 
 
 def spectral_weights(M: np.ndarray, V: np.ndarray, omega: np.ndarray):
@@ -139,7 +143,8 @@ def run(Nc: int = 10, p: int = 4, n_max: int = 6, seed: int = 21,
         print(f"{n:>3} {cp_target:>+7d} {row['static_fraction']:>11.2e} "
               f"{frac_right:>14.3f} {rms_omega:>10.3f}")
 
-    print("\nn = 0, 1: static_fraction = 1 (conserved photon/graviton) is the")
+    print("\nn = 0, 1: static_fraction = 1 (conserved: the paper's "
+          "photon/graviton) is the")
     print("built-in exactness check; n >= 2 weight is genuinely dynamical.")
     if outfile:
         with open(outfile, "w") as fh:
@@ -148,7 +153,7 @@ def run(Nc: int = 10, p: int = 4, n_max: int = 6, seed: int = 21,
     return results
 
 
-def plot(results, fname="mn_spectra.png"):
+def plot(results, fname=HERE / "mn_spectra.png"):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -190,8 +195,13 @@ def plot(results, fname="mn_spectra.png"):
 
 
 if __name__ == "__main__":
-    big = "--big" in sys.argv
+    ap = argparse.ArgumentParser(
+        description="CP-resolved M_n spectral functions; with no flag, Nc = 10 "
+                    "(rewrites mn_spectra.json/.png next to this file)")
+    ap.add_argument("--big", action="store_true",
+                    help="Nc = 12, written to mn_spectra_big.json/.png")
+    big = ap.parse_args().big
     # --big writes to its own files so the committed Nc=10 artifacts survive
     stem = "mn_spectra_big" if big else "mn_spectra"
-    res = run(Nc=12 if big else 10, outfile=f"{stem}.json")
-    plot(res, fname=f"{stem}.png")
+    res = run(Nc=12 if big else 10, outfile=HERE / f"{stem}.json")
+    plot(res, fname=HERE / f"{stem}.png")
