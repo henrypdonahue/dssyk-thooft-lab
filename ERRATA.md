@@ -87,7 +87,7 @@ entries and the A₇, A₈ rows were right, and no conclusion changes.
 **E24. "With W = 1 the rung reproduces every coefficient through n = 7
 except three, which need sector-dependent τ² weights, −5/6 for O₂ and
 −9/10 for O₃, not Liouville's −1; the rung's subleading form is not
-identified"** (`50105e0`, `a9c2319`). Corrected 2026-11-10 (@HASH@). The
+identified"** (`50105e0`, `a9c2319`). Corrected 2026-11-10 (`d6534f3`). The
 model iterated the rung (B = B_OPE + K B), which first differs from one
 rung at n − m = 4, in exactly those three coefficients; −5/6 and −9/10
 compensated the spurious second rung. One rung of Liouville's own
@@ -99,7 +99,7 @@ now a prediction.
 **E25. "The gapless spectrum is consistent with the paper's own picture
 of a deconfined, conformal stretched horizon"** (README item 4,
 `duality/HORIZON.md`, `road_map.md`, the walkthrough; `17b52cd`).
-Withdrawn 2026-11-10 (@HASH@). That picture, 2506.18054v3 §6 with the
+Withdrawn 2026-11-10 (`d6534f3`). That picture, 2506.18054v3 §6 with the
 deconfined layer a string length from the horizon, was itself corrected
 by Susskind ([2511.10907](https://arxiv.org/abs/2511.10907)): the layer
 sits within a Planck distance, a factor ~√N closer, and 2607.05678v2
@@ -110,7 +110,7 @@ proposal there, not a consistency. The computation is unchanged.
 
 **E26. "Zero residual on every checked word (176 words at n = 7, 257 at
 n = 8)" as the verification of the decomposition** (`e66be31`, the note
-§4 and the `singlet_tower.py` docstring). Corrected 2026-11-10 (@HASH@).
+§4 and the `singlet_tower.py` docstring). Corrected 2026-11-10 (`d6534f3`).
 The counts include each word (A, B) and its mirror (B, A), which give
 the same equation, words already used to solve the sectors, and the
 word that defines the norm: the independent checks are 55 at n = 7 and
