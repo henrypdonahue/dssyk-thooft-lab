@@ -67,19 +67,22 @@ on every checked word. The chord that is new at level n is faint: 14.9%,
 1.6%, 0.18%, 0.02%, 0.002% and 0.0002% of the dynamical weight for
 n = 3..8 at λ = 2, with norm ∝ λ^(2⌊n/2⌋) at small λ. As λ → 0 the even
 chords fade out of A₃..A₈ and the odd ones remain (A₃, A₄ → O₃;
-A₅ → 99.5% O₃ + 0.53% O₅; A₈ → 97.8% O₃ + 2.0% O₅ + 0.014% O₇). The
+A₅ → 99.47% O₃ + 0.53% O₅ in the limit; A₈ at λ = 1/1280 is 97.8% O₃ +
+2.0% O₅ + 0.014% O₇). The
 surviving dimensions, 2, 3, 5, 7, follow the pattern of the large-p SYK
 bilinear spectrum h = 2, 3, 5, 7, …. Levels 7 and 8 were computed after
-the pattern was stated and bore it out.
+the pattern was stated and bore it out ([note](notes/singlet-tower-note.md)
+§4, [code](duality/singlet_tower.py)).
 
-**3a. As λ → 0 the chords are conformal primaries (exact, n ≤ 7, not
-proved).** Each dressing becomes a polynomial in the scaled frequency
-with rational coefficients. With the chord rule's grade remainder
-switched off, every Aₙ is exactly the one-dimensional conformal OPE of
-the bilocal Σψᵢ(0)ψᵢ(t) in the frame u = tanh(√λ t), with Oₘ a primary
-of weight m. With the remainder on, one ladder rung of the linearized
-large-q Liouville form is added. The odd survival then follows from the
-norm law, and the shares are exact rationals (A₅ → 2047/2058 O₃ +
+**3a. As λ → 0 the levels are a conformal OPE plus one ladder rung
+(exact limits through n = 7, not proved).** Each dressing becomes a
+polynomial in the scaled frequency with rational coefficients. With the
+chord rule's grade remainder switched off, every Aₙ is exactly the
+one-dimensional conformal OPE of the bilocal Σψᵢ(0)ψᵢ(t) in the frame
+u = tanh(√λ t), with Oₘ a primary of weight m. With the remainder on,
+one ladder rung of the linearized large-p Liouville form is added, so
+the full channels are not exactly conformal. The odd survival then
+follows from the norm law, and the shares are exact rationals (A₅ → 2047/2058 O₃ +
 11/2058 O₅). The odd T = ∞ OPE coefficients equal N(1 − k_c(h))² times
 the Gross–Rosenhaus IR couplings, k_c(h) = 2/(h(h−1)), exactly at
 h = 3, 5, 7. That relation is identified, not derived
@@ -193,10 +196,10 @@ or an identical BLAS guarantee. CI covers Python 3.9 and 3.12 on Linux.
 
 Run tests separately in each directory (the three modules and
 `scripts/`), as the Makefile does; the code uses flat script imports.
-`test` excludes slow tests (696 fast tests, 14 of them for the
+`test` excludes slow tests (713 fast tests, 14 of them for the
 runner); `test-all` includes them. `reproduce` runs the fast
 deterministic producers and plots in a few minutes; `reproduce-slow`
-runs every campaign and reference generator and takes many hours.
+runs every campaign and reference generator and takes about a day.
 Producers overwrite their output files, so use a scratch copy or the
 logged snapshot runner, which also compares regenerated artifacts with
 the committed ones ([REPRODUCIBILITY.md](REPRODUCIBILITY.md)).
@@ -226,8 +229,9 @@ folded four-point functions.
 
 The main theoretical gaps are the state/time/operator dictionary that
 relates boost-frequency data to invariant masses, a proof of the
-matter-chord decomposition for general n, and the full Dirac
-CP-resolved channel. [road_map.md](road_map.md) Part III lists them with
+matter-chord decomposition and its norm law for general n, a derivation
+of the relation between the odd T = ∞ OPE coefficients and the
+Gross–Rosenhaus couplings, and the full Dirac CP-resolved channel. [road_map.md](road_map.md) Part III lists them with
 the next computational steps.
 
 Code and original documentation are [MIT licensed](LICENSE). Third-party

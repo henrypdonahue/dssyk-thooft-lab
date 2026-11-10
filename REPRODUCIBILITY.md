@@ -3,7 +3,7 @@
 The Makefile is the command inventory. Use its four targets: `test`,
 `test-all`, `reproduce`, and `reproduce-slow`. Slow reproduction includes
 large ED ensembles, exact rational interpolation, multiprocessing campaigns
-and high-precision reference generation. Allow many hours and inspect logs;
+and high-precision reference generation. Allow about a day and inspect logs;
 the short unit suite does not regenerate those artifacts.
 
 ## Preserve the working tree and record the run

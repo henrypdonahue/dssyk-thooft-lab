@@ -245,7 +245,8 @@
  },
  "norms_off_equal": true,
  "max_residual": 2.4680163803480922e-14,
- "sigma_max": 4.1125793927008854e-13,
+ "max_drift": 4.404014346157903e-06,
+ "sub_max": 2.1437482085947926e-18,
  "top_is_block_coefficient": {
   "(2, 2)": true,
   "(3, 2)": true,
@@ -402,10 +403,10 @@
  },
  "ope_c2_scaled": {
   "2": "4",
-  "4": "13/45",
-  "6": "103/5670",
   "3": "8/9",
+  "4": "13/45",
   "5": "22/1575",
+  "6": "103/5670",
   "7": "1/2205"
  },
  "rung_tau2_fit": [
@@ -462,6 +463,6 @@
   "gr": "1/4000",
   "chord_over_gr": "100/49"
  },
- "runtime_s": 248.6,
- "provenance": "conformal_tower.py --run -- lambda -> 0 limits of the singlet-tower dressings from exact rational chord sums at lambda = 2^-9..2^-14, against the tanh-frame SL(2) OPE and the one-rung ladder"
+ "runtime_s": 224.0,
+ "provenance": "conformal_tower.py --run 5 -- lambda -> 0 limits of the singlet-tower dressings from exact rational chord sums at lambda = 2^-9..2^-14, against the tanh-frame SL(2) OPE and the one-rung ladder"
 }

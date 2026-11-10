@@ -74,6 +74,16 @@ best-fit scale the shape deviates by about 0.045λ.
 4p(10p − 21) passes the Δ = 2 value 28p² only at p > 7; at p = 4 and 6
 it lies below it. The law itself stands, now checked at p = 10 and 12.
 
+**E23. The small-λ share table, "the arrows give the values at
+λ = 1/1280": A₃, A₄ → 100% O₃, A₅ → 99.5% O₃ + 0.53% O₅, A₆ → 99.2% O₃
++ 0.80% O₅** (`64636b8`, and the summaries quoting A₅). Corrected
+2026-11-10. The O₃ entries of A₃..A₆ were rounded λ → 0 limits, not the
+λ = 1/1280 values, and the A₅ row summed to 100.03%. At λ = 1/1280 the
+O₃ shares are 99.65%, 99.61%, 99.19% and 98.96%, with the rest in the
+fading even chords. The exact limits are 1, 1, 2047/2058 = 99.47% and
+20443/20608 = 99.20% (`duality/conformal_tower.py`). The O₅ and O₇
+entries and the A₇, A₈ rows were right, and no conclusion changes.
+
 ## The dS / OTOC axis
 
 **E7. "Re a = −1 exactly, at every temperature," and "ED/closed-form gap

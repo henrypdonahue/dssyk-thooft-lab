@@ -33,18 +33,20 @@ chord at every λ, and toward λ → 0 the higher Aₙ concentrate on the odd
 chords O₃, O₅ and O₇ (`singlet_tower.py`, `notes/singlet-tower-note.md`).
 That matches the pattern of the large-q bilinear dimensions
 h = 2, 3, 5, 7, …. Semiclassical correlators of the two limits agree
-(`ANTISCRAMBLING.md` checks the OTOC: chord/closed → 1 as λ → 0). The
-quantitative map now exists for the odd tower (`conformal_tower.py`). As
-λ → 0 the chords are weight-m primaries of a conformal OPE of the
-bilocal, and their infinite-temperature OPE coefficients are, exactly at
-h = 3, 5, 7,
+(`ANTISCRAMBLING.md` checks the OTOC: chord/closed → 1 as λ → 0). An
+exact empirical relation now links the odd tower to the GR couplings
+(`conformal_tower.py`). As λ → 0, with the chord rule's grade remainder
+off, the chords are weight-m primaries of a conformal OPE of the
+bilocal (the full rule adds one ladder rung), and their
+infinite-temperature OPE coefficients are, exactly at h = 3, 5, 7,
 
   Cₕ² = N (1 − k_c(h))² cₕ²(GR),  k_c(h) = 2/(h(h−1)),  N = 2p²/λ,
 
 with cₕ² the GR (2.15) couplings above. For the odd tower, then, the
 1/q² of the couplings and the 1/λ of the chord coefficients are the same
-factor, N/q² = 2/λ. The relation was read off from three operators, and
-it is not derived.
+factor, N/q² = 2/λ. The (1 − k_c)² form was read off from the h = 5
+and 7 ratios, so h = 3 is the one out-of-sample check, and the relation
+is not derived.
 
 **The skeleton is now derived, not transcribed.** `largeq_kernel.py`
 takes the Maldacena–Stanford finite-T ladder-kernel eigenproblem (their

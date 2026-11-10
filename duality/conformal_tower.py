@@ -9,7 +9,7 @@ polynomial in H plus matter chords O_m of dimension m = 2..n, each dressed
 by a polynomial F_{n,m}(E, E') acting from the left (E) and right (E').
 It measured, at small lambda, that the even chords fade and the odd ones
 survive (2, 3, 5, 7), the pattern of the large-q SYK bilinear spectrum,
-and road_map.md Part III item 3 asks whether the chords behave as the
+and road_map.md Part III item 3 asked whether the chords behave as the
 conformal operators of that spectrum.  This module answers in the
 semiclassical limit.
 
@@ -26,9 +26,13 @@ with P_{n,m} a polynomial of the parity of n - m and NO sigma dependence
 (the sigma terms vanish as powers of a).  The coefficients of P_{n,m} are
 rationals (chord_limits(): exact rational arithmetic at
 lambda = 2^-9 .. 2^-14 and q within 1e-60 of e^-lambda, polynomial
-extrapolation to lambda = 0, rational reconstruction; the residuals,
-below 1e-13, are recorded).  The same holds for the norms: norm_m = nu_m lambda^(2 floor(m/2))
-(1 + O(lambda)) with nu_2..nu_6 = 1, 2, 52/5, 88/7, 4120/7.
+extrapolation to lambda = 0, rational reconstruction).  Three guards are
+recorded: the reconstruction residual (below 1e-13), the drift of every
+limit when an end point is dropped (a quantity that does not converge
+moves at O(1)), and the size of every term that must vanish (sigma terms
+and wrong-parity w terms, below 1e-17).  The same holds for the norms:
+norm_m = nu_m lambda^(2 floor(m/2)) (1 + O(lambda)) with
+nu_2..nu_7 = 1, 2, 52/5, 88/7, 4120/7, 720.
 
 RESULT 1: WITHOUT THE REMAINDER, A_n IS AN SL(2) OPE
 ----------------------------------------------------
@@ -48,12 +52,15 @@ with each O_m a primary of weight h = m and Delta_psi -> 0
 P_{n,m} = 4 C(n, m) (m)_(n-m) / (2m)_(n-m) w^(n-m) + ..., and every lower
 coefficient is the frame correction; e.g. A_4 > (36/5 w^2 + 16/5) O_2,
 A_6 > (60/7 w^4 + 96/7 w^2 + 64/7) O_2.  The frame u = tanh(a t) is the
-one in which the chord two-point function sech^(2m)(a t) is a conformal
-two-point function; u = e^(2at) is Moebius-equivalent and gives the same
-numbers, and u = tan(a t) flips the sign of every frame correction (it
-fails).  The match is exact on all 28 coefficients below the diagonal
-through n = 7 (the tests re-derive the 17 through n = 6;
-conformal_tower.json has n = 7).
+one in which the chord two-point function takes conformal form:
+sech^(2m)(a(t1 - t2)) = (du1/dt du2/dt)^m (1 - u1 u2)^(-2m), the
+two-point function with one point inverted (u2 -> 1/u2).  u = e^(2at)
+is Moebius-equivalent and gives the same numbers, and u = tan(a t)
+multiplies the w^(n-m-2j) coefficient by (-1)^j, e.g.
+A_6 > (60/7 w^4 - 96/7 w^2 + 64/7) O_2 (it fails).  The match is exact
+on all 28 coefficients below the diagonal through n = 7, 13 of them
+frame corrections (the fast tests re-derive the 9 through n = 5, the
+slow test the 17 through n = 6; conformal_tower.json has n = 7).
 
 RESULT 2: THE REMAINDER IS THE FIRST LADDER RUNG
 ------------------------------------------------
@@ -67,12 +74,14 @@ where B(t1, t2) = sum_j psi_j(t1) psi_j(t2) (so the total translation
 e^(i t1 ad_H) acts on it).  This is the shape of the linearized large-q
 Liouville equation d1 d2 dg = -2 J^2 e^g dg, whose rung is e^g = sech^2.
 At W = 1 it reproduces every coefficient through n = 7 except the three
-that see the tau^2 term of W.  Those need a sector-dependent tau^2 weight,
--5/6 for O_2 (A_6 and A_7 agree) and -9/10 for O_3, where Liouville's
-e^g = sech^2 would give -1 (rung_tau2_fit()).  So the rung's leading form
-is identified and its subleading form is not.  The remainder is what
-makes the full channels non-conformal at lambda -> 0; its weight is O(1)
-there (it moves the O_5 share of A_5 by about 10%).
+that see the tau^2 term of W (10 nontrivial matches with kappa = -2
+fixed).  Those three need a tau^2 weight of -5/6 for O_2 (fixed by two
+coefficients, from A_6 and A_7, which agree) and -9/10 for O_3 (fixed by
+one, so it is a fit, not a check), where Liouville's e^g = sech^2 would
+give -1 (rung_tau2_fit()).  So the rung's leading form is identified and
+its subleading form is not.  The remainder is what makes the full
+channels non-conformal at lambda -> 0; its weight is O(1) there (it
+lowers the O_5 share of A_5 from 11/1911 to 11/2058, by about 7%).
 
 RESULT 3: EXACT SEMICLASSICAL SHARES, AND WHY THE ODD CHORDS SURVIVE
 -------------------------------------------------------------------
@@ -87,8 +96,10 @@ weight are exact rationals (limiting_shares()):
 singlet_tower.py's values at lambda = 1/1280 approach these.  The weight
 of dressed O_m in A_n scales as lambda^(n - m + 2 floor(m/2)): lambda^(n-1)
 for odd m, lambda^n for even m.  So the even chords fade BECAUSE of the
-norm law norm_m ~ lambda^(2 floor(m/2)); given the law, the survival
-pattern is derived, not observed.
+norm law norm_m ~ lambda^(2 floor(m/2)): given that law and the scaling
+F_{n,m} ~ a^(n-m) with a nonzero limit (both established here through
+n = 7, neither proved), the survival pattern follows rather than being a
+separate observation.
 
 RESULT 4: THE T = infinity OPE COEFFICIENTS ARE THE IR ONES, TIMES (1-k_c)^2
 ---------------------------------------------------------------------------
@@ -102,11 +113,17 @@ conformal tower, exactly for h = 3, 5, 7,
     C_h^2 = N (1 - k_c(h))^2 c_h^2,   k_c(h) = 2/(h(h-1)),   N = 2 p^2/lambda,
 
 with k_c the q = infinity conformal ladder-kernel eigenvalue
-(Maldacena-Stanford (3.76)).  The form was read off from the h = 5 and 7
-ratios (27/20 and 10/7 are (s-1)/s over its h = 3 value, s = h(h-1)/2);
-the absolute normalization at h = 3, exactly N, is an independent check.
-It is not derived.  It predicts norm_9 -> (21482496/143) lambda^8, recorded in the
-artifact for a future n = 9 computation.
+(Maldacena-Stanford 1604.07818 (3.76)), taken as the regular function
+2/(h(h-1)): at q -> infinity the kernel's poles at h = 1 + 2/q + 2n land on
+the odd integers, so the pointwise limit there is singular.  The form was
+read off from the h = 5 and 7 ratios (27/20 and 10/7 are (s-1)/s over its
+h = 3 value, s = h(h-1)/2), and it is one of several equivalent
+factorizations: since q eps_h = (1 + k_c)/(1 - k_c), it is also GR with
+their eps_h^2 replaced by (1 + 1/s)^2.  The absolute normalization at
+h = 3, exactly N, is the one out-of-sample check (given psi^2 = 1 and
+GR's four-point normalization of c_h^2).  It is not derived.  It
+predicts norm_9 -> (21482496/143) lambda^8, recorded in the artifact for
+a future n = 9 computation.
 
 SCOPE.  Majorana A_n, strict N = infinity, the leading order in lambda.
 "Exact" for the limits means exact rational arithmetic plus polynomial
@@ -115,26 +132,31 @@ is not a symbolic proof.  Results 1 and 2 are verified identities on
 the levels computed, not derivations.
 
 Output: conformal_tower.json.  `python conformal_tower.py` prints the
-n <= 5 comparison in seconds; `--run [KMAX]` writes the artifact
-(KMAX = 4, n <= 6, about a minute; KMAX = 5, n = 7, builds the K = 16
-word tables first, about 4 minutes on one core).
+n <= 5 comparison in seconds; `--run` writes the committed n <= 7
+artifact (KMAX = 5: it builds the K = 16 word tables first, about
+4 minutes on one core); `--run 4` stops at n = 6 (a minute) and is for
+checking only, since the tests expect n = 7.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import math
 import time
 from fractions import Fraction
 from math import comb, factorial
 from pathlib import Path
+from typing import Optional
 
 import singlet_tower as st
 
 HERE = Path(__file__).resolve().parent
 
 LAMS = tuple(Fraction(1, 2 ** j) for j in range(9, 15))
+# a limit that moves by more than this when an end point of LAMS is dropped
+# is not converging: five-point roundoff is 2e-8 at n = 6, while a stray
+# c / lambda term moves by at least half its own size
+DRIFT_TOL = 1e-4
 
 
 # ---------------------------------------------------------------------------
@@ -184,7 +206,7 @@ def _tanh_series(nmax):
         T[1] = Fraction(1)
     for n in range(1, nmax):
         sq = sum(T[i] * T[n - i] for i in range(n + 1))
-        T[n + 1] = ((1 if n == 0 else 0) - sq) / (n + 1)
+        T[n + 1] = -sq / (n + 1)
     return T
 
 
@@ -268,14 +290,15 @@ def block_coefficient(n: int, m: int) -> Fraction:
 # the ladder rung
 # ---------------------------------------------------------------------------
 def ladder_dressings(base: dict, nmax: int, rung=(1,), kappa=-2,
-                     iterations: int = None) -> dict:
+                     iterations: Optional[int] = None) -> dict:
     """Solve B = B_base + K B sector by sector, with
     (K B)(0, t) = kappa Int_{0<t1<t2<t} W(t2 - t1) e^(i w t1) b(t2 - t1),
     a = 1, W(tau) = sum rung[k] tau^k.  base: {(n, m): {w-power: c}}.
     In dressing language, with c_n the t^n coefficients of W(tau) b(tau),
     F_N = F_N^base + kappa sum_n c_n n! i^(-n-2) w^(N-2-n).  kappa = -2 is
     the sign of the linearized Liouville rung, -2 J^2 e^g."""
-    iterations = iterations or nmax
+    if iterations is None:
+        iterations = nmax
     out = {}
     for m in range(2, nmax + 1):
         F0 = {n: dict(base.get((n, m), {})) for n in range(nmax + 1)}
@@ -292,9 +315,9 @@ def ladder_dressings(base: dict, nmax: int, rung=(1,), kappa=-2,
                         if j < 0 or not wk or not F.get(j):
                             continue
                         # term: kappa * wk * F_j i^j / j! * n! * i^(-n-2) * w^(N-2-n)
-                        ph = j - n - 2          # power of i; even by parity
+                        ph = j - n - 2          # power of i, = -k - 2
                         if ph % 2:
-                            continue
+                            raise ValueError("the rung must be even in tau")
                         coef = wk * (kappa * _sgn(ph // 2)
                                      * Fraction(factorial(n), factorial(j)))
                         acc = _padd(acc, {e + N - 2 - n: coef * v
@@ -340,9 +363,12 @@ def _q_of(lam: Fraction) -> Fraction:
 
 
 def _scaled_dressings(T, n: int) -> dict:
-    """{(m, w-power): c / lambda^((n-m-power)/2)} for the sigma-free part of
-    F_{n,m}, plus {(m, 'sigma', a, b): ...} for the sigma terms (which must
-    vanish in the limit)."""
+    """{(m, w-power): c / lambda^((n-m-power)/2)} for the leading part of
+    F_{n,m} (no sigma, w-power of the parity of n - m), plus
+    {(m, "sub", a, b): t} for every other term sigma^a w^b: its scaled
+    size is s = c lambda^((b-k)/2), k = n - m, and t = s / lambda^(par/2)
+    with par = (b - k) mod 2 is rational.  Such a term vanishes in the
+    limit iff t -> 0 (par = 0) or t stays finite (par = 1, s ~ t sqrt(lambda))."""
     out = {}
     lam = T.lam
     for m, f in T.a_kernels(n).items():
@@ -354,7 +380,7 @@ def _scaled_dressings(T, n: int) -> dict:
                     a_pow = x + y                       # sigma power
                     b_pow = (i - x) + (j - y)           # w power
                     v = c * comb(i, x) * comb(j, y) * Fraction(1, 2 ** b_pow) \
-                        * (-1) ** (j - y)
+                        * _sgn(j - y)
                     poly[(a_pow, b_pow)] = poly.get((a_pow, b_pow), 0) + v
         k = n - m
         for (a_pow, b_pow), c in poly.items():
@@ -363,9 +389,8 @@ def _scaled_dressings(T, n: int) -> dict:
             if a_pow == 0 and (k - b_pow) % 2 == 0:
                 out[(m, b_pow)] = c / lam ** ((k - b_pow) // 2)
             else:
-                # scaled size of a sigma term: c * lam^((b-k)/2); report its
-                # square to stay rational
-                out[(m, "sigma", a_pow, b_pow)] = c * c * lam ** (b_pow - k)
+                par = (b_pow - k) % 2
+                out[(m, "sub", a_pow, b_pow)] = c * lam ** ((b_pow - k - par) // 2)
     return out
 
 
@@ -381,9 +406,22 @@ def _extrapolate(xs, ys) -> Fraction:
     return tot
 
 
-def _reconstruct(v: Fraction, max_den: int = 10 ** 5) -> tuple:
+def _reconstruct(v: Fraction, max_den: int = 10 ** 3) -> tuple:
+    """The nearest rational of denominator <= max_den, and the distance.
+    (The largest denominator met through n = 7 is 35.)"""
     r = v.limit_denominator(max_den)
     return r, abs(float(v - r))
+
+
+def _limit(xs, ys) -> tuple:
+    """The lambda -> 0 extrapolation through all points, and its largest
+    change when the first or the last point is dropped (relative to
+    max(1, |limit|)).  A quantity that does not converge, e.g. a stray
+    1/lambda, gives an O(1) change; a convergent one, roundoff."""
+    L = _extrapolate(xs, ys)
+    drift = max(abs(float(_extrapolate(xs[1:], ys[1:]) - L)),
+                abs(float(_extrapolate(xs[:-1], ys[:-1]) - L)))
+    return L, drift / max(1.0, abs(float(L)))
 
 
 def chord_limits(kmax: int = 3, remainder: bool = True, lams=LAMS) -> dict:
@@ -392,8 +430,12 @@ def chord_limits(kmax: int = 3, remainder: bool = True, lams=LAMS) -> dict:
 
     Returns {"dressings": {(n, m): {w-power: Fraction}}, "norms": {m: Fraction},
     "max_residual": worst |extrapolated - reconstructed rational|,
-    "sigma_max": the largest extrapolated sigma term (squared, scaled),
-    "mu0": {(n, m): limit of sector weight / lambda^(n-1)}}."""
+    "max_drift": worst change of a limit when one end point is dropped,
+    "sub_max": the largest extrapolated subleading term that must vanish
+    (the par = 0 terms of _scaled_dressings; the par = 1 ones only have to
+    stay finite, which max_drift checks),
+    "mu0": {(n, m): limit of sector weight / lambda^(n-1)}}.
+    Raises if any limit fails to reconstruct or drifts."""
     cls = st.TowerChord if remainder else NoRemainder
     rows = []
     for lam in lams:
@@ -408,37 +450,38 @@ def chord_limits(kmax: int = 3, remainder: bool = True, lams=LAMS) -> dict:
         for m, v in T.norm.items():
             d[("norm", m)] = v / lam ** (2 * (m // 2))
         rows.append(d)
-    keys = set(rows[0])
-    for r in rows[1:]:
-        keys |= set(r)
+    keys = set().union(*rows)
     xs = list(lams)
     dress: dict = {}
     norms: dict = {}
     mu0: dict = {}
-    worst = 0.0
-    sigma_max = 0.0
-    for key in keys:
-        ys = [r.get(key, Fraction(0)) for r in rows]
-        L = _extrapolate(xs, ys)
-        if key[0] == "norm":
-            r, res = _reconstruct(L)
-            norms[key[1]] = r
-            worst = max(worst, res)
-        elif key[0] == "mu0":
+    worst = drift = sub_max = 0.0
+    for key in sorted(keys, key=str):
+        L, dr = _limit(xs, [r.get(key, Fraction(0)) for r in rows])
+        if dr > DRIFT_TOL:
+            raise ArithmeticError(f"{key}: the lambda -> 0 limit drifts by {dr:.1e}")
+        drift = max(drift, dr)
+        if key[0] == "mu0":
             mu0[(key[1], key[2])] = L
-        elif len(key) > 3 and key[2] == "sigma":
-            sigma_max = max(sigma_max, abs(float(L)))
+        elif len(key) == 5:                     # (n, m, "sub", a, b)
+            if (key[4] - key[0] + key[1]) % 2 == 0:
+                sub_max = max(sub_max, abs(float(L)))
         else:
-            n, m, b = key
             r, res = _reconstruct(L)
             worst = max(worst, res)
-            if r != 0:
-                dress.setdefault((n, m), {})[b] = r
-    # the top chord of each level: constant dressing 4
-    for n in range(2, kmax + 3):
-        dress[(n, n)] = {0: Fraction(4)}
+            if key[0] == "norm":
+                norms[key[1]] = r
+            elif r != 0:
+                dress.setdefault((key[0], key[1]), {})[key[2]] = r
+    if worst > 1e-10 or sub_max > 1e-10:
+        raise ArithmeticError(f"lambda -> 0 limit not clean: residual {worst:.1e}, "
+                              f"subleading {sub_max:.1e}")
+    # the top chord of each level carries the constant dressing 4
+    dress[(2, 2)] = {0: Fraction(4)}
+    for n in range(3, kmax + 3):
+        assert dress[(n, n)] == {0: Fraction(4)}, n
     return dict(dressings=dress, norms=norms, mu0=mu0, max_residual=worst,
-                sigma_max=sigma_max)
+                max_drift=drift, sub_max=sub_max)
 
 
 # ---------------------------------------------------------------------------
@@ -470,7 +513,10 @@ def sector_weight(P: dict, m: int) -> Fraction:
     for i, a in P.items():
         for j, b in P.items():
             tot += a * b * ladder_moment(m, i + j)
-    return tot if tot >= 0 else -tot
+    # the ladder's spectral measure (the Fourier transform of sech^(2m)) is
+    # positive, so a negative weight is a bug, not a sign convention
+    assert tot >= 0, (P, m)
+    return tot
 
 
 def limiting_shares(dressings: dict, norms: dict, nmax: int) -> dict:
@@ -482,7 +528,7 @@ def limiting_shares(dressings: dict, norms: dict, nmax: int) -> dict:
         ws = {}
         for m in range(2, n + 1):
             P = dressings.get((n, m))
-            if not P or m not in norms:
+            if not P:                       # the sector is absent at lambda -> 0
                 continue
             ws[m] = (2 * (m // 2) + n - m, norms[m] * sector_weight(P, m))
         lead = min(p for p, _ in ws.values())
@@ -501,16 +547,8 @@ def ope_coefficients(norms: dict) -> dict:
 
 def gr_ratio(n: int) -> Fraction:
     """Gross-Rosenhaus c_n^2 / c_1^2 at q -> infinity (1702.08016 (2.15);
-    largeq_anchor.gr_tower), exactly: the Gamma ratio is rational."""
-    def part(k):
-        eps = Fraction(2 * k * k + k + 1, 2 * k * k + k - 1)
-        s = k * (1 + 2 * k)
-        # sqrt(pi) Gamma(2k+1) / (Gamma(2k+1/2) 2^(4k-2)), Gamma(2k+1/2) =
-        # (4k)! sqrt(pi) / (4^(2k) (2k)!)
-        g = Fraction(factorial(2 * k) * 4 ** (2 * k) * factorial(2 * k),
-                     factorial(4 * k) * 2 ** (4 * k - 2))
-        return eps * eps * Fraction(s, (s + 1) * (s - 1)) * g
-    return part(n) / part(1)
+    the float tower is largeq_anchor.gr_tower), exactly."""
+    return gr_c2_q2(n) / gr_c2_q2(1)
 
 
 def gr_c2_q2(n: int) -> Fraction:
@@ -536,19 +574,22 @@ def odd_ope_from_gr(h: int) -> Fraction:
 
 def rung_tau2_fit(frame: dict, chord_on: dict, nmax: int) -> list:
     """For each coefficient that the W = 1 ladder misses, the tau^2 weight
-    w2 of W(tau) = 1 + w2 tau^2 that would fix it (the miss is linear in
-    w2).  Returns [(n, m, w-power, w2)]."""
-    l0 = ladder_dressings(frame, nmax, rung=(1, 0, 0))
-    l1 = ladder_dressings(frame, nmax, rung=(1, 0, 1))
+    w2 of W(tau) = 1 + w2 tau^2 that would fix it.  Returns
+    [(n, m, w-power, w2)], w2 = None where the coefficient does not see w2
+    or sees it nonlinearly (two tau^2 insertions, from n - m = 6 on); the
+    linearity is checked, not assumed."""
+    l0, l1, l2 = (ladder_dressings(frame, nmax, rung=(1, 0, c)) for c in (0, 1, 2))
     out = []
     for key, P in sorted(chord_on.items()):
         if key[0] <= key[1]:
             continue
         for e in sorted(set(P) | set(l0[key])):
-            v0, v1, d = l0[key].get(e, 0), l1[key].get(e, 0), P.get(e, 0)
-            if v0 != d:
-                out.append((key[0], key[1], e,
-                            (d - v0) / (v1 - v0) if v1 != v0 else None))
+            v0, v1, v2, d = (x[key].get(e, 0) for x in (l0, l1, l2, chord_on))
+            if v0 == d:
+                continue
+            linear = v2 - v0 == 2 * (v1 - v0)
+            out.append((key[0], key[1], e,
+                        (d - v0) / (v1 - v0) if v1 != v0 and linear else None))
     return out
 
 
@@ -565,28 +606,30 @@ def compare(kmax: int = 3, verbose: bool = True) -> dict:
     off = chord_limits(kmax, remainder=False)
     on = chord_limits(kmax, remainder=True)
     frame_match = {str(k): off["dressings"].get(k) == frame[k]
-                   for k in sorted(frame) if k[0] > k[1] and k[0] <= nmax}
+                   for k in sorted(frame) if k[0] > k[1]}
     ladder = ladder_dressings(frame, nmax, rung=(1,))
     ladder_match = {str(k): on["dressings"].get(k) == ladder[k]
-                    for k in sorted(ladder) if k[0] > k[1] and k[0] <= nmax}
+                    for k in sorted(ladder) if k[0] > k[1]}
     top = {str((n, m)): frame[(n, m)].get(n - m) == block_coefficient(n, m)
            for (n, m) in frame if n >= m}
     shares = limiting_shares(on["dressings"], on["norms"], nmax)
     shares_engine = {}
     for n in range(3, nmax + 1):
-        lead = {m: v for (nn, m), v in on["mu0"].items() if nn == n}
+        lead = {m: v for (nn, m), v in sorted(on["mu0"].items()) if nn == n}
         tot = sum(lead.values())
-        shares_engine[n] = {m: float(v / tot) for m, v in lead.items() if v / tot > 1e-12}
+        shares_engine[n] = {m: float(v / tot) for m, v in lead.items()
+                            if v / tot > 1e-12}
+    c2 = ope_coefficients(on["norms"])
     out = dict(
         kmax=kmax, nmax=nmax,
-        frame_dressings={str(k): _fmt(v) for k, v in sorted(frame.items())
-                         if k[0] <= nmax},
+        frame_dressings={str(k): _fmt(v) for k, v in sorted(frame.items())},
         chord_off={str(k): _fmt(v) for k, v in sorted(off["dressings"].items())},
         chord_on={str(k): _fmt(v) for k, v in sorted(on["dressings"].items())},
         norms={str(m): str(v) for m, v in sorted(on["norms"].items())},
         norms_off_equal=on["norms"] == off["norms"],
         max_residual=max(on["max_residual"], off["max_residual"]),
-        sigma_max=max(on["sigma_max"], off["sigma_max"]),
+        max_drift=max(on["max_drift"], off["max_drift"]),
+        sub_max=max(on["sub_max"], off["sub_max"]),
         top_is_block_coefficient=top,
         frame_matches_no_remainder=frame_match,
         ladder_w1_matches_full=ladder_match,
@@ -597,9 +640,8 @@ def compare(kmax: int = 3, verbose: bool = True) -> dict:
                 for n, r in shares.items()},
         shares_engine_mu0={str(n): {str(m): v for m, v in r.items()}
                            for n, r in shares_engine.items()},
-        ope_c2_scaled={str(m): str(v) for m, v in ope_coefficients(on["norms"]).items()},
+        ope_c2_scaled={str(m): str(v) for m, v in sorted(c2.items())},
     )
-    c2 = ope_coefficients(on["norms"])
     out["rung_tau2_fit"] = [dict(n=n, m=m, w_power=e,
                                  w2=None if w2 is None else str(w2))
                             for n, m, e, w2 in rung_tau2_fit(frame, on["dressings"], nmax)]
@@ -621,8 +663,9 @@ def compare(kmax: int = 3, verbose: bool = True) -> dict:
         out["odd_ratio_7_3"] = dict(chord=str(c2[7] / c2[3]), gr=str(gr_ratio(3)),
                                     chord_over_gr=str(c2[7] / c2[3] / gr_ratio(3)))
     if verbose:
-        print(f"n <= {nmax}: residual of rational reconstruction "
-              f"{out['max_residual']:.1e}, largest sigma term {out['sigma_max']:.1e}")
+        print(f"n <= {nmax}: reconstruction residual {out['max_residual']:.1e}, "
+              f"end-point drift {out['max_drift']:.1e}, "
+              f"largest vanishing term {out['sub_max']:.1e}")
         print("  top coefficient = SL(2) block coefficient:", all(top.values()))
         print("  no-remainder chords = tanh-frame OPE:", all(frame_match.values()))
         bad = [k for k, v in ladder_match.items() if not v]
@@ -641,7 +684,7 @@ def compare(kmax: int = 3, verbose: bool = True) -> dict:
     return out
 
 
-def run(kmax: int = 4, out_path=None, workers: int = 1) -> dict:
+def run(kmax: int = 5, out_path=None, workers: int = 1) -> dict:
     t0 = time.time()
     if kmax >= 5:
         # the K >= 16 word tables: one enumeration per size (singlet_tower)
@@ -649,21 +692,25 @@ def run(kmax: int = 4, out_path=None, workers: int = 1) -> dict:
     payload = compare(kmax)
     payload["runtime_s"] = round(time.time() - t0, 1)
     payload["provenance"] = (
-        "conformal_tower.py --run -- lambda -> 0 limits of the singlet-tower "
+        f"conformal_tower.py --run {kmax} -- lambda -> 0 limits of the singlet-tower "
         "dressings from exact rational chord sums at lambda = 2^-9..2^-14, "
         "against the tanh-frame SL(2) OPE and the one-rung ladder")
     out = Path(out_path) if out_path else HERE / "conformal_tower.json"
     with open(out, "w") as fh:
         json.dump(payload, fh, indent=1)
         fh.write("\n")
-    print(f"wrote {out}")
+    print(f"wrote {out} ({payload['runtime_s']} s)")
     return payload
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--run", nargs="?", const=4, type=int, metavar="KMAX")
-    ap.add_argument("--workers", type=int, default=1)
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
+    ap.add_argument("--run", nargs="?", const=5, type=int, metavar="KMAX",
+                    help="write conformal_tower.json for n <= KMAX + 2 "
+                         "(default 5, the committed n <= 7 artifact)")
+    ap.add_argument("--workers", type=int, default=1,
+                    help="processes for the K >= 16 word tables (default 1: "
+                         "the n <= 7 run is about 4 minutes on one core)")
     args = ap.parse_args()
     if args.run is not None:
         run(args.run, workers=args.workers)

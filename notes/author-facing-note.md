@@ -1,7 +1,7 @@
 # Full-channel moments and normalization checks for the DSSYK–'t Hooft proposal
 
 Henry Donahue — working technical note, 16 September 2026; §2 and the
-priorities revised 4, 14 and 15 October 2026.
+priorities revised 4, 14 and 15 October and 10 November 2026.
 
 **Purpose.** Provide specific calculations relevant to the singlet-spectrum
 question in Miyashita–Sekino–Susskind, [2607.05678v1, §4.3](https://arxiv.org/abs/2607.05678v1),
@@ -112,21 +112,24 @@ not proved. The chord new at level n is small (14.9%, 1.6%, 0.18%,
 scales as λ^(2⌊n/2⌋) at small λ. Shares behave differently from norms,
 because the dressings carry powers of the frequency: as λ → 0 the even
 chords fade out of A₃..A₈ linearly in λ while the odd ones stay (A₃,
-A₄ → O₃; A₅ → 99.5% O₃ + 0.53% O₅; A₈ → 97.8% O₃ + 2.0% O₅ + 0.014% O₇).
+A₄ → O₃; A₅ → 99.47% O₃ + 0.53% O₅ in the limit; A₈ at λ = 1/1280 is
+97.8% O₃ + 2.0% O₅ + 0.014% O₇).
 The surviving dimensions, 2, 3, 5, 7, match the pattern of the large-p
 SYK bilinear spectrum. Levels 7 and 8 were computed as a test after the
 pattern was noticed, and the norm law, the subleading coefficient and
 the odd survival all held.
 
-As λ → 0 that structure becomes exact and conformal
-(`duality/conformal_tower.py`, singlet-tower note §4a). Without the
+As λ → 0 that structure has exact rational limits, and with the grade
+remainder off it is exactly conformal (`duality/conformal_tower.py`,
+singlet-tower note §4a). Without the
 grade remainder of the chord rule, every Aₙ through n = 7 is exactly the
 SL(2) OPE of the bilocal Σψᵢ(0)ψᵢ(t) in the frame u = tanh(√λ t), with
 the dimension-m chord a primary of weight m. The remainder adds one
 ladder rung. The odd survival then follows from the norm law
 Nₘ ∝ λ^(2⌊m/2⌋), and the odd infinite-temperature OPE coefficients are
 N(1 − 2/(h(h−1)))² times the Gross–Rosenhaus IR couplings, exactly at
-h = 3, 5, 7. The relation is identified, not derived.
+h = 3, 5, 7. The factor was read off from h = 5 and 7, so h = 3 is the
+one out-of-sample check. The relation is identified, not derived.
 
 The same engine computes fixed-p finite-N moments without ED. For the
 tested even p = 2,…,12, the coefficients support
@@ -187,9 +190,11 @@ Priorities before a stronger claim:
    1e-11 relative; the hours-long campaigns have not been re-run (a full
    run takes about a day of dedicated compute).
 2. Prove the matter-chord decomposition for general n (done for n = 2;
-   verified, not proved, for n = 3..8), explain the λ^(2⌊n/2⌋) scaling of
-   the new chord's norm, and derive the small-λ survival of the odd
-   dimensions.
+   verified, not proved, for n = 3..8) and explain the λ^(2⌊n/2⌋) scaling
+   of the new chord's norm (the small-λ survival of the odd dimensions
+   then follows, singlet-tower note §4a). Derive the relation between the
+   odd T = ∞ OPE coefficients and the Gross–Rosenhaus couplings, and test
+   its prediction for the dimension-9 norm.
 3. Compute the complete Dirac CP-resolved counterpart, with its ensemble
    specified. The disjoint-coupling CP-symmetric subensemble differs from
    the generic Dirac ensemble and that difference need not vanish at fixed λ.

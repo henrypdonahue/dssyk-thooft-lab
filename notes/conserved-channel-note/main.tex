@@ -381,14 +381,20 @@ $A_3,\dots,A_8$ at $\lambda=2$, with norm
 $\propto\lambda^{2\lfloor m/2\rfloor}$ at small $\lambda$. As
 $\lambda\to0$ the even chords fade out of $A_3,\dots,A_8$ linearly in
 $\lambda$ while the odd ones remain: $A_3$ and $A_4$ tend to $O_3$ alone,
-$A_5$ to $99.5\%\,O_3+0.53\%\,O_5$, and $A_8$ to
+$A_5$ to $\tfrac{2047}{2058}\,O_3+\tfrac{11}{2058}\,O_5$
+($99.47\%+0.53\%$), and $A_8$ at $\lambda=1/1280$ is
 $97.8\%\,O_3+2.0\%\,O_5+0.014\%\,O_7$. The dimensions that survive,
 $2,3,5,7$, follow the pattern of the large-$p$ SYK bilinear spectrum
 $h=2,3,5,7,\dots$ \cite{MS}. The levels $n=7,8$ were computed after the
-pattern was noticed on $n\le6$, and it held there. We still record it
-as an observation, on six levels. In particular we do not identify powers of $\lambda$ in these
-norms with powers of $1/p$ in the large-$p$ expansion \cite{GR}: how the
-$\lambda\to0$ limit of the double-scaled theory relates to the
+pattern was noticed on $n\le6$, and it held there. Given the norm law
+and the $\sqrt\lambda^{\,n-m}$ scaling of the dressings, the survival
+follows (repository \texttt{duality/conformal\_tower.py}, which takes the
+$\lambda\to0$ limit exactly through $n=7$); neither is proved. The same
+limit gives the odd infinite-temperature OPE coefficients as
+$N(1-k_c(h))^2$ times the couplings of \cite{GR}, $k_c=2/(h(h-1))$,
+exactly at $h=3,5,7$. That relation is identified, not derived, and
+beyond it we do not identify powers of $\lambda$ with powers of $1/p$:
+how the $\lambda\to0$ limit of the double-scaled theory relates to the
 large-$p$ expansion at fixed $p$ is not established here.
 
 \section{Scope}

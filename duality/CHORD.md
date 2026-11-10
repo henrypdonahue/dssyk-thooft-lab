@@ -4,7 +4,8 @@
 (singlet moments), `chord_charges.py` (the conserved-channel theorem),
 `diagonal_chord.py` (the diagonal law), `full_channel_chord.py` (the
 full A₂ moments), `singlet_tower.py` (the full channel resolved into
-matter chords, n ≤ 8), `horizon_tower.py` (the tower in a Rindler frame),
+matter chords, n ≤ 8), `conformal_tower.py` (its λ → 0 limit, an SL(2)
+OPE plus a ladder rung), `horizon_tower.py` (the tower in a Rindler frame),
 `chord_fold.py` (the fold at N = ∞). The ED side is
 `syk-self-averaging/mn_majorana_bench.py`. Every verdict below is
 asserted from a committed JSON in `test_chord*.py`.*
@@ -322,7 +323,7 @@ blocks Ωₖ = Σᵢ Hᵢ Hᵏ Hᵢ. Each block is solved (`singlet_tower.py`):
     Ω₀ = O₂
     Ω₁ = [q/(1+q²)] {H, O₂} + O₃
     Ω₂ = a(H²O₂ + O₂H²) + b H O₂ H + c O₂ + [q/(1−q+q²)] {H, O₃} + O₄
-    Ω₃ = … + O₅,    Ω₄ = … + O₆
+    Ω₃ = … + O₅,    Ω₄ = … + O₆,    Ω₅ = … + O₇,    Ω₆ = … + O₈
 
 modulo polynomials in H, with Oₘ an un-normalized matter chord of
 dimension m. So
@@ -338,21 +339,25 @@ of A₃ is 85% O₂ and 15% O₃; A₄ is 83%, 15% and 1.6% O₄; A₅ carries 0
 in O₅, A₆ 0.02% in O₆, A₇ 0.002% in O₇ and A₈ 0.0002% in O₈. Across
 λ_chord from 0.05 to 4 the weight of A₄, A₅, A₆ outside O₂ and O₃ stays
 between 0.9% and 5.4%. The norm of Oₘ goes as λ^(2⌊m/2⌋): λ², 2λ²,
-(52/5)λ⁴, about 12.5λ⁴, then λ⁶ for m = 6, 7 and λ⁸ for m = 8.
+(52/5)λ⁴, (88/7)λ⁴, (4120/7)λ⁶ and 720λ⁶ (exact limits,
+`conformal_tower.py`), then λ⁸ for m = 8.
 
 Norms are not shares, though, because the dressings carry powers of the
 frequency. The dressing of O₂ inside A₃ is (3/2)[H, A₂], a total
 derivative, plus an anticommutator admixture −(1−q)²/(3(1+q²)) of it.
 A derivative costs a factor of the width, which is O(λ). So toward small
 λ the even chords fade out of every level above the second, linearly in
-λ, and the odd ones stay: A₃ and A₄ tend to O₃ alone, A₅ to 99.5% O₃
-plus 0.53% O₅, A₆ to 99.2% O₃ plus 0.80% O₅, A₇ to 98.4% O₃ + 1.4% O₅ +
-0.006% O₇, A₈ to 97.8% O₃ + 2.0% O₅ + 0.014% O₇ (exact arithmetic down
-to λ = 1/1280). A₂ is O₂ at every λ. The dimensions that survive the
+λ, and the odd ones stay: A₃ and A₄ tend to O₃ alone. At λ = 1/1280
+(exact arithmetic) A₅ is 99.2% O₃ plus 0.53% O₅, A₆ 99.0% O₃ plus
+0.80% O₅, A₇ 98.4% O₃ + 1.4% O₅ + 0.006% O₇ and A₈ 97.8% O₃ + 2.0% O₅ +
+0.014% O₇; the exact limits through A₇ are in `conformal_tower.py`
+(e.g. A₅ → 2047/2058 O₃ + 11/2058 O₅). A₂ is O₂ at every λ. The dimensions that survive the
 semiclassical limit are 2, 3, 5, 7: the pattern of the large-q SYK
 bilinear spectrum h = 2, 3, 5, 7, … Levels 7 and 8 were the test of that
-pattern (O₇ should survive, O₈ fade), and it held. It is still an
-observation on six levels, not a derivation.
+pattern (O₇ should survive, O₈ fade), and it held. Given the norm law
+and the scaling of the dressings, the survival follows
+(`conformal_tower.py`, singlet-tower note §4a); neither of those is
+proved.
 
 What these continua look like in a Rindler frame is in
 [HORIZON.md](HORIZON.md): as λ → 0 each chord of dimension Δ becomes the

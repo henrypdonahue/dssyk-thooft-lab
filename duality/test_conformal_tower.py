@@ -1,7 +1,7 @@
 """Tests for conformal_tower.py: the lambda -> 0 dressings of the singlet
 tower against the tanh-frame SL(2) OPE and the one-rung ladder."""
 import json
-import math
+from ast import literal_eval
 from fractions import Fraction
 from pathlib import Path
 
@@ -77,13 +77,25 @@ def test_no_remainder_rule_is_consistent():
         assert d["max_residual"] == 0 and d["n_checked"] == 84
 
 
-
 def test_limits_are_clean(limits):
     """Rational reconstruction is exact to roundoff of the extrapolation,
-    and every sigma = (E+E')/2 term vanishes in the limit."""
+    no limit moves when an end point is dropped, and every sigma term and
+    wrong-parity w term vanishes in the limit (the unsquared scaled size)."""
     for d in limits.values():
-        assert d["max_residual"] < 1e-12
-        assert d["sigma_max"] < 1e-12
+        assert d["max_residual"] < 1e-15
+        assert d["max_drift"] < 1e-9
+        assert d["sub_max"] < 1e-18
+
+
+def test_limit_guard_catches_divergence():
+    """A stray c/lambda extrapolates to a clean-looking finite number
+    (c * sum 1/lambda_i = 32256 c); the end-point drift exposes it."""
+    xs = list(ct.LAMS)
+    finite = ct._limit(xs, [F(2) + F(3, 7) * x for x in xs])
+    assert finite == (F(2), 0.0)
+    L, drift = ct._limit(xs, [F(2) + F(3, 7) / x for x in xs])
+    assert L == 2 + F(3, 7) * 32256
+    assert drift > 0.1 > ct.DRIFT_TOL
 
 
 def test_norms(limits):
@@ -95,18 +107,21 @@ def test_norms(limits):
 
 def test_no_remainder_is_the_ope(limits):
     """Result 1: with the grade remainder off, every dressing through
-    n = 5 is exactly the tanh-frame OPE."""
+    n = 5 is exactly the tanh-frame OPE (both ways: no predicted sector is
+    missing and none is extra)."""
     frame = ct.frame_dressings(5)
-    for key, P in limits["off"]["dressings"].items():
-        assert P == frame[key], key
+    assert set(limits["off"]["dressings"]) == set(frame)
+    for key, P in frame.items():
+        assert limits["off"]["dressings"][key] == P, key
 
 
 def test_remainder_is_one_rung(limits):
     """Result 2: with it on, the dressings through n = 5 are the OPE plus
     one ladder rung of weight -2 a^2 (W = 1 suffices at this depth)."""
     ladder = ct.ladder_dressings(ct.frame_dressings(5), 5)
-    for key, P in limits["on"]["dressings"].items():
-        assert P == ladder[key], key
+    assert set(limits["on"]["dressings"]) == set(ladder)
+    for key, P in ladder.items():
+        assert limits["on"]["dressings"][key] == P, key
     assert limits["on"]["dressings"][(4, 2)] == {2: F(36, 5), 0: F(56, 5)}
 
 
@@ -126,13 +141,23 @@ def test_shares(limits):
     assert abs(float(mu[2] / tot)) < 1e-10 and abs(float(mu[4] / tot)) < 1e-10
 
 
-def test_survival_follows_the_norm_law():
-    """The weight of dressed O_m in A_n goes as lambda^(n - m + 2 floor(m/2)):
-    odd m tie at lambda^(n-1), even m are one power down."""
-    for n in range(3, 9):
+def test_survival_follows_the_norm_law(limits):
+    """Result 3 from the data: every sector of A_n has a nonzero scaled
+    dressing (F_{n,m} ~ a^(n-m)), so with the norm law the weight of O_m
+    goes as lambda^(n - m + 2 floor(m/2)), and the engine's own sector
+    weights / lambda^(n-1) confirm it: nonzero for odd m, zero for even m,
+    at every n <= 5."""
+    d = limits["on"]
+    for n in range(3, 6):
         for m in range(2, n + 1):
-            p = n - m + 2 * (m // 2)
-            assert p == (n - 1 if m % 2 else n)
+            assert d["dressings"][(n, m)], (n, m)
+            mu = float(d["mu0"][(n, m)])
+            assert (mu > 1e-3) if m % 2 else (abs(mu) < 1e-9), (n, m, mu)
+    sh = ct.limiting_shares(d["dressings"], d["norms"], 5)
+    for n, r in sh.items():
+        assert r["lead_power"] == n - 1
+        assert set(r["shares"]) == {m for m in range(3, n + 1, 2)}
+        assert r["fading"] == list(range(2, n + 1, 2))
 
 
 def test_odd_ope_ratio(limits):
@@ -145,14 +170,40 @@ def test_odd_ope_ratio(limits):
 
 
 # -- the artifact ------------------------------------------------------------
-def test_artifact_n6(art):
-    """The committed run (n <= 6): every check true, the A_6 shares exact."""
+def _parse(d):
+    return {literal_eval(k): {int(e): F(v) for e, v in P.items()} for k, P in d.items()}
+
+
+def test_artifact_matches_current_code(art):
+    """The committed dressings against the OPE and ladder recomputed now
+    (so a stale artifact or a changed prediction cannot hide behind the
+    stored booleans), and its limit guards."""
+    nmax = art["nmax"]
+    frame = ct.frame_dressings(nmax)
+    assert _parse(art["frame_dressings"]) == frame
+    assert _parse(art["chord_off"]) == frame
+    ladder = ct.ladder_dressings(frame, nmax)
+    on = _parse(art["chord_on"])
+    assert set(on) == set(ladder)
+    misses = [k for k in sorted(ladder) if on[k] != ladder[k]]
+    assert misses == [(6, 2), (7, 2), (7, 3)]
+    norms = {int(m): F(v) for m, v in art["norms"].items()}
+    shares = ct.limiting_shares(on, norms, nmax)
+    for n, r in shares.items():
+        assert {int(m): F(v) for m, v in art["shares"][str(n)]["shares"].items()} \
+            == r["shares"]
+    assert art["max_residual"] < 1e-12 and art["max_drift"] < 1e-5
+    assert art["sub_max"] < 1e-15
+
+
+def test_artifact_through_n6(art):
+    """The n <= 6 part of the committed run: every check true, the A_6
+    shares exact."""
     assert all(art["top_is_block_coefficient"].values())
     assert all(art["frame_matches_no_remainder"].values())
     assert art["norms_off_equal"]
     assert art["norms"]["6"] == "4120/7"
     assert art["shares"]["6"]["shares"] == {"3": "20443/20608", "5": "165/20608"}
-    assert art["max_residual"] < 1e-12 and art["sigma_max"] < 1e-12
 
 
 def test_artifact_n7(art):
@@ -193,6 +244,8 @@ def test_n6_live():
     on = ct.chord_limits(4, remainder=True)
     off = ct.chord_limits(4, remainder=False)
     frame = ct.frame_dressings(6)
-    for key, P in off["dressings"].items():
-        assert P == frame[key], key
+    assert off["dressings"] == frame
     assert on["norms"][6] == F(4120, 7)
+    misses = [k for k, P in ct.ladder_dressings(frame, 6).items()
+              if on["dressings"][k] != P]
+    assert misses == [(6, 2)]

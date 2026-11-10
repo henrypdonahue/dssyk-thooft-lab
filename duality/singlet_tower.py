@@ -186,20 +186,23 @@ WHAT IT SAYS ABOUT THE TOWER
     down to lambda = 1/1280) the EVEN chords fade out of every level
     above the second, linearly in lambda, and the odd ones stay:
 
-        A_3 -> O_3 alone;   A_4 -> O_3 alone;
-        A_5 -> 99.5 % O_3 + 0.53 % O_5;   A_6 -> 99.2 % O_3 + 0.80 % O_5;
-        A_7 -> 98.4 % O_3 + 1.4 % O_5 + 0.006 % O_7;
-        A_8 -> 97.8 % O_3 + 2.0 % O_5 + 0.014 % O_7
+        A_3 -> 99.65 % O_3;   A_4 -> 99.61 % O_3;
+        A_5 -> 99.19 % O_3 + 0.53 % O_5;   A_6 -> 98.96 % O_3 + 0.80 % O_5;
+        A_7 -> 98.40 % O_3 + 1.38 % O_5 + 0.006 % O_7;
+        A_8 -> 97.80 % O_3 + 1.99 % O_5 + 0.014 % O_7
 
-    (values at lambda = 1/1280; O_8 fades linearly like the other even
+    (values at lambda = 1/1280, the rest in the fading even chords; A_3
+    and A_4 tend to O_3 alone, and O_8 fades linearly like the other even
     chords).  A_2 is O_2 at every lambda.  So the dimensions that survive
     the semiclassical limit are 2, 3, 5, 7 -- the pattern of the large-q
     SYK bilinear spectrum h = 2, 3, 5, 7, ... (Maldacena-Stanford
     1604.07818).  O_7 surviving and O_8 fading was the pattern's
     prediction for n = 7, 8 before they were computed.  conformal_tower.py
-    takes the limit exactly: the chords are weight-m primaries of a
-    conformal OPE of the bilocal, the survival follows from the norm law,
-    and the shares above have exact rational limits.
+    takes the limit through n = 7: with the chord rule's grade remainder
+    off the chords are weight-m primaries of a conformal OPE of the
+    bilocal (with it on, plus one ladder rung), the survival follows from
+    the norm law, and the shares above have exact rational limits
+    (A_5 -> 2047/2058 O_3 + 11/2058 O_5).
   * The O_2 kernel of A_3 is (3/2)(E - E') plus an anticommutator
     admixture -(1-q)^2 / (3 (1+q^2)) of it: A_3 = (3/2) [H, A_2] + 4 O^_3
     + ..., a total derivative plus one new chord.  (A_3 - A_3^dag =
@@ -1316,7 +1319,7 @@ EXACT_POINTS = [(Fraction(2), Fraction(1, 7)), (Fraction(1, 3), Fraction(3, 5)),
 
 
 def deep_level(kmax: int, workers: int = None) -> dict:
-    """Levels n = kmax + 2 beyond the committed n <= 6: the same exact
+    """Levels n = kmax + 2 beyond singlet_tower.json's n <= 6: the same exact
     checks, the lambda = 2 shares, and the small-lambda norm and share
     scalings, with the word tables built in parallel first."""
     t0 = time.time()

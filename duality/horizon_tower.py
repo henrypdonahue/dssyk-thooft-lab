@@ -95,7 +95,7 @@ massive_rates() show the gapped rates).
 WHAT THIS DOES AND DOES NOT SAY
 -------------------------------
 At N = infinity and small lambda, the Majorana singlet channels have a
-gapless, scale-invariant Rindler mass spectrum, dimensions 2, 3, 5, with
+gapless, scale-invariant Rindler mass spectrum, dimensions 2, 3, 5, 7, with
 no gap and no discrete masses: the spectrum of a conformal near-horizon
 region, consistent with the deconfined stretched horizon of 2506.18054
 Sec. 6, and unlike the gapped, discrete 't Hooft tower.  It does not

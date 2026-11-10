@@ -458,8 +458,9 @@ def test_artifact_scan_recomputes(art):
 
 def test_artifact_share_scaling(art):
     """Toward small lambda the even chords fade out of A_3..A_6 linearly
-    in lambda and the odd ones stay: A_3, A_4 -> O_3; A_5 -> 99.5 % O_3 +
-    0.53 % O_5; A_6 -> 99.2 % O_3 + 0.80 % O_5.  One row is recomputed
+    in lambda and the odd ones stay: A_3, A_4 -> O_3; at lambda = 1/1280
+    A_5 is 99.2 % O_3 + 0.53 % O_5 and A_6 99.0 % O_3 + 0.80 % O_5 (the
+    exact limits are conformal_tower.py's).  One row is recomputed
     through Omega_3."""
     rows = sorted(art["share_scaling"], key=lambda r: -r["lam"])
     a, b = rows[-3], rows[-2]            # lambda = 1/160 and 1/320
