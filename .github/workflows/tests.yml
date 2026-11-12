@@ -18,7 +18,7 @@ env:
 
 jobs:
   pytest:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04   # ubuntu-latest (26.04) has no Python 3.9
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -43,7 +43,7 @@ jobs:
         run: python -m pytest -q -m 'not slow'
 
   physics-gate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04   # ubuntu-latest (26.04) has no Python 3.9
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
