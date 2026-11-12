@@ -9,8 +9,10 @@ PAPERS=(
   2302.11882 2303.00792 2310.16994 2312.15598 2401.08555 2403.01950 2403.05980
   2404.03535 2406.11078 2407.09396 2407.12988 2409.11324 2501.09423
   2505.08116 2506.18054v3 2512.07715 2601.09801 2607.05678v1
-  2607.13665v1 2607.14215v1 2607.14215v2
+  2607.13665v1 2607.14215v1 2607.14215v2 2307.15725 2411.04251
+  2511.08743 2511.10907 2610.20703 2610.37667
 )
+failed=0
 for id in "${PAPERS[@]}"; do
   [ -f "$id.pdf" ] && continue
   echo "fetching $id"
@@ -18,6 +20,7 @@ for id in "${PAPERS[@]}"; do
   if ! curl -sfL -o "$id.pdf.part" "https://arxiv.org/pdf/$id"; then
     echo "  download failed: $id" >&2
     rm -f "$id.pdf.part"
+    failed=$((failed + 1))
     continue
   fi
   if head -c 5 "$id.pdf.part" | grep -q '%PDF'; then
@@ -25,6 +28,7 @@ for id in "${PAPERS[@]}"; do
   else
     echo "  not a PDF, discarded: $id" >&2
     rm -f "$id.pdf.part"
+    failed=$((failed + 1))
   fi
   sleep 2   # arXiv rate limit
 done
@@ -35,4 +39,8 @@ if [ ! -f arXiv-2607.05678v1/HologramsSM.tex ]; then
   tar -xzf src.tar.gz -C arXiv-2607.05678v1.part
   rm -rf arXiv-2607.05678v1 && mv arXiv-2607.05678v1.part arXiv-2607.05678v1
   rm src.tar.gz
+fi
+if [ "$failed" -gt 0 ]; then
+  echo "$failed download(s) failed" >&2
+  exit 1
 fi

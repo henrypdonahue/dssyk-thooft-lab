@@ -71,7 +71,7 @@ a sub-maximal scrambler.
 That is qualitatively what this repo measures: sub-maximal scrambling,
 a(v) < 0, rate λ_L = 2π/β_fake.
 
-One honesty note. With β_fake defined as β/v, that identity is
+Note. With β_fake defined as β/v, that identity is
 definitional. The quantitative tie sin θ ↔ v in matched units is untested
 here, and a naive chord-saddle check does not close under the β_chord
 bridge. Open item. CK pressure attaches only to this program's further
@@ -129,7 +129,7 @@ everywhere, and π/κ_eff ≈ 3.8 lands near π/(2v) = 3.3, where the
 rotation law puts Re a = 0. No rate recalibration rescues strong
 coupling.
 
-**Honesty.** A sign flip plus effective thermality under a contour shift
+**Caveat.** A sign flip plus effective thermality under a contour shift
 are *necessary* conditions for this map. They are not a dictionary. The
 algebra story, why the observer's operators live at the antipodal point,
 is NV's construction to complete. But this is the first map tested here

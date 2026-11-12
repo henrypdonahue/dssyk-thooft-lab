@@ -13,7 +13,7 @@ one place to hide.
 | n_paper = n_FLZ + 2, the photon/graviton relabeling | correction #1 |
 | CP = (−1)^(n+1), consistent with FLZ parity through the offset | paper §4.2–4.3 |
 | M₁ = −(p/2) iH (`m1_coefficient`) | correction #3, tested in `syk-self-averaging` |
-| paper λ = p²/N, chord λ = 2p²/N, q = exp(−λ_chord) | the factor-2 landmine |
+| paper λ = p²/N, chord λ = 2p²/N, q = exp(−λ_chord) | the factor-2 convention difference |
 | ᾱ = ḡ²N = p², ḡ² = λ_paper, τ = p² mq² | paper §4.1–4.2 |
 
 ## What a DSSYK tower would have to reproduce
@@ -68,7 +68,8 @@ moves has width 2(1 − q²) at every λ, 1.963369 at λ_chord = 2; the
 conserved. Above n = 2, an exact operator identity writes Aₙ through the
 blocks Ωₖ = ΣᵢHᵢHᵏHᵢ, and each block computed (k ≤ 6, so n ≤ 8) is a
 polynomial in H plus matter chords of dimension 2..k+2 with polynomial
-dressings: zero residual in computer algebra on every checked word. The
+dressings: zero residual in computer algebra on every checked word
+(a test of the structure, not the values; ERRATA E26). The
 new chord at each level is faint (1.6% of A₄, 0.2% of A₅, 0.0002% of A₈
 at λ_chord = 2), with norm ∝ λ^(2⌊m/2⌋). Toward small λ the even chords
 fade out of A₃..A₈ and the odd ones stay: dimensions 2, 3, 5, 7 survive.
@@ -97,10 +98,10 @@ frame where the mesons should be. The orthogonalized tower is a pure chord,
 |Γ(Δ + iω/a)|² at a string-scale spacing (a = 2√2 J_MSS in the Majorana
 translation of the paper's units). At a Rindler horizon a field of mass M
 gives the entire K_{iω/a}(M/a)², and the ladder is exactly their
-superposition with mass density ∝ M^(2Δ−1). So the Majorana singlet
+superposition with mass density ∝ M^(2Δ−1). So as λ → 0 the Majorana singlet
 channels' Rindler mass spectrum at N = ∞ is gapless, with no gap and no
-discrete masses, unlike the 't Hooft tower: the mesons, if the duality
-holds, are not visible in them. At finite λ the ladders end in a t⁻³
+discrete masses, unlike the 't Hooft tower: under the two-sided
+calibration, a tension with the proposal in this limit (ERRATA E25). At finite λ the ladders end in a t⁻³
 tail.
 
 **[ANTISCRAMBLING.md](ANTISCRAMBLING.md)** and `antiscrambling.py`. The
@@ -166,8 +167,8 @@ whose exponent is a dictionary input.
 
 `dirac_chord.py`. The complex-SYK chord layer (Berkooz–Narovlansky–Raj
 [2006.13983](https://arxiv.org/abs/2006.13983)). The chord sum is the
-Majorana one at q = e^(−p²/Nc) = e^(−λ_paper), so the factor-2 landmine
-is Majorana-only. It is ED-verified. M₁ = −(p/2)iH is an exactly
+Majorana one at q = e^(−p²/Nc) = e^(−λ_paper), so the factor-2 convention
+difference is Majorana-only. It is ED-verified. M₁ = −(p/2)iH is an exactly
 conserved transfer-matrix insertion. Charged probes carry Δ = (a+b)/p at
 fixed charge q(𝒬). Chord rules for the H-correlated M_{n≥2} tower are
 unpublished; the pair half never needed them — the bare-fermion census
@@ -199,6 +200,6 @@ python3 singlet_tower.py --run   # its artifact and finite-N gates (~3 CPU-hours
 python3 singlet_tower.py --deep 5 6  # levels n = 7, 8 (~25 min on 6 cores)
 python3 conformal_tower.py       # its lambda -> 0 limit, n <= 5   (~5 s)
 python3 conformal_tower.py --run # its artifact, n <= 7 (~5 min, one core)
-python3 horizon_tower.py         # the tower at the stretched horizon (~4 min)
+python3 horizon_tower.py         # the tower in a Rindler frame (~4 min)
 pytest -q                        # 391 tests (385 fast, ~1.5 min)
 ```

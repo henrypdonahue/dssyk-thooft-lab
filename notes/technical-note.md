@@ -214,7 +214,8 @@ Priorities before a stronger claim:
    is gapless (density ∝ M^(2Δ−1)), with no gap and no discrete masses,
    unlike the 't Hooft tower. With the stretched horizon at a Planck
    distance (2511.10907), that string-scale region is the confined one,
-   so this is a tension with the proposal in the λ → 0 limit. A
+   so this is a tension with the proposal in the λ → 0 limit, under the
+   two-sided calibration. A
    dictionary therefore has to say where the mesons enter: finite p at
    N = ∞ (the regime of the paper's comparison), the Dirac channels,
    other operators, or a non-local probe; the dS₂ 't Hooft model of

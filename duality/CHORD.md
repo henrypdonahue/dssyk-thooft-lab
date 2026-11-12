@@ -369,7 +369,9 @@ n = 2 is proven. n = 3..8 are exact identities verified in computer
 algebra: each kernel is solved linearly from cross-correlators and every
 remaining two-point word then has zero residual, symbolically for
 k ≤ 2 and in exact rational arithmetic for k = 3..6 (k = 5, 6 in
-`singlet_tower_deep.json`). The closed forms
+`singlet_tower_deep.json`). The residual tests the structure; the
+values rest on the rule's derivation and the finite-N gates (ERRATA
+E26). The closed forms
 for μ₂ of A₃ and A₄ are gated by the exact finite-N engine, to 1.5e-5
 and 2e-3; the cross moment ⟨ad²(A₄)A₂†⟩ to 7e-6. A proof for general n
 is open. Figure: `singlet_tower.png`.

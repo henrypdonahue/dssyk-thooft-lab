@@ -1345,7 +1345,7 @@ def deep_level(kmax: int, workers: int = None) -> dict:
     scalings, with the word tables built in parallel first."""
     t0 = time.time()
     build_word_tables(needed_word_keys(kmax, 2), workers)
-    tables_s = round(time.time() - t0, 1)
+    tables_runtime_s = round(time.time() - t0, 1)
     exact = []
     for lam, q in EXACT_POINTS:
         T = TowerChord(lam, q)
@@ -1368,7 +1368,8 @@ def deep_level(kmax: int, workers: int = None) -> dict:
                 scan_lam2=scan_row(2.0, kmax),
                 norm_scaling=norm_scaling(kmax=kmax),
                 share_scaling=share_scaling(kmax=kmax),
-                tables_s=tables_s, runtime_s=round(time.time() - t0, 1))
+                tables_runtime_s=tables_runtime_s,
+                runtime_s=round(time.time() - t0, 1))
 
 
 def run_deep(kmaxes, out_path=None, workers: int = None) -> dict:
@@ -1582,11 +1583,12 @@ def run(out_path=None, workers: int = None, resume: bool = False,
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--run", action="store_true")
-    ap.add_argument("--resume", action="store_true")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--run", action="store_true")
+    mode.add_argument("--resume", action="store_true")
     ap.add_argument("--workers", type=int, default=None)
-    ap.add_argument("--deep", type=int, nargs="+", metavar="KMAX",
-                    help="levels past n = 6: KMAX = n - 2 (5 and 6)")
+    mode.add_argument("--deep", type=int, nargs="+", metavar="KMAX",
+                      help="levels past n = 6: KMAX = n - 2 (5 and 6)")
     args = ap.parse_args()
     if args.deep:
         run_deep(args.deep, workers=args.workers)

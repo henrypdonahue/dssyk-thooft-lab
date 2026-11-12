@@ -143,7 +143,7 @@ footer { margin-top: 50px; padding-top: 18px; border-top: 1px solid var(--faint)
     <li><a href="#layer5"><span class="n">5</span>The 't Hooft limit</a></li>
     <li><a href="#layer6"><span class="n">6</span>The dS / OTOC axis</a></li>
     <li><a href="#layer7"><span class="n">7</span>Where it stands</a></li>
-    <li><a href="#honesty"><span class="n">!</span>Errata &amp; scope</a></li>
+    <li><a href="#errata"><span class="n">!</span>Errata &amp; scope</a></li>
     <li><a href="#repo"><span class="n">⌘</span>Repo map &amp; reproduce</a></li>
   </ol>
   <button class="themebtn" id="themebtn" type="button">toggle light / dark</button>
@@ -153,7 +153,7 @@ footer { margin-top: 50px; padding-top: 18px; border-top: 1px solid var(--faint)
 <header class="hero">
   <div class="eyebrow">Project walkthrough · 10 November 2026</div>
   <h1>Testing DSSYK∞ ↔ the 't Hooft model, from the ground up</h1>
-  <p class="lede">Miyashita, Sekino and Susskind propose that double-scaled SYK at infinite temperature is a hologram of a de Sitter static patch whose bulk matter is the 't Hooft model: two-dimensional QCD with mesons. Their own "best test" is that the singlet spectrum of SYK should match the 't Hooft meson tower. Nobody had run it. This repository computes both sides as exactly as it can, and says precisely what holds, what fails, and what is still missing.</p>
+  <p class="lede">Miyashita, Sekino and Susskind propose that double-scaled SYK at infinite temperature is a hologram of a de Sitter static patch whose bulk matter is the 't Hooft model: two-dimensional QCD with mesons. Their own "best test" is that the singlet spectrum of SYK should match the 't Hooft meson tower. No published work has run it. This repository computes both sides as exactly as it can, and says precisely what holds, what fails, and what is still missing.</p>
   <div class="stats">
     <div class="stat"><b>40</b><span>'t Hooft levels, 17–21 digits</span></div>
     <div class="stat"><b>2</b><span>theorems at N = ∞</span></div>
@@ -172,7 +172,7 @@ footer { margin-top: 50px; padding-top: 18px; border-top: 1px solid var(--faint)
     <li><b>Argued by counting</b>: the bulk matter is the 't Hooft model (U(N) QCD₂ with one flavor, massless quark) with ḡ² = p²/N and ᾱ = p².</li>
     <li><b>Qualitative</b>: the SYK singlet operators M<sub>n</sub> = Σ c†(dⁿ/dtⁿ)c map to the 't Hooft mesons with CP = (−1)<sup>n+1</sup>. The authors call matching these spectra "the best test of the duality".</li>
   </ol>
-  <p>Two limits matter throughout, and confusing them is the easiest mistake to make. Chord diagrams are exact in the <b>double-scaled</b> limit (λ = 2p²/N fixed). The paper's <b>'t Hooft limit</b> fixes p instead and sends N → ∞. Both end in the same semiclassical corner.</p>
+  <p>Two limits matter throughout. Chord diagrams are exact in the <b>double-scaled</b> limit (λ = 2p²/N fixed). The paper's <b>'t Hooft limit</b> fixes p instead and sends N → ∞. Both end in the same semiclassical corner.</p>
   <figure class="fig">{{limits}}<figcaption>The two limits. Horizontal arrows: double scaling, where the N = ∞ chord results of layers 2–4 live. Vertical arrows: fixed p, where the paper's 't Hooft limit lives (layer 5). The repository uses λ = λ<sub>chord</sub> = 2p²/N, twice the paper's λ = p²/N.</figcaption></figure>
 </section>
 
@@ -185,7 +185,7 @@ footer { margin-top: 50px; padding-top: 18px; border-top: 1px solid var(--faint)
 
 <section id="layer0">
   <h2><span class="layer-no">Layer 0 · thooft-target/</span>The yardstick: the 't Hooft meson spectrum</h2>
-  <p>A test needs a target. 't Hooft's equation for a meson's light-cone wavefunction is solved at the duality's mass point, renormalized m<sub>q</sub>² = 0 (α = 0). That is a regular, gapped theory, and not the chiral limit α = −1, a distinction that is easy to get wrong. The solver uses a Chebyshev basis that already has the exact endpoint behaviour, so the matrix elements are exact rationals and convergence is variational.</p>
+  <p>A test needs a target. 't Hooft's equation for a meson's light-cone wavefunction is solved at the duality's mass point, renormalized m<sub>q</sub>² = 0 (α = 0). That is a regular, gapped theory, and not the chiral limit α = −1. The solver uses a Chebyshev basis that already has the exact endpoint behaviour, so the matrix elements are exact rationals and convergence is variational.</p>
   <div class="grid2">
     <figure class="fig"><img src="thooft-target/regge_trajectory.png" alt="Massless 't Hooft meson spectrum: 2λ_n against n, alternating CP, on the asymptote n + 3/4"><figcaption>The tower: M<sub>n</sub>²/(πg²) on a straight Regge trajectory n + ¾, CP alternating. The lightest meson has 2λ₀ = 0.737061746292689589581.</figcaption></figure>
     <div class="card">
@@ -276,7 +276,7 @@ A₂ = 4 Σᵢ Hᵢ²        (the first dynamical singlet)</div>
     </div>
   </div>
   <figure class="fig">{{masses}}<figcaption>What the two sides look like as mass spectra (schematic heights; 't Hooft masses in units of √(πg²)). The N = ∞ singlet channels give smooth power-law densities from M = 0, while the 't Hooft model gives a gapped set of lines.</figcaption></figure>
-  <div class="callout warn"><p><b>The result.</b> At N = ∞ and as λ → 0, the Majorana singlet channels have a gapless, scale-invariant Rindler mass spectrum (Δ = 2, 3, 5, 7 through n = 8) at the string-scale spacing a = 2√2 J<sub>MSS</sub>, with no gap and no discrete masses. So the paper's small-λ prediction cannot be met by these N = ∞ two-point functions in this limit. Since Susskind's correction (2511.10907) puts the deconfined stretched horizon within a Planck distance, the string-scale region probed here is the confined one, where the mesons should be: this is a tension with the proposal, not a consistency. It has to be met at finite p (the regime of the paper's comparison), in the Dirac channels, by other operators, or by a non-local dictionary.</p></div>
+  <div class="callout warn"><p><b>The result.</b> At N = ∞ and as λ → 0, the Majorana singlet channels have a gapless, scale-invariant Rindler mass spectrum (Δ = 2, 3, 5, 7 through n = 8) at the string-scale spacing a = 2√2 J<sub>MSS</sub>, with no gap and no discrete masses. Under the two-sided free-field calibration, the paper's small-λ prediction cannot be met by these N = ∞ two-point functions in this limit. Since Susskind's correction (2511.10907) puts the deconfined stretched horizon within a Planck distance, the string-scale region probed here is the confined one, where the mesons should be: this is a tension with the proposal, not a consistency. It has to be met at finite p (the regime of the paper's comparison), in the Dirac channels, by other operators, or by a non-local dictionary.</p></div>
 </section>
 
 <section id="layer5">
@@ -326,8 +326,8 @@ A₃:  ⟨ω⁴⟩/⟨ω²⟩ = 4p(10p − 21)    (fit on p = 4, 6, 8; checked a
   <p class="cap">Compute-only items remain (A₄ shapes at fixed p, level 9 at about 20× the n = 8 cost, which would test the predicted dimension-9 norm, a recorded two-day <code>reproduce-slow</code> run), but each now adds little.</p>
 </section>
 
-<section id="honesty">
-  <h2><span class="layer-no">Discipline</span>Errata and scope</h2>
+<section id="errata">
+  <h2><span class="layer-no">Record</span>Errata and scope</h2>
   <p>Every withdrawn or corrected claim is kept in <a href="ERRATA.md">ERRATA.md</a>, {{errata}} so far, each with what replaced it. The most instructive:</p>
   <ul>
     <li><b>E1</b>: "the tower is invisible at N = ∞" became the pair theorem plus a full channel that does propagate.</li>
@@ -345,7 +345,7 @@ A₃:  ⟨ω⁴⟩/⟨ω²⟩ = 4p(10p − 21)    (fit on p = 4, 6, 8; checked a
     <tr><td><code>thooft-target/</code></td><td>the yardstick: solvers, reference spectrum, condensate</td><td><a href="thooft-target/README.md">README</a></td></tr>
     <tr><td><code>syk-self-averaging/</code></td><td>ED, exact Wick statistics, exact finite-N laws, fixed-p limit</td><td><a href="syk-self-averaging/README.md">README</a></td></tr>
     <tr><td><code>duality/</code></td><td>chord engines, tower decomposition, horizon, boost calibration, OTOCs</td><td><a href="duality/CHORD.md">CHORD.md</a>, <a href="duality/HORIZON.md">HORIZON.md</a></td></tr>
-    <tr><td><code>notes/</code></td><td>technical note, singlet-tower note, two LaTeX manuscripts</td><td><a href="notes/author-facing-note.md">author-facing note</a></td></tr>
+    <tr><td><code>notes/</code></td><td>technical note, singlet-tower note, two LaTeX manuscripts</td><td><a href="notes/technical-note.md">technical note</a></td></tr>
     <tr><td><code>scripts/</code></td><td>the logged snapshot runner</td><td><a href="REPRODUCIBILITY.md">REPRODUCIBILITY.md</a></td></tr>
     <tr><td><code>papers/</code></td><td>index and fetch script for every cited paper (PDFs not distributed)</td><td><a href="papers/README.md">papers/README.md</a></td></tr>
   </table></div>

@@ -86,12 +86,12 @@ reproducibility claim. CI passing is not a substitute for them.
   confidence interval. Disorder means require sample counts, seeds, and
   uncertainties with correlations propagated where relevant.
 
-## Before contacting authors
+## Before a release
 
 Run the full suites and both reproduction targets, then rerun the suites on
 the regenerated snapshot. Reconcile any generated differences; retain the
 logs and source manifest. Check the concise note against the exact release
 commit. Verify primary-source versions and equation references. Ensure all
 new source/data files are tracked, `git diff --check` passes, and the release
-has a clean working tree. Do not include ignored local email drafts or
-third-party papers accidentally.
+has a clean working tree, with no ignored local files or third-party
+papers included.

@@ -1,18 +1,17 @@
 # Road map — stress-testing DSSYK∞ ↔ 't Hooft ([arXiv:2607.05678](https://arxiv.org/abs/2607.05678))
 
 What the paper claims. What this repo has settled. What is left. The
-literature snapshot is current as of 2026-09-09; the arXiv versions and
-the citation count were re-checked on 2026-10-14. Withdrawn and
+literature snapshot was taken on 2026-09-09; the arXiv versions and the
+citing papers were re-checked on 2026-11-10. Withdrawn and
 corrected claims are collected in [ERRATA.md](ERRATA.md).
 
 ---
 
-## Part I — The paper, honestly assessed
+## Part I — The paper's claims
 
 *Holograms and Standard Models* (Miyashita–Sekino–Susskind, July 2026) is
-a short talk-style manifesto. It is not a technical paper, and it does
-not pretend to be. Here is its chain of claims, with the paper's own
-confidence levels attached.
+a short programmatic paper. Its chain of claims, with the paper's own
+confidence levels attached:
 
 1. **Assumed.** Their words: "unproved but we will assume it." DSSYK∞ =
    JT-de Sitter static-patch holography.
@@ -29,13 +28,13 @@ confidence levels attached.
    Mₙ = ψ†(dⁿ/dtⁿ)ψ maps to 't Hooft mesons, with CP = (−1)ⁿ⁺¹, and with
    n = 0 (photon = Q) and n = 1 (graviton = H) non-dynamical. The paper
    names the quantitative spectrum match as "the best test of the
-   duality." **No published work has run it** (as of 2026-10-14).
+   duality." **No published work has run it** (as of 2026-11-10).
 5. **A logical inversion, not a computation** (§5, "Holographic
    Tuning"). At T_B = ∞ the entropy is exactly log dim H, so the vacuum
    energy gets no corrections, and the coupling ḡ²(N) becomes a *derived*
    quantity. Its finite-N form is only a sketched figure.
 
-### Two structural weaknesses the paper does not address
+### Two structural questions left open
 
 **The boost-against-mass gap.** The SYK Hamiltonian is the Rindler
 *boost* generator. A fixed-mass particle has a *continuous*
@@ -57,10 +56,9 @@ through node-level data. (Free scalar, 1+1, single particle, sharp
 worldline, e^(−εω) regulator: the calibration bounds what shape data
 can show; it does not fix the map.)
 
-**Does the toy even have the disease?** QCD₂ is super-renormalizable. Its
-only mass renormalization, m_q² = m_bare² − g²/π, is finite. So the 4d
-fine-tuning drama of §5 is transplanted into a model where it barely
-exists. And the vacuum-energy/entropy relation ε = 3/(8S) is only ever
+**Is there a fine-tuning problem in 2d?** QCD₂ is super-renormalizable.
+Its only mass renormalization, m_q² = m_bare² − g²/π, is finite, so the
+4d fine-tuning of §5 has no direct 2d counterpart. And the vacuum-energy/entropy relation ε = 3/(8S) is only ever
 written in D = 4, never derived for the JT-dS where the paper works.
 
 `thooft-target/condensate.py` measures the 2d counterpart. It is a single
@@ -113,9 +111,9 @@ Eigenfunctions are checked (Parseval 3e-6, weak-form Rayleigh quotient
 are consumed too (`flz_dconstants.py`): their Eq. 4.21 products
 converge to d₊ = 0.9631784563984(1), d₋ = 0.43358263983325(1), inside
 the 5e-13 rounding of both 12-digit values and one to two digits past
-them, with the exact ratio √2/π met to 2e-15. Pinning their definition corrected a
-mischaracterization — d± are spectrum functionals, not wavefunction
-data — so the external eigenfunction-anchor slot is genuinely empty.
+them, with the exact ratio √2/π met to 2e-15. Their definition shows that d±
+are spectrum functionals, not wavefunction data, so no external
+eigenfunction anchor exists.
 The decay constants are new data. No published wavefunction tables
 exist.
 
@@ -133,14 +131,13 @@ A second anchor, exact E[m₄] and Var(m₄), gives
 relVar(m₄) = 4·relVar(m₂)(1+o(1)). The Dirac/U(N) counterpart is in
 `exact_wick_dirac.py`, with rms ~ Nc^(−(p−1)/2).
 
-**Worth telling the authors.** The "systematic derivation" that §3.5
-defers to [arXiv:2501.09423](https://arxiv.org/abs/2501.09423) **is not
-there**. That paper never mentions self-averaging. Its counting rule
+**On the cited derivation.** The "systematic derivation" that §3.5
+defers to [arXiv:2501.09423](https://arxiv.org/abs/2501.09423) does not
+contain it. That paper never mentions self-averaging. Its counting rule
 (Eq. 4.26) is magnitude-only and part-empirical (their §6.2), and its n
 ≪ p approximation fails precisely in the diagram-B regime, with error
-~e^p. That is harmless for the bound and fatal for prefactors.
-`exact_wick.py` appears to be the only complete prefactor-exact
-derivation. It agrees with both papers at leading order, and it adds the
+~e^p. That is adequate for the bound but not for prefactors.
+`exact_wick.py` gives a prefactor-exact derivation. It agrees with both papers at leading order, and it adds the
 exact pinning factor 4p(N−p)/N(N−1).
 
 ### The dictionary needs four corrections
@@ -151,7 +148,7 @@ Each one is forced, and each one is tested (`duality/dictionary.py`,
 **M₁ = −(p/2)iH, not H.** It follows from anti-Hermiticity. Q̇ = 0 forces
 M₁† = −M₁, so M₁ cannot equal the Hermitian H. Verified to 1.3e-15.
 
-**M₂ = −Σċ†ċ.** The paper's + sign is wrong.
+**M₂ = −Σċ†ċ** (the paper has +).
 
 **CP is the unitary particle-hole map.** M₁ ∝ iH rules out an antiunitary
 one.
@@ -226,8 +223,8 @@ the spectral density rebuilt from the closed-form matter vertex.
 The levels above follow the same pattern. An exact operator identity
 writes every Aₙ through the blocks Ωₖ = ΣᵢHᵢHᵏHᵢ, and each Aₙ computed
 (n ≤ 8) is a polynomial in H plus matter chords of dimension 2..n with
-polynomial dressings — zero residual in computer algebra, a proof only
-at n = 2. One new chord enters per level, and it is faint: 14.9%, 1.6%,
+polynomial dressings — zero residual in computer algebra (a test of
+the structure, not the values; ERRATA E26), a proof only at n = 2. One new chord enters per level, and it is faint: 14.9%, 1.6%,
 0.18%, 0.02%, 0.002%, 0.0002% of the dynamical weight at λ_chord = 2
 for n = 3..8, with norm ∝ λ^(2⌊n/2⌋). Toward small λ the even chords fade
 out of A₃..A₈ linearly in λ and the odd ones stay (A₅ → 99.47% O₃ +
@@ -305,7 +302,7 @@ p = 4..12 and reproducing the committed p = 2 value out of sample. What
 the chord-side derivation now has to reproduce is that cancellation, and
 the fixed-p polynomials Q_n(p).
 
-### The tower at the stretched horizon
+### The singlet tower in a Rindler frame
 
 [`duality/HORIZON.md`](duality/HORIZON.md). The flat-space limit of
 2506.18054 is λ fixed, energies fixed in string units, so the N = ∞
@@ -323,11 +320,10 @@ the mass transform), the channels' Rindler mass spectrum is gapless power
 laws with Δ = 2, 3, 5, 7, with no gap and no discrete masses. The gapped,
 discrete 't Hooft tower gives an entire density instead. This holds in
 the λ → 0 limit (at finite λ the band-limited density has no mass
-reading under the two-sided calibration). An earlier version called it
-consistent with the deconfined stretched horizon of their §6, a string
-length out; Susskind's 2511.10907 moved that layer to a Planck distance,
-so the string-scale region is confined and the result is a tension with
-the proposal in this limit (ERRATA E25): the meson tower is not visible
+reading under the two-sided calibration). Since Susskind's 2511.10907
+the deconfined layer of their §6 is at a Planck distance, so the
+string-scale region is confined and the result is a tension with the
+proposal in this limit (ERRATA E25): the meson tower is not visible
 in the N = ∞ two-point functions of the Sₙ in their Majorana form (the
 Dirac full channel is still open).
 
@@ -382,13 +378,12 @@ Gibbs state.
 ### Other results
 
 `freeness.py` exhibits the free-product transition. spec(E + F(t)) lands
-on the arcsine law, and the W₁ plateau falls like dim^(−0.9). To our
-knowledge that is the first time in a microscopic dS-candidate model.
+on the arcsine law, and the W₁ plateau falls like dim^(−0.9).
 
 `qed_campaign.py` closes the gap between Majorana numerics and Dirac
-claims. `baryons.py` gives first data on the wholly underived
-inter-baryon-force claim. `condensate.py` transcribes the exact
-condensate and gives first α → −1 GMOR data.
+claims. `baryons.py` gives data on the paper's inter-baryon-force
+claim. `condensate.py` transcribes the exact condensate and gives
+α → −1 GMOR data.
 
 ---
 
@@ -402,8 +397,9 @@ condensate and gives first α → −1 GMOR data.
    channel computed (n ≤ 8) is a sum of
    quasinormal ladders |Γ(Δ + iω/a)|², Δ = 2, 3, 5, 7, whose Rindler mass
    spectrum is gapless (density ∝ M^(2Δ−1)), with no gap and no discrete
-   masses. So the paper's small-λ prediction cannot be met by the N = ∞
-   two-point functions of the Majorana Sₙ, a tension with the proposal
+   masses. So, under the two-sided calibration, the paper's small-λ
+   prediction cannot be met by the N = ∞ two-point functions of the
+   Majorana Aₙ, a tension with the proposal
    since the corrected stretched horizon (2511.10907) leaves the
    string-scale region confined (ERRATA E25). Next: the regime the
    paper actually compares in, fixed p at N = ∞ (2607.05678v2 §4.1).
@@ -422,8 +418,8 @@ condensate and gives first α → −1 GMOR data.
    exactly (2p − 4) times the fermion's 4p, the second moment of a
    product of 2p − 4 fermion propagators (Δ_eff = 2 − 4/p), and an
    independent review enumeration found the A₂ moments through the sixth
-   to be those of G_melonic(t)^(2p−4) at β = 0 (not yet checked in this
-   repo). If that holds, the fixed-p channels follow from a real-time
+   to be those of G_melonic(t)^(2p−4) at β = 0 (a conjecture here, not
+   yet checked in this repo). If that holds, the fixed-p channels follow from a real-time
    Schwinger–Dyson solve, with no word frontier.
 3. **The 2, 3, 5, 7 coincidence.** Answered in the semiclassical limit
    (`duality/conformal_tower.py`). As λ → 0 the chords are SL(2)
@@ -520,8 +516,8 @@ remain open.
 **The Dirac full channel.** The complex-SYK chord machinery has its
 H-sector built (`duality/dirac_chord.py`, on Berkooz–Narovlansky–Raj
 [2006.13983](https://arxiv.org/abs/2006.13983)). The chord sum is the
-Majorana one at q = e^(−p²/Nc) = e^(−λ_paper), so the factor-2 landmine
-is Majorana-only. It is verified microscopically and against ED (m₄/m₂²
+Majorana one at q = e^(−p²/Nc) = e^(−λ_paper), so the factor-2 convention
+difference is Majorana-only. It is verified microscopically and against ED (m₄/m₂²
 deviation +0.198 → +0.004 over Nc = 8 → 12, c_symmetric).
 M₁ = −(p/2)iH is a transfer-matrix insertion, so it is an exactly
 conserved channel. Charged random probes carry Δ = (a+b)/p, with
@@ -613,7 +609,7 @@ with nothing for Holographic Tuning to cancel, on both sides of the
 first law.
 
 **The finite-N coupling curve ḡ²(N).** Their Fig. 17 is a sketch with no
-formula, yet the whole set-it-and-forget-it inversion rests on it. Match
+formula, and the inversion of §5 depends on it. Match
 a bulk observable at a sequence of finite N and extrapolate. Gated on the
 tower extraction.
 
@@ -622,9 +618,8 @@ and the boost-spectrum → invariant-mass reorganization. The
 chaos-to-integrability transition at small λ
 ([2403.01950](https://arxiv.org/abs/2403.01950),
 [2601.09801](https://arxiv.org/abs/2601.09801)) is the likely mechanism
-zone. This is where the duality most plausibly *fails*, and a sharp
-statement of where it holds would be a real contribution. The first
-exact probe of that corner is in (`syk-self-averaging/full_channel_laws.py`):
+zone. This is where the duality most plausibly *fails*. An exact probe of
+that corner is in (`syk-self-averaging/full_channel_laws.py`):
 along fixed p the identity-subtracted A₂ width in bandwidth units peaks
 at λ_chord ≈ 4/3 (N = 24 at p = 4) and then dies as 8p(p−2)/N, while the
 N = ∞ ratio at fixed λ (`duality/full_channel_chord.py`) peaks near
@@ -643,12 +638,11 @@ ED.
 
 Proving DSSYK∞ = JT-dS. The authors assume it themselves.
 
-The 1+1 → 3+1 uplift. Contrary to how it is sometimes described, *no*
-uplift construction exists in the source. §§5–6 are explicit that it is a
+The 1+1 → 3+1 uplift. The source contains no uplift construction. §§5–6 are explicit that it is a
 hope.
 
 Instance-level ED in the true double-scaling regime (p ~ √N, N ≳ 100,
-dim 2⁵⁰). That is the honest wall. The exact-Wick and chord computations
+dim 2⁵⁰). That is the practical limit. The exact-Wick and chord computations
 are the ways around it.
 
 ---
@@ -681,20 +675,17 @@ identifications conflict. A clean meson-tower match, or mismatch, would
 be the first quantitative discriminator among all three programs.
 `duality/DISCRIMINATOR.md` lays out that axis.
 
-**Convention landmine.** This paper uses λ = p²/N with no q. The chord
+**Conventions.** This paper uses λ = p²/N with no q. The chord
 literature uses λ = 2p²/N, q = e^(−λ). Any reuse of chord results must
 pass through a tested conversion.
 
-**Priority.** As of 2026-11-10 (INSPIRE, arXiv) the target paper is at
-v2 (2026-10-19, minor changes) and has two citations, Cui–Kolchmeyer
+**Citing work.** As of 2026-11-10 (INSPIRE, arXiv) the target paper is
+at v2 (2026-10-19, minor changes) and has two citations, Cui–Kolchmeyer
 [2607.13665](https://arxiv.org/abs/2607.13665) and Aguilar-Gutierrez
-[2610.20703](https://arxiv.org/abs/2610.20703). That paper argues that
+[2610.20703](https://arxiv.org/abs/2610.20703). Cui–Kolchmeyer argue that
 dS observer OTOCs *anti-scramble*, which poses a structural challenge to
 observer-centric static-patch holography. Its
 same-week companion Harlow–Zhao
 [2607.14215](https://arxiv.org/abs/2607.14215) proposes the
 Euclidean-fold mechanism, and poses the SYK test that
 `duality/ANTISCRAMBLING.md` answers.
-
-The authors' promised meson-spectrum computation has not appeared. The
-first-mover race on the headline test is still open.

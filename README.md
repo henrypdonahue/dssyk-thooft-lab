@@ -12,7 +12,7 @@ mass spectrum.
 - [WALKTHROUGH.html](WALKTHROUGH.html): a visual tour of the whole project,
   layer by layer from the 't Hooft target up (open it in a browser from a
   local clone; `scripts/walkthrough/make_walkthrough.py` regenerates it).
-- [notes/author-facing-note.md](notes/author-facing-note.md): the
+- [notes/technical-note.md](notes/technical-note.md): the
   technical note. Definitions, results, limitations, priorities.
 - [notes/singlet-tower-note.md](notes/singlet-tower-note.md): the N = ∞
   structure of the singlet channels, with the proof and the checks.
@@ -63,7 +63,8 @@ p = 6, N = 16–20, against 2.00.
 **3. The levels above are matter chords too (verified, not proved).** For
 n = 3..8, each Aₙ is a polynomial in H plus matter chords of dimension
 2..n with polynomial dressings: zero residual in exact computer algebra
-on every checked word. The chord that is new at level n is faint: 14.9%,
+on every checked word (this tests the structure; the values rest on the
+rule's derivation and the n ≤ 4 finite-N gates, ERRATA E26). The chord that is new at level n is faint: 14.9%,
 1.6%, 0.18%, 0.02%, 0.002% and 0.0002% of the dynamical weight for
 n = 3..8 at λ = 2, with norm ∝ λ^(2⌊n/2⌋) at small λ. As λ → 0 the even
 chords fade out of A₃..A₈ and the odd ones remain (A₃, A₄ → O₃;

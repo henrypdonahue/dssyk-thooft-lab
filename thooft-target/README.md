@@ -107,7 +107,7 @@ has the wrong endpoint exponent. Use the Jacobi solver there.
 | `thooft_highprec.py`, `generate_reference.py` | mpmath solver, the Rayleigh-quotient polish, both reference builders (`--polish` for the 40-level table) |
 | `sine_solver.py` | the independent cross-check solver |
 | `eigenfunctions.py` | wavefunction checks and decay constants |
-| `condensate.py` | the exact condensate (LM Eq. 6.1), the GMOR chiral corner (first data from this repo's solvers at α → −1: 2λ₀ → (2/π)√(a/3), next order ≈ √a measured), and the vacuum-energy curve ε(0) = −0.0407 Nc g² |
+| `condensate.py` | the exact condensate (LM Eq. 6.1), the GMOR chiral corner (this repo's solvers at α → −1: 2λ₀ → (2/π)√(a/3), next order ≈ √a measured), and the vacuum-energy curve ε(0) = −0.0407 Nc g² |
 | `flz_reference.py` | FLZ Tables 1–2 and the Padé anchor, one provenance-checked copy |
 | `external_anchors.json` | FLZ Table 3 sum rules and their closed forms, the d± constants, LM tables and LM sum rules, with provenance inside; all consumed except the LM s = 1 sums (stored, not consumed; the JSON says why) |
 | `test_thooft.py`, `test_jacobi.py`, `test_condensate.py`, `validate.py` | the asserting suites, plus the human-readable gate |

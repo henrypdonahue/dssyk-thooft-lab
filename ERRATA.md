@@ -88,8 +88,8 @@ entries and the A₇, A₈ rows were right, and no conclusion changes.
 except three, which need sector-dependent τ² weights, −5/6 for O₂ and
 −9/10 for O₃, not Liouville's −1; the rung's subleading form is not
 identified"** (`50105e0`, `a9c2319`). Corrected 2026-11-10 (`d6534f3`). The
-model iterated the rung (B = B_OPE + K B), which first differs from one
-rung at n − m = 4, in exactly those three coefficients; −5/6 and −9/10
+model iterated the rung (B = B_OPE + K B), which differs from one rung
+from n − m = 4 on, through n = 7 in exactly those three coefficients; −5/6 and −9/10
 compensated the spurious second rung. One rung of Liouville's own
 kernel, −2a² sech²(aτ) acting once on the OPE bilocal, reproduces all
 13 coefficients with nothing fitted, and each of the three needs

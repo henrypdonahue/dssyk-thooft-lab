@@ -17,7 +17,7 @@ Line-number citations in the code, for example in `qed_campaign.py` and
 
 | arXiv | Authors | Title | Why it is here |
 |---|---|---|---|
-| [2607.05678](https://arxiv.org/abs/2607.05678) | Miyashita, Sekino, Susskind | Holograms and Standard Models | The target paper (v1) |
+| [2607.05678](https://arxiv.org/abs/2607.05678) | Miyashita, Sekino, Susskind | Holograms and Standard Models | The target paper (v1 is the source the code's line numbers cite; v2, 2026-10-19, has minor changes) |
 | [2506.18054](https://arxiv.org/abs/2506.18054) | Miyashita, Sekino, Susskind | DSSYK at infinite temperature: the flat-space limit and the 't Hooft model | The companion: the λ = ḡ² dictionary, the flat- and 't Hooft-limit definitions, the Sₙ tower (v3) |
 | [2501.09423](https://arxiv.org/abs/2501.09423) | Sekino, Susskind | Double-scaled SYK, QCD, and the flat space limit of de Sitter space | The self-averaging counting the target defers to; λ = 2p²/N there |
 | [2012.12326](https://arxiv.org/abs/2012.12326) | Susskind | Electric Forces in the Charged SYK Model | The U(1) Coulomb-force picture behind M₀ = Q |
@@ -27,6 +27,8 @@ Line-number citations in the code, for example in `qed_campaign.py` and
 | arXiv | Authors | Title | Why it is here |
 |---|---|---|---|
 | [2206.01083](https://arxiv.org/abs/2206.01083) | Lin, Susskind | Infinite Temperature's Not So Hot | Tomperature; DSSYK∞ as the dS static patch |
+| [2511.10907](https://arxiv.org/abs/2511.10907) | Susskind | Where is the Entropy in DSSYK-de Sitter? Correction to a wrong claim | The stretched horizon at a Planck distance (`duality/HORIZON.md`, ERRATA E25) |
+| [2610.20703](https://arxiv.org/abs/2610.20703) | Aguilar-Gutierrez | Finite-cutoff geometry in double-scaled SYK | Cites the target paper |
 | [2303.00792](https://arxiv.org/abs/2303.00792) | Susskind | De Sitter Space has no Chords. Almost Everything is Confined. | Confinement to the stretched horizon; quasinormal-mode time scales |
 | [2401.08555](https://arxiv.org/abs/2401.08555) | Rahman, Susskind | Infinite Temperature is Not So Infinite: The Many Temperatures of de Sitter Space | Which scales stay finite in the semiclassical limit |
 | [2407.12988](https://arxiv.org/abs/2407.12988) | Rahman, Susskind | p-Chords, Wee-Chords, and de Sitter Space | Argues the NV and DSSYK chord algebras conflict |
@@ -48,6 +50,9 @@ Line-number citations in the code, for example in `qed_campaign.py` and
 | [2403.05980](https://arxiv.org/abs/2403.05980) | Berkooz, Brukner, Jia, Mamroud | Path integral for chord diagrams and chaotic-integrable transitions in double scaled SYK | The chord path integral |
 | [2403.01950](https://arxiv.org/abs/2403.01950) | Berkooz, Brukner, Jia, Mamroud | From Chaos to Integrability in Double Scaled Sachdev-Ye-Kitaev Model via a Chord Path Integral | The small-λ transition |
 | [2601.09801](https://arxiv.org/abs/2601.09801) | Aguilar-Gutierrez, Das, Erdmenger, Xian | Probing the chaos to integrability transition in double-scaled SYK | The same transition, probed |
+| [2307.15725](https://arxiv.org/abs/2307.15725) | Lin, Stanford | A symmetry algebra in double-scaled SYK | sl₂ in the semiclassical limit (`duality/conformal_tower.py`) |
+| [2511.08743](https://arxiv.org/abs/2511.08743) | van der Heijden, Verlinde, Xu | Quantum Symmetry and Geometry in Double-Scaled SYK | U_q(su(1,1)) discrete series of the chord space; a route to a general-n proof |
+| [2411.04251](https://arxiv.org/abs/2411.04251) | Xu | On Chord Dynamics and Complexity Growth in Double-Scaled SYK | The semiclassical T = ∞ four-point function |
 | [2302.11882](https://arxiv.org/abs/2302.11882) | Narayan, S | SYK Model with global symmetries in the double scaling limit | U(M)-symmetric chords (`duality/dirac_chord.py`) |
 | [2512.07715](https://arxiv.org/abs/2512.07715) | Forste, Kruse, Natu | Grand canonical vs. canonical Krylov complexity in double-scaled complex SYK model | Fixed-charge Dirac chord conventions |
 
@@ -69,6 +74,7 @@ Line-number citations in the code, for example in `qed_campaign.py` and
 | [2409.11324](https://arxiv.org/abs/2409.11324) | Litvinov, Meshcheriakov | Meson mass spectrum in QCD2 't Hooft's model | The α ≠ 0 anchors (`external_anchors.json`) |
 | [2312.15598](https://arxiv.org/abs/2312.15598) | Ambrosino, Komatsu | 2d QCD and integrability. Part I. 't Hooft model | The TQ-Baxter recasting |
 | [2406.11078](https://arxiv.org/abs/2406.11078) | Ambrosino, Komatsu | 2d QCD and Integrability, Part II: Generalized QCD | Its continuation |
+| [2610.37667](https://arxiv.org/abs/2610.37667) | Betzios | The 't Hooft model on (A)dS₂ | Mesons on dS₂, resonances at N = ∞; the curved-space bulk target (`duality/HORIZON.md`) |
 
 ## Versions
 

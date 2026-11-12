@@ -56,9 +56,15 @@ def test_ladder_moments():
 
 
 def test_gr_ratio_matches_largeq_anchor():
-    """The exact GR ratio equals the float tower of largeq_anchor at large q."""
+    """The exact GR couplings equal the float tower of largeq_anchor (its
+    Gamma-function transcription of GR (2.15)) at large q, in absolute
+    normalization (q^2 c_n^2, which fixes the h = 3 check) and in ratio."""
     import largeq_anchor as la
-    rows = la.gr_tower(1e8, n_max=3)
+    q = 1e8
+    rows = la.gr_tower(q, n_max=3)
+    for n in (1, 2, 3):
+        assert float(ct.gr_c2_q2(n)) == pytest.approx(q * q * rows[n - 1]["c2"], rel=1e-6)
+    assert ct.gr_c2_q2(1) == 1
     for n in (2, 3):
         assert float(ct.gr_ratio(n)) == pytest.approx(rows[n - 1]["c2"] / rows[0]["c2"],
                                                        rel=1e-6)

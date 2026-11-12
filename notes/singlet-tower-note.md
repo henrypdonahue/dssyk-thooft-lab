@@ -265,8 +265,8 @@ The norms have rational limits too: Nₘ/λ^(2⌊m/2⌋) → νₘ = 1, 2, 52/5,
 88/7, 4120/7, 720 for m = 2..7. "Exact" means exact rational chord sums
 at λ = 1/(3·2^j), j = 10..16, polynomial extrapolation to λ = 0 and
 rational reconstruction (denominators ≤ 1000; the largest met is 35).
-Each scaled coefficient is a rational function of q = e^(−λ) times an
-integer power of λ, so it is analytic in λ and the extrapolation has no
+Each scaled coefficient is rational in q = e^(−λ) and λ, so where it has
+a finite limit it is analytic in λ near 0, and the extrapolation has no
 logarithms or half-integer powers to miss. The residuals are below
 1e-23, no limit moves by more than 2e-14 when an end point is dropped
 (a hidden divergence would move it at O(1)), and the terms that must
@@ -314,7 +314,7 @@ exactly conformal.
 lower coefficients change: A₄ ⊃ (36/5 w² + 56/5) O₂,
 A₅ ⊃ (80/7 w² + 136/7) O₃. At leading order the change is exactly one
 rung of the linearized large-p Liouville equation
-∂₁∂₂δg = −2𝒥²e^g δg (e^g = sech², 𝒥 = a), acting once on the OPE
+∂₁∂₂δg = 2𝒥²e^g δg in real time (e^g = sech², 𝒥 = a), acting once on the OPE
 bilocal (the first Born term, not the resummed ladder):
 
 ```text
@@ -328,10 +328,8 @@ rung's value at τ = 0, and each fixes the coupling at −2 on its own; the
 other three, (n, m) = (6, 2), (7, 2), (7, 3), see its τ² term, and each
 needs exactly sech²'s −1. That the rung acts once fits the chord rule,
 in which each Ωₖ insertion carries the remainder at most once.
-Iterating the rung agrees through n − m = 3 and differs first, at
-n − m = 4, in exactly those three coefficients. (An earlier version
-iterated it and read the difference as sector-dependent τ² weights,
-−5/6 and −9/10; ERRATA E24.) The next level is a prediction, recorded in
+Iterating the rung agrees through n − m = 3 and differs from n − m = 4
+on: through n = 7, in exactly those three coefficients (ERRATA E24). The next level is a prediction, recorded in
 `conformal_tower.json`: for example A₈ ⊃ (28/3 w⁶ + 9892/105 w⁴ +
 93488/105 w² + 76352/35) O₂, where only the w⁰ term sees sech²'s τ⁴
 coefficient. The remainder is O(1) at λ → 0: it lowers O₅'s share of A₅
@@ -377,8 +375,8 @@ where k_c is the p = ∞ conformal ladder-kernel eigenvalue
 kernel's poles at h = 1 + 2/p + 2n land on the odd integers, so the
 pointwise limit there is singular.) The form (1 − k_c)² was read off
 from the ratios at h = 5 and 7, and it is one of several equivalent
-factorizations: it is also GR's formula with their ε_h² replaced by
-(1 + 2/(h(h−1)))². The form that needs no GR is
+factorizations: it is also N times GR's c_h² with their ε_h² replaced
+by (1 + 2/(h(h−1)))². The form that needs no GR is
 
 ```text
 Cₕ² = N c²_GFF(h) (1 + k_c(h))/(1 − k_c(h)),

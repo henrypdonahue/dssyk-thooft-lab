@@ -8,7 +8,7 @@ A_n = sum_i psi_i (ad_H)^n psi_i (n <= 8) at N = infinity as a conserved
 polynomial in H plus matter chords O_m of dimension m = 2..n, each dressed
 by a polynomial F_{n,m}(E, E') acting from the left (E) and right (E').
 It measured, at small lambda, that the even chords fade and the odd ones
-survive (2, 3, 5, 7), the pattern of the large-q SYK bilinear spectrum,
+survive (2, 3, 5, 7), the pattern of the large-p SYK bilinear spectrum,
 and road_map.md Part III item 3 asked whether the chords behave as the
 conformal operators of that spectrum.  This module answers in the
 semiclassical limit.
@@ -28,8 +28,8 @@ with P_{n,m} a polynomial of the parity of n - m and NO sigma dependence
 rationals (chord_limits(): exact rational arithmetic at
 lambda = 1/(3 2^j), j = 10..16, and q within 1e-60 of e^-lambda,
 polynomial extrapolation to lambda = 0, rational reconstruction).  Every
-scaled coefficient is a rational function of q = e^-lambda times an
-integer power of lambda, so it is analytic in lambda and the
+scaled coefficient is rational in q = e^-lambda and lambda, so where it
+has a finite limit it is analytic in lambda near 0, and the
 extrapolation has no log or half-integer terms to miss.  Three guards
 are recorded: the reconstruction residual, the drift of every limit when
 an end point is dropped (a quantity that does not converge moves at
@@ -77,8 +77,8 @@ RESULT 2: THE REMAINDER IS ONE LIOUVILLE RUNG (THE FIRST BORN TERM)
 -------------------------------------------------------------------
 With the remainder on, the chord answer differs from the OPE only in the
 lower coefficients, and at leading order the difference is exactly one
-rung of the linearized large-q Liouville equation
-d1 d2 dg = -2 J^2 e^g dg (e^g = sech^2, J = a) acting once on the OPE
+rung of the linearized large-p Liouville equation, in real time
+d1 d2 dg = 2 J^2 e^g dg (e^g = sech^2, J = a), acting once on the OPE
 bilocal,
 
     B(0, t)  =  B_OPE(0, t)
@@ -93,10 +93,9 @@ implies kappa = -2 on its own; the other three, (6, 2), (7, 2) and
 (rung_tau2_fit()).  The rung acts once, not iterated, which fits the chord
 rule: each Omega_k insertion carries the remainder at most once (r = 0
 or 1 in singlet_tower._omega_terms).  Iterating it (the geometric
-series B = B_OPE + K B) agrees through n - m = 3 and first differs, at
-n - m = 4, in exactly those three coefficients (an earlier version of
-this module iterated the rung, and fitted the difference as tau^2
-weights -5/6 and -9/10; ERRATA E24).  The next level is a prediction:
+series B = B_OPE + K B) agrees through n - m = 3 and differs from
+n - m = 4 on: through n = 7, in exactly those three coefficients
+(ERRATA E24).  The next level is a prediction:
 compare() records P_{8,m} for both rules, and of the n = 8 coefficients
 only (8, 2) w^0 sees the tau^4 term of sech^2.  The
 remainder is what makes the full channels non-conformal at lambda -> 0;
@@ -141,8 +140,8 @@ with k_c the q = infinity conformal ladder-kernel eigenvalue
 the odd integers, so the pointwise limit there is singular.  The form was
 read off from the h = 5 and 7 ratios (27/20 and 10/7 are (s-1)/s over its
 h = 3 value, s = h(h-1)/2), and it is one of several equivalent
-factorizations: since q eps_h = (1 + k_c)/(1 - k_c), it is also GR with
-their eps_h^2 replaced by (1 + 1/s)^2.  The form that needs no GR is
+factorizations: since q eps_h = (1 + k_c)/(1 - k_c), it is also N times
+GR's c_h^2 with their eps_h^2 replaced by (1 + 1/s)^2.  The form that needs no GR is
 
     C_h^2 = N c_h^2(GFF) (1 + k_c(h)) / (1 - k_c(h)),
     c_h^2(GFF) = 4 Delta_psi^2 k_c(h) Gamma(h)^2 / Gamma(2h - 1)  (Delta_psi = 1/p),
@@ -170,8 +169,9 @@ the levels computed, not derivations.
 Output: conformal_tower.json.  `python conformal_tower.py` prints the
 n <= 5 comparison in seconds; `--run` writes the committed n <= 7
 artifact (KMAX = 5: it builds the K = 16 word tables first, about
-5 minutes on one core); `--run 4` stops at n = 6 (half a minute) and is for
-checking only, since the tests expect n = 7.
+5 minutes on one core); any other KMAX writes conformal_tower_n<KMAX+2>.json
+(`--run 4`, n <= 6, half a minute, for checking; `--run 6`, n <= 8, the
+K = 18 tables, about an hour on 3 workers).
 """
 
 from __future__ import annotations
@@ -297,7 +297,7 @@ def frame_dressings(nmax: int = 8) -> dict:
             for e, v in b[n].items():
                 # y^e i^(m - n) = i^(e + m - n) w^e ; e + m - n is even
                 if (e + m - n) % 2:
-                    raise AssertionError("parity")
+                    raise ArithmeticError("parity")
                 sign = _sgn((e + m - n) // 2)
                 F[e] = 4 * factorial(n) * v * sign / (norm * factorial(m))
             out[(n, m)] = {e: v for e, v in F.items() if v != 0}
@@ -342,7 +342,8 @@ def ladder_dressings(base: dict, nmax: int, rung=None, kappa=-2,
     e^g).  base: {(n, m): {w-power: c}}.
     In dressing language, with c_n the t^n coefficients of W(tau) b(tau),
     F_N = F_N^base + kappa sum_n c_n n! i^(-n-2) w^(N-2-n).  kappa = -2 is
-    the linearized Liouville rung -2 J^2 e^g at J = a = 1."""
+    the rung of the linearized Liouville equation d1 d2 dg = 2 J^2 e^g dg
+    (real time) at J = a = 1, written as an integral."""
     if rung is None:
         rung = sech2_series(nmax)
     out = {}
@@ -526,7 +527,8 @@ def chord_limits(kmax: int = 3, remainder: bool = True, lams=LAMS) -> dict:
     # the top chord of each level carries the constant dressing 4
     dress[(2, 2)] = {0: Fraction(4)}
     for n in range(3, kmax + 3):
-        assert dress[(n, n)] == {0: Fraction(4)}, n
+        if dress[(n, n)] != {0: Fraction(4)}:
+            raise ArithmeticError(f"top dressing of A_{n} is {dress[(n, n)]}, not 4")
     return dict(dressings=dress, norms=norms, mu0=mu0, max_residual=worst,
                 max_drift=drift, sub_max=sub_max)
 
@@ -562,7 +564,8 @@ def sector_weight(P: dict, m: int) -> Fraction:
             tot += a * b * ladder_moment(m, i + j)
     # the ladder's spectral measure (the Fourier transform of sech^(2m)) is
     # positive, so a negative weight is a bug, not a sign convention
-    assert tot >= 0, (P, m)
+    if tot < 0:
+        raise ArithmeticError(f"negative sector weight {tot} for O_{m}, {P}")
     return tot
 
 
@@ -782,10 +785,17 @@ def run(kmax: int = 5, out_path=None, workers: int = 1) -> dict:
         f"conformal_tower.py --run {kmax} -- lambda -> 0 limits of the singlet-tower "
         "dressings from exact rational chord sums at lambda = 1/(3 2^j), "
         "j = 10..16, against the tanh-frame SL(2) OPE and one Liouville rung")
-    out = Path(out_path) if out_path else HERE / "conformal_tower.json"
-    with open(out, "w") as fh:
+    if out_path:
+        out = Path(out_path)
+    else:
+        # only the committed n <= 7 run writes conformal_tower.json
+        name = "conformal_tower" if kmax == 5 else f"conformal_tower_n{kmax + 2}"
+        out = HERE / f"{name}.json"
+    tmp = out.with_suffix(".json.tmp")
+    with open(tmp, "w") as fh:
         json.dump(payload, fh, indent=1)
         fh.write("\n")
+    tmp.replace(out)
     print(f"wrote {out} ({payload['runtime_s']} s)")
     return payload
 

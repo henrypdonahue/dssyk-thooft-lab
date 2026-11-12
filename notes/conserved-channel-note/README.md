@@ -1,4 +1,4 @@
-# Draft note: the singlet bilinear channels at N = ∞
+# Note: the singlet bilinear channels at N = ∞
 
 `main.tex` is a standalone manuscript, about seven pages, on the channels
 Aₙ = Σᵢ ψᵢ (ad_H)ⁿ ψᵢ of double-scaled SYK at strict N = ∞. It proves two
@@ -26,9 +26,7 @@ up to an identified, underived factor (`duality/conformal_tower.py`).
 `notes/singlet-tower-note.md` is the longer companion, with the block
 kernels, the norm table and the small-λ shares.
 
-**Status: a draft for the author's review. Not for distribution.**
-Resolve the two `TODO(author)` markers, affiliation and
-acknowledgments, before circulating.
+**Status: working manuscript; not peer-reviewed.**
 
 Build with `tectonic main.tex`, or `pdflatex main.tex` run twice, or on
 Overleaf. The displayed equations are machine-checked in

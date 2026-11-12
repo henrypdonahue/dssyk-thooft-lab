@@ -1,4 +1,4 @@
-# The singlet tower at the stretched horizon
+# The singlet tower in a Rindler frame
 
 *Code: `horizon_tower.py`. Data: `horizon_tower.json`. Tests:
 `test_horizon_tower.py`. Builds on `singlet_tower.py` and
@@ -161,10 +161,9 @@ roughly. The moments do not decide whether the finite-p spectrum is gapped.
 At N = ∞ and in the λ → 0 limit, the Majorana singlet channels of
 DSSYK∞ have a gapless, scale-invariant Rindler mass spectrum, dimensions
 2, 3, 5, 7 at the string-scale ladder spacing, with no gap and no
-discrete masses. An earlier version read this as consistent with the
-picture of [2506.18054](https://arxiv.org/abs/2506.18054) §6, a hot,
-deconfined stretched horizon a string length out (ERRATA E25). That
-picture was corrected by Susskind
+discrete masses (ERRATA E25). The stretched-horizon picture of
+[2506.18054](https://arxiv.org/abs/2506.18054) §6, a deconfined layer
+a string length out, was corrected by Susskind
 ([2511.10907](https://arxiv.org/abs/2511.10907)): the deconfined layer
 sits within a Planck distance of the horizon, ~√N closer than the
 string length, and so it shrinks to nothing at N = ∞. In the corrected
@@ -181,7 +180,7 @@ should match that of the 't Hooft model", at fixed λ → 0 after N → ∞.
 as N → ∞ ("since that's where the calculations are done"), and says
 "We don't have a quantitative calculation of the DSSYK spectrum". The
 λ → 0 limit is the large-p edge of that regime, and at finite p the
-exact moments differ substantially from the ladders (the next section).
+exact moments differ substantially from the ladders (previous section).
 The open routes are therefore: finite p at N = ∞ (leading-order
 objects, computable from the large-N Schwinger–Dyson and ladder
 equations; 't Hooft mesons are leading-order objects in the gauge

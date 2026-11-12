@@ -53,14 +53,14 @@ Exact, and asserted in `dirac.py` and `mn_spectroscopy.py`:
 
 - [H, Q] = 0, and M₀ = Q.
 - **M₁ = −(p/2)iH.** The paper's M₁ = H fails at O(1).
-- **M₂ = −Σ ċ†ċ.** The paper's + sign is wrong.
+- **M₂ = −Σ ċ†ċ** (the paper has +).
 - Mₙ† = (−1)ⁿMₙ only for n ≤ 2.
 
 CP has to be the **unitary** particle-hole map, because M₁ ∝ iH rules out
 an antiunitary one. CP of the traceless M₀ (= Q − Nc/2, with C Q C =
 Nc − Q) is −1, and CP(M₁) = +1. Both are exact.
 
-Raw Mₙ for n ≥ 2 are CP mixtures, with 15–60% wrong-channel content. So
+Raw Mₙ for n ≥ 2 are CP mixtures, with 15–65% wrong-channel content. So
 the paper's CP = (−1)^(n+1) lives in CP-*resolved* correlators, not in
 the raw ones. `mn_spectroscopy.py` computes those: n = 0 and n = 1 are
 conserved and exact at ω = 0, and there are broad continua at λ = 1.6.
@@ -75,7 +75,7 @@ capacitive-against-confining question is stated with ΔAIC, not asserted.
 
 **Baryons** (`baryons.py`). ε-tensor baryons at Nc = 4–10. Exact 2-point
 collapse onto charge sectors, mass extensivity, and the edge-curvature
-hierarchy. First data on the paper's underived inter-baryon-force claim,
+hierarchy. Data on the paper's inter-baryon-force claim,
 with the hierarchy claims kept inside their error bars.
 
 **Freeness** (`freeness.py`). Cui–Kolchmeyer argue that early and late
@@ -86,9 +86,7 @@ spec(E + F(t)) is the arcsine law.
 Measured at N = 12–24, the spectrum lands on the arcsine law, the W₁
 plateau falls like dim^(−0.9), and every alternating word goes to zero.
 The plateau is a rigid-spectrum floor, far below the dim^(−1/2) floor of
-unstructured sampling. To our knowledge this is the first measurement of
-this pair's classical → free crossover in a microscopic dS-candidate
-model.
+unstructured sampling.
 
 The caveat is real. The crossover sits at the *dissipation* time
 (t𝒥 ≈ 1.2, nearly N-independent), so ED cannot resolve the ln N

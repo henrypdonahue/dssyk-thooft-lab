@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 r"""
-The singlet tower at the stretched horizon: a gapless, scale-invariant spectrum.
-==============================================================================
+The singlet tower in a Rindler frame: a gapless, scale-invariant spectrum.
+==========================================================================
 
 singlet_tower.py writes every Majorana singlet channel
 A_n = sum_i psi_i (ad_H)^n psi_i (n <= 8) at N = infinity as a conserved
@@ -55,8 +55,9 @@ scriptJ = Jc sqrt(<H^2>) = sqrt(2) J_MSS (units_mss(); exact because the
 e^(lambda/8) in Jc cancels the e^(-lambda/4)).  The O(1) factor is
 convention-dependent: the paper's complex model (q = e^(-4 lambda) in
 2006.13983's convention) changes it.  Either way the ladder sits at the
-string scale, the scale of the meson masses and of the stretched horizon
-of 2506.18054 Sec. 6.
+string scale, the scale of the meson masses (2506.18054 Sec. 6 put the
+stretched horizon there too; since 2511.10907 it is at a Planck
+distance).
 
 THE CALIBRATION: MASS SPECTRA AT A RINDLER HORIZON
 --------------------------------------------------
@@ -98,9 +99,8 @@ WHAT THIS DOES AND DOES NOT SAY
 -------------------------------
 At N = infinity and as lambda -> 0, the Majorana singlet channels have a
 gapless, scale-invariant Rindler mass spectrum, dimensions 2, 3, 5, 7, with
-no gap and no discrete masses: the spectrum of a conformal near-horizon
-region (in the limit, equivalent to the chords being conformal), unlike
-the gapped, discrete 't Hooft tower.  With the deconfined stretched
+no gap and no discrete masses (in the limit, equivalent to the chords
+being conformal), unlike the gapped, discrete 't Hooft tower.  With the deconfined stretched
 horizon at a Planck distance (Susskind 2511.10907, correcting
 2506.18054 Sec. 6), the string-scale region probed here is the confined
 one, so this is a tension with the proposal, not a consistency
@@ -463,7 +463,7 @@ def run(out_path=None) -> dict:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(
-        description="The singlet tower at the stretched horizon.  With no "
+        description="The singlet tower in a Rindler frame.  With no "
                     "flag: compute every table, print them, and write "
                     "horizon_tower.json (~2-4 min, one core).")
     ap.add_argument("--out", default=None,

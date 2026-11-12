@@ -18,7 +18,7 @@ precisely what remains, and it draws the conditional consequence.
 
 NV work in a doubled, constrained DSSYK with λ = 2p²/N and q = e^(−λ).
 That is this repo's chord convention, so there is no factor-of-two
-landmine on this axis. The pieces used here:
+difference on this axis. The pieces used here:
 
 **Physical operators** (§2.3). Gravitationally dressed by a time integral
 over the two sides, schematically ∫dt O^(1−D)_L(t) O^D_R(τ−t), their
