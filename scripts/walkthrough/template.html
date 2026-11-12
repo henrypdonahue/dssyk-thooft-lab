@@ -158,7 +158,7 @@ footer { margin-top: 50px; padding-top: 18px; border-top: 1px solid var(--faint)
     <div class="stat"><b>40</b><span>'t Hooft levels, 17–21 digits</span></div>
     <div class="stat"><b>2</b><span>theorems at N = ∞</span></div>
     <div class="stat"><b>n ≤ 8</b><span>tower levels decomposed</span></div>
-    <div class="stat"><b>723</b><span>fast tests passing</span></div>
+    <div class="stat"><b>724</b><span>fast tests passing</span></div>
     <div class="stat"><b>{{errata}}</b><span>errata, all public</span></div>
   </div>
 </header>
@@ -255,7 +255,7 @@ A₂ = 4 Σᵢ Hᵢ²        (the first dynamical singlet)</div>
     <tr><td>as λ → 0 even chords fade, odd chords survive</td><td>O₇ survives, O₈ fades</td><td>O₇ settles near 0.006% of A₇ and 0.014% of A₈; O₈ falls ∝ λ ✓</td></tr>
   </table></div>
   <figure class="fig">{{survival}}<figcaption>Inside A₈ as λ → 0 (log–log, exact arithmetic down to λ = 1/1280). Dashed even chords fall in proportion to λ; solid odd chords level off. O₃ ends at 97.8%, O₅ at 2.0%, O₇ at 0.014%.</figcaption></figure>
-  <div class="callout"><p><b>Why it is interesting.</b> The dimensions that survive the semiclassical limit are <b>2, 3, 5, 7</b>, the same pattern as the large-p SYK bilinear spectrum h = 2, 3, 5, 7, … (Maldacena–Stanford). That map has exact λ → 0 limits through n = 7 (<code>duality/conformal_tower.py</code>). Without the chord rule's grade remainder, every A<sub>n</sub> through n = 7 is exactly a one-dimensional conformal OPE of the bilocal, in the frame u = tanh(√λ t), with the dimension-m chord a primary of weight m. The remainder adds exactly one rung of the linearized Liouville equation, −2a² sech², with nothing fitted, so the full channels are not exactly conformal. Odd survival follows from the norm law (a free Majorana fermion's bilinears are odd too; the content is in the norms and coefficients), and the odd OPE coefficients equal N(1 − 2/(h(h−1)))² times the Gross–Rosenhaus IR couplings at h = 3, 5, 7. The OPE structure is <span class="badge b-ver">verified</span> through n = 7; the relation to Gross–Rosenhaus is identified, not derived.</p></div>
+  <div class="callout"><p><b>Why it is interesting.</b> The dimensions that survive the semiclassical limit are <b>2, 3, 5, 7</b>, the same pattern as the large-p SYK bilinear spectrum h = 2, 3, 5, 7, … (Maldacena–Stanford). That map has exact λ → 0 limits through n = 8 (<code>duality/conformal_tower.py</code>). Without the chord rule's grade remainder, every A<sub>n</sub> through n = 8 is exactly a one-dimensional conformal OPE of the bilocal, in the frame u = tanh(√λ t), with the dimension-m chord a primary of weight m. The remainder adds exactly one rung of the linearized Liouville equation, −2a² sech², with nothing fitted, so the full channels are not exactly conformal. Odd survival follows from the norm law (a free Majorana fermion's bilinears are odd too; the content is in the norms and coefficients), and the odd OPE coefficients equal N(1 − 2/(h(h−1)))² times the Gross–Rosenhaus IR couplings at h = 3, 5, 7. The OPE structure is <span class="badge b-ver">verified</span> through n = 8, where the rung's predicted dressings were confirmed; the relation to Gross–Rosenhaus is identified, not derived.</p></div>
   <figure class="fig"><img src="duality/singlet_tower.png" alt="Four panels: A2 width with the conserved part removed, exact dynamical spectral densities, sector composition, and the finite-N check of the remainder rule."><figcaption>(a) With the conserved H² removed the width is 2(1 − q²) at every λ; the raw ratio is that width diluted. (b) The exact spectral densities: smooth continua, no lines, no nodes. (c) Composition at λ = 2 (n ≤ 6 in the committed figure). (d) Exact finite N picks the correct remainder rule (155.03 against 150.65).</figcaption></figure>
 </section>
 
@@ -308,7 +308,7 @@ A₃:  ⟨ω⁴⟩/⟨ω²⟩ = 4p(10p − 21)    (fit on p = 4, 6, 8; checked a
     <tr><td>Pair channel frozen at N = ∞ (all n, λ, matter weight)</td><td><span class="badge b-thm">theorem</span></td></tr>
     <tr><td>Full A₂ = conserved H² + a Δ = 2 chord</td><td><span class="badge b-thm">theorem</span></td></tr>
     <tr><td>A₃…A₈ = polynomial in H + chords of dimension 2…n</td><td><span class="badge b-ver">verified</span></td></tr>
-    <tr><td>As λ → 0, remainder off: chords = weight-m primaries of a conformal OPE</td><td><span class="badge b-ver">verified</span> n ≤ 7; the full rule adds one Liouville rung; odd survival from the norm law</td></tr>
+    <tr><td>As λ → 0, remainder off: chords = weight-m primaries of a conformal OPE</td><td><span class="badge b-ver">verified</span> n ≤ 8; the full rule adds one Liouville rung; odd survival from the norm law</td></tr>
     <tr><td>Surviving dimensions 2, 3, 5, 7 ↔ large-p h = 2, 3, 5, 7</td><td><span class="badge b-obs">observation</span></td></tr>
     <tr><td>Odd T = ∞ OPE coefficients = N(1 − k<sub>c</sub>(h))² × Gross–Rosenhaus</td><td><span class="badge b-obs">observation</span> exact at h = 3, 5, 7, not derived</td></tr>
     <tr><td>N = ∞ Rindler mass spectrum gapless, no discrete masses (Majorana)</td><td><span class="badge b-thm">follows from the above</span></td></tr>
@@ -351,7 +351,7 @@ A₃:  ⟨ω⁴⟩/⟨ω²⟩ = 4p(10p − 21)    (fit on p = 4, 6, 8; checked a
   </table></div>
   <pre><code>python3 -m venv .venv &amp;&amp; . .venv/bin/activate
 python -m pip install -e '.[dev]'
-make test                                  # 723 fast tests, ~3 min
+make test                                  # 724 fast tests, ~4 min
 make reproduce                             # fast producers + figures, minutes
 python scripts/validate.py reproduce-slow  # every campaign, logged; about two days
 cd duality &amp;&amp; python singlet_tower.py --deep 5 6   # levels n = 7, 8 (~25 min on 6 cores)</code></pre>

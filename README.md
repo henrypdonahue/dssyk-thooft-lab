@@ -76,15 +76,16 @@ the pattern was stated and bore it out ([note](notes/singlet-tower-note.md)
 §4, [code](duality/singlet_tower.py)).
 
 **3a. As λ → 0 the levels are a conformal OPE plus one Liouville rung
-(exact limits through n = 7, not proved).** Each dressing becomes a
+(exact limits through n = 8, not proved).** Each dressing becomes a
 polynomial in the scaled frequency with rational coefficients. With the
 chord rule's grade remainder switched off, every Aₙ is exactly the
 one-dimensional conformal OPE of the bilocal Σψᵢ(0)ψᵢ(t) in the frame
 u = tanh(√λ t), with Oₘ a primary of weight m. With the remainder on,
 exactly one rung of the linearized large-p Liouville equation is added,
 −2a² sech²(aτ) acting once on the OPE bilocal, with nothing fitted (all
-13 coefficients it changes), so the full channels are not exactly
-conformal. The odd survival then
+22 coefficients it changes through n = 8; the 9 at n = 8 were
+predicted before they were computed), so the full channels are not
+exactly conformal. The odd survival then
 follows from the norm law and the a^(n−m) scaling of the dressings (both
 numerical, neither proved), and the shares are exact rationals
 (A₅ → 2047/2058 O₃ + 11/2058 O₅). The odd-only pattern is itself what a
@@ -143,7 +144,7 @@ corrections ([syk-self-averaging/thooft_limit.py](syk-self-averaging/thooft_limi
 | Pair (i ≠ j) chord amplitude | Conserved at N = ∞ for every n, λ and matter weight (theorem) | Not the full flavor-summed channel |
 | Full A₂ channel at N = ∞ | Conserved H² part plus a Δ = 2 matter chord (theorem), checked against exact finite N and projected ED | Majorana only; a boost-frequency continuum is not a mass |
 | Aₙ, n = 3..8, at N = ∞ | Polynomial in H plus matter chords of dimension 2..n | Verified in computer algebra on finite word sets (the residual tests the structure; the values rest on the rule's derivation and the n ≤ 4 finite-N gates); no general-n proof |
-| The same as λ → 0 | Chords are weight-m primaries of a tanh-frame SL(2) OPE (remainder off), plus one Liouville rung (remainder on); exact shares; odd Cₕ² = N(1 − k_c)² × GR | Rational limits by extrapolation of exact sums, n ≤ 7; neither the OPE, the rung nor the GR relation is derived |
+| The same as λ → 0 | Chords are weight-m primaries of a tanh-frame SL(2) OPE (remainder off), plus one Liouville rung (remainder on); exact shares; odd Cₕ² = N(1 − k_c)² × GR | Rational limits by extrapolation of exact sums, n ≤ 8; neither the OPE, the rung nor the GR relation is derived |
 | Singlet tower in a Rindler frame | As λ → 0 each chord is the quasinormal ladder \|Γ(Δ + iω/a)\|², the response of a gapless mass density ∝ M^(2Δ−1); the channels' Rindler mass spectrum has no gap and no discrete masses | Majorana only; the λ → 0 limit (no mass reading at finite λ); two-sided free-field calibration, chosen, at fixed distance from the horizon; a = 2𝒥 is the natural, not a supplied, identification; tests the paper's small-λ statement, not its fixed-p regime |
 | 't Hooft limit (fixed p, N → ∞) | Exact moments of A₂ (and the A₃ ratio) approach the λ → 0 ladders as p grows, with large closed-form finite-p corrections | Laws fit on low p, checked on higher p; the expected large-p ↔ small-λ consistency, and moments do not decide whether the finite-p spectrum is gapped |
 | Fixed p, finite N | Exact rational moment laws; μ₂/μ₀ = 8p(p−2)/N + O(N⁻²) at each tested even p ≤ 12 | Not proved for all p; not an exact finite-N equality |
@@ -214,7 +215,7 @@ or an identical BLAS guarantee. CI covers Python 3.9 and 3.12 on Linux.
 
 Run tests separately in each directory (the three modules and
 `scripts/`), as the Makefile does; the code uses flat script imports.
-`test` excludes slow tests (723 fast tests, 16 of them for the
+`test` excludes slow tests (724 fast tests, 16 of them for the
 runner and the walkthrough page); `test-all` includes them. `reproduce` runs the fast
 deterministic producers and plots in a few minutes; `reproduce-slow`
 runs every campaign and reference generator and takes about two days.

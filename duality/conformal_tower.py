@@ -38,7 +38,7 @@ wrong-parity w terms that are integer powers of lambda times a rational
 function; the rest are sqrt(lambda) times a quantity whose finiteness
 the drift checks).  The same holds for the norms:
 norm_m = nu_m lambda^(2 floor(m/2)) (1 + O(lambda)) with
-nu_2..nu_7 = 1, 2, 52/5, 88/7, 4120/7, 720.
+nu_2..nu_8 = 1, 2, 52/5, 88/7, 4120/7, 720, 18192384/143.
 
 RESULT 1: WITHOUT THE REMAINDER, A_n IS AN SL(2) OPE
 ----------------------------------------------------
@@ -69,9 +69,10 @@ orientation-reversing map, so up to the sign (-1)^m).  u = e^(2at)
 is Moebius-equivalent and gives the same numbers, and u = tan(a t)
 multiplies the w^(n-m-2j) coefficient by (-1)^j, e.g.
 A_6 > (60/7 w^4 - 96/7 w^2 + 64/7) O_2 (it fails).  The match is exact
-on all 28 coefficients below the diagonal through n = 7, 13 of them
+on all 43 coefficients below the diagonal through n = 8, 22 of them
 frame corrections (the fast tests re-derive the 9 through n = 5, the
-slow test the 17 through n = 6; conformal_tower.json has n = 7).
+slow test the 17 through n = 6; conformal_tower.json has n = 7 and
+conformal_tower_n8.json n = 8).
 
 RESULT 2: THE REMAINDER IS ONE LIOUVILLE RUNG (THE FIRST BORN TERM)
 -------------------------------------------------------------------
@@ -95,9 +96,11 @@ rule: each Omega_k insertion carries the remainder at most once (r = 0
 or 1 in singlet_tower._omega_terms).  Iterating it (the geometric
 series B = B_OPE + K B) agrees through n - m = 3 and differs from
 n - m = 4 on: through n = 7, in exactly those three coefficients
-(ERRATA E24).  The next level is a prediction:
-compare() records P_{8,m} for both rules, and of the n = 8 coefficients
-only (8, 2) w^0 sees the tau^4 term of sech^2.  The
+(ERRATA E24).  n = 8 then tested it out of sample: the n <= 7 artifact
+recorded the predicted P_{8,m} for both rules, and the K = 18 run
+(conformal_tower_n8.json) matches all of them, including the 9 new
+coefficients the remainder changes and (8, 2) w^0, the one that sees
+the tau^4 term of sech^2.  The
 remainder is what makes the full channels non-conformal at lambda -> 0;
 its weight is O(1) there (it lowers the O_5 share of A_5 from 11/1911
 to 11/2058, by about 7%).
@@ -111,13 +114,15 @@ weight are exact rationals (limiting_shares()):
     A_5 -> 2047/2058 O_3 + 11/2058 O_5                       (0.5345% O_5)
     A_6 -> 20443/20608 O_3 + 165/20608 O_5                   (0.8007% O_5)
     A_7 -> 540648/548261 O_3 + 7578/548261 O_5 + 5/78323 O_7 (0.0064% O_7)
+    A_8 -> 382290/390131 O_3 + 62287/3121048 O_5 + 63/445864 O_7
+                                                             (0.0141% O_7)
 
 singlet_tower.py's values at lambda = 1/1280 approach these.  The weight
 of dressed O_m in A_n scales as lambda^(n - m + 2 floor(m/2)): lambda^(n-1)
 for odd m, lambda^n for even m.  So the even chords fade BECAUSE of the
 norm law norm_m ~ lambda^(2 floor(m/2)): given that law and the scaling
 F_{n,m} ~ a^(n-m) with a nonzero limit (both established here through
-n = 7, neither proved), the survival pattern follows rather than being a
+n = 8, neither proved), the survival pattern follows rather than being a
 separate observation.  The pattern itself is the expected one: the
 bilinear primaries of a generalized free Majorana fermion have
 h = 2 Delta_psi + 2n + 1, the odd integers as Delta_psi -> 0, with h = 2
@@ -127,7 +132,7 @@ RESULT 4: AN EXACT EMPIRICAL FORM OF THE ODD T = infinity OPE COEFFICIENTS
 --------------------------------------------------------------------------
 In block normalization C_m^2 = 16 nu_m / m!^2 lambda^(2 floor(m/2) - m)
 (ope_coefficients()).  The even ones are O(1): C_2^2 = 4, C_4^2 = 13/45,
-C_6^2 = 103/5670.  The odd ones are O(1/lambda): lambda C_3^2 = 8/9,
+C_6^2 = 103/5670, C_8^2 = 94/75075.  The odd ones are O(1/lambda): lambda C_3^2 = 8/9,
 lambda C_5^2 = 22/1575, lambda C_7^2 = 1/2205.  Against Gross-Rosenhaus
 (1702.08016 (2.15)), the q -> infinity couplings c_h^2 of the IR
 conformal tower, exactly for h = 3, 5, 7,
@@ -455,7 +460,7 @@ def _extrapolate(xs, ys) -> Fraction:
 
 def _reconstruct(v: Fraction, max_den: int = 10 ** 3) -> tuple:
     """The nearest rational of denominator <= max_den, and the distance.
-    (The largest denominator met through n = 7 is 35.)"""
+    (The largest denominator met through n = 8 is 143, in nu_8.)"""
     r = v.limit_denominator(max_den)
     return r, abs(float(v - r))
 

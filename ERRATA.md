@@ -93,8 +93,8 @@ from n − m = 4 on, through n = 7 in exactly those three coefficients; −5/6 a
 compensated the spurious second rung. One rung of Liouville's own
 kernel, −2a² sech²(aτ) acting once on the OPE bilocal, reproduces all
 13 coefficients with nothing fitted, and each of the three needs
-exactly −1. The rung's form is identified, and the n = 8 dressings are
-now a prediction.
+exactly −1. The rung's form is identified, and the n = 8 dressings it
+predicted were then computed and match (`conformal_tower_n8.json`).
 
 **E25. "The gapless spectrum is consistent with the paper's own picture
 of a deconfined, conformal stretched horizon"** (README item 4,
@@ -123,7 +123,8 @@ the n = 2 theorem and the finite-N gates at n = 3 and 4. The stored
 n = 7 and 8 residuals also predate the `ad021a7` fix, so they certified
 only the top sector. Re-checked with the fixed code, n = 7 gives
 residual 0 at all three points, as stored (and n ≤ 6 with longer words
-than stored); n = 8 awaits a rebuild of its K = 18 tables.
+than stored); rebuilt from its K = 18 tables, n = 8 gives residual 0 at
+all three points, as stored.
 
 ## The dS / OTOC axis
 

@@ -491,7 +491,7 @@
      }
     }
    ],
-   "tables_s": 37.0
+   "tables_runtime_s": 37.0
   },
   "8": {
    "kmax": 6,
@@ -1081,7 +1081,7 @@
      }
     }
    ],
-   "tables_s": 829.1
+   "tables_runtime_s": 829.1
   }
  },
  "provenance": "singlet_tower.py --deep -- the matter-chord decomposition past n = 6: exact rational checks at three generic (lambda, q), the subleading coefficient q[k]_q/(1+q^(k+1)), sector shares at lambda = 2 and the small-lambda norm and share scalings"

@@ -104,6 +104,7 @@ reproduce-slow:
 	cd duality && $(PY) singlet_tower.py --run
 	cd duality && $(PY) singlet_tower.py --deep 5 6
 	cd duality && $(PY) conformal_tower.py --run 5
+	cd duality && $(PY) conformal_tower.py --run 6 --workers 3
 	cd thooft-target && $(PY) generate_reference.py
 	cd thooft-target && $(PY) generate_reference.py --polish
 	cd thooft-target && $(PY) jacobi_solver.py

@@ -261,6 +261,35 @@ def test_artifact_n7(art):
     assert eng["7"] == pytest.approx(5 / 78323, rel=1e-8)
 
 
+def test_artifact_n8():
+    """conformal_tower_n8.json (the K = 18 run): the OPE is exact at n = 8
+    too, one sech^2 rung reproduces every coefficient the remainder
+    changes (the nine new ones at n = 8 were predicted by the n <= 7
+    artifact before they were computed), and the exact n = 8 limits."""
+    with open(HERE / "conformal_tower_n8.json") as fh:
+        a8 = json.load(fh)
+    with open(HERE / "conformal_tower.json") as fh:
+        a7 = json.load(fh)
+    assert a8["nmax"] == 8
+    frame = ct.frame_dressings(8)
+    assert _parse(a8["chord_off"]) == frame
+    on = _parse(a8["chord_on"])
+    rung = ct.ladder_dressings(frame, 8)
+    assert set(on) == set(rung) and all(on[k] == rung[k] for k in rung)
+    pred = a7["prediction_next_level"]
+    for m, P in pred["chord_on"].items():
+        assert a8["chord_on"][str((8, int(m)))] == P
+    for m, P in pred["chord_off"].items():
+        assert a8["chord_off"][str((8, int(m)))] == P
+    assert a8["norms"]["8"] == "18192384/143"
+    assert a8["shares"]["8"]["shares"] == {"3": "382290/390131", "5": "62287/3121048",
+                                           "7": "63/445864"}
+    assert {h: r["equal"] for h, r in a8["odd_ope_vs_gr"].items()} == \
+        {"3": True, "5": True, "7": True}
+    assert a8["max_residual"] < 1e-18 and a8["max_drift"] < 1e-10
+    assert a8["sub_max"] < 1e-20
+
+
 def test_gff_coefficients():
     """The generalized-free-fermion coefficients behind gff_c2: the block
     expansion of F_0 = -chi^(2D) + (chi/(1-chi))^(2D) at D = 0.1, and

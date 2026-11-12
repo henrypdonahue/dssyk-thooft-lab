@@ -122,7 +122,7 @@ the odd survival all held.
 As λ → 0 that structure has exact rational limits, and with the grade
 remainder off it is exactly conformal (`duality/conformal_tower.py`,
 singlet-tower note §4a). Without the
-grade remainder of the chord rule, every Aₙ through n = 7 is exactly the
+grade remainder of the chord rule, every Aₙ through n = 8 is exactly the
 SL(2) OPE of the bilocal Σψᵢ(0)ψᵢ(t) in the frame u = tanh(√λ t), with
 the dimension-m chord a primary of weight m. The remainder adds exactly
 one rung of the linearized large-p Liouville equation, −2a² sech²,

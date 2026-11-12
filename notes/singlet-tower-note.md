@@ -247,14 +247,15 @@ Closed forms for the moments follow, for example
 ## 4a. The semiclassical limit: a conformal OPE plus one Liouville rung
 
 Code: `duality/conformal_tower.py`. Tests: `duality/test_conformal_tower.py`.
-Data: `duality/conformal_tower.json`.
+Data: `duality/conformal_tower.json` (n ≤ 7) and
+`duality/conformal_tower_n8.json` (n ≤ 8).
 
 Write σ = (E + E′)/2 and ω = E − E′ for the left and right energies of a
 dressing F_{n,m}(E, E′), so that ad_H acts as ω. As λ → 0 a chord of
 dimension m is the ladder sech^(2m)(𝒥t), with 𝒥 = √λ in chord units
 (`duality/HORIZON.md`, whose ladder spacing is 2𝒥). Write a ≡ √λ in this
 section, so ω ~ a while σ ~ 1. Scale ω = a w. Then, at every level taken to the
-limit (n ≤ 7),
+limit (n ≤ 8),
 
 ```text
 F_{n,m}(E, E′) = a^(n−m) P_{n,m}(w) (1 + O(a)),
@@ -262,9 +263,9 @@ F_{n,m}(E, E′) = a^(n−m) P_{n,m}(w) (1 + O(a)),
 
 with P_{n,m} a polynomial with rational coefficients and no σ dependence.
 The norms have rational limits too: Nₘ/λ^(2⌊m/2⌋) → νₘ = 1, 2, 52/5,
-88/7, 4120/7, 720 for m = 2..7. "Exact" means exact rational chord sums
+88/7, 4120/7, 720, 18192384/143 for m = 2..8. "Exact" means exact rational chord sums
 at λ = 1/(3·2^j), j = 10..16, polynomial extrapolation to λ = 0 and
-rational reconstruction (denominators ≤ 1000; the largest met is 35).
+rational reconstruction (denominators ≤ 1000; the largest met is 143).
 Each scaled coefficient is rational in q = e^(−λ) and λ, so where it has
 a finite limit it is analytic in λ near 0, and the extrapolation has no
 logarithms or half-integer powers to miss. The residuals are below
@@ -275,7 +276,7 @@ vanish do so to below 1e-26. It is not a symbolic proof.
 **Without the remainder, Aₙ is an SL(2) operator expansion.** The chord
 rule of §4 has one ingredient that is not pairwise: the remainder, an
 O(1) term that appears when the first and last slots of Ωₖ contract with
-each other. Switch it off. Then every P_{n,m} through n = 7 (28
+each other. Switch it off. Then every P_{n,m} through n = 8 (43
 coefficients below the diagonal) is exactly the prediction of a
 one-dimensional conformal OPE of the bilocal,
 
@@ -295,7 +296,7 @@ two-point function with one point inverted (u₂ → 1/u₂, orientation
 reversing, so up to a sign (−1)^m). e^(2at) is
 Möbius-equivalent and gives the same numbers; tan(at) multiplies the
 w^(n−m−2j) coefficient by (−1)^j (A₆ ⊃ (60/7 w⁴ − 96/7 w² + 64/7) O₂) and
-fails. So, with the remainder off and through n = 7, the dressings are
+fails. So, with the remainder off and through n = 8, the dressings are
 exactly those of a weight-m primary in the bilocal's SL(2) OPE. Some
 SL(2) structure at λ → 0 is expected: Lin–Stanford
 ([2307.15725](https://arxiv.org/abs/2307.15725)) find that a subalgebra
@@ -329,10 +330,14 @@ other three, (n, m) = (6, 2), (7, 2), (7, 3), see its τ² term, and each
 needs exactly sech²'s −1. That the rung acts once fits the chord rule,
 in which each Ωₖ insertion carries the remainder at most once.
 Iterating the rung agrees through n − m = 3 and differs from n − m = 4
-on: through n = 7, in exactly those three coefficients (ERRATA E24). The next level is a prediction, recorded in
-`conformal_tower.json`: for example A₈ ⊃ (28/3 w⁶ + 9892/105 w⁴ +
-93488/105 w² + 76352/35) O₂, where only the w⁰ term sees sech²'s τ⁴
-coefficient. The remainder is O(1) at λ → 0: it lowers O₅'s share of A₅
+on: through n = 7, in exactly those three coefficients (ERRATA E24).
+n = 8 then tested the rung out of sample. The n ≤ 7 artifact recorded
+the predicted A₈ dressings for both rules, for example
+A₈ ⊃ (28/3 w⁶ + 9892/105 w⁴ + 93488/105 w² + 76352/35) O₂, whose w⁰
+term is the one coefficient that sees sech²'s τ⁴ term. The K = 18 run
+(`conformal_tower_n8.json`) matches every one of them: the OPE again
+with the remainder off, and one sech² rung on all 9 new coefficients
+the remainder changes, 22 in all through n = 8. The remainder is O(1) at λ → 0: it lowers O₅'s share of A₅
 from 11/1911 to 11/2058, by about 7%.
 
 **Exact semiclassical shares; why odd dimensions survive.** The weight
@@ -340,7 +345,7 @@ of the dressed Oₘ in Aₙ is Nₘ⟨|P_{n,m}|²⟩ ∝ λ^(n−m+2⌊m/2⌋). 
 λ^(n−1) for every odd m and λ^n for every even m. So the survival of
 2, 3, 5, 7 follows from the norm law Nₘ ∝ λ^(2⌊m/2⌋) and the scaling
 F_{n,m} ~ a^(n−m) with a nonzero limit (A₂ is O₂ alone). Both are
-established here through n = 7 and neither is proved; given them, the
+established here through n = 8 and neither is proved; given them, the
 survival is a consequence rather than a separate observation. The
 odd-only pattern is itself what a generalized free Majorana fermion
 gives (its bilinear primaries have h = 2Δψ + 2n + 1, odd as Δψ → 0,
@@ -353,13 +358,14 @@ surviving shares are exact rationals:
 | A₅ | 2047/2058 (99.4655%) | 11/2058 (0.5345%) | |
 | A₆ | 20443/20608 (99.1993%) | 165/20608 (0.8007%) | |
 | A₇ | 540648/548261 (98.6114%) | 7578/548261 (1.3822%) | 5/78323 (0.0064%) |
+| A₈ | 382290/390131 (97.9902%) | 62287/3121048 (1.9957%) | 63/445864 (0.0141%) |
 
 The λ = 1/1280 values in the table of §4 approach these.
 
 **The T = ∞ OPE coefficients, against the IR ones.** In the
 normalization of the conformal block expansion, with νₘ the norm limits
 above, Cₘ² = 16νₘ/m!² × λ^(2⌊m/2⌋−m). The even ones are O(1): C₂² = 4, C₄² = 13/45,
-C₆² = 103/5670. The odd ones are O(1/λ): λC₃² = 8/9, λC₅² = 22/1575,
+C₆² = 103/5670, C₈² = 94/75075. The odd ones are O(1/λ): λC₃² = 8/9, λC₅² = 22/1575,
 λC₇² = 1/2205. Compare Gross–Rosenhaus
 ([1702.08016](https://arxiv.org/abs/1702.08016) (2.15)): the large-p
 couplings c_h² of the IR conformal SYK tower h = 3, 5, 7 (their q is
@@ -501,6 +507,7 @@ python -m pytest -q test_singlet_tower.py
 python singlet_tower.py --run            # artifact and finite-N gates
 python singlet_tower.py --deep 5 6       # levels n = 7, 8 (~25 min on 6 cores)
 python conformal_tower.py                # §4a, the λ → 0 limit through n = 5, seconds
-python conformal_tower.py --run          # its artifact, n ≤ 7 (~4 min, one core)
+python conformal_tower.py --run          # its artifact, n ≤ 7 (~5 min, one core)
+python conformal_tower.py --run 6 --workers 3   # n ≤ 8 (K = 18, ~45 min)
 python -m pytest -q test_conformal_tower.py
 ```

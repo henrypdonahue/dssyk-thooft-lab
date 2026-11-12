@@ -78,7 +78,7 @@ H projected out. Levels 7 and 8 (`--deep 5 6`, `singlet_tower_deep.json`)
 use a parallel builder for the 16- and 18-node word tables, tested equal
 to the serial ones. Figure: `plot_singlet_tower.py`.
 
-`conformal_tower.py`. The tower's semiclassical limit, through n = 7.
+`conformal_tower.py`. The tower's semiclassical limit, through n = 8.
 As λ → 0 each dressing is a polynomial in the scaled frequency ω/√λ
 with rational coefficients (exact chord sums at seven small λ,
 extrapolated and reconstructed, with the reconstruction, convergence and
@@ -200,6 +200,7 @@ python3 singlet_tower.py --run   # its artifact and finite-N gates (~3 CPU-hours
 python3 singlet_tower.py --deep 5 6  # levels n = 7, 8 (~25 min on 6 cores)
 python3 conformal_tower.py       # its lambda -> 0 limit, n <= 5   (~5 s)
 python3 conformal_tower.py --run # its artifact, n <= 7 (~5 min, one core)
+python3 conformal_tower.py --run 6 --workers 3  # n <= 8 (K = 18, ~45 min)
 python3 horizon_tower.py         # the tower in a Rindler frame (~4 min)
-pytest -q                        # 391 tests (385 fast, ~1.5 min)
+pytest -q                        # 392 tests (386 fast, ~2 min)
 ```

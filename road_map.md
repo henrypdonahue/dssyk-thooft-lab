@@ -236,13 +236,14 @@ the norm law, the subleading coefficient and the odd survival all held
 there.
 
 The semiclassical limit of that structure now has exact rational limits
-through n = 7 (`duality/conformal_tower.py`, note §4a). As λ → 0, each dressing is a
+through n = 8 (`duality/conformal_tower.py`, note §4a). As λ → 0, each dressing is a
 polynomial in the scaled frequency ω/√λ with rational coefficients.
 Without the chord rule's grade remainder, Aₙ is *exactly* a
 one-dimensional conformal OPE of the bilocal Σψᵢ(0)ψᵢ(t) in the frame
 u = tanh(√λ t), with Oₘ a primary of weight m (every coefficient through
-n = 7). The remainder adds exactly one rung of the linearized large-p
-Liouville equation, −2a² sech²(aτ) acting once, with nothing fitted. The odd survival follows from the norm law, and the
+n = 8). The remainder adds exactly one rung of the linearized large-p
+Liouville equation, −2a² sech²(aτ) acting once, with nothing fitted;
+its n = 8 dressings were predicted before they were computed. The odd survival follows from the norm law, and the
 shares are exact (A₅ → 2047/2058 O₃ + 11/2058 O₅). The odd T = ∞ OPE
 coefficients equal N(1 − k_c(h))² times the Gross–Rosenhaus IR couplings,
 exactly at h = 3, 5, 7, with k_c(h) = 2/(h(h−1)); equivalently N times
@@ -416,16 +417,16 @@ claim. `condensate.py` transcribes the exact condensate and gives
    (the K = 12 word frontier limits the moments available). A lead for
    deriving the laws rather than fitting them: ⟨ω²⟩ = 8p(p−2) is
    exactly (2p − 4) times the fermion's 4p, the second moment of a
-   product of 2p − 4 fermion propagators (Δ_eff = 2 − 4/p), and an
-   independent review enumeration found the A₂ moments through the sixth
-   to be those of G_melonic(t)^(2p−4) at β = 0 (a conjecture here, not
-   yet checked in this repo). If that holds, the fixed-p channels follow from a real-time
-   Schwinger–Dyson solve, with no word frontier.
+   product of 2p − 4 fermion propagators (Δ_eff = 2 − 4/p). The
+   conjecture is that the A₂ moments through the sixth are those of
+   G_melonic(t)^(2p−4) at β = 0 (not yet checked in this repo). If that
+   holds, the fixed-p channels follow from a real-time Schwinger–Dyson
+   solve, with no word frontier.
 3. **The 2, 3, 5, 7 coincidence.** Answered in the semiclassical limit
    (`duality/conformal_tower.py`). As λ → 0 the chords are SL(2)
-   primaries of weight m in the bilocal OPE (exact through n = 7 with the
+   primaries of weight m in the bilocal OPE (exact through n = 8 with the
    grade remainder off; with it on, one Liouville rung, −2a² sech², is
-   added once). The odd
+   added once, confirmed out of sample at n = 8). The odd
    survival follows from the norm law, and the small-λ shares are exact
    rationals (O₅ in A₅: 11/2058 = 0.5345%; O₇ in A₇: 5/78323). The
    chord weights do not match the GR coupling ratios directly (C₅²/C₃² is
@@ -433,15 +434,13 @@ claim. `condensate.py` transcribes the exact condensate and gives
    h = 3, 5, 7 after a factor (1 − k_c)² read off from the data:
    Cₕ² = N(1 − k_c(h))² cₕ²(GR). Open:
    - a derivation of that relation and of the conformal structure;
-   - the predicted n = 8 dressings of one Liouville rung (recorded in
-     `conformal_tower.json`; they need the K = 18 tables);
    - the predicted N₉ → (21482496/143)λ⁸, which needs n = 9.
 4. **The Dirac full channel and its CP resolution** (below). This is what
    the paper's own CP assignment waits on.
 5. **A proof of the decomposition for general n** and of the λ^(2⌊n/2⌋)
    norm law. Which dimensions survive λ → 0 now follows from the norm law
    and the a^(n−m) scaling of the dressings (item 3; both established
-   numerically through n = 7). At every level computed (now
+   numerically through n = 8). At every level computed (now
    through n = 8, where all three patterns held as predicted), the first
    sub-leading coefficient is (q + … + q^k)/(1 + q^(k+1)), which suggests
    extending the n = 2 involution bundle by bundle. Further levels add
